@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>JAK Academy v4</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">
+    <img src="logo.png" class="logo-img" onload="this.style.display='block';document.querySelector('.logo-fallback').style.display='none'">
+    <div class="logo-fallback">JAK</div>
+    <div><div class="brand-title">JAK Academy</div><div class="brand-sub">Learning is Fun ✨</div></div>
+  </div>
+  <nav>
+    <button onclick="showPage('home')">Home</button>
+    <button onclick="goDashboard()">Dashboard</button>
+    <button onclick="showPage('studentExams');loadStudentExams()">Exams</button>
+    <button onclick="showPage('studySystem')">Study System</button>
+    <button onclick="showPage('aiCenter')">AI Center</button>
+    <button onclick="openPlanner()">Planner</button>
+    <button onclick="showPage('leaderboard');loadLeaderboard('daily')">Leaderboard</button>
+    <button class="secondary" onclick="logout()">Logout</button>
+  </nav>
+</header>
+<main>
+<section id="home" class="page active">
+  <div class="card hero">
+    <div class="logo-big">JAK</div>
+    <h1>JAK Academy v4</h1>
+    <div class="slogan">Learning is Fun ✨</div>
+    <p>Modern exam platform with teacher tools, results, leaderboard, study systems, AI-ready features, smart student assistant, and math symbols.</p>
+    <div class="actions" style="justify-content:center">
+      <button onclick="goDashboard()">Start Now</button>
+      <button class="gold" onclick="showPage('studySystem')">Study Systems</button>
+      <button class="violet" onclick="showPage('aiCenter')">AI Tools</button>
+    </div>
+  </div>
+  <div class="grid four" style="margin-top:18px">
+    <div class="box"><div class="edu-visual">📝</div><h2>Exams</h2><p>Create and solve interactive exams.</p></div>
+    <div class="box"><div class="edu-visual">🤖</div><h2>AI Ready</h2><p>Prepared for AI exam generation and explanations.</p></div>
+    <div class="box"><div class="edu-visual">📐</div><h2>Math Tools</h2><p>Symbols and patterns for math teachers.</p></div>
+    <div class="box"><div class="edu-visual">🏆</div><h2>Leaderboard</h2><p>Daily and weekly competition.</p></div>
+  </div>
+</section>
+
+<section id="studentDashboard" class="page"><div class="card"><span class="badge">Student Dashboard</span><h1>Welcome, Student</h1>
+<div class="grid three">
+<div class="box"><h2>Exams</h2><button onclick="showPage('studentExams');loadStudentExams()">Open Exams</button></div>
+<div class="box"><h2>My Results</h2><button onclick="showPage('myResults');loadMyResults()">Open Results</button></div>
+<div class="box"><h2>Study System</h2><button onclick="showPage('studySystem')">How to Study</button></div>
+<div class="box"><h2>Smart Assistant</h2><button onclick="showPage('studentAssistant')">Ask Assistant</button></div>
+<div class="box"><h2>Leaderboard</h2><button onclick="showPage('leaderboard');loadLeaderboard('daily')">Open Leaderboard</button></div>
+<div class="box"><h2>Planner</h2><button onclick="openPlanner()">Open Planner</button></div>
+</div></div></section>
+
+<section id="teacherDashboard" class="page"><div class="card"><span class="badge">Teacher Dashboard</span><h1>Teacher Tools</h1>
+<div class="grid three">
+<div class="box"><h2>Create Exam</h2><input id="examTitle" placeholder="Exam title"><input id="examDesc" placeholder="Description"><input id="examTime" type="number" value="10"><button onclick="createExam()">Create Exam</button><p id="examMsg" class="msg"></p></div>
+<div class="box"><h2>My Exams</h2><button onclick="loadTeacherExams()">Load Exams</button><div id="teacherExamList"></div></div>
+<div class="box"><h2>Results</h2><button onclick="loadTeacherResults()">Load Results</button><div id="teacherResultsList"></div></div>
+<div class="box ai-card"><h2>AI Question Builder</h2><button onclick="showPage('aiCenter')">Open AI Center</button></div>
+<div class="box"><h2>Math Tools</h2><button onclick="showPage('mathTools')">Open Math Symbols</button></div>
+<div class="box"><h2>Leaderboard</h2><button onclick="showPage('leaderboard');loadLeaderboard('daily')">Open Leaderboard</button></div>
+</div></div></section>
+
+<section id="studentExams" class="page"><div class="card"><span class="badge">Exams</span><h1>Available Exams</h1><button onclick="loadStudentExams()">Refresh Exams</button><div id="studentExamList" class="grid three"></div></div></section>
+
+<section id="questionManager" class="page"><div class="card"><span class="badge">Question Manager</span><h1 id="questionExamTitle">Manage Questions</h1>
+<div class="grid two"><div class="box"><h2>Add Question</h2><select id="questionType" onchange="handleQuestionTypeChange()"><option value="mcq">Multiple Choice</option><option value="true_false">True / False</option></select><textarea id="questionText" placeholder="Question text"></textarea>
+<div id="mcqOptions"><input id="optionA" placeholder="Option A"><input id="optionB" placeholder="Option B"><input id="optionC" placeholder="Option C"><input id="optionD" placeholder="Option D"><select id="mcqCorrectAnswer"><option value="A">Correct A</option><option value="B">Correct B</option><option value="C">Correct C</option><option value="D">Correct D</option></select></div>
+<div id="trueFalseOptions" style="display:none"><select id="tfCorrectAnswer"><option value="True">True</option><option value="False">False</option></select></div>
+<textarea id="questionExplanation" placeholder="Optional explanation"></textarea><button onclick="addQuestion()">Save Question</button><button class="secondary" onclick="showPage('teacherDashboard')">Back</button><p id="questionMsg" class="msg"></p></div>
+<div class="box"><h2>Questions</h2><button onclick="loadQuestions()">Refresh</button><div id="questionList"></div></div></div></div></section>
+
+<section id="takeExam" class="page"><div class="card"><span class="badge">Exam Preview</span><h1 id="takeExamTitle">Exam</h1><p id="takeExamDesc"></p><p id="takeExamTime"></p><button onclick="startSolvingExam()">Start Solving</button><button class="secondary" onclick="showPage('studentExams')">Back</button></div></section>
+
+<section id="examSolver" class="page"><div class="card"><span class="badge">Solving Exam</span><h1 id="solverExamTitle">Exam</h1><div class="timer" id="examTimer">00:00</div><div id="questionNav" class="question-nav"></div><div class="box"><h2 id="solverQuestionText">Question</h2><div id="solverOptions"></div></div><div class="actions"><button class="secondary" onclick="previousQuestion()">Previous</button><button onclick="nextQuestion()">Next</button><button class="gold" onclick="toggleReviewLater()">Review Later</button><button class="success" onclick="submitExam(false)">Submit Exam</button></div></div></section>
+
+<section id="examResult" class="page"><div class="card"><span class="badge">Exam Result</span><h1 id="resultTitle">Result</h1><h2 id="scoreText"></h2><div id="studyAdviceAfterResult" class="box tip-card"></div><div id="resultDetails"></div><button onclick="showPage('studentExams');loadStudentExams()">Back to Exams</button><button class="gold" onclick="window.print()">Print Result</button></div></section>
+
+<section id="myResults" class="page"><div class="card"><span class="badge">My Results</span><h1>My Exam Results</h1><button onclick="loadMyResults()">Refresh</button><div id="myResultsList"></div></div></section>
+
+<section id="leaderboard" class="page"><div class="card"><span class="badge">Leaderboard</span><h1>Leaderboard 🏆</h1><div class="actions"><button onclick="loadLeaderboard('daily')">Daily</button><button class="gold" onclick="loadLeaderboard('weekly')">Weekly</button></div><div id="leaderboardList"></div></div></section>
+
+<section id="studySystem" class="page"><div class="card"><span class="badge">Study System</span><h1>How Should Students Study? 📚</h1>
+<div class="grid two">
+<div class="box tip-card"><h2>Foundation System</h2><p>20 minutes grammar + 20 minutes vocabulary + 20 minutes practice questions.</p><p>مناسب للطلاب الضعاف أو البداية.</p></div>
+<div class="box tip-card"><h2>Exam Preparation System</h2><p>Practice under time, correct mistakes, then repeat weak topics.</p><p>مناسب قبل الامتحان.</p></div>
+<div class="box tip-card"><h2>Active Recall</h2><p>Close the book and try to remember. Then check and correct.</p><p>لا تقرأ فقط؛ اختبر نفسك.</p></div>
+<div class="box tip-card"><h2>Mistakes Notebook</h2><p>Write every repeated mistake and review it before exams.</p><p>دفتر الأخطاء سر التحسن.</p></div>
+<div class="box tip-card"><h2>Weekly Routine</h2><p>Day 1 grammar, Day 2 vocabulary, Day 3 reading, Day 4 writing, Day 5 exam, Day 6 correction, Day 7 light review.</p></div>
+<div class="box tip-card"><h2>Smart Advice by Score</h2><p>Below 50%: review basics. 50–79%: practice more. 80%+: move to advanced questions.</p></div>
+</div></div></section>
+
+<section id="studentAssistant" class="page"><div class="card"><span class="badge">Smart Student Assistant</span><h1>Ask JAK Assistant 🤖</h1><div class="box ai-card"><p>This assistant is ready for AI connection later. For now, it gives safe study guidance.</p><textarea id="assistantQuestion" placeholder="Ask about grammar, vocabulary, study plan..."></textarea><button onclick="localAssistant()">Ask</button><div id="assistantAnswer" class="box" style="margin-top:12px"></div></div></div></section>
+
+<section id="aiCenter" class="page"><div class="card"><span class="badge">AI Center</span><h1>AI Question Builder 🤖</h1><div class="grid two"><div class="box ai-card"><h2>Generate Questions Placeholder</h2><input id="aiTopic" placeholder="Topic: Present Simple / Passive Voice..."><select id="aiType"><option>MCQ</option><option>True / False</option><option>Grammar</option><option>Vocabulary</option></select><input id="aiCount" type="number" value="5"><button onclick="mockAIQuestions()">Generate Preview</button><p class="msg">Later this will connect securely through Netlify Functions.</p></div><div class="box"><h2>Preview</h2><div id="aiPreview"></div></div></div></div></section>
+
+<section id="mathTools" class="page"><div class="card"><span class="badge">Math Tools</span><h1>Math Symbols & Patterns 📐</h1><div class="grid two"><div class="box"><h2>Symbol Keyboard</h2><div class="math-symbols" id="mathSymbols"></div><textarea id="mathEditor" placeholder="Write equation here..."></textarea></div><div class="box"><h2>Templates</h2><button onclick="insertMath('x^2 + 3x + 2 = 0')">Quadratic</button><button onclick="insertMath('\\frac{a}{b}')">Fraction</button><button onclick="insertMath('√x')">Root</button><button onclick="insertMath('f(x)=2x+1')">Function</button></div></div></div></section>
+
+<section id="planner" class="page"><div class="card"><span class="badge">Study Planner</span><h1>Study Planner</h1><div class="grid two"><input id="subject" placeholder="Subject"><input id="studyDate" type="date"><input id="startTime" type="time"><input id="endTime" type="time"><select id="planType"><option value="daily">Daily / 7 days</option><option value="weekly">Weekly</option><option value="exam">Before Exam</option></select><textarea id="task" placeholder="Task"></textarea></div><div class="actions"><button onclick="addPlan()">Add Plan</button><button class="gold" onclick="printPlans()">Print</button><button class="danger" onclick="clearAllPlans()">Clear All</button></div><h2>My Plans</h2><div id="plansList"></div><h2>Calendar View</h2><div id="calendarView"></div></div></section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+</body></html>
