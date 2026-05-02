@@ -601,13 +601,142 @@ async function loadLeaderboard(type) {
   });
 }
 
+function fillAssistantPrompt(type) {
+  if (!$('assistantQuestion')) return;
+  const prompts = {
+    grammar: "Explain this grammar rule with examples in English and Arabic.",
+    plan: "I need a study plan for English this week.",
+    mistakes: "How can I fix my repeated mistakes in exams?"
+  };
+  assistantQuestion.value = prompts[type] || "Help me study English better.";
+  localAssistant();
+}
+
 function localAssistant() {
+  if (!$('assistantQuestion') || !$('assistantAnswer')) return;
   const q = assistantQuestion.value.toLowerCase();
-  let ans = "Start by identifying your weak point, then practise with short timed exercises.";
-  if (q.includes("grammar")) ans = "For grammar: learn the rule, write 3 examples, then solve 10 mixed questions.";
-  if (q.includes("vocab")) ans = "For vocabulary: use word + meaning + sentence + quick revision after 24 hours.";
-  if (q.includes("plan")) ans = "Use 25 minutes study + 5 minutes break. Start with the hardest subject first.";
-  assistantAnswer.innerHTML = "<h3>JAK Assistant</h3><p>" + ans + "</p>";
+
+  let ans = `
+    <h3>JAK Assistant 🤖</h3>
+    <p>Start by identifying your weak point, then practise with short timed exercises.</p>
+    <p><b>ابدأ بتحديد نقطة ضعفك، ثم تدرب بتمارين قصيرة ومؤقتة.</b></p>
+  `;
+
+  if (q.includes("grammar") || q.includes("rule") || q.includes("passive") || q.includes("tense")) {
+    ans = `
+      <h3>Grammar Plan</h3>
+      <p>1. Read the rule. 2. Write 3 examples. 3. Solve 10 mixed questions. 4. Write your mistakes in a notebook.</p>
+      <p><b>الخطة:</b> افهم القاعدة، اكتب أمثلة، حل أسئلة متنوعة، وسجل أخطاءك.</p>
+    `;
+  }
+
+  if (q.includes("vocab") || q.includes("word") || q.includes("meaning")) {
+    ans = `
+      <h3>Vocabulary Plan</h3>
+      <p>Use: word + Arabic meaning + English sentence + revision after 24 hours.</p>
+      <p><b>للمفردات:</b> الكلمة + معناها + جملة + مراجعة بعد يوم.</p>
+    `;
+  }
+
+  if (q.includes("plan") || q.includes("study") || q.includes("schedule")) {
+    ans = `
+      <h3>Study Plan</h3>
+      <p>Use 25 minutes study + 5 minutes break. Start with the hardest skill first, then practise exam questions.</p>
+      <p><b>خطة الدراسة:</b> 25 دقيقة دراسة + 5 دقائق راحة، وابدأ بالأصعب.</p>
+    `;
+  }
+
+  if (q.includes("mistake") || q.includes("wrong") || q.includes("weak")) {
+    ans = `
+      <h3>Mistakes Strategy</h3>
+      <p>Write every mistake under three columns: the wrong answer, the correct answer, and the reason.</p>
+      <p><b>استراتيجية الأخطاء:</b> اكتب الخطأ، التصحيح، وسبب الخطأ.</p>
+    `;
+  }
+
+  assistantAnswer.innerHTML = ans;
+}
+
+const studyAdviceBank = [
+  "Study the hardest topic first while your energy is high.",
+  "Use active recall: close the book and test yourself.",
+  "Do not only read; solve questions under time.",
+  "Keep a mistakes notebook and review it before exams.",
+  "Revise vocabulary after 24 hours, then after one week.",
+  "For grammar, always write your own examples.",
+  "Before sleeping, review only the mistakes you made today.",
+  "Use Pomodoro: 25 minutes focus + 5 minutes break."
+];
+
+function getRandomStudyAdvice() {
+  return studyAdviceBank[Math.floor(Math.random() * studyAdviceBank.length)];
+}
+
+function renderRotatingAdvice() {
+  const advice = getRandomStudyAdvice();
+  if ($('rotatingAdviceBox')) {
+    rotatingAdviceBox.innerHTML = `<div class="box"><h3>Advice for You</h3><p>${safeText(advice)}</p></div>`;
+  }
+  if ($('studentAdviceBox')) {
+    studentAdviceBox.innerHTML = `<h2>Daily Study Advice</h2><p>${safeText(advice)}</p><button onclick="renderRotatingAdvice()">Change Advice</button>`;
+  }
+}
+
+const dictionaryEntries = [
+  { category: "grammar", word: "passive voice", meaning: "المبني للمجهول", example: "The room was cleaned yesterday." },
+  { category: "grammar", word: "reported speech", meaning: "الكلام المنقول", example: "He said that he was tired." },
+  { category: "grammar", word: "conditional", meaning: "الجملة الشرطية", example: "If you study, you will pass." },
+  { category: "grammar", word: "relative clause", meaning: "جملة الوصل", example: "The boy who won is my friend." },
+  { category: "grammar", word: "article", meaning: "أداة التعريف أو التنكير", example: "I saw a bird. The bird was blue." },
+  { category: "vocabulary", word: "achieve", meaning: "يحقق", example: "Students can achieve their goals with practice." },
+  { category: "vocabulary", word: "improve", meaning: "يحسّن", example: "You can improve your writing by reading." },
+  { category: "vocabulary", word: "challenge", meaning: "تحدٍ", example: "Learning new words is a useful challenge." },
+  { category: "vocabulary", word: "revise", meaning: "يراجع", example: "Revise your notes before the exam." },
+  { category: "study", word: "active recall", meaning: "الاسترجاع النشط", example: "Test yourself without looking at the book." },
+  { category: "study", word: "pomodoro", meaning: "نظام 25 دقيقة دراسة و5 راحة", example: "Use Pomodoro when you feel distracted." },
+  { category: "study", word: "mistakes notebook", meaning: "دفتر الأخطاء", example: "Write grammar mistakes in your mistakes notebook." },
+  { category: "irregular", word: "go / went / gone", meaning: "يذهب", example: "He has gone home." },
+  { category: "irregular", word: "write / wrote / written", meaning: "يكتب", example: "She has written an essay." },
+  { category: "irregular", word: "break / broke / broken", meaning: "يكسر", example: "The window was broken." },
+  { category: "irregular", word: "speak / spoke / spoken", meaning: "يتحدث", example: "English is spoken here." }
+];
+
+function dictionaryCard(entry) {
+  return `
+    <div class="box dictionary-card">
+      <span class="badge">${safeText(entry.category)}</span>
+      <h3>${safeText(entry.word)}</h3>
+      <p><b>Arabic:</b> ${safeText(entry.meaning)}</p>
+      <p><b>Example:</b> ${safeText(entry.example)}</p>
+    </div>
+  `;
+}
+
+function renderDictionaryHome() {
+  renderDictionaryCategory('grammar');
+  if ($('dictionarySearch')) dictionarySearch.value = "";
+  if ($('dictionaryResults')) dictionaryResults.innerHTML = "";
+}
+
+function renderDictionaryCategory(category) {
+  if (!$('dictionaryCategory')) return;
+  const items = dictionaryEntries.filter(e => e.category === category);
+  dictionaryCategory.innerHTML = items.map(dictionaryCard).join("");
+}
+
+function searchDictionary() {
+  if (!$('dictionarySearch') || !$('dictionaryResults')) return;
+  const q = dictionarySearch.value.trim().toLowerCase();
+  if (!q) {
+    dictionaryResults.innerHTML = "";
+    return;
+  }
+  const items = dictionaryEntries.filter(e =>
+    e.word.toLowerCase().includes(q) ||
+    e.meaning.toLowerCase().includes(q) ||
+    e.category.toLowerCase().includes(q)
+  );
+  dictionaryResults.innerHTML = items.length ? items.map(dictionaryCard).join("") : "No results found.";
 }
 
 function mockAIQuestions() {
@@ -848,6 +977,7 @@ function printPlans() {
 async function loadStudentDashboard() {
   renderTodayTasks();
   updatePlannerStats();
+  renderRotatingAdvice();
   if ($("studentProgressBox")) {
     const plans = getPlans();
     const total = plans.length;
@@ -998,9 +1128,137 @@ function loadAdminOverview() {
   }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  showPage("home");
-  displayQuestion();
+
+// =========================
+// JAK Academy Stable v5 Fix Pack
+// =========================
+function getQueryParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+async function bootStableApp() {
   renderPaymentInfo();
   renderTodayTasks();
+  renderRotatingAdvice();
+  renderDictionaryHome();
+  renderGamesHome();
+  const user = await getCurrentUser();
+  if (getQueryParam('dashboard') === '1' && user) {
+    await goDashboard();
+    history.replaceState({}, document.title, 'index.html');
+    return;
+  }
+  showPage('home');
+}
+
+function renderGamesHome() {
+  if (!$('gameArea')) return;
+  gameArea.innerHTML = `<div class="box"><h3>Choose a game above.</h3><p>اختر لعبة من الأعلى للتدريب.</p></div>`;
+}
+
+const irregularGameBank = [
+  { base: 'go', past: 'went', pp: 'gone', ar: 'يذهب' },
+  { base: 'write', past: 'wrote', pp: 'written', ar: 'يكتب' },
+  { base: 'speak', past: 'spoke', pp: 'spoken', ar: 'يتحدث' },
+  { base: 'break', past: 'broke', pp: 'broken', ar: 'يكسر' },
+  { base: 'see', past: 'saw', pp: 'seen', ar: 'يرى' },
+  { base: 'take', past: 'took', pp: 'taken', ar: 'يأخذ' },
+  { base: 'give', past: 'gave', pp: 'given', ar: 'يعطي' },
+  { base: 'come', past: 'came', pp: 'come', ar: 'يأتي' },
+  { base: 'eat', past: 'ate', pp: 'eaten', ar: 'يأكل' },
+  { base: 'make', past: 'made', pp: 'made', ar: 'يصنع' }
+];
+let irregularState = { index: 0, score: 0, target: 'past' };
+
+function startIrregularGame() {
+  irregularState = { index: 0, score: 0, target: Math.random() > .5 ? 'past' : 'pp' };
+  renderIrregularQuestion();
+}
+
+function renderIrregularQuestion() {
+  if (!$('gameArea')) return;
+  const q = irregularGameBank[irregularState.index % irregularGameBank.length];
+  const targetLabel = irregularState.target === 'past' ? 'past simple' : 'past participle';
+  const correct = q[irregularState.target];
+  const all = [...new Set(irregularGameBank.flatMap(v => [v.past, v.pp]))].filter(x => x !== correct);
+  const options = [correct, ...all.sort(() => Math.random() - .5).slice(0, 3)].sort(() => Math.random() - .5);
+  gameArea.innerHTML = `
+    <div class="box">
+      <span class="badge">Irregular Verbs</span>
+      <h2>What is the ${targetLabel} of: ${q.base}?</h2>
+      <p>Arabic meaning: ${q.ar}</p>
+      <p><b>Score:</b> ${irregularState.score}</p>
+      <div class="actions">${options.map(o => `<button onclick="answerIrregular('${o.replace(/'/g, "\\'")}','${correct.replace(/'/g, "\\'")}')">${o}</button>`).join('')}</div>
+    </div>`;
+}
+
+function answerIrregular(choice, correct) {
+  if (choice === correct) irregularState.score++;
+  else alert(`Wrong. Correct answer: ${correct}`);
+  irregularState.index++;
+  irregularState.target = Math.random() > .5 ? 'past' : 'pp';
+  renderIrregularQuestion();
+}
+
+const hangmanWords = ['grammar','vocabulary','passive','reported','conditionals','article','revision','achievement'];
+let hangmanState = { word: '', letters: [], wrong: 0 };
+function startHangmanGame() {
+  hangmanState = { word: hangmanWords[Math.floor(Math.random() * hangmanWords.length)], letters: [], wrong: 0 };
+  renderHangman();
+}
+function renderHangman() {
+  if (!$('gameArea')) return;
+  const display = hangmanState.word.split('').map(ch => hangmanState.letters.includes(ch) ? ch : '_').join(' ');
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  gameArea.innerHTML = `
+    <div class="box">
+      <span class="badge">Hangman</span>
+      <h2>${display}</h2>
+      <p>Wrong tries: ${hangmanState.wrong} / 6</p>
+      <div class="actions">${alphabet.map(l => `<button class="secondary" onclick="guessHangman('${l}')" ${hangmanState.letters.includes(l) ? 'disabled' : ''}>${l}</button>`).join('')}</div>
+    </div>`;
+  if (!display.includes('_')) setTimeout(() => alert('Excellent! You guessed the word ✅'), 100);
+  if (hangmanState.wrong >= 6) setTimeout(() => alert('Game over. Word: ' + hangmanState.word), 100);
+}
+function guessHangman(letter) {
+  if (!hangmanState.letters.includes(letter)) hangmanState.letters.push(letter);
+  if (!hangmanState.word.includes(letter)) hangmanState.wrong++;
+  renderHangman();
+}
+
+function generateSmartPlan() {
+  const subjects = (smartSubjects?.value || 'English, Grammar, Vocabulary').split(',').map(s => s.trim()).filter(Boolean);
+  const days = Math.max(1, Math.min(30, Number(smartDays?.value || 7)));
+  const start = smartStart?.value || '17:00';
+  const minutes = Math.max(15, Number(smartMinutes?.value || 45));
+  const plans = getPlans();
+  const [h, m] = start.split(':').map(Number);
+  const today = new Date();
+  for (let i = 0; i < days; i++) {
+    const subjectName = subjects[i % subjects.length];
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const endDate = new Date(d);
+    endDate.setHours(h, m + minutes, 0, 0);
+    plans.push({
+      id: 'smart-' + Date.now() + '-' + i,
+      subject: subjectName,
+      date: d.toISOString().split('T')[0],
+      start,
+      end: `${String(endDate.getHours()).padStart(2,'0')}:${String(endDate.getMinutes()).padStart(2,'0')}`,
+      type: 'weekly',
+      task: `Smart study session: revise ${subjectName}, solve questions, and write mistakes.`,
+      color: getSubjectColor(subjectName),
+      status: 'not_started'
+    });
+  }
+  savePlans(plans);
+  loadPlans(); renderCalendar(); updatePlannerStats(); renderTodayTasks();
+  alert('Smart study plan generated ✅');
+}
+
+
+window.addEventListener("DOMContentLoaded", () => {
+  displayQuestion();
+  bootStableApp();
 });

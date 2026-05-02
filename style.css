@@ -182,3 +182,8 @@ textarea{min-height:95px;resize:vertical}
   #plannerStats,#todayTasks,#plansList,#calendarView{display:block!important}
   input,select,textarea{border:1px solid #999!important;color:black!important;background:white!important}
 }
+
+.dictionary-card{border-left:7px solid var(--cyan);margin-top:10px}
+#dictionaryResults,#dictionaryCategory{display:grid;gap:10px;margin-top:12px}
+#studentAdviceBox{border-left:7px solid var(--violet)}
+#rotatingAdviceBox .box{margin-top:10px}

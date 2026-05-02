@@ -20,6 +20,9 @@
     <button onclick="openPlanner()">Planner</button>
     <button onclick="showPage('studySystem')">Study System</button>
     <button onclick="showPage('aiCenter')">AI Center</button>
+    <button onclick="showPage('studentAssistant')">Assistant 🤖</button>
+    <button onclick="showPage('games');renderGamesHome()">Games 🎮</button>
+    <button onclick="showPage('dictionaries');renderDictionaryHome()">Dictionaries 📚</button>
     <button onclick="showPage('premium');renderPaymentInfo()">Premium</button>
     <button onclick="showPage('leaderboard');loadLeaderboard('daily')">Leaderboard</button>
     <button class="secondary" onclick="logout()">Logout</button>
@@ -58,6 +61,9 @@
       <div class="box"><h2>Today’s Tasks</h2><div id="studentTodayTasks"></div><button onclick="openPlanner()">Open Planner</button></div>
       <div class="box" id="studentProgressBox"><h2>Study Progress</h2><p>Open dashboard to load progress.</p></div>
       <div class="box"><h2>Smart Assistant</h2><button onclick="showPage('studentAssistant')">Ask Assistant</button></div>
+      <div class="box" id="studentAdviceBox"><h2>Daily Study Advice</h2><p>Open dashboard to load advice.</p></div>
+      <div class="box"><h2>Dictionaries</h2><button onclick="showPage('dictionaries');renderDictionaryHome()">Open Dictionaries</button></div>
+      <div class="box"><h2>Games</h2><button onclick="showPage('games');renderGamesHome()">Open Games</button></div>
       <div class="box"><h2>Premium</h2><button onclick="showPage('premium');renderPaymentInfo()">Request Premium</button></div>
     </div>
   </div>
@@ -135,15 +141,77 @@
 <div class="box tip-card"><h2>Smart Advice by Score</h2><p>Below 50%: review basics. 50–79%: practice more. 80%+: move to advanced questions.</p></div>
 </div></div></section>
 
-<section id="studentAssistant" class="page"><div class="card"><span class="badge">Smart Student Assistant</span><h1>Ask JAK Assistant 🤖</h1><div class="box ai-card"><p>This assistant is ready for AI connection later. For now, it gives safe study guidance.</p><textarea id="assistantQuestion" placeholder="Ask about grammar, vocabulary, study plan..."></textarea><button onclick="localAssistant()">Ask</button><div id="assistantAnswer" class="box" style="margin-top:12px"></div></div></div></section>
+<section id="studentAssistant" class="page">
+  <div class="card">
+    <span class="badge">Smart Student Assistant</span>
+    <h1>Ask JAK Assistant 🤖</h1>
+    <div class="grid two">
+      <div class="box ai-card">
+        <h2>Student Helper</h2>
+        <p>Ask about grammar, vocabulary, exam preparation, study planning, or mistakes. يعمل الآن محليًا، ولاحقًا نربطه بالذكاء الاصطناعي الحقيقي.</p>
+        <textarea id="assistantQuestion" placeholder="Ask about grammar, vocabulary, study plan, passive voice, exam advice..."></textarea>
+        <div class="actions">
+          <button onclick="localAssistant()">Ask</button>
+          <button class="gold" onclick="fillAssistantPrompt('grammar')">Grammar Help</button>
+          <button class="violet" onclick="fillAssistantPrompt('plan')">Study Plan</button>
+          <button class="success" onclick="fillAssistantPrompt('mistakes')">Mistakes</button>
+        </div>
+        <div id="assistantAnswer" class="box" style="margin-top:12px"></div>
+      </div>
+      <div class="box tip-card">
+        <h2>Changing Study Advice 🔁</h2>
+        <div id="rotatingAdviceBox"></div>
+        <button onclick="renderRotatingAdvice()">New Advice</button>
+      </div>
+    </div>
+  </div>
+</section>
 
-<section id="aiCenter" class="page"><div class="card"><span class="badge">AI Center</span><h1>AI Question Builder 🤖</h1><div class="grid two"><div class="box ai-card"><h2>Generate Questions Placeholder</h2><input id="aiTopic" placeholder="Topic: Present Simple / Passive Voice..."><select id="aiType"><option>MCQ</option><option>True / False</option><option>Grammar</option><option>Vocabulary</option></select><input id="aiCount" type="number" value="5"><button onclick="mockAIQuestions()">Generate Preview</button><p class="msg">Later this will connect securely through Netlify Functions.</p></div><div class="box"><h2>Preview</h2><div id="aiPreview"></div></div></div></div></section>
+
+<section id="dictionaries" class="page">
+  <div class="card">
+    <span class="badge">Dictionaries</span>
+    <h1>Student Dictionaries 📚</h1>
+    <p class="msg">English-Arabic support for vocabulary, grammar terms, study words, and irregular verbs.</p>
+    <div class="grid two">
+      <div class="box">
+        <h2>Search Dictionary</h2>
+        <input id="dictionarySearch" placeholder="Search: passive / revise / achieve / break..." oninput="searchDictionary()">
+        <div id="dictionaryResults"></div>
+      </div>
+      <div class="box">
+        <h2>Dictionary Categories</h2>
+        <div class="actions">
+          <button onclick="renderDictionaryCategory('grammar')">Grammar</button>
+          <button class="gold" onclick="renderDictionaryCategory('vocabulary')">Vocabulary</button>
+          <button class="violet" onclick="renderDictionaryCategory('study')">Study Skills</button>
+          <button class="success" onclick="renderDictionaryCategory('irregular')">Irregular Verbs</button>
+        </div>
+        <div id="dictionaryCategory"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="games" class="page">
+  <div class="card">
+    <span class="badge">Learning Games</span>
+    <h1>Games 🎮</h1>
+    <div class="grid two">
+      <div class="box"><h2>Irregular Verbs Game</h2><p>Choose the correct form and collect points.</p><button onclick="startIrregularGame()">Start</button></div>
+      <div class="box"><h2>Hangman Vocabulary</h2><p>Practise curriculum vocabulary by guessing letters.</p><button onclick="startHangmanGame()">Start</button></div>
+    </div>
+    <div id="gameArea" style="margin-top:16px"></div>
+  </div>
+</section>
+
+<section id="aiCenter" class="page"><div class="card"><span class="badge">AI Center</span><h1>AI Question Builder 🤖</h1><div class="grid two"><div class="box ai-card"><h2>AI-ready Question Builder</h2><input id="aiTopic" placeholder="Topic: Present Simple / Passive Voice..."><select id="aiType"><option>MCQ</option><option>True / False</option><option>Grammar</option><option>Vocabulary</option></select><input id="aiCount" type="number" value="5"><button onclick="mockAIQuestions()">Generate Preview</button><p class="msg">Safe local preview now. Real OpenAI connection should be added later through Netlify Functions only, not directly in frontend.</p></div><div class="box"><h2>Preview</h2><div id="aiPreview"></div></div></div></div></section>
 
 <section id="mathTools" class="page"><div class="card"><span class="badge">Math Tools</span><h1>Math Symbols & Patterns 📐</h1><div class="grid two"><div class="box"><h2>Symbol Keyboard</h2><div class="math-symbols" id="mathSymbols"></div><textarea id="mathEditor" placeholder="Write equation here..."></textarea></div><div class="box"><h2>Templates</h2><button onclick="insertMath('x^2 + 3x + 2 = 0')">Quadratic</button><button onclick="insertMath('\\frac{a}{b}')">Fraction</button><button onclick="insertMath('√x')">Root</button><button onclick="insertMath('f(x)=2x+1')">Function</button></div></div></div></section>
 
 <section id="premium" class="page"><div class="card"><span class="badge">Premium</span><h1>Premium Plans & CliQ Payment</h1><div id="paymentInfo"></div><div class="box"><h2>Request Premium</h2><select id="premiumPlan"><option value="student_monthly">Student Monthly</option><option value="student_yearly">Student Yearly</option><option value="teacher_monthly">Teacher Monthly</option><option value="teacher_yearly">Teacher Yearly</option></select><textarea id="premiumNote" placeholder="Write your payment reference or note"></textarea><button onclick="submitPremiumRequest()">Send Request</button><p id="premiumMsg" class="msg"></p></div></div></section>
 
-<section id="planner" class="page"><div class="card"><span class="badge">Study Planner</span><h1>Study Planner + Colored Calendar</h1><div id="plannerStats" class="grid three"></div><h2>Today’s Tasks</h2><div id="todayTasks"></div><div class="grid two"><input id="subject" placeholder="Subject"><input id="studyDate" type="date"><input id="startTime" type="time"><input id="endTime" type="time"><select id="planType"><option value="daily">Daily / 7 days</option><option value="weekly">Weekly</option><option value="exam">Before Exam</option></select><select id="planStatus"><option value="not_started">Not Started</option><option value="in_progress">In Progress</option><option value="done">Completed</option></select><input id="subjectColor" type="color" value="#2563eb"><textarea id="task" placeholder="Task / goal"></textarea></div><div class="actions"><button onclick="addPlan()">Add Plan</button><button class="gold" onclick="printPlans()">Print</button><button class="danger" onclick="clearAllPlans()">Clear All</button></div><h2>My Plans</h2><div id="plansList"></div><h2>Calendar View</h2><input id="subjectFilter" placeholder="Filter by subject" oninput="renderCalendar()"><div id="calendarView"></div></div></section>
+<section id="planner" class="page"><div class="card"><span class="badge">Study Planner</span><h1>Study Planner + Colored Calendar</h1><div id="plannerStats" class="grid three"></div><div class="box tip-card"><h2>Smart Plan Generator</h2><div class="grid two"><input id="smartSubjects" placeholder="Subjects: English, Grammar, Vocabulary"><input id="smartDays" type="number" value="7" min="1" max="30"><input id="smartStart" type="time" value="17:00"><input id="smartMinutes" type="number" value="45" min="15"></div><button class="violet" onclick="generateSmartPlan()">Generate Smart Plan</button></div><h2>Today’s Tasks</h2><div id="todayTasks"></div><div class="grid two"><input id="subject" placeholder="Subject"><input id="studyDate" type="date"><input id="startTime" type="time"><input id="endTime" type="time"><select id="planType"><option value="daily">Daily / 7 days</option><option value="weekly">Weekly</option><option value="exam">Before Exam</option></select><select id="planStatus"><option value="not_started">Not Started</option><option value="in_progress">In Progress</option><option value="done">Completed</option></select><input id="subjectColor" type="color" value="#2563eb"><textarea id="task" placeholder="Task / goal"></textarea></div><div class="actions"><button onclick="addPlan()">Add Plan</button><button class="gold" onclick="printPlans()">Print</button><button class="danger" onclick="clearAllPlans()">Clear All</button></div><h2>My Plans</h2><div id="plansList"></div><h2>Calendar View</h2><input id="subjectFilter" placeholder="Filter by subject" oninput="renderCalendar()"><div id="calendarView"></div></div></section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
