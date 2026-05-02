@@ -153,3 +153,32 @@ textarea{min-height:95px;resize:vertical}
   #planner.page,#examResult.page{display:block!important}
   .card,.box,.calendar-day{background:white!important;color:black!important;border:1px solid #ddd!important;box-shadow:none!important}
 }
+
+/* ===== JAK Academy v4 Enhanced Additions ===== */
+.option-card.selected{
+  border:2px solid var(--green)!important;
+  background:rgba(22,163,74,.18)!important;
+  box-shadow:0 0 0 3px rgba(22,163,74,.08);
+}
+.progress{
+  width:100%;height:12px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:8px;
+}
+.progress span{
+  display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:999px;
+}
+.plan-card{transition:.2s ease}
+.plan-card:hover{transform:translateY(-2px)}
+.payment-card{border-left:7px solid var(--green)}
+.check-line{display:flex;align-items:center;gap:8px;margin:10px 0;font-weight:900;color:var(--muted)}
+.check-line input{width:auto;margin:0}
+#todayTasks,.today-tasks{display:grid;gap:8px;margin-bottom:16px}
+#plannerStats{margin:12px 0 18px}
+#plannerStats .box p,#adminOverview .box p{font-size:28px;font-weight:900;color:var(--gold);margin:6px 0}
+#subjectColor{height:46px;padding:6px;cursor:pointer}
+.mini-plan.done{opacity:.8;text-decoration:none}
+.mini-plan small{display:inline-block;margin-top:4px;font-weight:900}
+#premiumRequestsList .box,#paymentInfo .box{margin-top:10px}
+@media print{
+  #plannerStats,#todayTasks,#plansList,#calendarView{display:block!important}
+  input,select,textarea{border:1px solid #999!important;color:black!important;background:white!important}
+}
