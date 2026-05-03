@@ -1282,7 +1282,32 @@ function generateSmartPlan() {
 }
 
 
+// ================= USER NAME =================
+async function loadUserName() {
+  const { data: { user } } = await client.auth.getUser();
+
+  if (!user) return;
+
+  const { data, error } = await client
+    .from("profiles")
+    .select("full_name")
+    .eq("email", user.email)
+    .single();
+
+  if (error) {
+    console.log("Error loading name:", error.message);
+    return;
+  }
+
+  const el = document.getElementById("userName");
+  if (el) {
+    el.textContent = data?.full_name || "Student";
+  }
+}
+
+// ================= START APP =================
 window.addEventListener("DOMContentLoaded", () => {
   displayQuestion();
   bootStableApp();
+  loadUserName();
 });
