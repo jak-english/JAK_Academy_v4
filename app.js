@@ -33,26 +33,50 @@ function getRoleFromUser(user) {
 
 async function goDashboard() {
   const user = await getCurrentUser();
+
   if (!user) {
     location.href = "login.html";
     return;
   }
 
-  currentUserRole = getRoleFromUser(user);
+  const { data: profile } = await client
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
 
-  if (currentUserRole === "super_admin" || currentUserRole === "admin") {
+  const role =
+    profile?.role ||
+    user?.user_metadata?.role ||
+    "student";
+
+  const name =
+    profile?.full_name ||
+    user?.user_metadata?.full_name ||
+    user?.email?.split("@")[0] ||
+    "User";
+
+  displayUserName({
+    ...user,
+    user_metadata: { full_name: name }
+  });
+
+  if (role === "admin" || role === "super_admin") {
     showPage("superAdminDashboard");
     loadAdminOverview();
     return;
   }
 
-  if (currentUserRole === "teacher") {
+  if (role === "teacher") {
     showPage("teacherDashboard");
+    loadTeacherExams();
+    loadTeacherResults();
     return;
   }
 
   showPage("studentDashboard");
   loadStudentDashboard();
+  loadStudentExams();
 }
 
 async function logout() {
@@ -1143,12 +1167,12 @@ async function bootStableApp() {
   renderDictionaryHome();
   renderGamesHome();
   const user = await getCurrentUser();
-  if (getQueryParam('dashboard') === '1' && user) {
-    await goDashboard();
-    history.replaceState({}, document.title, 'index.html');
-    return;
-  }
-  showPage('home');
+  if (user) {
+  await goDashboard();
+  return;
+}
+
+showPage('home');
 }
 
 function renderGamesHome() {
