@@ -1311,3 +1311,40 @@ window.addEventListener("DOMContentLoaded", () => {
   bootStableApp();
   loadUserName();
 });
+function showPage(pageId) {
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
+  });
+
+  const target = document.getElementById(pageId);
+
+  if (target) {
+    target.classList.add("active");
+  } else {
+    console.log("Page not found:", pageId);
+  }
+}async function goDashboard() {
+  const { data: { user } } = await client.auth.getUser();
+
+  if (!user) {
+    showPage("home");
+    return;
+  }
+
+  const { data, error } = await client
+    .from("profiles")
+    .select("role")
+    .eq("email", user.email)
+    .single();
+
+  if (error) {
+    console.log("Role error:", error.message);
+    return;
+  }
+
+  if (data?.role === "teacher") {
+    showPage("teacherDashboard");
+  } else {
+    showPage("studentDashboard");
+  }
+}
