@@ -112,13 +112,19 @@
 </section>
 
 <section id="superAdminDashboard" class="page">
-  <button onclick="showPage('teacherDashboard')">
-  Open Teacher Dashboard
-</button>
   <div class="card">
     <span class="badge">Super Admin Dashboard</span>
     <h1>Admin Controls</h1>
+
+    <div class="actions" style="margin: 15px 0;">
+      <button onclick="showPage('teacherDashboard')">Open Teacher Dashboard</button>
+      <button onclick="showPage('premium'); loadUsers(); renderPaymentInfo();">
+        Open Users Management
+      </button>
+    </div>
+
     <div id="adminOverview" class="grid three"></div>
+
     <div class="grid two" style="margin-top:18px">
       <div class="box payment-card">
         <h2>CliQ Payment Settings</h2>
@@ -129,13 +135,18 @@
         <input id="teacherMonthly" type="number" placeholder="Teacher monthly price">
         <input id="teacherYearly" type="number" placeholder="Teacher yearly price">
         <textarea id="paymentInstructions" placeholder="Payment instructions"></textarea>
-        <label class="check-line"><input id="paymentActive" type="checkbox" checked> Payment active</label>
+        <label class="check-line">
+          <input id="paymentActive" type="checkbox" checked> Payment active
+        </label>
         <button onclick="updatePaymentSettings()">Save Payment Settings</button>
         <p id="paymentAdminMsg" class="msg"></p>
       </div>
+
       <div class="box">
         <h2>Premium Requests</h2>
-        <button onclick="renderPremiumRequests();loadAdminOverview()">Refresh Requests</button>
+        <button onclick="renderPremiumRequests(); loadAdminOverview();">
+          Refresh Requests
+        </button>
         <div id="premiumRequestsList"></div>
       </div>
     </div>
