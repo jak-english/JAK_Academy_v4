@@ -63,7 +63,7 @@ async function login(){
  msg.textContent="Logging in...";
  const {error}=await client.auth.signInWithPassword({email,password});
  if(error){msg.textContent="❌ "+error.message;return;}
- msg.textContent="✅ Login successful"; setTimeout(()=>location.href="index.html?dashboard=1",500);
+ msg.textContent="✅ Login successful";msg.textContent="✅ Login successful";location.href = "index.html";
 }
 async function register(){
  const name=regName.value.trim(), email=regEmail.value.trim(), password=regPassword.value, role=document.getElementById("role").value, msg=regMsg;

@@ -17,9 +17,16 @@ const $ = (id) => document.getElementById(id);
 const safeText = (value) => (value === null || value === undefined ? "" : String(value));
 
 function showPage(id) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  const page = $(id);
-  if (page) page.classList.add("active");
+  document.querySelectorAll(".page").forEach(p => {
+    p.style.display = "none";
+  });
+
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.display = "block";
+  } else {
+    console.log("Page not found:", id);
+  }
 }
 
 async function getCurrentUser() {
@@ -32,51 +39,42 @@ function getRoleFromUser(user) {
 }
 
 async function goDashboard() {
-  const user = await getCurrentUser();
+  try {
+    const { data: { user } } = await client.auth.getUser();
 
-  if (!user) {
-    location.href = "login.html";
-    return;
-  }
+    if (!user) {
+      alert("Not logged in");
+      return;
+    }
 
-  const { data: profile } = await client
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+    const { data: profile, error } = await client
+      .from("profiles")
+      .select("role, full_name")
+      .eq("email", user.email)
+      .single();
 
-  const role =
-    profile?.role ||
-    user?.user_metadata?.role ||
-    "student";
+    if (error) {
+      console.error("Profile error:", error);
+      return;
+    }
 
-  const name =
-    profile?.full_name ||
-    user?.user_metadata?.full_name ||
-    user?.email?.split("@")[0] ||
-    "User";
+const role = (profile?.role || "").toLowerCase().trim();
+    console.log("User role:", role);
 
-  displayUserName({
-    ...user,
-    user_metadata: { full_name: name }
-  });
-
-  if (role === "admin" || role === "super_admin") {
-    showPage("superAdminDashboard");
-    loadAdminOverview();
-    return;
-  }
-
-  if (role === "teacher") {
-    showPage("teacherDashboard");
-    loadTeacherExams();
-    loadTeacherResults();
-    return;
-  }
-
+    // 🧠 توجيه حسب الدور
+    if (role.includes("super_admin") || role.includes("admin")) {
+  showPage("superAdminDashboard");
+} else if (role.includes("teacher")) {
+  showPage("teacherDashboard");
+} else if (role.includes("student")) {
   showPage("studentDashboard");
-  loadStudentDashboard();
-  loadStudentExams();
+} else {
+  showPage("studentDashboard");
+}
+
+  } catch (err) {
+    console.error("Dashboard error:", err);
+  }
 }
 
 async function logout() {
@@ -132,7 +130,8 @@ async function createExam() {
   }
 
   const user = await getCurrentUser();
-  if (!user) {
+
+   if (!user) {
     examMsg.textContent = "Login first";
     return;
   }
@@ -777,13 +776,25 @@ function insertMath(t) {
 }
 
 const syms = ["√", "π", "∞", "≤", "≥", "≠", "≈", "±", "×", "÷", "∑", "∆", "θ", "α", "β", "x²", "x³", "∫"];
-window.addEventListener("load", () => {
-  if ($("mathSymbols")) {
+window.addEventListener("DOMContentLoaded", async () => {
+  displayQuestion();
+  bootStableApp();
+  loadUserName();
+
+  // 🔥 dashboard
+  if (window.location.hash === "#dashboard") {
+    goDashboard();
+  }
+
+  // ✅ math tools
+  const container = $("mathSymbols");
+
+  if (container) {
     syms.forEach(s => {
       const b = document.createElement("button");
       b.textContent = s;
       b.onclick = () => insertMath(s);
-      mathSymbols.appendChild(b);
+      container.appendChild(b);
     });
   }
 });
@@ -1161,18 +1172,31 @@ function getQueryParam(name) {
 }
 
 async function bootStableApp() {
-  renderPaymentInfo();
-  renderTodayTasks();
-  renderRotatingAdvice();
-  renderDictionaryHome();
-  renderGamesHome();
-  const user = await getCurrentUser();
-  if (user) {
-  await goDashboard();
-  return;
-}
+  try {
+    renderPaymentInfo();
+    renderTodayTasks();
+    renderRotatingAdvice();
+    renderDictionaryHome();
+    renderGamesHome();
 
-showPage('home');
+    const user = await getCurrentUser();
+
+    if (user && window.location.hash === "#dashboard") {
+      await goDashboard();
+      return;
+    }
+
+    if (!user) {
+      showPage("home");
+      return;
+    }
+
+    showPage("home");
+
+  } catch (err) {
+    console.error("Boot error:", err);
+    showPage("home");
+  }
 }
 
 function renderGamesHome() {
@@ -1311,40 +1335,39 @@ window.addEventListener("DOMContentLoaded", () => {
   bootStableApp();
   loadUserName();
 });
-function showPage(pageId) {
-  document.querySelectorAll(".page").forEach(page => {
-    page.classList.remove("active");
-  });
+window.goDashboard = goDashboard;
+window.logout = logout;
+window.showPage = showPage;
+window.openPlanner = openPlanner;
+window.mockAIQuestions = mockAIQuestions;
+window.insertMath = insertMath;
+window.submitPremiumRequest = submitPremiumRequest;
+window.generateSmartPlan = generateSmartPlan;
+window.addPlan = addPlan;
+window.printPlans = printPlans;
+window.clearAllPlans = clearAllPlans;
 
-  const target = document.getElementById(pageId);
+if (typeof loadUsers === "function") window.loadUsers = loadUsers;
+if (typeof setUserRole === "function") window.setUserRole = setUserRole;
+if (typeof makeUserPremium === "function") window.makeUserPremium = makeUserPremium;
+if (typeof removeUserProfile === "function") window.removeUserProfile = removeUserProfile;
+ window.addEventListener("DOMContentLoaded", async () => {
+  displayQuestion();
+  bootStableApp();
+  loadUserName();
 
-  if (target) {
-    target.classList.add("active");
-  } else {
-    console.log("Page not found:", pageId);
-  }
-}async function goDashboard() {
-  const { data: { user } } = await client.auth.getUser();
-
-  if (!user) {
-    showPage("home");
-    return;
-  }
-
-  const { data, error } = await client
-    .from("profiles")
-    .select("role")
-    .eq("email", user.email)
-    .single();
-
-  if (error) {
-    console.log("Role error:", error.message);
-    return;
+  if (window.location.hash === "#dashboard") {
+    goDashboard();
   }
 
-  if (data?.role === "teacher") {
-    showPage("teacherDashboard");
-  } else {
-    showPage("studentDashboard");
+  const container = $("mathSymbols");
+
+  if (container) {
+    syms.forEach(s => {
+      const b = document.createElement("button");
+      b.textContent = s;
+      b.onclick = () => insertMath(s);
+      container.appendChild(b);
+    });
   }
-}
+});

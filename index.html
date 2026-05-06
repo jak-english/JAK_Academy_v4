@@ -9,22 +9,22 @@
 <body>
 <header>
   <div class="brand">
-    <img src="logo.png" class="logo-img" onload="this.style.display='block';document.querySelector('.logo-fallback').style.display='none'">
+  <img src="logo.png" class="logo-img" alt="JAK Logo" onload="this.style.display='block';document.querySelector('.logo-fallback').style.display='none'">
     <div class="logo-fallback">JAK</div>
     <div><div class="brand-title">JAK Academy</div><div class="brand-sub">Learning is Fun ✨</div></div>
   </div>
   <nav>
     <button onclick="showPage('home')">Home</button>
-    <button onclick="goDashboard()">Dashboard</button>
-    <button onclick="showPage('studentExams');loadStudentExams()">Exams</button>
+    <button onclick="goDashboard()">Dashboard</button>   
+    <button onclick="showPage('studentExams')">Exams</button> 
     <button onclick="openPlanner()">Planner</button>
     <button onclick="showPage('studySystem')">Study System</button>
     <button onclick="showPage('aiCenter')">AI Center</button>
     <button onclick="showPage('studentAssistant')">Assistant 🤖</button>
-    <button onclick="showPage('games');renderGamesHome()">Games 🎮</button>
-    <button onclick="showPage('dictionaries');renderDictionaryHome()">Dictionaries 📚</button>
-    <button onclick="showPage('premium');renderPaymentInfo()">Premium</button>
-    <button onclick="showPage('leaderboard');loadLeaderboard('daily')">Leaderboard</button>
+    <button onclick="showPage('games')">Games 🎮</button>
+    <button onclick="showPage('dictionaries')">Dictionaries 📚</button>
+    <button onclick="showPage('premium') ">Premium</button>
+   <button onclick="showPage('leaderboard')">Leaderboard</button>
     <button class="secondary" onclick="logout()">Logout</button>
   </nav>
 </header>
@@ -37,8 +37,7 @@
     <div class="slogan">Learning is Fun ✨</div>
     <p>Modern exam platform with interactive solving, smart study planner, colored calendar, student dashboard, payment settings, AI-ready tools, and math symbols.</p>
     <div class="actions" style="justify-content:center">
-      <button onclick="goDashboard()">Start Now</button>
-      <button class="gold" onclick="openPlanner()">Planner Calendar</button>
+<button onclick="goDashboard()">Start Now</button>      <button class="gold" onclick="openPlanner()">Planner Calendar</button>
       <button class="violet" onclick="showPage('aiCenter')">AI Tools</button>
       <button class="success" onclick="showPage('premium');renderPaymentInfo()">Premium Plans</button>
     </div>
@@ -50,7 +49,36 @@
     <div class="box"><div class="edu-visual">💳</div><h2>Premium</h2><p>CliQ payment settings and admin approval workflow.</p></div>
   </div>
 </section>
+<section id="premium" class="page">
+  <div class="card">
+    <h1>💎 Premium Plans</h1>
 
+    <!-- CliQ Payment -->
+    <div id="paymentInfo"></div>
+
+    <!-- USERS TABLE -->
+    <div class="box" style="margin-top:20px;">
+      <h2>👥 Users Management</h2>
+      <button onclick="loadUsers()">Load Users</button>
+      <p id="usersStatus"></p>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%; text-align:center; margin-top:15px;">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Premium</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
 <section id="studentDashboard" class="page">
   <div class="card">
     <span class="badge">Student Dashboard</span>
@@ -84,6 +112,9 @@
 </section>
 
 <section id="superAdminDashboard" class="page">
+  <button onclick="showPage('teacherDashboard')">
+  Open Teacher Dashboard
+</button>
   <div class="card">
     <span class="badge">Super Admin Dashboard</span>
     <h1>Admin Controls</h1>
@@ -124,7 +155,8 @@
 
 <section id="examSolver" class="page"><div class="card"><span class="badge">Solving Exam</span><h1 id="solverExamTitle">Exam</h1><div class="timer" id="examTimer">00:00</div><div id="questionNav" class="question-nav"></div><div class="box"><h2 id="solverQuestionText">Question</h2><div id="solverOptions"></div></div><div class="actions"><button class="secondary" onclick="previousQuestion()">Previous</button><button onclick="nextQuestion()">Next</button><button class="gold" onclick="toggleReviewLater()">Review Later</button><button class="success" onclick="submitExam(false)">Submit Exam</button></div></div></section>
 
-<section id="examResult" class="page"><div class="card"><span class="badge">Exam Result</span><h1 id="resultTitle">Result</h1><h2 id="scoreText"></h2><div id="studyAdviceAfterResult" class="box tip-card"></div><div id="resultDetails"></div><button onclick="showPage('studentExams');loadStudentExams()">Back to Exams</button><button class="gold" onclick="window.print()">Print Result</button></div></section>
+<section id="examResult" class="page"><div class="card"><span class="badge">Exam Result</span><h1 id="resultTitle">Result</h1>
+<h2 id="scoreText"></h2><div id="studyAdviceAfterResult" class="box tip-card"></div><div id="resultDetails"></div><button onclick="showPage('studentExams');loadStudentExams()">Back to Exams</button><button class="gold" onclick="window.print()">Print Result</button></div></section>
 
 <section id="myResults" class="page"><div class="card"><span class="badge">My Results</span><h1>My Exam Results</h1><button onclick="loadMyResults()">Refresh</button><div id="myResultsList"></div></div></section>
 
@@ -208,7 +240,6 @@
 
 <section id="mathTools" class="page"><div class="card"><span class="badge">Math Tools</span><h1>Math Symbols & Patterns 📐</h1><div class="grid two"><div class="box"><h2>Symbol Keyboard</h2><div class="math-symbols" id="mathSymbols"></div><textarea id="mathEditor" placeholder="Write equation here..."></textarea></div><div class="box"><h2>Templates</h2><button onclick="insertMath('x^2 + 3x + 2 = 0')">Quadratic</button><button onclick="insertMath('\\frac{a}{b}')">Fraction</button><button onclick="insertMath('√x')">Root</button><button onclick="insertMath('f(x)=2x+1')">Function</button></div></div></div></section>
 
-<section id="premium" class="page"><div class="card"><span class="badge">Premium</span><h1>Premium Plans & CliQ Payment</h1><div id="paymentInfo"></div><div class="box"><h2>Request Premium</h2><select id="premiumPlan"><option value="student_monthly">Student Monthly</option><option value="student_yearly">Student Yearly</option><option value="teacher_monthly">Teacher Monthly</option><option value="teacher_yearly">Teacher Yearly</option></select><textarea id="premiumNote" placeholder="Write your payment reference or note"></textarea><button onclick="submitPremiumRequest()">Send Request</button><p id="premiumMsg" class="msg"></p></div></div></section>
 
 <section id="planner" class="page"><div class="card"><span class="badge">Study Planner</span><h1>Study Planner + Colored Calendar</h1><div id="plannerStats" class="grid three"></div><div class="box tip-card"><h2>Smart Plan Generator</h2><div class="grid two"><input id="smartSubjects" placeholder="Subjects: English, Grammar, Vocabulary"><input id="smartDays" type="number" value="7" min="1" max="30"><input id="smartStart" type="time" value="17:00"><input id="smartMinutes" type="number" value="45" min="15"></div><button class="violet" onclick="generateSmartPlan()">Generate Smart Plan</button></div><h2>Today’s Tasks</h2><div id="todayTasks"></div><div class="grid two"><input id="subject" placeholder="Subject"><input id="studyDate" type="date"><input id="startTime" type="time"><input id="endTime" type="time"><select id="planType"><option value="daily">Daily / 7 days</option><option value="weekly">Weekly</option><option value="exam">Before Exam</option></select><select id="planStatus"><option value="not_started">Not Started</option><option value="in_progress">In Progress</option><option value="done">Completed</option></select><input id="subjectColor" type="color" value="#2563eb"><textarea id="task" placeholder="Task / goal"></textarea></div><div class="actions"><button onclick="addPlan()">Add Plan</button><button class="gold" onclick="printPlans()">Print</button><button class="danger" onclick="clearAllPlans()">Clear All</button></div><h2>My Plans</h2><div id="plansList"></div><h2>Calendar View</h2><input id="subjectFilter" placeholder="Filter by subject" oninput="renderCalendar()"><div id="calendarView"></div></div></section>
 </main>
