@@ -1346,7 +1346,137 @@ window.generateSmartPlan = generateSmartPlan;
 window.addPlan = addPlan;
 window.printPlans = printPlans;
 window.clearAllPlans = clearAllPlans;
+// =========================
+// Users Management - Super Admin
+// =========================
+async function loadUsers() {
+  const status = $("usersStatus");
+  const table = $("usersTable");
 
+  if (status) status.textContent = "Loading users...";
+  if (table) table.innerHTML = "";
+
+  if (!table) {
+    console.warn("usersTable element not found in index.html");
+    if (status) status.textContent = "Users table not found.";
+    return;
+  }
+
+  const { data, error } = await client
+    .from("profiles")
+    .select("email, role, full_name, premium_until")
+    .order("email", { ascending: true });
+
+  if (error) {
+    console.error("Load users error:", error);
+    if (status) status.textContent = "Error loading users: " + error.message;
+    return;
+  }
+
+  const users = data || [];
+
+  if (status) status.textContent = "Users loaded: " + users.length;
+
+  if (!users.length) {
+    table.innerHTML = `
+      <tr>
+        <td colspan="4">No users found.</td>
+      </tr>
+    `;
+    return;
+  }
+
+  users.forEach(user => {
+    const premiumText = user.premium_until
+      ? new Date(user.premium_until).toLocaleDateString()
+      : "Free";
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${safeText(user.email)}</td>
+      <td>${safeText(user.role || "student")}</td>
+      <td>${safeText(premiumText)}</td>
+      <td>
+        <button onclick="setUserRole('${safeText(user.email)}', 'teacher')">Make Teacher</button>
+        <button onclick="setUserRole('${safeText(user.email)}', 'student')">Make Student</button>
+        <button onclick="makeUserPremium('${safeText(user.email)}')">Make Premium</button>
+        <button class="danger" onclick="removeUserProfile('${safeText(user.email)}')">Remove Profile</button>
+      </td>
+    `;
+
+    table.appendChild(row);
+  });
+}
+
+async function setUserRole(email, newRole) {
+  if (!email || !newRole) return;
+
+  const ok = confirm("Change role for " + email + " to " + newRole + "?");
+  if (!ok) return;
+
+  const { error } = await client
+    .from("profiles")
+    .update({ role: newRole })
+    .eq("email", email);
+
+  if (error) {
+    console.error("Set role error:", error);
+    alert("Error changing role: " + error.message);
+    return;
+  }
+
+  alert("Role updated ✅");
+  loadUsers();
+}
+
+async function makeUserPremium(email) {
+  if (!email) return;
+
+  const ok = confirm("Make " + email + " premium for 30 days?");
+  if (!ok) return;
+
+  const premiumDate = new Date();
+  premiumDate.setDate(premiumDate.getDate() + 30);
+
+  const { error } = await client
+    .from("profiles")
+    .update({ premium_until: premiumDate.toISOString() })
+    .eq("email", email);
+
+  if (error) {
+    console.error("Premium error:", error);
+    alert("Error making premium: " + error.message);
+    return;
+  }
+
+  alert("Premium activated for 30 days ✅");
+  loadUsers();
+}
+
+async function removeUserProfile(email) {
+  if (!email) return;
+
+  const ok = confirm(
+    "Remove profile row only for " + email + "?\n\nThis will NOT delete the Supabase Auth user."
+  );
+
+  if (!ok) return;
+
+  const { error } = await client
+    .from("profiles")
+    .delete()
+    .eq("email", email);
+
+  if (error) {
+    console.error("Remove profile error:", error);
+    alert("Error removing profile: " + error.message);
+    return;
+  }
+
+  alert("Profile row removed only ✅");
+  loadUsers();
+}
 if (typeof loadUsers === "function") window.loadUsers = loadUsers;
 if (typeof setUserRole === "function") window.setUserRole = setUserRole;
 if (typeof makeUserPremium === "function") window.makeUserPremium = makeUserPremium;
