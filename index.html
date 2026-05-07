@@ -164,8 +164,33 @@
 
 <section id="takeExam" class="page"><div class="card"><span class="badge">Exam Preview</span><h1 id="takeExamTitle">Exam</h1><p id="takeExamDesc"></p><p id="takeExamTime"></p><button onclick="startSolvingExam()">Start Solving</button><button class="secondary" onclick="showPage('studentExams')">Back</button></div></section>
 
-<section id="examSolver" class="page"><div class="card"><span class="badge">Solving Exam</span><h1 id="solverExamTitle">Exam</h1><div class="timer" id="examTimer">00:00</div><div id="questionNav" class="question-nav"></div><div class="box"><h2 id="solverQuestionText">Question</h2><div id="solverOptions"></div></div><div class="actions"><button class="secondary" onclick="previousQuestion()">Previous</button><button onclick="nextQuestion()">Next</button><button class="gold" onclick="toggleReviewLater()">Review Later</button><button class="success" onclick="submitExam(false)">Submit Exam</button></div></div></section>
+<section id="examSolver" class="page">
+  <div class="card">
+    <span class="badge">Solving Exam</span>
+    <h1 id="solverExamTitle">Exam</h1>
 
+    <div class="timer" id="examTimer">00:00</div>
+
+    <div class="box tip-card">
+      <p id="examProgressText">Question 1 of 1</p>
+      <p id="examAutoSaveStatus">Answers are saved automatically on this device.</p>
+    </div>
+
+    <div id="questionNav" class="question-nav"></div>
+
+    <div class="box">
+      <h2 id="solverQuestionText">Question</h2>
+      <div id="solverOptions"></div>
+    </div>
+
+    <div class="actions">
+      <button class="secondary" onclick="previousQuestion()">Previous</button>
+      <button onclick="nextQuestion()">Next</button>
+      <button class="gold" onclick="toggleReviewLater()">Review Later</button>
+      <button class="success" onclick="submitExam(false)">Submit Exam</button>
+    </div>
+  </div>
+</section>
 <section id="examResult" class="page"><div class="card"><span class="badge">Exam Result</span><h1 id="resultTitle">Result</h1>
 <h2 id="scoreText"></h2><div id="studyAdviceAfterResult" class="box tip-card"></div><div id="resultDetails"></div><button onclick="showPage('studentExams');loadStudentExams()">Back to Exams</button><button class="gold" onclick="window.print()">Print Result</button></div></section>
 

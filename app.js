@@ -1,7 +1,11 @@
 const supabaseUrl = "https://bvvgfsogkzaikpraluof.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2dmdmc29na3phaWtwcmFsdW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMjYwMDAsImV4cCI6MjA5MjYwMjAwMH0.Rv4gjwqFA_ZVyice9JBV7sf81alsZb3PmB3lVtS4Xjo";
 const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+const $ = (id) => document.getElementById(id);
 
+const safeText = (value) => {
+  return value === null || value === undefined ? "" : String(value);
+};
 let currentExamId = null;
 let currentExamTitle = "";
 let currentPreviewExam = null;
@@ -13,8 +17,6 @@ let timerInterval = null;
 let remainingSeconds = 0;
 let currentUserRole = "student";
 
-const $ = (id) => document.getElementById(id);
-const safeText = (value) => (value === null || value === undefined ? "" : String(value));
 
 function showPage(id) {
   document.querySelectorAll(".page").forEach(p => {
@@ -408,25 +410,72 @@ function renderSolver() {
   if (!q) return;
 
   renderQuestionNav();
-  solverQuestionText.textContent = (currentQuestionIndex + 1) + ". " + q.question_text;
+
+  const progressEl = $("examProgressText");
+  if (progressEl) {
+    progressEl.textContent =
+      "Question " + (currentQuestionIndex + 1) + " of " + solvingQuestions.length;
+  }
+
+  const statusEl = $("examAutoSaveStatus");
+  if (statusEl && statusEl.dataset.saved !== "true") {
+    statusEl.textContent = "Answers are saved automatically on this device.";
+  }
+
+  solverQuestionText.textContent =
+    (currentQuestionIndex + 1) + ". " + q.question_text;
+
   solverOptions.innerHTML = "";
 
   getOptionsForQuestion(q).forEach(o => {
     const selected = studentAnswers[q.id] === o.key;
+
     const lab = document.createElement("label");
     lab.className = selected ? "option-card selected" : "option-card";
+
     lab.innerHTML = `
       <input type="radio" name="answer" ${selected ? "checked" : ""}>
       <b>${o.key}.</b> ${safeText(o.text)}
     `;
+
     lab.onclick = () => {
       studentAnswers[q.id] = o.key;
+
+      if (typeof saveExamProgress === "function") {
+        saveExamProgress();
+      }
+
+      const status = $("examAutoSaveStatus");
+      if (status) {
+        status.dataset.saved = "true";
+        status.textContent = "Saved ✅ " + new Date().toLocaleTimeString();
+      }
+
       renderSolver();
     };
+
     solverOptions.appendChild(lab);
   });
 }
+function getExamProgressKey() {
+  const examId = currentPreviewExam?.id || "unknown_exam";
+  return "jakExamProgress_" + examId;
+}
 
+function saveExamProgress() {
+  if (!currentPreviewExam) return;
+
+  const data = {
+    examId: currentPreviewExam.id,
+    currentQuestionIndex,
+    studentAnswers,
+    reviewLater,
+    remainingSeconds,
+    savedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem(getExamProgressKey(), JSON.stringify(data));
+}
 function renderQuestionNav() {
   questionNav.innerHTML = "";
 
