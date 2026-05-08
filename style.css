@@ -84,7 +84,9 @@ main{max-width:1240px;margin:auto;padding:24px}
 .slogan{
   font-size:34px;font-weight:900;margin:8px 0 18px;
   background:linear-gradient(90deg,var(--cyan),#fff,var(--gold));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 .hero p{color:var(--muted);font-size:18px;max-width:760px;margin:0 auto 18px}
 .grid{display:grid;gap:18px}
@@ -187,3 +189,250 @@ textarea{min-height:95px;resize:vertical}
 #dictionaryResults,#dictionaryCategory{display:grid;gap:10px;margin-top:12px}
 #studentAdviceBox{border-left:7px solid var(--violet)}
 #rotatingAdviceBox .box{margin-top:10px}
+
+/* =========================================================
+   JAK Academy - Modern Homepage / Services Layout
+   ========================================================= */
+
+.modern-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 24px;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+
+.hero-content,
+.hero-panel,
+.services-section {
+  background:
+    linear-gradient(180deg, rgba(16,42,70,.96), rgba(8,22,40,.96));
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 28px;
+  padding: 30px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.28);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content::before,
+.hero-panel::before,
+.services-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(34,211,238,.12), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(251,191,36,.08), transparent 35%);
+  pointer-events: none;
+}
+
+.hero-content > *,
+.hero-panel > *,
+.services-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-kicker {
+  display: inline-block;
+  padding: 8px 13px;
+  border-radius: 999px;
+  background: rgba(34,211,238,.12);
+  border: 1px solid rgba(34,211,238,.28);
+  color: var(--cyan);
+  font-weight: 900;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.hero-content h1 {
+  font-size: clamp(34px, 5vw, 62px);
+  line-height: 1.03;
+  margin: 0 0 16px;
+  letter-spacing: -1.5px;
+}
+
+.hero-content p {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.hero-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-panel .logo-big {
+  margin-bottom: 18px;
+}
+
+.hero-panel h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.hero-panel p {
+  color: var(--muted);
+}
+
+.hero-mini-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.hero-mini-stats div {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  padding: 14px 8px;
+}
+
+.hero-mini-stats strong {
+  display: block;
+  color: var(--gold);
+  font-size: 20px;
+}
+
+.hero-mini-stats span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.services-section {
+  margin-top: 18px;
+}
+
+.section-title {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 24px;
+}
+
+.section-title h2 {
+  font-size: clamp(26px, 3vw, 40px);
+  margin: 10px 0 8px;
+  letter-spacing: -.7px;
+}
+
+.section-title p {
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.service-card {
+  position: relative;
+  min-height: 210px;
+  padding: 22px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(18,52,86,.78), rgba(9,26,46,.78));
+  border: 1px solid rgba(255,255,255,.11);
+  box-shadow: 0 18px 42px rgba(0,0,0,.22);
+  overflow: hidden;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.service-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(34,211,238,.10), transparent 45%);
+  pointer-events: none;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(34,211,238,.32);
+  box-shadow: 0 24px 54px rgba(0,0,0,.30);
+}
+
+.service-number {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 38px;
+  font-weight: 950;
+  color: rgba(255,255,255,.08);
+}
+
+.service-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background: linear-gradient(135deg, rgba(34,211,238,.22), rgba(37,99,235,.18));
+  border: 1px solid rgba(255,255,255,.12);
+  margin-bottom: 18px;
+}
+
+.service-card h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.service-card p {
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Make older home grid disappear only if it still exists inside home */
+#home > .grid.four {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .modern-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .hero-content,
+  .hero-panel,
+  .services-section {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-actions button {
+    width: 100%;
+  }
+
+  .hero-mini-stats {
+    grid-template-columns: 1fr;
+  }
+}

@@ -32,22 +32,117 @@
 
 <main>
 <section id="home" class="page active">
-  <div class="card hero">
-    <div class="logo-big">JAK</div>
-    <h1>JAK Academy v4 Enhanced</h1>
-    <div class="slogan">Learning is Fun ✨</div>
-    <p>Modern exam platform with interactive solving, smart study planner, colored calendar, student dashboard, payment settings, AI-ready tools, and math symbols.</p>
-    <div class="actions" style="justify-content:center">
-<button onclick="goDashboard()">Start Now</button>      <button class="gold" onclick="openPlanner()">Planner Calendar</button>
-      <button class="violet" onclick="showPage('aiCenter')">AI Tools</button>
-      <button class="success" onclick="showPage('premium');renderPaymentInfo()">Premium Plans</button>
+  <div class="modern-hero">
+    <div class="hero-content">
+      <span class="hero-kicker">JAK Academy Platform</span>
+
+      <h1>Smart Learning. Better Exams. Real Progress.</h1>
+
+      <p>
+        A modern educational platform for teachers and students:
+        exams, analytics, planning, AI tools, games, and premium learning features.
+      </p>
+
+      <div class="hero-actions">
+        <button onclick="goDashboard()">Start Now</button>
+        <button class="gold" onclick="showPage('studentExams');loadStudentExams()">Open Exams</button>
+        <button class="violet" onclick="showPage('aiCenter')">AI Tools</button>
+        <button class="secondary" onclick="window.location.href='login.html'">Login / Sign in</button>
+      </div>
+    </div>
+
+    <div class="hero-panel">
+      <div class="logo-big">JAK</div>
+      <h2>Learning is Fun ✨</h2>
+      <p>Built for exams, practice, analytics, and smart study planning.</p>
+
+      <div class="hero-mini-stats">
+        <div>
+          <strong>AI</strong>
+          <span>Ready</span>
+        </div>
+        <div>
+          <strong>24/7</strong>
+          <span>Access</span>
+        </div>
+        <div>
+          <strong>Pro</strong>
+          <span>Tools</span>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="grid four" style="margin-top:18px">
-    <div class="box"><div class="edu-visual">📝</div><h2>Exams</h2><p>Create, solve, review, and print results.</p></div>
-    <div class="box"><div class="edu-visual">📅</div><h2>Planner</h2><p>Colored subjects, daily tasks, and calendar view.</p></div>
-    <div class="box"><div class="edu-visual">📐</div><h2>Math Tools</h2><p>Symbols and patterns for math teachers.</p></div>
-    <div class="box"><div class="edu-visual">💳</div><h2>Premium</h2><p>CliQ payment settings and admin approval workflow.</p></div>
+
+  <div class="services-section">
+    <div class="section-title">
+      <span class="badge">Platform Features</span>
+      <h2>Everything students and teachers need in one place</h2>
+      <p>Organized tools designed for teaching, practice, tracking, and improvement.</p>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-number">01</div>
+        <div class="service-icon">📝</div>
+        <h3>Interactive Exams</h3>
+        <p>Create, publish, solve, auto-correct, and review exams.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">02</div>
+        <div class="service-icon">🧩</div>
+        <h3>Question Manager</h3>
+        <p>Add, edit, delete, and organize MCQ and True/False questions.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">03</div>
+        <div class="service-icon">📊</div>
+        <h3>Student Analytics</h3>
+        <p>Track scores, averages, best results, and study advice.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">04</div>
+        <div class="service-icon">🏆</div>
+        <h3>Leaderboard</h3>
+        <p>Show best students and strongest results in a clean ranking.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">05</div>
+        <div class="service-icon">🤖</div>
+        <h3>AI Center</h3>
+        <p>Prepare for AI question generation, writing help, and smart tutoring.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">06</div>
+        <div class="service-icon">📅</div>
+        <h3>Study Planner</h3>
+        <p>Plan tasks, organize study routines, and follow daily progress.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">07</div>
+        <div class="service-icon">🎮</div>
+        <h3>Learning Games</h3>
+        <p>Practice vocabulary, irregular verbs, and grammar through games.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-number">08</div>
+        <div class="service-icon">💎</div>
+        <h3>Premium System</h3>
+        <p>Manage paid access, requests, plans, and teacher/student tools.</p>
+      </div>
+    </div>
+  </div>
+</section>
+      <h3>Premium System</h3>
+        <p>Manage paid access, requests, plans, and teacher/student tools.</p>
+      </div>
+    </div>
   </div>
 </section>
 <section id="premium" class="page">
