@@ -436,3 +436,143 @@ textarea{min-height:95px;resize:vertical}
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   Teacher Dashboard Modern Layout
+   ========================================================= */
+
+.teacher-dashboard-modern {
+  overflow: hidden;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.dashboard-header h1 {
+  margin-bottom: 8px;
+}
+
+.dashboard-header p {
+  color: var(--muted);
+  max-width: 720px;
+  font-size: 16px;
+}
+
+.dashboard-quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.teacher-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.85fr) minmax(420px, 1.15fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.teacher-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.create-exam-panel {
+  border-left: 6px solid var(--gold);
+}
+
+.exams-panel {
+  border-left: 6px solid var(--cyan);
+}
+
+.results-panel {
+  grid-column: 1 / -1;
+  border-left: 6px solid var(--green);
+}
+
+.panel-title {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.panel-title h2 {
+  margin: 0 0 4px;
+}
+
+.panel-title p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.panel-number {
+  min-width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 950;
+  color: #111827;
+  background: linear-gradient(135deg, var(--gold), #fde68a);
+  box-shadow: 0 12px 26px rgba(251,191,36,.18);
+}
+
+.teacher-tools-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.teacher-tool-card {
+  min-height: 210px;
+  border-left: 6px solid rgba(34,211,238,.75);
+}
+
+.teacher-tool-card .tool-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  margin-bottom: 12px;
+}
+
+.teacher-tool-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 1050px) {
+  .dashboard-header {
+    flex-direction: column;
+  }
+
+  .dashboard-quick-actions {
+    justify-content: flex-start;
+  }
+
+  .teacher-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .results-panel,
+  .teacher-tools-grid {
+    grid-column: auto;
+  }
+
+  .teacher-tools-grid {
+    grid-template-columns: 1fr;
+  }
+}

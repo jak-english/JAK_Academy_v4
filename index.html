@@ -194,68 +194,127 @@
 </section>
 
 <section id="teacherDashboard" class="page">
-  <div class="card">
-    <span class="badge">Teacher Dashboard</span>
-    <h1>Teacher Tools</h1>
-    <div class="grid three">
-<div class="box">
-  <h2>Create Exam</h2>
+  <div class="card teacher-dashboard-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Teacher Dashboard</span>
+        <h1>Teacher Workspace</h1>
+        <p>Create exams, manage questions, publish tests, and track student performance.</p>
+      </div>
 
-  <label>Exam Title</label>
-  <input id="examTitle" placeholder="Exam title">
+      <div class="dashboard-quick-actions">
+        <button onclick="loadTeacherExams()">Load Exams</button>
+        <button class="gold" onclick="loadTeacherResults()">Load Results</button>
+        <button class="violet" onclick="showPage('aiCenter')">AI Tools</button>
+      </div>
+    </div>
 
-  <label>Description</label>
-  <input id="examDesc" placeholder="Description">
+    <div class="teacher-layout">
+      <!-- Create / Edit Exam -->
+      <div class="box teacher-panel create-exam-panel">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Create / Edit Exam</h2>
+            <p>Prepare exam details, duration, type, grade, then add questions.</p>
+          </div>
+        </div>
 
-  <label>Duration / Time Limit (minutes)</label>
-  <input id="examTime" type="number" value="10" placeholder="Duration in minutes">
+        <label>Exam Title</label>
+        <input id="examTitle" placeholder="Exam title">
 
-  <label>Number of Questions</label>
-  <input id="examQuestionCount" type="number" placeholder="Number of Questions">
+        <label>Description</label>
+        <input id="examDesc" placeholder="Description">
 
-  <label>Exam Type</label>
-  <select id="examType">
-    <option value="multiple_choice">Multiple Choice</option>
-    <option value="true_false">True / False</option>
-    <option value="mixed">Mixed</option>
-    <option value="writing">Writing</option>
-  </select>
+        <label>Duration / Time Limit (minutes)</label>
+        <input id="examTime" type="number" value="10" placeholder="Duration in minutes">
 
-  <label>Grade / Class / Generation</label>
-  <input id="examGrade" placeholder="Grade 11 / 2008 / Tawjihi">
+        <label>Number of Questions</label>
+        <input id="examQuestionCount" type="number" placeholder="Number of Questions">
 
-<button id="createExamBtn" onclick="createExam()">Create Exam</button>
-  <p id="examMsg" class="msg"></p>
-<div class="box">
-  <h2>My Exams</h2>
+        <label>Exam Type</label>
+        <select id="examType">
+          <option value="multiple_choice">Multiple Choice</option>
+          <option value="true_false">True / False</option>
+          <option value="mixed">Mixed</option>
+          <option value="writing">Writing</option>
+        </select>
 
-  <input id="teacherExamGradeFilter" placeholder="Filter by Grade / Class e.g. 2008, Grade 11">
+        <label>Grade / Class / Generation</label>
+        <input id="examGrade" placeholder="Grade 11 / 2008 / Tawjihi">
 
-  <button onclick="loadTeacherExams()">Load Exams</button>
+        <button id="createExamBtn" onclick="createExam()">Create Exam</button>
+        <p id="examMsg" class="msg"></p>
+      </div>
 
-  <button onclick="clearTeacherExamFilter()">Clear Filter</button>
+      <!-- My Exams -->
+      <div class="box teacher-panel exams-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>My Exams</h2>
+            <p>Filter, manage, edit, publish, share, or delete your exams.</p>
+          </div>
+        </div>
 
-  <p id="teacherExamFilterStatus" class="msg"></p>
+        <label>Filter by Grade / Class</label>
+        <input id="teacherExamGradeFilter" placeholder="Filter by Grade / Class e.g. 2008, Grade 11">
 
-  <div id="teacherExamList"></div>
-</div><div class="box">
-  <h2>Results</h2>
+        <div class="actions">
+          <button onclick="loadTeacherExams()">Load Exams</button>
+          <button class="secondary" onclick="clearTeacherExamFilter()">Clear Filter</button>
+        </div>
 
-  <button onclick="loadTeacherResults()">Load Results</button>
+        <p id="teacherExamFilterStatus" class="msg"></p>
 
-  <button onclick="clearResultsViewOnly()">
-    Clear View
-  </button>
+        <div id="teacherExamList"></div>
+      </div>
 
-  <p id="teacherResultsStatus"></p>
+      <!-- Results -->
+      <div class="box teacher-panel results-panel">
+        <div class="panel-title">
+          <span class="panel-number">03</span>
+          <div>
+            <h2>Results & Analytics</h2>
+            <p>Track submissions, averages, top students, and weak areas.</p>
+          </div>
+        </div>
 
-  <div id="teacherResultsSummary" class="box"></div>
+        <div class="actions">
+          <button onclick="loadTeacherResults()">Load Results</button>
+          <button class="secondary" onclick="clearResultsViewOnly()">Clear View</button>
+        </div>
 
-  <div id="teacherResultsList"></div>
-</div>
-      <div class="box ai-card"><h2>AI Question Builder</h2><button onclick="showPage('aiCenter')">Open AI Center</button></div>
-      <div class="box"><h2>Math Tools</h2><button onclick="showPage('mathTools')">Open Math Symbols</button></div>
-      <div class="box"><h2>Premium</h2><button onclick="showPage('premium');renderPaymentInfo()">View Premium</button></div>
+        <p id="teacherResultsStatus" class="msg"></p>
+
+        <div id="teacherResultsSummary" class="box"></div>
+
+        <div id="teacherResultsList"></div>
+      </div>
+
+      <!-- Extra Tools -->
+      <div class="teacher-tools-grid">
+        <div class="box teacher-tool-card ai-card">
+          <span class="tool-icon">🤖</span>
+          <h2>AI Question Builder</h2>
+          <p>Generate exams and questions using AI tools.</p>
+          <button onclick="showPage('aiCenter')">Open AI Center</button>
+        </div>
+
+        <div class="box teacher-tool-card">
+          <span class="tool-icon">📐</span>
+          <h2>Math Tools</h2>
+          <p>Use symbols and patterns for math questions.</p>
+          <button onclick="showPage('mathTools')">Open Math Symbols</button>
+        </div>
+
+        <div class="box teacher-tool-card">
+          <span class="tool-icon">💎</span>
+          <h2>Premium</h2>
+          <p>View plans, payments, and premium access tools.</p>
+          <button onclick="showPage('premium');renderPaymentInfo()">View Premium</button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
