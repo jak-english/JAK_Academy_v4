@@ -630,9 +630,14 @@ async function loadMyResults() {
 
 async function loadTeacherResults() {
   const list = document.getElementById("teacherResultsList");
+  const summary = document.getElementById("teacherResultsSummary");
+  const status = document.getElementById("teacherResultsStatus");
+
   if (!list) return;
 
   list.innerHTML = "Loading results...";
+  if (summary) summary.innerHTML = "";
+  if (status) status.textContent = "Loading results...";
 
   // 1) Load exam results
   const { data: results, error } = await client
@@ -643,11 +648,14 @@ async function loadTeacherResults() {
   if (error) {
     console.error("Teacher results error:", error);
     list.innerHTML = "<p>Could not load results.</p>";
+    if (status) status.textContent = "Could not load results.";
     return;
   }
 
   if (!results || results.length === 0) {
     list.innerHTML = "<p>No results yet.</p>";
+    if (summary) summary.innerHTML = "";
+    if (status) status.textContent = "No results yet.";
     return;
   }
 
@@ -678,7 +686,56 @@ async function loadTeacherResults() {
     });
   }
 
-  // 4) Render results
+  // 4) Teacher results summary
+  const totalSubmissions = results.length;
+
+  const percentages = results.map(result => Number(result.percentage || 0));
+
+  const averageScore = Math.round(
+    percentages.reduce((sum, value) => sum + value, 0) / totalSubmissions
+  );
+
+  const topResult = results.reduce((best, current) => {
+    const bestPercentage = Number(best.percentage || 0);
+    const currentPercentage = Number(current.percentage || 0);
+
+    if (currentPercentage > bestPercentage) return current;
+
+    if (currentPercentage === bestPercentage) {
+      const bestScore = Number(best.score || 0);
+      const currentScore = Number(current.score || 0);
+      if (currentScore > bestScore) return current;
+    }
+
+    return best;
+  }, results[0]);
+
+  const topProfile = profilesMap[topResult.student_id];
+
+  const topStudentName =
+    topProfile?.full_name ||
+    topProfile?.email ||
+    topResult.student_id ||
+    "Unknown Student";
+
+  const below50Count = results.filter(result => Number(result.percentage || 0) < 50).length;
+
+  if (summary) {
+    summary.innerHTML = `
+      <h3>Teacher Analytics Summary 📊</h3>
+
+      <p><strong>Total Submissions:</strong> ${safeText(totalSubmissions)}</p>
+      <p><strong>Average Score:</strong> ${safeText(averageScore)}%</p>
+      <p><strong>Top Student:</strong> ${safeText(topStudentName)}</p>
+      <p><strong>Students Below 50%:</strong> ${safeText(below50Count)}</p>
+    `;
+  }
+
+  if (status) {
+    status.textContent = "Results loaded: " + results.length;
+  }
+
+  // 5) Render results
   list.innerHTML = "";
 
   results.forEach(result => {
@@ -715,7 +772,6 @@ async function loadTeacherResults() {
     list.appendChild(d);
   });
 }
-
 async function loadLeaderboard(type = "weekly") {
   const list = document.getElementById("leaderboardList");
   if (!list) return;
