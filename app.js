@@ -628,7 +628,7 @@ async function loadMyResults() {
   });
 }
 
-async function loadTeacherResults() {
+async function loadTeacherResults(filter = "all") {
   const list = document.getElementById("teacherResultsList");
   const summary = document.getElementById("teacherResultsSummary");
   const status = document.getElementById("teacherResultsStatus");
@@ -640,7 +640,7 @@ async function loadTeacherResults() {
   if (status) status.textContent = "Loading results...";
 
   // 1) Load exam results
-  const { data: results, error } = await client
+  const { data: resultsRaw, error } = await client
     .from("exam_results")
     .select("*, exams(title)")
     .order("submitted_at", { ascending: false });
@@ -652,14 +652,79 @@ async function loadTeacherResults() {
     return;
   }
 
-  if (!results || results.length === 0) {
+  if (!resultsRaw || resultsRaw.length === 0) {
     list.innerHTML = "<p>No results yet.</p>";
     if (summary) summary.innerHTML = "";
     if (status) status.textContent = "No results yet.";
     return;
   }
 
-  // 2) Collect student IDs
+  // 2) Apply filter
+  let results = [...resultsRaw];
+
+  if (filter === "passed") {
+    results = results.filter(result => Number(result.percentage || 0) >= 50);
+  }
+
+  if (filter === "failed") {
+    results = results.filter(result => Number(result.percentage || 0) < 50);
+  }
+
+  if (filter === "best") {
+    const bestByStudent = {};
+
+    results.forEach(result => {
+      if (!result.student_id) return;
+
+      const currentBest = bestByStudent[result.student_id];
+
+      if (!currentBest) {
+        bestByStudent[result.student_id] = result;
+        return;
+      }
+
+      const resultPercentage = Number(result.percentage || 0);
+      const bestPercentage = Number(currentBest.percentage || 0);
+
+      const resultScore = Number(result.score || 0);
+      const bestScore = Number(currentBest.score || 0);
+
+      const resultDate = result.submitted_at ? new Date(result.submitted_at).getTime() : 0;
+      const bestDate = currentBest.submitted_at ? new Date(currentBest.submitted_at).getTime() : 0;
+
+      if (
+        resultPercentage > bestPercentage ||
+        (resultPercentage === bestPercentage && resultScore > bestScore) ||
+        (resultPercentage === bestPercentage && resultScore === bestScore && resultDate > bestDate)
+      ) {
+        bestByStudent[result.student_id] = result;
+      }
+    });
+
+    results = Object.values(bestByStudent);
+  }
+
+  if (!results.length) {
+    list.innerHTML = "<p>No results match this filter.</p>";
+    if (summary) summary.innerHTML = "";
+    if (status) status.textContent = "No results match this filter.";
+    return;
+  }
+
+  // 3) Sort filtered results
+  results.sort((a, b) => {
+    const percentageDiff = Number(b.percentage || 0) - Number(a.percentage || 0);
+    if (percentageDiff !== 0) return percentageDiff;
+
+    const scoreDiff = Number(b.score || 0) - Number(a.score || 0);
+    if (scoreDiff !== 0) return scoreDiff;
+
+    const dateA = a.submitted_at ? new Date(a.submitted_at).getTime() : 0;
+    const dateB = b.submitted_at ? new Date(b.submitted_at).getTime() : 0;
+    return dateB - dateA;
+  });
+
+  // 4) Collect student IDs
   const studentIds = [
     ...new Set(
       results
@@ -668,7 +733,7 @@ async function loadTeacherResults() {
     )
   ];
 
-  // 3) Load profiles separately
+  // 5) Load profiles separately
   let profilesMap = {};
 
   if (studentIds.length > 0) {
@@ -686,7 +751,7 @@ async function loadTeacherResults() {
     });
   }
 
-  // 4) Teacher results summary
+  // 6) Teacher results summary based on the selected filter
   const totalSubmissions = results.length;
 
   const percentages = results.map(result => Number(result.percentage || 0));
@@ -720,11 +785,18 @@ async function loadTeacherResults() {
 
   const below50Count = results.filter(result => Number(result.percentage || 0) < 50).length;
 
+  const filterTitle =
+    filter === "passed" ? "Passed Students" :
+    filter === "failed" ? "Failed Students" :
+    filter === "best" ? "Best Result Per Student" :
+    "All Results";
+
   if (summary) {
     summary.innerHTML = `
       <h3>Teacher Analytics Summary 📊</h3>
 
-      <p><strong>Total Submissions:</strong> ${safeText(totalSubmissions)}</p>
+      <p><strong>Current Filter:</strong> ${safeText(filterTitle)}</p>
+      <p><strong>Total Shown:</strong> ${safeText(totalSubmissions)}</p>
       <p><strong>Average Score:</strong> ${safeText(averageScore)}%</p>
       <p><strong>Top Student:</strong> ${safeText(topStudentName)}</p>
       <p><strong>Students Below 50%:</strong> ${safeText(below50Count)}</p>
@@ -732,10 +804,10 @@ async function loadTeacherResults() {
   }
 
   if (status) {
-    status.textContent = "Results loaded: " + results.length;
+    status.textContent = "Results loaded: " + results.length + " | Filter: " + filterTitle;
   }
 
-  // 5) Render results
+  // 7) Render results
   list.innerHTML = "";
 
   results.forEach(result => {
