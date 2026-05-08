@@ -146,33 +146,64 @@
   </div>
 </section>
 <section id="premium" class="page">
-  <div class="card">
-    <h1>💎 Premium Plans</h1>
+  <div class="card premium-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Premium & Admin</span>
+        <h1>💎 Premium Plans</h1>
+        <p>Manage premium access, payment information, and user roles from one organized panel.</p>
+      </div>
 
-    <!-- CliQ Payment -->
-    <div id="paymentInfo"></div>
-
-    <!-- USERS TABLE -->
-    <div class="box" style="margin-top:20px;">
-      <h2>👥 Users Management</h2>
-      <button onclick="loadUsers()">Load Users</button>
-      <p id="usersStatus"></p>
-
-      <div style="overflow-x:auto;">
-        <table style="width:100%; text-align:center; margin-top:15px;">
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Premium</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="usersTable"></tbody>
-        </table>
+      <div class="dashboard-quick-actions">
+        <button onclick="renderPaymentInfo()">Refresh Payment Info</button>
+        <button class="gold" onclick="loadUsers()">Load Users</button>
+        <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
       </div>
     </div>
 
+    <div class="premium-layout">
+      <div class="box premium-payment-panel">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Payment & Premium Info</h2>
+            <p>Students and teachers can view available premium plans and payment instructions.</p>
+          </div>
+        </div>
+
+        <div id="paymentInfo"></div>
+      </div>
+
+      <div class="box premium-users-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Users Management</h2>
+            <p>Manage user roles, premium access, and profile records safely.</p>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button onclick="loadUsers()">Load Users</button>
+        </div>
+
+        <p id="usersStatus" class="msg"></p>
+
+        <div class="users-table-wrap">
+          <table class="table-like users-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Premium</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 <section id="studentDashboard" class="page">

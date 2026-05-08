@@ -1080,3 +1080,72 @@ textarea{min-height:95px;resize:vertical}
     width: 100%;
   }
 }
+/* =========================================================
+   Premium / Users Management Modern Layout
+   ========================================================= */
+
+.premium-modern {
+  overflow: hidden;
+}
+
+.premium-layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.85fr) minmax(520px, 1.15fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.premium-payment-panel {
+  border-left: 6px solid var(--gold);
+}
+
+.premium-users-panel {
+  border-left: 6px solid var(--green);
+}
+
+.users-table-wrap {
+  margin-top: 16px;
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.users-table {
+  min-width: 760px;
+  margin: 0;
+}
+
+.users-table th {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  font-weight: 900;
+  text-align: center;
+}
+
+.users-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.users-table button {
+  margin: 4px;
+  padding: 9px 11px;
+  font-size: 12px;
+  border-radius: 12px;
+}
+
+#paymentInfo .box {
+  margin-top: 12px;
+  border-left: 5px solid var(--gold);
+}
+
+#usersStatus:not(:empty) {
+  margin-top: 12px;
+}
+
+@media (max-width: 1050px) {
+  .premium-layout {
+    grid-template-columns: 1fr;
+  }
+}
