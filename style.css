@@ -1015,3 +1015,68 @@ textarea{min-height:95px;resize:vertical}
     width: 100%;
   }
 }
+/* =========================================================
+   My Results + Leaderboard Modern Layout
+   ========================================================= */
+
+.results-history-modern,
+.leaderboard-modern {
+  max-width: 1100px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.results-list-panel {
+  border-left: 6px solid var(--gold);
+}
+
+.leaderboard-list-panel {
+  border-left: 6px solid var(--cyan);
+}
+
+#myResultsList,
+#leaderboardList {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+#myResultsList .box,
+#leaderboardList .box {
+  border-left: 5px solid rgba(34, 211, 238, 0.75);
+  min-height: 130px;
+}
+
+#leaderboardList .box:first-child {
+  border-left-color: var(--gold);
+}
+
+#leaderboardList .box h3,
+#myResultsList .box h3 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+#leaderboardList .box p,
+#myResultsList .box p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .results-history-modern .dashboard-header,
+  .leaderboard-modern .dashboard-header {
+    flex-direction: column;
+  }
+
+  .results-history-modern .dashboard-quick-actions,
+  .leaderboard-modern .dashboard-quick-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .results-history-modern .dashboard-quick-actions button,
+  .leaderboard-modern .dashboard-quick-actions button {
+    width: 100%;
+  }
+}

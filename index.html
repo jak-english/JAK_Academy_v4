@@ -696,6 +696,64 @@
     </div>
   </div>
 </section>
+<section id="myResults" class="page">
+  <div class="card results-history-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">My Results</span>
+        <h1>My Exam Results</h1>
+        <p>Review your exam history, scores, percentages, and submitted dates.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="loadMyResults()">Refresh Results</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="box results-list-panel">
+      <div class="panel-title">
+        <span class="panel-number">01</span>
+        <div>
+          <h2>Results History</h2>
+          <p>Your completed exams will appear below.</p>
+        </div>
+      </div>
+
+      <div id="myResultsList"></div>
+    </div>
+  </div>
+</section>
+
+<section id="leaderboard" class="page">
+  <div class="card leaderboard-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Leaderboard</span>
+        <h1>Leaderboard 🏆</h1>
+        <p>See top students and best exam performance.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="loadLeaderboard('daily')">Daily</button>
+        <button class="gold" onclick="loadLeaderboard('weekly')">Weekly</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="box leaderboard-list-panel">
+      <div class="panel-title">
+        <span class="panel-number">01</span>
+        <div>
+          <h2>Ranking</h2>
+          <p>The leaderboard shows the best result for each student.</p>
+        </div>
+      </div>
+
+      <div id="leaderboardList"></div>
+    </div>
+  </div>
+</section>
 <section id="studentAssistant" class="page">
   <div class="card">
     <span class="badge">Smart Student Assistant</span>
