@@ -103,8 +103,36 @@
     <span class="badge">Teacher Dashboard</span>
     <h1>Teacher Tools</h1>
     <div class="grid three">
-      <div class="box"><h2>Create Exam</h2><input id="examTitle" placeholder="Exam title"><input id="examDesc" placeholder="Description"><input id="examTime" type="number" value="10"><button onclick="createExam()">Create Exam</button><p id="examMsg" class="msg"></p></div>
-      <div class="box"><h2>My Exams</h2><button onclick="loadTeacherExams()">Load Exams</button><div id="teacherExamList"></div></div>
+<div class="box">
+  <h2>Create Exam</h2>
+
+  <label>Exam Title</label>
+  <input id="examTitle" placeholder="Exam title">
+
+  <label>Description</label>
+  <input id="examDesc" placeholder="Description">
+
+  <label>Duration / Time Limit (minutes)</label>
+  <input id="examTime" type="number" value="10" placeholder="Duration in minutes">
+
+  <label>Number of Questions</label>
+  <input id="examQuestionCount" type="number" placeholder="Number of Questions">
+
+  <label>Exam Type</label>
+  <select id="examType">
+    <option value="multiple_choice">Multiple Choice</option>
+    <option value="true_false">True / False</option>
+    <option value="mixed">Mixed</option>
+    <option value="writing">Writing</option>
+  </select>
+
+  <label>Grade / Class / Generation</label>
+  <input id="examGrade" placeholder="Grade 11 / 2008 / Tawjihi">
+
+  <button onclick="createExam()">Create Exam</button>
+
+  <p id="examMsg" class="msg"></p>
+</div>      <div class="box"><h2>My Exams</h2><button onclick="loadTeacherExams()">Load Exams</button><div id="teacherExamList"></div></div>
 <div class="box">
   <h2>Results</h2>
 

@@ -131,38 +131,71 @@ async function createExam() {
   const title = $("examTitle")?.value.trim();
   const description = $("examDesc")?.value.trim();
   const timeLimit = Number($("examTime")?.value || 10);
+  const questionCount = Number($("examQuestionCount")?.value || 0);
+  const examType = $("examType")?.value || "multiple_choice";
+  const gradeLevel = $("examGrade")?.value.trim();
+
+  const msg = $("examMsg");
 
   if (!title) {
-    examMsg.textContent = "Please enter title";
+    if (msg) msg.textContent = "Please enter exam title.";
+    return;
+  }
+
+  if (!timeLimit || timeLimit <= 0) {
+    if (msg) msg.textContent = "Please enter a valid exam duration.";
     return;
   }
 
   const user = await getCurrentUser();
 
-   if (!user) {
-    examMsg.textContent = "Login first";
+  if (!user) {
+    if (msg) msg.textContent = "Login first.";
     return;
   }
 
-  examMsg.textContent = "Creating...";
+  if (msg) msg.textContent = "Creating exam...";
 
-  const r = await client.from("exams").insert([{ title, description, time_limit: timeLimit, teacher_id: user.id }]);
+  const { data, error } = await client
+    .from("exams")
+    .insert([
+      {
+        title,
+        description,
+        time_limit: timeLimit,
+        question_count: questionCount,
+        exam_type: examType,
+        grade_level: gradeLevel,
+        teacher_id: user.id
+      }
+    ])
+    .select()
+    .single();
 
-  if (r.error) {
-    examMsg.textContent = r.error.message;
-    console.error(r.error);
+  if (error) {
+    if (msg) msg.textContent = error.message;
+    console.error("Create exam error:", error);
     return;
   }
 
-  examMsg.textContent = "Exam created ✅";
-  examTitle.value = "";
-  examDesc.value = "";
-  examTime.value = 10;
-  loadTeacherExams();
+  if (msg) msg.textContent = "Exam created ✅ Now add questions.";
+
+  if ($("examTitle")) $("examTitle").value = "";
+  if ($("examDesc")) $("examDesc").value = "";
+  if ($("examTime")) $("examTime").value = 10;
+  if ($("examQuestionCount")) $("examQuestionCount").value = "";
+  if ($("examType")) $("examType").value = "multiple_choice";
+  if ($("examGrade")) $("examGrade").value = "";
+
+  await loadTeacherExams();
+
+  if (data?.id) {
+    openQuestionManager(data.id, data.title);
+  }
 }
 
 async function loadTeacherExams() {
-  if (!$('teacherExamList')) return;
+  if (!$("teacherExamList")) return;
   teacherExamList.innerHTML = "Loading...";
 
   const user = await getCurrentUser();
@@ -186,16 +219,42 @@ async function loadTeacherExams() {
   rows.forEach(exam => {
     const d = document.createElement("div");
     d.className = "box";
+
+    const examCode = exam.id;
+    const examLink = `${window.location.origin}${window.location.pathname}?exam=${exam.id}`;
+
     d.innerHTML = `
       <h3>${safeText(exam.title)}</h3>
-      <p>${safeText(exam.description)}</p>
-      <p>⏱ ${exam.time_limit || 10} min</p>
+      <p>${safeText(exam.description || "")}</p>
+      <p>⏱ ${safeText(exam.time_limit || 10)} min</p>
+      <p><strong>Exam Code:</strong> ${safeText(examCode)}</p>
+      <p><strong>Share Link:</strong> <span>${safeText(examLink)}</span></p>
     `;
 
-    const b = document.createElement("button");
-    b.textContent = "Manage Questions";
-    b.onclick = () => openQuestionManager(exam.id, exam.title);
-    d.appendChild(b);
+    const manageBtn = document.createElement("button");
+    manageBtn.textContent = "Manage Questions";
+    manageBtn.onclick = () => openQuestionManager(exam.id, exam.title);
+    d.appendChild(manageBtn);
+
+    const copyBtn = document.createElement("button");
+    copyBtn.textContent = "Copy Share Link";
+    copyBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(examLink);
+        alert("Exam link copied ✅");
+      } catch (err) {
+        console.error("Copy link error:", err);
+        alert("Could not copy link. You can copy it manually.");
+      }
+    };
+    d.appendChild(copyBtn);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete Exam";
+    deleteBtn.className = "danger";
+    deleteBtn.onclick = () => deleteExam(exam.id, exam.title);
+    d.appendChild(deleteBtn);
+
     teacherExamList.appendChild(d);
   });
 }
@@ -216,89 +275,204 @@ function openQuestionManager(id, title) {
   showPage("questionManager");
   loadQuestions();
 }
-
+let isSavingQuestion = false;
 async function addQuestion() {
-  if (!currentExamId) {
-    questionMsg.textContent = "Choose exam first";
+  if (isSavingQuestion) {
     return;
   }
 
-  const type = questionType.value;
-  const text = questionText.value.trim();
-  const explanation = questionExplanation.value.trim();
+  isSavingQuestion = true;
 
-  if (!text) {
-    questionMsg.textContent = "Enter question";
-    return;
-  }
-
-  let row = { exam_id: currentExamId, question_text: text, question_type: type, explanation };
-
-  if (type === "mcq") {
-    if (!optionA.value || !optionB.value || !optionC.value || !optionD.value) {
-      questionMsg.textContent = "Fill options";
+  try {
+    if (!currentExamId) {
+      questionMsg.textContent = "Choose exam first";
       return;
     }
 
-    Object.assign(row, {
-      option_a: optionA.value.trim(),
-      option_b: optionB.value.trim(),
-      option_c: optionC.value.trim(),
-      option_d: optionD.value.trim(),
-      correct_answer: mcqCorrectAnswer.value
-    });
-  } else {
-    Object.assign(row, { option_a: "True", option_b: "False", correct_answer: tfCorrectAnswer.value });
+    const type = questionType.value;
+    const text = questionText.value.trim();
+    const explanation = questionExplanation.value.trim();
+
+    if (!text) {
+      questionMsg.textContent = "Enter question";
+      return;
+    }
+
+    questionMsg.textContent = "Saving question...";
+
+    // Prevent duplicate question text inside the same exam
+    const duplicateCheck = await client
+      .from("questions")
+      .select("id")
+      .eq("exam_id", currentExamId)
+      .eq("question_text", text)
+      .limit(1);
+
+    if (duplicateCheck.error) {
+      console.error("Duplicate check error:", duplicateCheck.error);
+      questionMsg.textContent = "Could not check duplicate question.";
+      return;
+    }
+
+    if (duplicateCheck.data && duplicateCheck.data.length > 0) {
+      questionMsg.textContent = "This question already exists in this exam.";
+      return;
+    }
+
+    let row = {
+      exam_id: currentExamId,
+      question_text: text,
+      question_type: type,
+      explanation
+    };
+
+    if (type === "mcq") {
+      if (!optionA.value.trim() || !optionB.value.trim() || !optionC.value.trim() || !optionD.value.trim()) {
+        questionMsg.textContent = "Fill all options";
+        return;
+      }
+
+      Object.assign(row, {
+        option_a: optionA.value.trim(),
+        option_b: optionB.value.trim(),
+        option_c: optionC.value.trim(),
+        option_d: optionD.value.trim(),
+        correct_answer: mcqCorrectAnswer.value
+      });
+    } else {
+      Object.assign(row, {
+        option_a: "True",
+        option_b: "False",
+        option_c: null,
+        option_d: null,
+        correct_answer: tfCorrectAnswer.value
+      });
+    }
+
+    const { error } = await client
+      .from("questions")
+      .insert([row]);
+
+    if (error) {
+      questionMsg.textContent = error.message;
+      console.error("Add question error:", error);
+      return;
+    }
+
+    questionMsg.textContent = "Question saved successfully ✅";
+
+    questionText.value = "";
+    optionA.value = "";
+    optionB.value = "";
+    optionC.value = "";
+    optionD.value = "";
+    questionExplanation.value = "";
+
+    await loadQuestions();
+
+  } finally {
+    isSavingQuestion = false;
   }
+}
+async function loadQuestions() {
+  const list = document.getElementById("questionList");
+  if (!list) return;
 
-  const r = await client.from("questions").insert([row]);
+  list.innerHTML = "Loading questions...";
 
-  if (r.error) {
-    questionMsg.textContent = r.error.message;
-    console.error(r.error);
+  if (!currentExamId) {
+    list.innerHTML = "<p>No exam selected.</p>";
     return;
   }
 
-  questionMsg.textContent = "Saved ✅";
-  questionText.value = "";
-  optionA.value = "";
-  optionB.value = "";
-  optionC.value = "";
-  optionD.value = "";
-  questionExplanation.value = "";
-  loadQuestions();
-}
-
-async function loadQuestions() {
-  if (!$('questionList')) return;
-  questionList.innerHTML = "Loading...";
-
-  const r = await client
+  const { data: qs, error } = await client
     .from("questions")
     .select("*")
     .eq("exam_id", currentExamId)
     .order("created_at", { ascending: true });
 
-  if (r.error) {
-    questionList.innerHTML = "Error";
+  if (error) {
+    console.error("Load questions error:", error);
+    list.innerHTML = "<p>Could not load questions.</p>";
     return;
   }
 
-  const qs = r.data || [];
-  questionList.innerHTML = qs.length ? "" : "No questions yet";
+  if (!qs || qs.length === 0) {
+    list.innerHTML = "<p>No questions yet. Add your first question above.</p>";
+    return;
+  }
+
+  list.innerHTML = "";
 
   qs.forEach((q, i) => {
+    const typeLabel = q.question_type === "mcq" ? "Multiple Choice" : "True / False";
+
+    const optionsHtml = q.question_type === "mcq"
+      ? `
+        <div class="box">
+          <p><strong>A.</strong> ${safeText(q.option_a)}</p>
+          <p><strong>B.</strong> ${safeText(q.option_b)}</p>
+          <p><strong>C.</strong> ${safeText(q.option_c)}</p>
+          <p><strong>D.</strong> ${safeText(q.option_d)}</p>
+        </div>
+      `
+      : `
+        <div class="box">
+          <p><strong>A.</strong> True</p>
+          <p><strong>B.</strong> False</p>
+        </div>
+      `;
+
     const box = document.createElement("div");
-    box.className = "box";
+    box.className = "box question-card";
+
     box.innerHTML = `
-      <h3>${i + 1}. ${safeText(q.question_text)}</h3>
-      <p><b>Correct:</b> ${safeText(q.correct_answer)}</p>
-      <p>${safeText(q.explanation)}</p>
+      <div>
+        <span class="badge">Question ${i + 1}</span>
+        <span class="badge">${safeText(typeLabel)}</span>
+      </div>
+
+      <h3>${safeText(q.question_text)}</h3>
+
+      ${optionsHtml}
+
+      <p><strong>Correct Answer:</strong> ${safeText(q.correct_answer)}</p>
+
+      ${
+        q.explanation
+          ? `<p><strong>Explanation:</strong> ${safeText(q.explanation)}</p>`
+          : `<p><strong>Explanation:</strong> Not added</p>`
+      }
+
+      <button onclick="deleteQuestion('${q.id}')" style="background:#b91c1c;color:white;margin-top:10px;">
+        Delete Question
+      </button>
     `;
-    questionList.appendChild(box);
+
+    list.appendChild(box);
   });
 }
+async function deleteQuestion(questionId) {
+  const confirmDelete = confirm("Are you sure you want to delete this question?");
 
+  if (!confirmDelete) {
+    return;
+  }
+
+  const { error } = await client
+    .from("questions")
+    .delete()
+    .eq("id", questionId);
+
+  if (error) {
+    console.error("Delete question error:", error);
+    alert("Could not delete question.");
+    return;
+  }
+
+  alert("Question deleted ✅");
+  await loadQuestions();
+}
 // =========================
 // Student Exams + Interactive Solver
 // =========================
@@ -1769,6 +1943,43 @@ window.addEventListener("DOMContentLoaded", () => {
   bootStableApp();
   loadUserName();
 });
+async function deleteExam(examId, examTitle) {
+  const confirmText = prompt(
+    `This will delete the exam:\n\n${examTitle}\n\nType DELETE to confirm:`
+  );
+
+  if (confirmText !== "DELETE") {
+    alert("Delete cancelled.");
+    return;
+  }
+
+  // Delete related questions first
+  const questionsDelete = await client
+    .from("questions")
+    .delete()
+    .eq("exam_id", examId);
+
+  if (questionsDelete.error) {
+    console.error("Delete questions error:", questionsDelete.error);
+    alert("Could not delete exam questions.");
+    return;
+  }
+
+  // Delete the exam itself
+  const examDelete = await client
+    .from("exams")
+    .delete()
+    .eq("id", examId);
+
+  if (examDelete.error) {
+    console.error("Delete exam error:", examDelete.error);
+    alert("Could not delete exam.");
+    return;
+  }
+
+  alert("Exam deleted successfully ✅");
+  loadTeacherExams();
+}
 
 window.goDashboard = goDashboard;
 window.logout = logout;
@@ -1785,6 +1996,18 @@ window.loadLeaderboard = loadLeaderboard;
 window.loadStudentDashboard = loadStudentDashboard;
 window.loadTeacherResults = loadTeacherResults;
 window.clearResultsViewOnly = clearResultsViewOnly;
+if (typeof deleteExam === "function") {
+  window.deleteExam = deleteExam;
+  console.log("✅ deleteExam connected to window");
+} else {
+  console.error("❌ deleteExam function was not found");
+} 
+if (typeof deleteQuestion === "function") {
+  window.deleteQuestion = deleteQuestion;
+  console.log("✅ deleteQuestion connected to window");
+} else {
+  console.error("❌ deleteQuestion function was not found");
+}
 // =========================
 // Users Management - Super Admin
 // =========================
