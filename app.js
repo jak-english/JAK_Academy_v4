@@ -649,7 +649,8 @@ async function loadLeaderboard(type = "weekly") {
 
   list.innerHTML = "Loading...";
 
-  // Load exam results WITHOUT created_at because your table does not have it
+  // Load results from exam_results using the real columns:
+  // student_id + submitted_at
   const { data: resultsRaw, error: resultsError } = await client
     .from("exam_results")
     .select("*, exams(title)")
@@ -664,7 +665,7 @@ async function loadLeaderboard(type = "weekly") {
 
   let results = resultsRaw || [];
 
-  // Optional client-side date filtering if any date column exists
+  // Daily / Weekly filtering using submitted_at
   const start = new Date();
 
   if (type === "daily") {
@@ -673,21 +674,12 @@ async function loadLeaderboard(type = "weekly") {
     start.setDate(start.getDate() - 7);
   }
 
-  results = results.filter(r => {
-    const dateValue =
-      r.created_at ||
-      r.submitted_at ||
-      r.completed_at ||
-      r.saved_at ||
-      r.date;
-
-    // If no date column exists, keep result instead of breaking leaderboard
-    if (!dateValue) return true;
-
-    return new Date(dateValue) >= start;
+  results = results.filter(result => {
+    if (!result.submitted_at) return true;
+    return new Date(result.submitted_at) >= start;
   });
 
-  if (!results || results.length === 0) {
+  if (!results.length) {
     list.innerHTML = `
       <h2>${type === "daily" ? "Daily" : "Weekly"} Leaderboard 🏆</h2>
       <p>No results yet.</p>
@@ -695,29 +687,30 @@ async function loadLeaderboard(type = "weekly") {
     return;
   }
 
-  // Collect emails if your results table has any email column
-  const emails = [
+  // Collect student IDs from exam_results
+  const studentIds = [
     ...new Set(
       results
-        .map(r => r.email || r.user_email || r.studentEmail || r.userEmail)
+        .map(result => result.student_id)
         .filter(Boolean)
     )
   ];
 
+  // Load student names from profiles
   let profilesMap = {};
 
-  if (emails.length > 0) {
+  if (studentIds.length > 0) {
     const { data: profiles, error: profilesError } = await client
       .from("profiles")
-      .select("email, full_name, role")
-      .in("email", emails);
+      .select("id, full_name, email, role")
+      .in("id", studentIds);
 
     if (profilesError) {
       console.warn("Profiles loading error:", profilesError);
     }
 
     (profiles || []).forEach(profile => {
-      profilesMap[profile.email] = profile;
+      profilesMap[profile.id] = profile;
     });
   }
 
@@ -725,27 +718,31 @@ async function loadLeaderboard(type = "weekly") {
     <h2>${type === "daily" ? "Daily" : "Weekly"} Leaderboard 🏆</h2>
   `;
 
-  results.forEach((x, i) => {
+  results.forEach((result, index) => {
     const medal =
-      i === 0 ? "🥇" :
-      i === 1 ? "🥈" :
-      i === 2 ? "🥉" :
-      "#" + (i + 1);
+      index === 0 ? "🥇" :
+      index === 1 ? "🥈" :
+      index === 2 ? "🥉" :
+      "#" + (index + 1);
 
-    const studentEmail = x.email || x.user_email || x.studentEmail || x.userEmail || "";
-    const profile = profilesMap[studentEmail];
+    const profile = profilesMap[result.student_id];
 
     const studentName =
       profile?.full_name ||
-      x.student_name ||
-      studentEmail ||
+      profile?.email ||
       "Unknown Student";
 
-    const examTitle = x.exams?.title || x.exam_title || "Exam";
+    const examTitle =
+      result.exams?.title ||
+      "Exam";
 
-    const score = x.score ?? 0;
-    const total = x.total ?? x.total_questions ?? 0;
-    const percentage = x.percentage ?? 0;
+    const score = result.score ?? 0;
+    const total = result.total ?? 0;
+    const percentage = result.percentage ?? 0;
+
+    const submittedDate = result.submitted_at
+      ? new Date(result.submitted_at).toLocaleString()
+      : "Date not available";
 
     const d = document.createElement("div");
     d.className = "box";
@@ -754,6 +751,7 @@ async function loadLeaderboard(type = "weekly") {
       <h3>${medal} ${safeText(studentName)}</h3>
       <p><strong>Exam:</strong> ${safeText(examTitle)}</p>
       <p><strong>Score:</strong> ${safeText(score)}/${safeText(total)} (${safeText(percentage)}%)</p>
+      <p><strong>Submitted:</strong> ${safeText(submittedDate)}</p>
     `;
 
     list.appendChild(d);
