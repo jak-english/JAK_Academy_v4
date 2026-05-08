@@ -1,3 +1,4 @@
+console.log("🔥 APP.JS STARTED");
 const supabaseUrl = "https://bvvgfsogkzaikpraluof.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2dmdmc29na3phaWtwcmFsdW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMjYwMDAsImV4cCI6MjA5MjYwMjAwMH0.Rv4gjwqFA_ZVyice9JBV7sf81alsZb3PmB3lVtS4Xjo";
 const client = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -602,10 +603,10 @@ async function loadMyResults() {
   if (!user) return;
 
   const r = await client
-    .from("exam_results")
-    .select("*, exams(title)")
-    .eq("student_id", user.id)
-    .order("created_at", { ascending: false });
+  .from("exam_results")
+  .select("*, exams(title)")
+  .eq("student_id", user.id)
+  .order("submitted_at", { ascending: false });
 
   if (r.error) {
     myResultsList.innerHTML = "Error";
@@ -617,7 +618,7 @@ async function loadMyResults() {
   rows.forEach(x => {
     const d = document.createElement("div");
     d.className = "box";
-    d.innerHTML = `<h3>${safeText(x.exams?.title || "Exam")}</h3><p>Score: ${x.score}/${x.total} (${x.percentage}%)</p><p>${new Date(x.created_at).toLocaleString()}</p>`;
+    d.innerHTML = `<h3>${safeText(x.exams?.title || "Exam")}</h3><p>Score: ${x.score}/${x.total} (${x.percentage}%)</p><p>${new Date(x.submitted_at).toLocaleString()}</p>`;
     myResultsList.appendChild(d);
   });
 }
@@ -642,37 +643,122 @@ async function loadTeacherResults() {
   });
 }
 
-async function loadLeaderboard(type) {
-  if (!$('leaderboardList')) return;
-  leaderboardList.innerHTML = "Loading...";
+async function loadLeaderboard(type = "weekly") {
+  const list = document.getElementById("leaderboardList");
+  if (!list) return;
 
-  const start = new Date();
-  if (type === "daily") start.setHours(0, 0, 0, 0);
-  else start.setDate(start.getDate() - 7);
+  list.innerHTML = "Loading...";
 
-  const r = await client
+  // Load exam results WITHOUT created_at because your table does not have it
+  const { data: resultsRaw, error: resultsError } = await client
     .from("exam_results")
     .select("*, exams(title)")
-    .gte("created_at", start.toISOString())
     .order("percentage", { ascending: false })
     .order("score", { ascending: false });
 
-  if (r.error) {
-    leaderboardList.innerHTML = "Error";
+  if (resultsError) {
+    console.error("Leaderboard error:", resultsError);
+    list.innerHTML = "<p>Could not load leaderboard.</p>";
     return;
   }
 
-  leaderboardList.innerHTML = `<h2>${type === "daily" ? "Daily" : "Weekly"} Leaderboard 🏆</h2>`;
+  let results = resultsRaw || [];
 
-  (r.data || []).forEach((x, i) => {
-    const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "#" + (i + 1);
+  // Optional client-side date filtering if any date column exists
+  const start = new Date();
+
+  if (type === "daily") {
+    start.setHours(0, 0, 0, 0);
+  } else {
+    start.setDate(start.getDate() - 7);
+  }
+
+  results = results.filter(r => {
+    const dateValue =
+      r.created_at ||
+      r.submitted_at ||
+      r.completed_at ||
+      r.saved_at ||
+      r.date;
+
+    // If no date column exists, keep result instead of breaking leaderboard
+    if (!dateValue) return true;
+
+    return new Date(dateValue) >= start;
+  });
+
+  if (!results || results.length === 0) {
+    list.innerHTML = `
+      <h2>${type === "daily" ? "Daily" : "Weekly"} Leaderboard 🏆</h2>
+      <p>No results yet.</p>
+    `;
+    return;
+  }
+
+  // Collect emails if your results table has any email column
+  const emails = [
+    ...new Set(
+      results
+        .map(r => r.email || r.user_email || r.studentEmail || r.userEmail)
+        .filter(Boolean)
+    )
+  ];
+
+  let profilesMap = {};
+
+  if (emails.length > 0) {
+    const { data: profiles, error: profilesError } = await client
+      .from("profiles")
+      .select("email, full_name, role")
+      .in("email", emails);
+
+    if (profilesError) {
+      console.warn("Profiles loading error:", profilesError);
+    }
+
+    (profiles || []).forEach(profile => {
+      profilesMap[profile.email] = profile;
+    });
+  }
+
+  list.innerHTML = `
+    <h2>${type === "daily" ? "Daily" : "Weekly"} Leaderboard 🏆</h2>
+  `;
+
+  results.forEach((x, i) => {
+    const medal =
+      i === 0 ? "🥇" :
+      i === 1 ? "🥈" :
+      i === 2 ? "🥉" :
+      "#" + (i + 1);
+
+    const studentEmail = x.email || x.user_email || x.studentEmail || x.userEmail || "";
+    const profile = profilesMap[studentEmail];
+
+    const studentName =
+      profile?.full_name ||
+      x.student_name ||
+      studentEmail ||
+      "Unknown Student";
+
+    const examTitle = x.exams?.title || x.exam_title || "Exam";
+
+    const score = x.score ?? 0;
+    const total = x.total ?? x.total_questions ?? 0;
+    const percentage = x.percentage ?? 0;
+
     const d = document.createElement("div");
     d.className = "box";
-    d.innerHTML = `<h3>${medal} Student</h3><p>${safeText(x.exams?.title || "Exam")}</p><p>${x.score}/${x.total} (${x.percentage}%)</p>`;
-    leaderboardList.appendChild(d);
+
+    d.innerHTML = `
+      <h3>${medal} ${safeText(studentName)}</h3>
+      <p><strong>Exam:</strong> ${safeText(examTitle)}</p>
+      <p><strong>Score:</strong> ${safeText(score)}/${safeText(total)} (${safeText(percentage)}%)</p>
+    `;
+
+    list.appendChild(d);
   });
 }
-
 function fillAssistantPrompt(type) {
   if (!$('assistantQuestion')) return;
   const prompts = {
@@ -1059,18 +1145,114 @@ function printPlans() {
 }
 
 async function loadStudentDashboard() {
-  renderTodayTasks();
-  updatePlannerStats();
-  renderRotatingAdvice();
+  // Keep old planner features working
+  if (typeof renderTodayTasks === "function") renderTodayTasks();
+  if (typeof updatePlannerStats === "function") updatePlannerStats();
+  if (typeof renderRotatingAdvice === "function") renderRotatingAdvice();
+
+  // Planner progress
   if ($("studentProgressBox")) {
-    const plans = getPlans();
+    const plans = typeof getPlans === "function" ? getPlans() : [];
     const total = plans.length;
     const done = plans.filter(p => p.status === "done").length;
     const progress = total ? Math.round((done / total) * 100) : 0;
-    studentProgressBox.innerHTML = `<h2>Study Progress</h2><p>${progress}% completed</p><div class="progress"><span style="width:${progress}%"></span></div>`;
-  }
-}
 
+    studentProgressBox.innerHTML = `
+      <h2>Study Progress</h2>
+      <p>${progress}% completed</p>
+      <div class="progress"><span style="width:${progress}%"></span></div>
+    `;
+  }
+
+  // Real exam analytics from Supabase
+  const statsBox =
+    document.getElementById("studentExamStatsBox") ||
+    document.getElementById("studentAnalyticsBox") ||
+    document.getElementById("studentStatsBox");
+
+  if (!statsBox) return;
+
+  statsBox.innerHTML = "Loading exam statistics...";
+
+  const { data: authData, error: authError } = await client.auth.getUser();
+
+  if (authError || !authData?.user) {
+    statsBox.innerHTML = "<p>Please log in to see your exam statistics.</p>";
+    return;
+  }
+
+  const userEmail = authData.user.email;
+
+ const { data: results, error } = await client
+  .from("exam_results")
+  .select("*, exams(title)")
+  .eq("student_id", authData.user.id)
+  .order("submitted_at", { ascending: false });
+  if (error) {
+    console.error("Student dashboard results error:", error);
+    statsBox.innerHTML = "<p>Could not load exam statistics.</p>";
+    return;
+  }
+
+  if (!results || results.length === 0) {
+    statsBox.innerHTML = `
+      <h2>Exam Analytics 📊</h2>
+      <p>No exam results yet.</p>
+    `;
+    return;
+  }
+
+  const totalExams = results.length;
+
+  const percentages = results.map(r => Number(r.percentage || 0));
+  const average = Math.round(
+    percentages.reduce((sum, value) => sum + value, 0) / totalExams
+  );
+
+  const bestResult = results.reduce((best, current) => {
+    return Number(current.percentage || 0) > Number(best.percentage || 0)
+      ? current
+      : best;
+  }, results[0]);
+
+  const latestResult = results[0];
+
+  let advice = "Keep practicing regularly and review your mistakes.";
+  if (average >= 90) {
+    advice = "Excellent work! Keep challenging yourself with harder exams.";
+  } else if (average >= 75) {
+    advice = "Very good progress. Focus on the questions you lost marks in.";
+  } else if (average >= 50) {
+    advice = "Good start. Review weak areas and repeat similar exercises.";
+  } else {
+    advice = "You need a focused revision plan. Start with easier exams and build step by step.";
+  }
+
+  statsBox.innerHTML = `
+    <h2>Exam Analytics 📊</h2>
+
+    <div class="box">
+      <h3>Total Exams</h3>
+      <p>${safeText(totalExams)}</p>
+    </div>
+
+    <div class="box">
+      <h3>Average Score</h3>
+      <p>${safeText(average)}%</p>
+    </div>
+
+    <div class="box">
+      <h3>Best Result</h3>
+      <p>${safeText(bestResult.exams?.title || bestResult.exam_title || "Exam")}</p>
+      <p>${safeText(bestResult.score ?? 0)}/${safeText(bestResult.total ?? bestResult.total_questions ?? 0)} (${safeText(bestResult.percentage ?? 0)}%)</p>
+    </div>
+
+    <div class="box">
+      <h3>Study Advice</h3>
+      <p>${safeText(advice)}</p>
+    </div>
+  `;
+}
 // =========================
 // Payment + Super Admin Settings
 // =========================
@@ -1395,6 +1577,8 @@ window.generateSmartPlan = generateSmartPlan;
 window.addPlan = addPlan;
 window.printPlans = printPlans;
 window.clearAllPlans = clearAllPlans;
+window.loadLeaderboard = loadLeaderboard;
+window.loadStudentDashboard = loadStudentDashboard;
 // =========================
 // Users Management - Super Admin
 // =========================
@@ -1550,3 +1734,29 @@ if (typeof removeUserProfile === "function") window.removeUserProfile = removeUs
     });
   }
 });
+// ===============================
+// Student Dashboard Binding Fix
+// ===============================
+if (typeof loadStudentDashboard === "function") {
+  window.loadStudentDashboard = loadStudentDashboard;
+  console.log("✅ loadStudentDashboard connected to window");
+} else {
+  console.error("❌ loadStudentDashboard function was not found");
+}
+// ===============================
+// Final Safe Window Bindings
+// ===============================
+if (typeof showPage === "function") window.showPage = showPage;
+if (typeof goDashboard === "function") window.goDashboard = goDashboard;
+if (typeof logout === "function") window.logout = logout;
+
+if (typeof loadLeaderboard === "function") window.loadLeaderboard = loadLeaderboard;
+if (typeof loadStudentDashboard === "function") window.loadStudentDashboard = loadStudentDashboard;
+
+if (typeof loadUsers === "function") window.loadUsers = loadUsers;
+if (typeof setUserRole === "function") window.setUserRole = setUserRole;
+if (typeof makeUserPremium === "function") window.makeUserPremium = makeUserPremium;
+if (typeof removeUserProfile === "function") window.removeUserProfile = removeUserProfile;
+
+console.log("✅ Final window bindings loaded");
+console.log("✅ APP.JS FINISHED");
