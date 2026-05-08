@@ -127,6 +127,8 @@ addDemoQuestion({
 // =========================
 // Teacher Exams
 // =========================
+let editingExamId = null;
+
 async function createExam() {
   const title = $("examTitle")?.value.trim();
   const description = $("examDesc")?.value.trim();
@@ -154,31 +156,61 @@ async function createExam() {
     return;
   }
 
-  if (msg) msg.textContent = "Creating exam...";
+  if (msg) {
+    msg.textContent = editingExamId ? "Updating exam..." : "Creating exam...";
+  }
 
-  const { data, error } = await client
-    .from("exams")
-    .insert([
-      {
-        title,
-        description,
-        time_limit: timeLimit,
-        question_count: questionCount,
-        exam_type: examType,
-        grade_level: gradeLevel,
-        teacher_id: user.id
-      }
-    ])
-    .select()
-    .single();
+  const examData = {
+    title,
+    description,
+    time_limit: timeLimit,
+    question_count: questionCount,
+    exam_type: examType,
+    grade_level: gradeLevel,
+    teacher_id: user.id
+  };
+
+  let data = null;
+  let error = null;
+
+  if (editingExamId) {
+    const response = await client
+      .from("exams")
+      .update(examData)
+      .eq("id", editingExamId)
+      .select()
+      .single();
+
+    data = response.data;
+    error = response.error;
+  } else {
+    const response = await client
+      .from("exams")
+      .insert([examData])
+      .select()
+      .single();
+
+    data = response.data;
+    error = response.error;
+  }
 
   if (error) {
     if (msg) msg.textContent = error.message;
-    console.error("Create exam error:", error);
+    console.error("Save exam error:", error);
     return;
   }
 
-  if (msg) msg.textContent = "Exam created ✅ Now add questions.";
+  if (msg) {
+    msg.textContent = editingExamId
+      ? "Exam updated successfully ✅"
+      : "Exam created ✅ Now add questions.";
+  }
+
+  const wasEditing = !!editingExamId;
+  editingExamId = null;
+
+  const btn = document.getElementById("createExamBtn");
+  if (btn) btn.textContent = "Create Exam";
 
   if ($("examTitle")) $("examTitle").value = "";
   if ($("examDesc")) $("examDesc").value = "";
@@ -189,11 +221,11 @@ async function createExam() {
 
   await loadTeacherExams();
 
-  if (data?.id) {
+  // Only open question manager after creating a NEW exam, not after editing
+  if (!wasEditing && data?.id) {
     openQuestionManager(data.id, data.title);
   }
 }
-
 async function loadTeacherExams() {
   if (!$("teacherExamList")) return;
   teacherExamList.innerHTML = "Loading...";
@@ -235,6 +267,11 @@ async function loadTeacherExams() {
     manageBtn.textContent = "Manage Questions";
     manageBtn.onclick = () => openQuestionManager(exam.id, exam.title);
     d.appendChild(manageBtn);
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "Edit Exam";
+    editBtn.onclick = () => editExam(exam);
+    d.appendChild(editBtn);
 
     const copyBtn = document.createElement("button");
     copyBtn.textContent = "Copy Share Link";
@@ -1089,6 +1126,24 @@ async function loadTeacherResults(filter = "all") {
 
     list.appendChild(d);
   });
+}
+function editExam(exam) {
+  editingExamId = exam.id;
+
+  if ($("examTitle")) $("examTitle").value = exam.title || "";
+  if ($("examDesc")) $("examDesc").value = exam.description || "";
+  if ($("examTime")) $("examTime").value = exam.time_limit || 10;
+  if ($("examQuestionCount")) $("examQuestionCount").value = exam.question_count || "";
+  if ($("examType")) $("examType").value = exam.exam_type || "multiple_choice";
+  if ($("examGrade")) $("examGrade").value = exam.grade_level || "";
+
+  const btn = document.getElementById("createExamBtn");
+  if (btn) btn.textContent = "Update Exam";
+
+  const msg = $("examMsg");
+  if (msg) msg.textContent = "Editing exam. Update the details, then click Update Exam.";
+
+  showPage("teacherDashboard");
 }
 async function loadLeaderboard(type = "weekly") {
   const list = document.getElementById("leaderboardList");
@@ -2070,6 +2125,7 @@ window.loadTeacherResults = loadTeacherResults;
 window.clearResultsViewOnly = clearResultsViewOnly;
 window.openExamFromShareLink = openExamFromShareLink;
 window.openExamByCode = openExamByCode;
+window.editExam = editExam;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");
