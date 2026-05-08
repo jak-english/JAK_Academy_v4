@@ -624,22 +624,90 @@ async function loadMyResults() {
 }
 
 async function loadTeacherResults() {
-  if (!$('teacherResultsList')) return;
-  teacherResultsList.innerHTML = "Loading...";
+  const list = document.getElementById("teacherResultsList");
+  if (!list) return;
 
-  const r = await client.from("exam_results").select("*, exams(title)").order("created_at", { ascending: false });
+  list.innerHTML = "Loading results...";
 
-  if (r.error) {
-    teacherResultsList.innerHTML = "Error or no table";
+  // 1) Load exam results
+  const { data: results, error } = await client
+    .from("exam_results")
+    .select("*, exams(title)")
+    .order("submitted_at", { ascending: false });
+
+  if (error) {
+    console.error("Teacher results error:", error);
+    list.innerHTML = "<p>Could not load results.</p>";
     return;
   }
 
-  teacherResultsList.innerHTML = "";
-  (r.data || []).forEach(x => {
+  if (!results || results.length === 0) {
+    list.innerHTML = "<p>No results yet.</p>";
+    return;
+  }
+
+  // 2) Collect student IDs
+  const studentIds = [
+    ...new Set(
+      results
+        .map(result => result.student_id)
+        .filter(Boolean)
+    )
+  ];
+
+  // 3) Load profiles separately
+  let profilesMap = {};
+
+  if (studentIds.length > 0) {
+    const { data: profiles, error: profilesError } = await client
+      .from("profiles")
+      .select("id, full_name, email, role")
+      .in("id", studentIds);
+
+    if (profilesError) {
+      console.warn("Profiles loading error:", profilesError);
+    }
+
+    (profiles || []).forEach(profile => {
+      profilesMap[profile.id] = profile;
+    });
+  }
+
+  // 4) Render results
+  list.innerHTML = "";
+
+  results.forEach(result => {
+    const profile = profilesMap[result.student_id];
+
+    const studentName =
+      profile?.full_name ||
+      profile?.email ||
+      result.student_id ||
+      "Unknown Student";
+
+    const examTitle =
+      result.exams?.title ||
+      "Exam";
+
+    const score = result.score ?? 0;
+    const total = result.total ?? 0;
+    const percentage = result.percentage ?? 0;
+
+    const submittedDate = result.submitted_at
+      ? new Date(result.submitted_at).toLocaleString()
+      : "Date not available";
+
     const d = document.createElement("div");
     d.className = "box";
-    d.innerHTML = `<h3>${safeText(x.exams?.title || "Exam")}</h3><p>Score: ${x.score}/${x.total} (${x.percentage}%)</p>`;
-    teacherResultsList.appendChild(d);
+
+    d.innerHTML = `
+      <h3>${safeText(studentName)}</h3>
+      <p><strong>Exam:</strong> ${safeText(examTitle)}</p>
+      <p><strong>Score:</strong> ${safeText(score)}/${safeText(total)} (${safeText(percentage)}%)</p>
+      <p><strong>Submitted:</strong> ${safeText(submittedDate)}</p>
+    `;
+
+    list.appendChild(d);
   });
 }
 
@@ -649,8 +717,6 @@ async function loadLeaderboard(type = "weekly") {
 
   list.innerHTML = "Loading...";
 
-  // Load results from exam_results using the real columns:
-  // student_id + submitted_at
   const { data: resultsRaw, error: resultsError } = await client
     .from("exam_results")
     .select("*, exams(title)")
@@ -665,7 +731,7 @@ async function loadLeaderboard(type = "weekly") {
 
   let results = resultsRaw || [];
 
-  // Daily / Weekly filtering using submitted_at
+  // Daily / Weekly filter using submitted_at
   const start = new Date();
 
   if (type === "daily") {
@@ -687,7 +753,56 @@ async function loadLeaderboard(type = "weekly") {
     return;
   }
 
-  // Collect student IDs from exam_results
+  // Keep only the BEST result for each student
+  const bestByStudent = {};
+
+  results.forEach(result => {
+    if (!result.student_id) return;
+
+    const currentBest = bestByStudent[result.student_id];
+
+    if (!currentBest) {
+      bestByStudent[result.student_id] = result;
+      return;
+    }
+
+    const resultPercentage = Number(result.percentage || 0);
+    const bestPercentage = Number(currentBest.percentage || 0);
+
+    const resultScore = Number(result.score || 0);
+    const bestScore = Number(currentBest.score || 0);
+
+    const resultDate = result.submitted_at ? new Date(result.submitted_at).getTime() : 0;
+    const bestDate = currentBest.submitted_at ? new Date(currentBest.submitted_at).getTime() : 0;
+
+    // Ranking rule:
+    // 1. Higher percentage
+    // 2. Higher score
+    // 3. Newer submission
+    if (
+      resultPercentage > bestPercentage ||
+      (resultPercentage === bestPercentage && resultScore > bestScore) ||
+      (resultPercentage === bestPercentage && resultScore === bestScore && resultDate > bestDate)
+    ) {
+      bestByStudent[result.student_id] = result;
+    }
+  });
+
+  results = Object.values(bestByStudent);
+
+  // Sort final leaderboard
+  results.sort((a, b) => {
+    const percentageDiff = Number(b.percentage || 0) - Number(a.percentage || 0);
+    if (percentageDiff !== 0) return percentageDiff;
+
+    const scoreDiff = Number(b.score || 0) - Number(a.score || 0);
+    if (scoreDiff !== 0) return scoreDiff;
+
+    const dateA = a.submitted_at ? new Date(a.submitted_at).getTime() : 0;
+    const dateB = b.submitted_at ? new Date(b.submitted_at).getTime() : 0;
+    return dateB - dateA;
+  });
+
   const studentIds = [
     ...new Set(
       results
@@ -696,7 +811,6 @@ async function loadLeaderboard(type = "weekly") {
     )
   ];
 
-  // Load student names from profiles
   let profilesMap = {};
 
   if (studentIds.length > 0) {
@@ -716,6 +830,7 @@ async function loadLeaderboard(type = "weekly") {
 
   list.innerHTML = `
     <h2>${type === "daily" ? "Daily" : "Weekly"} Leaderboard 🏆</h2>
+    <p>Showing the best result for each student.</p>
   `;
 
   results.forEach((result, index) => {
@@ -749,68 +864,13 @@ async function loadLeaderboard(type = "weekly") {
 
     d.innerHTML = `
       <h3>${medal} ${safeText(studentName)}</h3>
-      <p><strong>Exam:</strong> ${safeText(examTitle)}</p>
-      <p><strong>Score:</strong> ${safeText(score)}/${safeText(total)} (${safeText(percentage)}%)</p>
+      <p><strong>Best Exam:</strong> ${safeText(examTitle)}</p>
+      <p><strong>Best Score:</strong> ${safeText(score)}/${safeText(total)} (${safeText(percentage)}%)</p>
       <p><strong>Submitted:</strong> ${safeText(submittedDate)}</p>
     `;
 
     list.appendChild(d);
   });
-}
-function fillAssistantPrompt(type) {
-  if (!$('assistantQuestion')) return;
-  const prompts = {
-    grammar: "Explain this grammar rule with examples in English and Arabic.",
-    plan: "I need a study plan for English this week.",
-    mistakes: "How can I fix my repeated mistakes in exams?"
-  };
-  assistantQuestion.value = prompts[type] || "Help me study English better.";
-  localAssistant();
-}
-
-function localAssistant() {
-  if (!$('assistantQuestion') || !$('assistantAnswer')) return;
-  const q = assistantQuestion.value.toLowerCase();
-
-  let ans = `
-    <h3>JAK Assistant 🤖</h3>
-    <p>Start by identifying your weak point, then practise with short timed exercises.</p>
-    <p><b>ابدأ بتحديد نقطة ضعفك، ثم تدرب بتمارين قصيرة ومؤقتة.</b></p>
-  `;
-
-  if (q.includes("grammar") || q.includes("rule") || q.includes("passive") || q.includes("tense")) {
-    ans = `
-      <h3>Grammar Plan</h3>
-      <p>1. Read the rule. 2. Write 3 examples. 3. Solve 10 mixed questions. 4. Write your mistakes in a notebook.</p>
-      <p><b>الخطة:</b> افهم القاعدة، اكتب أمثلة، حل أسئلة متنوعة، وسجل أخطاءك.</p>
-    `;
-  }
-
-  if (q.includes("vocab") || q.includes("word") || q.includes("meaning")) {
-    ans = `
-      <h3>Vocabulary Plan</h3>
-      <p>Use: word + Arabic meaning + English sentence + revision after 24 hours.</p>
-      <p><b>للمفردات:</b> الكلمة + معناها + جملة + مراجعة بعد يوم.</p>
-    `;
-  }
-
-  if (q.includes("plan") || q.includes("study") || q.includes("schedule")) {
-    ans = `
-      <h3>Study Plan</h3>
-      <p>Use 25 minutes study + 5 minutes break. Start with the hardest skill first, then practise exam questions.</p>
-      <p><b>خطة الدراسة:</b> 25 دقيقة دراسة + 5 دقائق راحة، وابدأ بالأصعب.</p>
-    `;
-  }
-
-  if (q.includes("mistake") || q.includes("wrong") || q.includes("weak")) {
-    ans = `
-      <h3>Mistakes Strategy</h3>
-      <p>Write every mistake under three columns: the wrong answer, the correct answer, and the reason.</p>
-      <p><b>استراتيجية الأخطاء:</b> اكتب الخطأ، التصحيح، وسبب الخطأ.</p>
-    `;
-  }
-
-  assistantAnswer.innerHTML = ans;
 }
 
 const studyAdviceBank = [
@@ -1577,6 +1637,7 @@ window.printPlans = printPlans;
 window.clearAllPlans = clearAllPlans;
 window.loadLeaderboard = loadLeaderboard;
 window.loadStudentDashboard = loadStudentDashboard;
+window.loadTeacherResults = loadTeacherResults;
 // =========================
 // Users Management - Super Admin
 // =========================
