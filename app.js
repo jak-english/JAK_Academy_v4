@@ -276,6 +276,7 @@ function openQuestionManager(id, title) {
   loadQuestions();
 }
 let isSavingQuestion = false;
+let editingQuestionId = null;
 async function addQuestion() {
   if (isSavingQuestion) {
     return;
@@ -298,15 +299,23 @@ async function addQuestion() {
       return;
     }
 
-    questionMsg.textContent = "Saving question...";
+    questionMsg.textContent = editingQuestionId
+      ? "Updating question..."
+      : "Saving question...";
 
     // Prevent duplicate question text inside the same exam
-    const duplicateCheck = await client
+    let duplicateQuery = client
       .from("questions")
       .select("id")
       .eq("exam_id", currentExamId)
       .eq("question_text", text)
       .limit(1);
+
+    if (editingQuestionId) {
+      duplicateQuery = duplicateQuery.neq("id", editingQuestionId);
+    }
+
+    const duplicateCheck = await duplicateQuery;
 
     if (duplicateCheck.error) {
       console.error("Duplicate check error:", duplicateCheck.error);
@@ -327,7 +336,12 @@ async function addQuestion() {
     };
 
     if (type === "mcq") {
-      if (!optionA.value.trim() || !optionB.value.trim() || !optionC.value.trim() || !optionD.value.trim()) {
+      if (
+        !optionA.value.trim() ||
+        !optionB.value.trim() ||
+        !optionC.value.trim() ||
+        !optionD.value.trim()
+      ) {
         questionMsg.textContent = "Fill all options";
         return;
       }
@@ -349,17 +363,30 @@ async function addQuestion() {
       });
     }
 
-    const { error } = await client
-      .from("questions")
-      .insert([row]);
+    let saveResult;
 
-    if (error) {
-      questionMsg.textContent = error.message;
-      console.error("Add question error:", error);
+    if (editingQuestionId) {
+      saveResult = await client
+        .from("questions")
+        .update(row)
+        .eq("id", editingQuestionId);
+    } else {
+      saveResult = await client
+        .from("questions")
+        .insert([row]);
+    }
+
+    if (saveResult.error) {
+      questionMsg.textContent = saveResult.error.message;
+      console.error("Save question error:", saveResult.error);
       return;
     }
 
-    questionMsg.textContent = "Question saved successfully ✅";
+    questionMsg.textContent = editingQuestionId
+      ? "Question updated successfully ✅"
+      : "Question saved successfully ✅";
+
+    editingQuestionId = null;
 
     questionText.value = "";
     optionA.value = "";
@@ -444,10 +471,14 @@ async function loadQuestions() {
           : `<p><strong>Explanation:</strong> Not added</p>`
       }
 
-      <button onclick="deleteQuestion('${q.id}')" style="background:#b91c1c;color:white;margin-top:10px;">
-        Delete Question
-      </button>
-    `;
+      <button onclick="editQuestion('${q.id}')" style="background:#2563eb;color:white;margin-top:10px;">
+  Edit Question
+</button>
+
+<button onclick="deleteQuestion('${q.id}')" style="background:#b91c1c;color:white;margin-top:10px;">
+  Delete Question
+</button>
+`;
 
     list.appendChild(box);
   });
@@ -507,7 +538,43 @@ async function loadStudentExams() {
     studentExamList.appendChild(box);
   });
 }
+async function editQuestion(questionId) {
+  const { data: question, error } = await client
+    .from("questions")
+    .select("*")
+    .eq("id", questionId)
+    .single();
 
+  if (error) {
+    console.error("Edit question loading error:", error);
+    alert("Could not load question for editing.");
+    return;
+  }
+
+  editingQuestionId = question.id;
+
+  questionType.value = question.question_type || "mcq";
+  questionText.value = question.question_text || "";
+  questionExplanation.value = question.explanation || "";
+
+  optionA.value = question.option_a || "";
+  optionB.value = question.option_b || "";
+  optionC.value = question.option_c || "";
+  optionD.value = question.option_d || "";
+
+  if (question.question_type === "mcq") {
+    mcqCorrectAnswer.value = question.correct_answer || "A";
+  } else {
+    tfCorrectAnswer.value = question.correct_answer || "True";
+  }
+
+  if (typeof toggleQuestionType === "function") {
+    toggleQuestionType();
+  }
+
+  questionMsg.textContent = "Editing question. Make changes, then click Add Question / Save.";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 function previewExam(id, title, description, timeLimit) {
   currentPreviewExam = { id, title, description, timeLimit: Number(timeLimit || 10) };
   takeExamTitle.textContent = title || "Exam";
@@ -2007,6 +2074,12 @@ if (typeof deleteQuestion === "function") {
   console.log("✅ deleteQuestion connected to window");
 } else {
   console.error("❌ deleteQuestion function was not found");
+}
+if (typeof editQuestion === "function") {
+  window.editQuestion = editQuestion;
+  console.log("✅ editQuestion connected to window");
+} else {
+  console.error("❌ editQuestion function was not found");
 }
 // =========================
 // Users Management - Super Admin
