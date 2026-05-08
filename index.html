@@ -452,30 +452,70 @@
 </section>
 
 <section id="studentExams" class="page">
-  <div class="card">
-    <span class="badge">Exams</span>
-    <h1>Available Exams</h1>
+  <div class="card exams-page-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Student Exams</span>
+        <h1>Available Exams</h1>
+        <p>Open a shared exam by code, filter exams by grade/class, or start any published exam.</p>
+      </div>
 
-    <div class="box">
-      <h2>Open Exam by Code</h2>
-      <input id="examCodeInput" placeholder="Paste exam code here">
-      <button onclick="openExamByCode()">Open Exam</button>
-      <p id="examCodeMsg" class="msg"></p>
+      <div class="dashboard-quick-actions">
+        <button onclick="loadStudentExams()">Refresh Exams</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
     </div>
-<div class="box">
-  <h2>Filter Exams</h2>
 
-  <input id="studentExamGradeFilter" placeholder="Filter by Grade / Class e.g. 2008, Grade 11">
+    <div class="exams-control-grid">
+      <div class="box exam-control-card">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Open Exam by Code</h2>
+            <p>Paste the exam code from your teacher to open the exam directly.</p>
+          </div>
+        </div>
 
-  <button onclick="loadStudentExams()">Apply Filter</button>
+        <input id="examCodeInput" placeholder="Paste exam code here">
 
-  <button onclick="clearStudentExamFilter()">Clear Filter</button>
+        <button onclick="openExamByCode()">Open Exam</button>
 
-  <p id="studentExamFilterStatus" class="msg"></p>
-</div>
-    <button onclick="loadStudentExams()">Refresh Exams</button>
+        <p id="examCodeMsg" class="msg"></p>
+      </div>
 
-    <div id="studentExamList" class="grid three"></div>
+      <div class="box exam-control-card">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Filter Exams</h2>
+            <p>Show exams for your grade, class, or generation only.</p>
+          </div>
+        </div>
+
+        <input id="studentExamGradeFilter" placeholder="Filter by Grade / Class e.g. 2008, Grade 11">
+
+        <div class="actions">
+          <button onclick="loadStudentExams()">Apply Filter</button>
+          <button class="secondary" onclick="clearStudentExamFilter()">Clear Filter</button>
+        </div>
+
+        <p id="studentExamFilterStatus" class="msg"></p>
+      </div>
+    </div>
+
+    <div class="box exams-list-panel">
+      <div class="panel-title">
+        <span class="panel-number">03</span>
+        <div>
+          <h2>Published Exams</h2>
+          <p>Choose an exam and start solving when you are ready.</p>
+        </div>
+      </div>
+
+      <button onclick="loadStudentExams()">Refresh Exams</button>
+
+      <div id="studentExamList" class="grid three"></div>
+    </div>
   </div>
 </section>
 <section id="questionManager" class="page"><div class="card"><span class="badge">Question Manager</span><h1 id="questionExamTitle">Manage Questions</h1>
