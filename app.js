@@ -884,8 +884,35 @@ function previousQuestion() {
 
 function toggleReviewLater() {
   const q = solvingQuestions[currentQuestionIndex];
+
+  if (!q) {
+    console.warn("No current question to mark for review.");
+    return;
+  }
+
   reviewLater[q.id] = !reviewLater[q.id];
-  renderQuestionNav();
+
+  if (typeof saveExamProgress === "function") {
+    saveExamProgress();
+  }
+
+  if (typeof renderQuestionNav === "function") {
+    renderQuestionNav();
+  }
+
+  const status = document.getElementById("examAutoSaveStatus");
+
+  if (status) {
+    status.dataset.saved = "true";
+
+    if (reviewLater[q.id]) {
+      status.textContent = "Marked for review ⭐";
+    } else {
+      status.textContent = "Removed from review list ✅";
+    }
+  }
+
+  console.log("Review Later:", q.id, reviewLater[q.id]);
 }
 
 function getUnansweredNumbers() {
@@ -2242,6 +2269,10 @@ window.editExam = editExam;
 window.clearTeacherExamFilter = clearTeacherExamFilter;
 window.clearStudentExamFilter = clearStudentExamFilter;
 window.toggleExamStatus = toggleExamStatus;
+window.toggleReviewLater = toggleReviewLater;
+window.previousQuestion = previousQuestion;
+window.nextQuestion = nextQuestion;
+window.submitExam = submitExam;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");
