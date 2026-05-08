@@ -197,8 +197,23 @@
   </div>
 </section>
 
-<section id="studentExams" class="page"><div class="card"><span class="badge">Exams</span><h1>Available Exams</h1><button onclick="loadStudentExams()">Refresh Exams</button><div id="studentExamList" class="grid three"></div></div></section>
+<section id="studentExams" class="page">
+  <div class="card">
+    <span class="badge">Exams</span>
+    <h1>Available Exams</h1>
 
+    <div class="box">
+      <h2>Open Exam by Code</h2>
+      <input id="examCodeInput" placeholder="Paste exam code here">
+      <button onclick="openExamByCode()">Open Exam</button>
+      <p id="examCodeMsg" class="msg"></p>
+    </div>
+
+    <button onclick="loadStudentExams()">Refresh Exams</button>
+
+    <div id="studentExamList" class="grid three"></div>
+  </div>
+</section>
 <section id="questionManager" class="page"><div class="card"><span class="badge">Question Manager</span><h1 id="questionExamTitle">Manage Questions</h1>
 <div class="grid two"><div class="box"><h2>Add Question</h2><select id="questionType" onchange="handleQuestionTypeChange()"><option value="mcq">Multiple Choice</option><option value="true_false">True / False</option></select><textarea id="questionText" placeholder="Question text"></textarea>
 <div id="mcqOptions"><input id="optionA" placeholder="Option A"><input id="optionB" placeholder="Option B"><input id="optionC" placeholder="Option C"><input id="optionD" placeholder="Option D"><select id="mcqCorrectAnswer"><option value="A">Correct A</option><option value="B">Correct B</option><option value="C">Correct C</option><option value="D">Correct D</option></select></div>

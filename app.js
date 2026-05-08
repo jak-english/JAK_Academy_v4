@@ -2069,6 +2069,7 @@ window.loadStudentDashboard = loadStudentDashboard;
 window.loadTeacherResults = loadTeacherResults;
 window.clearResultsViewOnly = clearResultsViewOnly;
 window.openExamFromShareLink = openExamFromShareLink;
+window.openExamByCode = openExamByCode;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");
@@ -2241,6 +2242,40 @@ async function openExamFromShareLink() {
     alert("Could not open this exam link.");
     return;
   }
+
+  previewExam(
+    exam.id,
+    exam.title,
+    exam.description,
+    exam.time_limit
+  );
+}
+async function openExamByCode() {
+  const input = document.getElementById("examCodeInput");
+  const msg = document.getElementById("examCodeMsg");
+
+  const examId = input?.value.trim();
+
+  if (!examId) {
+    if (msg) msg.textContent = "Please enter an exam code.";
+    return;
+  }
+
+  if (msg) msg.textContent = "Opening exam...";
+
+  const { data: exam, error } = await client
+    .from("exams")
+    .select("*")
+    .eq("id", examId)
+    .single();
+
+  if (error || !exam) {
+    console.error("Open exam by code error:", error);
+    if (msg) msg.textContent = "Invalid exam code or exam not found.";
+    return;
+  }
+
+  if (msg) msg.textContent = "Exam found ✅";
 
   previewExam(
     exam.id,
