@@ -161,14 +161,18 @@ async function createExam() {
   }
 
   const examData = {
-    title,
-    description,
-    time_limit: timeLimit,
-    question_count: questionCount,
-    exam_type: examType,
-    grade_level: gradeLevel,
-    teacher_id: user.id
-  };
+  title,
+  description,
+  time_limit: timeLimit,
+  question_count: questionCount,
+  exam_type: examType,
+  grade_level: gradeLevel,
+  teacher_id: user.id
+};
+
+if (!editingExamId) {
+  examData.status = "draft";
+}
 
   let data = null;
   let error = null;
@@ -282,6 +286,7 @@ async function loadTeacherExams() {
       <p>${safeText(exam.description || "")}</p>
 
       <p><strong>Type:</strong> ${safeText(exam.exam_type || "multiple_choice")}</p>
+      <p><strong>Status:</strong> ${safeText(exam.status || "draft")}</p>
       <p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
       <p><strong>Questions:</strong> ${safeText(exam.question_count || 0)}</p>
       <p><strong>Duration:</strong> ⏱ ${safeText(exam.time_limit || 10)} min</p>
@@ -299,6 +304,10 @@ async function loadTeacherExams() {
     editBtn.textContent = "Edit Exam";
     editBtn.onclick = () => editExam(exam);
     d.appendChild(editBtn);
+    const publishBtn = document.createElement("button");
+    publishBtn.textContent = exam.status === "published" ? "Unpublish Exam" : "Publish Exam";
+    publishBtn.onclick = () => toggleExamStatus(exam.id, exam.status || "draft");
+    d.appendChild(publishBtn);
 
     const copyBtn = document.createElement("button");
     copyBtn.textContent = "Copy Share Link";
@@ -1211,6 +1220,25 @@ function editExam(exam) {
   if (msg) msg.textContent = "Editing exam. Update the details, then click Update Exam.";
 
   showPage("teacherDashboard");
+}
+
+async function toggleExamStatus(examId, currentStatus) {
+  const newStatus = currentStatus === "published" ? "draft" : "published";
+
+  const { error } = await client
+    .from("exams")
+    .update({ status: newStatus })
+    .eq("id", examId);
+
+  if (error) {
+    console.error("Toggle exam status error:", error);
+    alert("Could not update exam status.");
+    return;
+  }
+
+  alert(newStatus === "published" ? "Exam published ✅" : "Exam unpublished ✅");
+
+  await loadTeacherExams();
 }
 async function loadLeaderboard(type = "weekly") {
   const list = document.getElementById("leaderboardList");
@@ -2205,6 +2233,7 @@ window.openExamByCode = openExamByCode;
 window.editExam = editExam;
 window.clearTeacherExamFilter = clearTeacherExamFilter;
 window.clearStudentExamFilter = clearStudentExamFilter;
+window.toggleExamStatus = toggleExamStatus;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");
