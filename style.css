@@ -576,3 +576,100 @@ textarea{min-height:95px;resize:vertical}
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   Student Dashboard Modern Layout
+   ========================================================= */
+
+.student-dashboard-modern {
+  overflow: hidden;
+}
+
+.student-layout {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.student-main-card {
+  min-height: 220px;
+  position: relative;
+  overflow: hidden;
+}
+
+.exams-card {
+  border-left: 6px solid var(--cyan);
+}
+
+.results-card {
+  border-left: 6px solid var(--gold);
+}
+
+.tasks-card {
+  border-left: 6px solid var(--violet);
+}
+
+.analytics-card {
+  grid-column: 1 / -1;
+  border-left: 6px solid var(--green);
+}
+
+#studentProgressBox {
+  border-left: 6px solid var(--blue);
+}
+
+#studentAdviceBox {
+  border-left: 6px solid var(--orange);
+}
+
+.student-tools-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.student-tool-card {
+  min-height: 220px;
+  border-left: 6px solid rgba(34, 211, 238, 0.75);
+}
+
+.student-tool-card .tool-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  margin-bottom: 12px;
+}
+
+.student-tool-card p,
+.student-main-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 1050px) {
+  .student-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-card,
+  .student-tools-grid {
+    grid-column: auto;
+  }
+
+  .student-tools-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .student-tools-grid {
+    grid-template-columns: 1fr;
+  }
+}

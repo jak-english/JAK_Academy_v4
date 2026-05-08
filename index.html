@@ -176,19 +176,109 @@
   </div>
 </section>
 <section id="studentDashboard" class="page">
-  <div class="card">
-    <span class="badge">Student Dashboard</span>
-<h1>Welcome, <span id="userName"></span></h1>    <div class="grid three">
-      <div class="box"><h2>Exams</h2><button onclick="showPage('studentExams');loadStudentExams()">Open Exams</button></div>
-      <div class="box"><h2>My Results</h2><button onclick="showPage('myResults');loadMyResults()">Open Results</button></div>
-      <div class="box"><h2>Today’s Tasks</h2><div id="studentTodayTasks"></div><button onclick="openPlanner()">Open Planner</button></div>
-      <div class="box" id="studentProgressBox"><h2>Study Progress</h2><p>Open dashboard to load progress.</p></div>
-      <div class="box"><h2>Smart Assistant</h2><button onclick="showPage('studentAssistant')">Ask Assistant</button></div>
-      <div class="box" id="studentAdviceBox"><h2>Daily Study Advice</h2><p>Open dashboard to load advice.</p></div>
-      <div class="box"><h2>Dictionaries</h2><button onclick="showPage('dictionaries');renderDictionaryHome()">Open Dictionaries</button></div>
-      <div class="box"><h2>Games</h2><button onclick="showPage('games');renderGamesHome()">Open Games</button></div>
-      <div id="studentExamStatsBox" class="box"></div>
-      <div class="box"><h2>Premium</h2><button onclick="showPage('premium');renderPaymentInfo()">Request Premium</button></div>
+  <div class="card student-dashboard-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Student Dashboard</span>
+        <h1>Welcome, <span id="userName"></span></h1>
+        <p>Your learning space: exams, results, planner, advice, games, dictionaries, and progress analytics.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="showPage('studentExams');loadStudentExams()">Open Exams</button>
+        <button class="gold" onclick="showPage('myResults');loadMyResults()">My Results</button>
+        <button class="violet" onclick="openPlanner()">Planner</button>
+      </div>
+    </div>
+
+    <div class="student-layout">
+
+      <div class="box student-main-card exams-card">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Exams</h2>
+            <p>Open published exams, use exam codes, and start solving.</p>
+          </div>
+        </div>
+        <button onclick="showPage('studentExams');loadStudentExams()">Open Exams</button>
+      </div>
+
+      <div class="box student-main-card results-card">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>My Results</h2>
+            <p>Review your exam history, scores, percentages, and dates.</p>
+          </div>
+        </div>
+        <button onclick="showPage('myResults');loadMyResults()">Open Results</button>
+      </div>
+
+      <div class="box student-main-card tasks-card">
+        <div class="panel-title">
+          <span class="panel-number">03</span>
+          <div>
+            <h2>Today’s Tasks</h2>
+            <p>Follow your daily study tasks and planner activities.</p>
+          </div>
+        </div>
+        <div id="studentTodayTasks"></div>
+        <button onclick="openPlanner()">Open Planner</button>
+      </div>
+
+      <div class="box student-main-card" id="studentProgressBox">
+        <div class="panel-title">
+          <span class="panel-number">04</span>
+          <div>
+            <h2>Study Progress</h2>
+            <p>Open dashboard to load progress.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="box student-main-card" id="studentAdviceBox">
+        <div class="panel-title">
+          <span class="panel-number">05</span>
+          <div>
+            <h2>Daily Study Advice</h2>
+            <p>Open dashboard to load advice.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="studentExamStatsBox" class="box student-main-card analytics-card"></div>
+
+      <div class="student-tools-grid">
+        <div class="box student-tool-card">
+          <span class="tool-icon">🤖</span>
+          <h2>Smart Assistant</h2>
+          <p>Ask for help, explanations, and study guidance.</p>
+          <button onclick="showPage('studentAssistant')">Ask Assistant</button>
+        </div>
+
+        <div class="box student-tool-card">
+          <span class="tool-icon">📚</span>
+          <h2>Dictionaries</h2>
+          <p>Use learning dictionaries for vocabulary and meanings.</p>
+          <button onclick="showPage('dictionaries');renderDictionaryHome()">Open Dictionaries</button>
+        </div>
+
+        <div class="box student-tool-card">
+          <span class="tool-icon">🎮</span>
+          <h2>Games</h2>
+          <p>Practice English through interactive learning games.</p>
+          <button onclick="showPage('games');renderGamesHome()">Open Games</button>
+        </div>
+
+        <div class="box student-tool-card">
+          <span class="tool-icon">💎</span>
+          <h2>Premium</h2>
+          <p>Request premium access and unlock extra learning tools.</p>
+          <button onclick="showPage('premium');renderPaymentInfo()">Request Premium</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
