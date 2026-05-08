@@ -849,8 +849,66 @@
   </div>
 </section>
 
-<section id="aiCenter" class="page"><div class="card"><span class="badge">AI Center</span><h1>AI Question Builder 🤖</h1><div class="grid two"><div class="box ai-card"><h2>AI-ready Question Builder</h2><input id="aiTopic" placeholder="Topic: Present Simple / Passive Voice..."><select id="aiType"><option>MCQ</option><option>True / False</option><option>Grammar</option><option>Vocabulary</option></select><input id="aiCount" type="number" value="5"><button onclick="mockAIQuestions()">Generate Preview</button><p class="msg">Safe local preview now. Real OpenAI connection should be added later through Netlify Functions only, not directly in frontend.</p></div><div class="box"><h2>Preview</h2><div id="aiPreview"></div></div></div></div></section>
+<section id="aiCenter" class="page">
+  <div class="card ai-center-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">AI Center</span>
+        <h1>AI Question Builder 🤖</h1>
+        <p>Generate exam question previews now, and prepare for real AI integration later through a secure backend.</p>
+      </div>
 
+      <div class="dashboard-quick-actions">
+        <button class="violet" onclick="mockAIQuestions()">Generate Preview</button>
+        <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="ai-center-layout">
+      <div class="box ai-builder-panel ai-card">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Question Generator</h2>
+            <p>Choose a topic, question type, and number of questions to generate a safe local preview.</p>
+          </div>
+        </div>
+
+        <label>Topic</label>
+        <input id="aiTopic" placeholder="Topic: Present Simple / Passive Voice...">
+
+        <label>Question Type</label>
+        <select id="aiType">
+          <option>MCQ</option>
+          <option>True / False</option>
+          <option>Grammar</option>
+          <option>Vocabulary</option>
+        </select>
+
+        <label>Number of Questions</label>
+        <input id="aiCount" type="number" value="5">
+
+        <button class="violet" onclick="mockAIQuestions()">Generate Preview</button>
+
+        <p class="msg">
+          Safe local preview now. Real OpenAI connection should be added later through Netlify Functions only, not directly in frontend.
+        </p>
+      </div>
+
+      <div class="box ai-preview-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Preview</h2>
+            <p>Generated preview questions will appear here before being saved or reviewed.</p>
+          </div>
+        </div>
+
+        <div id="aiPreview"></div>
+      </div>
+    </div>
+  </div>
+</section>
 <section id="mathTools" class="page"><div class="card"><span class="badge">Math Tools</span><h1>Math Symbols & Patterns 📐</h1><div class="grid two"><div class="box"><h2>Symbol Keyboard</h2><div class="math-symbols" id="mathSymbols"></div><textarea id="mathEditor" placeholder="Write equation here..."></textarea></div><div class="box"><h2>Templates</h2><button onclick="insertMath('x^2 + 3x + 2 = 0')">Quadratic</button><button onclick="insertMath('\\frac{a}{b}')">Fraction</button><button onclick="insertMath('√x')">Root</button><button onclick="insertMath('f(x)=2x+1')">Function</button></div></div></div></section>
 
 

@@ -1150,95 +1150,46 @@ textarea{min-height:95px;resize:vertical}
   }
 }
 /* =========================================================
-   Study Planner Modern Layout
+   AI Center Modern Layout
    ========================================================= */
 
-.planner-modern {
+.ai-center-modern {
   overflow: hidden;
 }
 
-.planner-layout {
+.ai-center-layout {
   display: grid;
   grid-template-columns: minmax(330px, 0.9fr) minmax(430px, 1.1fr);
   gap: 18px;
   align-items: start;
 }
 
-.planner-panel {
-  position: relative;
-  overflow: hidden;
-}
-
-.smart-plan-panel {
+.ai-builder-panel {
   border-left: 6px solid var(--violet);
 }
 
-.today-tasks-panel {
-  border-left: 6px solid var(--gold);
-}
-
-.add-plan-panel {
+.ai-preview-panel {
   border-left: 6px solid var(--cyan);
 }
 
-.plans-list-panel {
-  border-left: 6px solid var(--green);
-}
-
-.calendar-panel {
-  grid-column: 1 / -1;
-  border-left: 6px solid var(--blue);
-}
-
-#todayTasks,
-#plansList,
-#calendarView {
+#aiPreview {
+  display: grid;
+  gap: 14px;
   margin-top: 16px;
 }
 
-#todayTasks .box,
-#plansList .box {
-  border-left: 5px solid rgba(34, 211, 238, 0.75);
-}
-
-#plannerStats {
-  margin-bottom: 18px;
-}
-
-#plannerStats .box {
+#aiPreview .box,
+#aiPreview > div {
   border-left: 5px solid var(--gold);
+  border-radius: 18px;
 }
 
-#plannerStats .box p {
-  font-size: 28px;
-  font-weight: 900;
-  color: var(--gold);
-  margin: 8px 0;
-}
-
-.calendar-panel .calendar-grid {
-  margin-top: 16px;
-}
-
-.calendar-day {
-  transition: transform .16s ease, border-color .16s ease;
-}
-
-.calendar-day:hover {
-  transform: translateY(-2px);
-  border-color: rgba(34,211,238,.35);
-}
-
-.mini-plan {
-  box-shadow: 0 8px 18px rgba(0,0,0,.18);
+.ai-builder-panel .msg {
+  margin-top: 14px;
 }
 
 @media (max-width: 1050px) {
-  .planner-layout {
+  .ai-center-layout {
     grid-template-columns: 1fr;
-  }
-
-  .calendar-panel {
-    grid-column: auto;
   }
 }
