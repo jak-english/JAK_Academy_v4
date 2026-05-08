@@ -131,8 +131,19 @@
 
 <button id="createExamBtn" onclick="createExam()">Create Exam</button>
   <p id="examMsg" class="msg"></p>
-</div>      <div class="box"><h2>My Exams</h2><button onclick="loadTeacherExams()">Load Exams</button><div id="teacherExamList"></div></div>
 <div class="box">
+  <h2>My Exams</h2>
+
+  <input id="teacherExamGradeFilter" placeholder="Filter by Grade / Class e.g. 2008, Grade 11">
+
+  <button onclick="loadTeacherExams()">Load Exams</button>
+
+  <button onclick="clearTeacherExamFilter()">Clear Filter</button>
+
+  <p id="teacherExamFilterStatus" class="msg"></p>
+
+  <div id="teacherExamList"></div>
+</div><div class="box">
   <h2>Results</h2>
 
   <button onclick="loadTeacherResults()">Load Results</button>

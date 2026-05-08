@@ -227,8 +227,14 @@ async function createExam() {
   }
 }
 async function loadTeacherExams() {
-  if (!$("teacherExamList")) return;
-  teacherExamList.innerHTML = "Loading...";
+  const list = document.getElementById("teacherExamList");
+  const status = document.getElementById("teacherExamFilterStatus");
+  const filterInput = document.getElementById("teacherExamGradeFilter");
+
+  if (!list) return;
+
+  list.innerHTML = "Loading...";
+  if (status) status.textContent = "";
 
   const user = await getCurrentUser();
   if (!user) return;
@@ -240,13 +246,29 @@ async function loadTeacherExams() {
     .order("created_at", { ascending: false });
 
   if (r.error) {
-    teacherExamList.innerHTML = "Error";
+    list.innerHTML = "Error";
     console.error(r.error);
     return;
   }
 
-  const rows = r.data || [];
-  teacherExamList.innerHTML = rows.length ? "" : "No exams yet";
+  const filterValue = filterInput?.value.trim().toLowerCase() || "";
+
+  let rows = r.data || [];
+
+  if (filterValue) {
+    rows = rows.filter(exam => {
+      const grade = String(exam.grade_level || "").toLowerCase();
+      return grade.includes(filterValue);
+    });
+  }
+
+  if (status) {
+    status.textContent = filterValue
+      ? `Showing exams for: ${filterInput.value.trim()}`
+      : "Showing all exams";
+  }
+
+  list.innerHTML = rows.length ? "" : "No exams found";
 
   rows.forEach(exam => {
     const d = document.createElement("div");
@@ -258,7 +280,12 @@ async function loadTeacherExams() {
     d.innerHTML = `
       <h3>${safeText(exam.title)}</h3>
       <p>${safeText(exam.description || "")}</p>
-      <p>⏱ ${safeText(exam.time_limit || 10)} min</p>
+
+      <p><strong>Type:</strong> ${safeText(exam.exam_type || "multiple_choice")}</p>
+      <p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
+      <p><strong>Questions:</strong> ${safeText(exam.question_count || 0)}</p>
+      <p><strong>Duration:</strong> ⏱ ${safeText(exam.time_limit || 10)} min</p>
+
       <p><strong>Exam Code:</strong> ${safeText(examCode)}</p>
       <p><strong>Share Link:</strong> <span>${safeText(examLink)}</span></p>
     `;
@@ -292,10 +319,9 @@ async function loadTeacherExams() {
     deleteBtn.onclick = () => deleteExam(exam.id, exam.title);
     d.appendChild(deleteBtn);
 
-    teacherExamList.appendChild(d);
+    list.appendChild(d);
   });
 }
-
 // =========================
 // Question Manager
 // =========================
@@ -2108,6 +2134,16 @@ async function deleteExam(examId, examTitle) {
   loadTeacherExams();
 }
 
+function clearTeacherExamFilter() {
+  const input = document.getElementById("teacherExamGradeFilter");
+  const status = document.getElementById("teacherExamFilterStatus");
+
+  if (input) input.value = "";
+  if (status) status.textContent = "Filter cleared.";
+
+  loadTeacherExams();
+}
+
 window.goDashboard = goDashboard;
 window.logout = logout;
 window.showPage = showPage;
@@ -2126,6 +2162,7 @@ window.clearResultsViewOnly = clearResultsViewOnly;
 window.openExamFromShareLink = openExamFromShareLink;
 window.openExamByCode = openExamByCode;
 window.editExam = editExam;
+window.clearTeacherExamFilter = clearTeacherExamFilter;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");
