@@ -286,7 +286,14 @@ async function loadTeacherExams() {
       <p>${safeText(exam.description || "")}</p>
 
       <p><strong>Type:</strong> ${safeText(exam.exam_type || "multiple_choice")}</p>
-      <p><strong>Status:</strong> ${safeText(exam.status || "draft")}</p>
+<p>
+  <strong>Status:</strong>
+  ${
+    exam.status === "published"
+      ? '<span class="badge">🟢 Published</span>'
+      : '<span class="badge">🟡 Draft</span>'
+  }
+</p>
       <p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
       <p><strong>Questions:</strong> ${safeText(exam.question_count || 0)}</p>
       <p><strong>Duration:</strong> ⏱ ${safeText(exam.time_limit || 10)} min</p>
@@ -593,9 +600,10 @@ async function loadStudentExams() {
   if (status) status.textContent = "";
 
   const r = await client
-    .from("exams")
-    .select("*")
-    .order("created_at", { ascending: false });
+  .from("exams")
+  .select("*")
+  .eq("status", "published")
+  .order("created_at", { ascending: false });
 
   if (r.error) {
     list.innerHTML = "Error loading exams";
