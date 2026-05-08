@@ -14,19 +14,20 @@
     <div><div class="brand-title">JAK Academy</div><div class="brand-sub">Learning is Fun ✨</div></div>
   </div>
   <nav>
-    <button onclick="showPage('home')">Home</button>
-    <button onclick="goDashboard()">Dashboard</button>   
-    <button onclick="showPage('studentExams')">Exams</button> 
-    <button onclick="openPlanner()">Planner</button>
-    <button onclick="showPage('studySystem')">Study System</button>
-    <button onclick="showPage('aiCenter')">AI Center</button>
-    <button onclick="showPage('studentAssistant')">Assistant 🤖</button>
-    <button onclick="showPage('games')">Games 🎮</button>
-    <button onclick="showPage('dictionaries')">Dictionaries 📚</button>
-    <button onclick="showPage('premium') ">Premium</button>
-   <button onclick="showPage('leaderboard')">Leaderboard</button>
-    <button class="secondary" onclick="logout()">Logout</button>
-  </nav>
+  <button onclick="showPage('home')">Home</button>
+  <button onclick="goDashboard()">Dashboard</button>
+  <button onclick="window.location.href='login.html'">Login / Sign in</button>
+  <button onclick="showPage('studentExams')">Exams</button>
+  <button onclick="openPlanner()">Planner</button>
+  <button onclick="showPage('studySystem')">Study System</button>
+  <button onclick="showPage('aiCenter')">AI Center</button>
+  <button onclick="showPage('studentAssistant')">Assistant 🤖</button>
+  <button onclick="showPage('games')">Games 🎮</button>
+  <button onclick="showPage('dictionaries')">Dictionaries 📚</button>
+  <button onclick="showPage('premium')">Premium</button>
+  <button onclick="showPage('leaderboard')">Leaderboard</button>
+  <button class="secondary" onclick="logout()">Logout</button>
+</nav>
 </header>
 
 <main>
@@ -104,7 +105,19 @@
     <div class="grid three">
       <div class="box"><h2>Create Exam</h2><input id="examTitle" placeholder="Exam title"><input id="examDesc" placeholder="Description"><input id="examTime" type="number" value="10"><button onclick="createExam()">Create Exam</button><p id="examMsg" class="msg"></p></div>
       <div class="box"><h2>My Exams</h2><button onclick="loadTeacherExams()">Load Exams</button><div id="teacherExamList"></div></div>
-      <div class="box"><h2>Results</h2><button onclick="loadTeacherResults()">Load Results</button><div id="teacherResultsList"></div></div>
+<div class="box">
+  <h2>Results</h2>
+
+  <button onclick="loadTeacherResults()">Load Results</button>
+
+  <button onclick="clearResultsViewOnly()">
+    Clear View
+  </button>
+
+  <p id="teacherResultsStatus"></p>
+
+  <div id="teacherResultsList"></div>
+    </div>
       <div class="box ai-card"><h2>AI Question Builder</h2><button onclick="showPage('aiCenter')">Open AI Center</button></div>
       <div class="box"><h2>Math Tools</h2><button onclick="showPage('mathTools')">Open Math Symbols</button></div>
       <div class="box"><h2>Premium</h2><button onclick="showPage('premium');renderPaymentInfo()">View Premium</button></div>

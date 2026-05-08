@@ -20,18 +20,23 @@ let currentUserRole = "student";
 
 
 function showPage(id) {
-  document.querySelectorAll(".page").forEach(p => {
-    p.style.display = "none";
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
+    page.style.display = "none";
   });
 
-  const el = document.getElementById(id);
-  if (el) {
-    el.style.display = "block";
-  } else {
-    console.log("Page not found:", id);
-  }
-}
+  const target = document.getElementById(id);
 
+  if (!target) {
+    console.log("Page not found:", id);
+    return;
+  }
+
+  target.classList.add("active");
+  target.style.display = "block";
+
+  console.log("Showing page:", id);
+}
 async function getCurrentUser() {
   const { data } = await client.auth.getUser();
   return data.user || null;
@@ -1619,11 +1624,24 @@ async function loadUserName() {
 }
 
 // ================= START APP =================
+function clearResultsViewOnly() {
+  const status = document.getElementById("teacherResultsStatus");
+  const list = document.getElementById("teacherResultsList");
+
+  if (list) {
+    list.innerHTML = "";
+  }
+
+  if (status) {
+    status.textContent = "Results view cleared only. Database was not changed.";
+  }
+}
 window.addEventListener("DOMContentLoaded", () => {
   displayQuestion();
   bootStableApp();
   loadUserName();
 });
+
 window.goDashboard = goDashboard;
 window.logout = logout;
 window.showPage = showPage;
@@ -1638,6 +1656,7 @@ window.clearAllPlans = clearAllPlans;
 window.loadLeaderboard = loadLeaderboard;
 window.loadStudentDashboard = loadStudentDashboard;
 window.loadTeacherResults = loadTeacherResults;
+window.clearResultsViewOnly = clearResultsViewOnly;
 // =========================
 // Users Management - Super Admin
 // =========================
