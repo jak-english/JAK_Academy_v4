@@ -838,14 +838,50 @@
 </section>
 
 <section id="games" class="page">
-  <div class="card">
-    <span class="badge">Learning Games</span>
-    <h1>Games 🎮</h1>
-    <div class="grid two">
-      <div class="box"><h2>Irregular Verbs Game</h2><p>Choose the correct form and collect points.</p><button onclick="startIrregularGame()">Start</button></div>
-      <div class="box"><h2>Hangman Vocabulary</h2><p>Practise curriculum vocabulary by guessing letters.</p><button onclick="startHangmanGame()">Start</button></div>
+  <div class="card games-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Learning Games</span>
+        <h1>Games 🎮</h1>
+        <p>Practice English in a fun way through vocabulary and irregular verbs games.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="window.startIrregularGame()">Irregular Verbs</button>
+        <button class="gold" onclick="window.startHangmanGame()">Hangman</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
     </div>
-    <div id="gameArea" style="margin-top:16px"></div>
+
+    <div class="games-layout">
+      <div class="box game-card">
+        <div class="game-icon">📝</div>
+        <span class="panel-number">01</span>
+        <h2>Irregular Verbs Game</h2>
+        <p>Choose the correct verb form, collect points, and improve your grammar memory.</p>
+        <button onclick="window.startIrregularGame()">Start Game</button>
+      </div>
+
+      <div class="box game-card">
+        <div class="game-icon">🎯</div>
+        <span class="panel-number">02</span>
+        <h2>Hangman Vocabulary</h2>
+        <p>Practise curriculum vocabulary by guessing letters before the word is complete.</p>
+        <button class="gold" onclick="window.startHangmanGame()">Start Game</button>
+      </div>
+    </div>
+
+    <div class="box game-area-panel">
+      <div class="panel-title">
+        <span class="panel-number">03</span>
+        <div>
+          <h2>Game Area</h2>
+          <p>Your selected game will appear here.</p>
+        </div>
+      </div>
+
+      <div id="gameArea"></div>
+    </div>
   </div>
 </section>
 
