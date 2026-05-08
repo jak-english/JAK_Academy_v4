@@ -218,7 +218,17 @@
       <button onclick="openExamByCode()">Open Exam</button>
       <p id="examCodeMsg" class="msg"></p>
     </div>
+<div class="box">
+  <h2>Filter Exams</h2>
 
+  <input id="studentExamGradeFilter" placeholder="Filter by Grade / Class e.g. 2008, Grade 11">
+
+  <button onclick="loadStudentExams()">Apply Filter</button>
+
+  <button onclick="clearStudentExamFilter()">Clear Filter</button>
+
+  <p id="studentExamFilterStatus" class="msg"></p>
+</div>
     <button onclick="loadStudentExams()">Refresh Exams</button>
 
     <div id="studentExamList" class="grid three"></div>
