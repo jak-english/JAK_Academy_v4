@@ -277,6 +277,7 @@ function openQuestionManager(id, title) {
 }
 let isSavingQuestion = false;
 let editingQuestionId = null;
+
 async function addQuestion() {
   if (isSavingQuestion) {
     return;
@@ -388,6 +389,8 @@ async function addQuestion() {
 
     editingQuestionId = null;
 
+    const saveQuestionBtn = document.getElementById("saveQuestionBtn");
+    if (saveQuestionBtn) saveQuestionBtn.textContent = "Save Question";
     questionText.value = "";
     optionA.value = "";
     optionB.value = "";
@@ -568,11 +571,13 @@ async function editQuestion(questionId) {
     tfCorrectAnswer.value = question.correct_answer || "True";
   }
 
-  if (typeof toggleQuestionType === "function") {
-    toggleQuestionType();
-  }
+  if (typeof handleQuestionTypeChange === "function") {
+  handleQuestionTypeChange();
+}
 
   questionMsg.textContent = "Editing question. Make changes, then click Add Question / Save.";
+const saveBtn = document.getElementById("saveQuestionBtn");
+if (saveBtn) saveBtn.textContent = "Update Question";
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 function previewExam(id, title, description, timeLimit) {
