@@ -657,28 +657,45 @@
     <div class="solver-actions">
       <button class="secondary" onclick="previousQuestion()">Previous</button>
       <button onclick="nextQuestion()">Next</button>
-      <button class="gold" onclick="toggleReviewLater()">Review Later</button>
-      <button class="success" onclick="submitExam(false)">Submit Exam</button>
+<button class="gold" onclick="window.toggleReviewLater()">Review Later</button>      <button class="success" onclick="submitExam(false)">Submit Exam</button>
     </div>
   </div>
 </section>
-<section id="examResult" class="page"><div class="card"><span class="badge">Exam Result</span><h1 id="resultTitle">Result</h1>
-<h2 id="scoreText"></h2><div id="studyAdviceAfterResult" class="box tip-card"></div><div id="resultDetails"></div><button onclick="showPage('studentExams');loadStudentExams()">Back to Exams</button><button class="gold" onclick="window.print()">Print Result</button></div></section>
+<section id="examResult" class="page">
+  <div class="card exam-result-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Exam Result</span>
+        <h1 id="resultTitle">Result</h1>
+        <p>Your score, feedback, and detailed answer review.</p>
+      </div>
 
-<section id="myResults" class="page"><div class="card"><span class="badge">My Results</span><h1>My Exam Results</h1><button onclick="loadMyResults()">Refresh</button><div id="myResultsList"></div></div></section>
+      <div class="dashboard-quick-actions">
+        <button onclick="showPage('studentExams');loadStudentExams()">Back to Exams</button>
+        <button class="gold" onclick="window.print()">Print Result</button>
+      </div>
+    </div>
 
-<section id="leaderboard" class="page"><div class="card"><span class="badge">Leaderboard</span><h1>Leaderboard 🏆</h1><div class="actions"><button onclick="loadLeaderboard('daily')">Daily</button><button class="gold" onclick="loadLeaderboard('weekly')">Weekly</button></div><div id="leaderboardList"></div></div></section>
+    <div class="result-score-card">
+      <span>Your Score</span>
+      <h2 id="scoreText"></h2>
+    </div>
 
-<section id="studySystem" class="page"><div class="card"><span class="badge">Study System</span><h1>How Should Students Study? 📚</h1>
-<div class="grid two">
-<div class="box tip-card"><h2>Foundation System</h2><p>20 minutes grammar + 20 minutes vocabulary + 20 minutes practice questions.</p><p>مناسب للطلاب الضعاف أو البداية.</p></div>
-<div class="box tip-card"><h2>Exam Preparation System</h2><p>Practice under time, correct mistakes, then repeat weak topics.</p><p>مناسب قبل الامتحان.</p></div>
-<div class="box tip-card"><h2>Active Recall</h2><p>Close the book and try to remember. Then check and correct.</p><p>لا تقرأ فقط؛ اختبر نفسك.</p></div>
-<div class="box tip-card"><h2>Mistakes Notebook</h2><p>Write every repeated mistake and review it before exams.</p><p>دفتر الأخطاء سر التحسن.</p></div>
-<div class="box tip-card"><h2>Weekly Routine</h2><p>Day 1 grammar, Day 2 vocabulary, Day 3 reading, Day 4 writing, Day 5 exam, Day 6 correction, Day 7 light review.</p></div>
-<div class="box tip-card"><h2>Smart Advice by Score</h2><p>Below 50%: review basics. 50–79%: practice more. 80%+: move to advanced questions.</p></div>
-</div></div></section>
+    <div class="box result-advice-card" id="studyAdviceAfterResult"></div>
 
+    <div class="box result-details-panel">
+      <div class="panel-title">
+        <span class="panel-number">01</span>
+        <div>
+          <h2>Answer Review</h2>
+          <p>Check your answers, correct answers, and explanations.</p>
+        </div>
+      </div>
+
+      <div id="resultDetails"></div>
+    </div>
+  </div>
+</section>
 <section id="studentAssistant" class="page">
   <div class="card">
     <span class="badge">Smart Student Assistant</span>

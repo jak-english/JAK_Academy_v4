@@ -936,3 +936,82 @@ textarea{min-height:95px;resize:vertical}
     width: 100%;
   }
 }
+/* =========================================================
+   Exam Result Modern Layout
+   ========================================================= */
+
+.exam-result-modern {
+  max-width: 1100px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.result-score-card {
+  margin: 18px 0;
+  padding: 28px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(34,211,238,.18), transparent 35%),
+    linear-gradient(135deg, rgba(22,163,74,.18), rgba(18,52,86,.82));
+  border: 1px solid rgba(22,163,74,.28);
+  text-align: center;
+  box-shadow: 0 22px 55px rgba(0,0,0,.24);
+}
+
+.result-score-card span {
+  display: block;
+  color: var(--muted);
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.result-score-card h2 {
+  margin: 0;
+  font-size: clamp(34px, 5vw, 58px);
+  color: var(--gold);
+}
+
+.result-advice-card {
+  border-left: 6px solid var(--gold);
+  margin-bottom: 18px;
+}
+
+.result-details-panel {
+  border-left: 6px solid var(--cyan);
+}
+
+#resultDetails {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+#resultDetails .box,
+#resultDetails > div {
+  border-radius: 20px;
+}
+
+#resultDetails .correct {
+  border: 2px solid var(--green) !important;
+  background: rgba(22,163,74,.10) !important;
+}
+
+#resultDetails .wrong {
+  border: 2px solid var(--red) !important;
+  background: rgba(220,38,38,.10) !important;
+}
+
+@media (max-width: 900px) {
+  .exam-result-modern .dashboard-header {
+    flex-direction: column;
+  }
+
+  .exam-result-modern .dashboard-quick-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .exam-result-modern .dashboard-quick-actions button {
+    width: 100%;
+  }
+}
