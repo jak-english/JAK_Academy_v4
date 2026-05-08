@@ -2068,6 +2068,7 @@ window.loadLeaderboard = loadLeaderboard;
 window.loadStudentDashboard = loadStudentDashboard;
 window.loadTeacherResults = loadTeacherResults;
 window.clearResultsViewOnly = clearResultsViewOnly;
+window.openExamFromShareLink = openExamFromShareLink;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");
@@ -2221,11 +2222,38 @@ if (typeof loadUsers === "function") window.loadUsers = loadUsers;
 if (typeof setUserRole === "function") window.setUserRole = setUserRole;
 if (typeof makeUserPremium === "function") window.makeUserPremium = makeUserPremium;
 if (typeof removeUserProfile === "function") window.removeUserProfile = removeUserProfile;
- window.addEventListener("DOMContentLoaded", async () => {
+async function openExamFromShareLink() {
+  const params = new URLSearchParams(window.location.search);
+  const examId = params.get("exam");
+
+  if (!examId) return;
+
+  console.log("Shared exam detected:", examId);
+
+  const { data: exam, error } = await client
+    .from("exams")
+    .select("*")
+    .eq("id", examId)
+    .single();
+
+  if (error || !exam) {
+    console.error("Shared exam loading error:", error);
+    alert("Could not open this exam link.");
+    return;
+  }
+
+  previewExam(
+    exam.id,
+    exam.title,
+    exam.description,
+    exam.time_limit
+  );
+}
+window.addEventListener("DOMContentLoaded", async () => {
   displayQuestion();
   bootStableApp();
   loadUserName();
-
+  await openExamFromShareLink();
   if (window.location.hash === "#dashboard") {
     goDashboard();
   }
