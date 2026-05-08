@@ -854,7 +854,138 @@
 <section id="mathTools" class="page"><div class="card"><span class="badge">Math Tools</span><h1>Math Symbols & Patterns 📐</h1><div class="grid two"><div class="box"><h2>Symbol Keyboard</h2><div class="math-symbols" id="mathSymbols"></div><textarea id="mathEditor" placeholder="Write equation here..."></textarea></div><div class="box"><h2>Templates</h2><button onclick="insertMath('x^2 + 3x + 2 = 0')">Quadratic</button><button onclick="insertMath('\\frac{a}{b}')">Fraction</button><button onclick="insertMath('√x')">Root</button><button onclick="insertMath('f(x)=2x+1')">Function</button></div></div></div></section>
 
 
-<section id="planner" class="page"><div class="card"><span class="badge">Study Planner</span><h1>Study Planner + Colored Calendar</h1><div id="plannerStats" class="grid three"></div><div class="box tip-card"><h2>Smart Plan Generator</h2><div class="grid two"><input id="smartSubjects" placeholder="Subjects: English, Grammar, Vocabulary"><input id="smartDays" type="number" value="7" min="1" max="30"><input id="smartStart" type="time" value="17:00"><input id="smartMinutes" type="number" value="45" min="15"></div><button class="violet" onclick="generateSmartPlan()">Generate Smart Plan</button></div><h2>Today’s Tasks</h2><div id="todayTasks"></div><div class="grid two"><input id="subject" placeholder="Subject"><input id="studyDate" type="date"><input id="startTime" type="time"><input id="endTime" type="time"><select id="planType"><option value="daily">Daily / 7 days</option><option value="weekly">Weekly</option><option value="exam">Before Exam</option></select><select id="planStatus"><option value="not_started">Not Started</option><option value="in_progress">In Progress</option><option value="done">Completed</option></select><input id="subjectColor" type="color" value="#2563eb"><textarea id="task" placeholder="Task / goal"></textarea></div><div class="actions"><button onclick="addPlan()">Add Plan</button><button class="gold" onclick="printPlans()">Print</button><button class="danger" onclick="clearAllPlans()">Clear All</button></div><h2>My Plans</h2><div id="plansList"></div><h2>Calendar View</h2><input id="subjectFilter" placeholder="Filter by subject" oninput="renderCalendar()"><div id="calendarView"></div></div></section>
+<section id="planner" class="page">
+  <div class="card planner-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Study Planner</span>
+        <h1>Study Planner + Colored Calendar</h1>
+        <p>Create smart study plans, track daily tasks, and organize subjects with a colored calendar.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button class="violet" onclick="generateSmartPlan()">Generate Smart Plan</button>
+        <button class="gold" onclick="printPlans()">Print</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div id="plannerStats" class="grid three"></div>
+
+    <div class="planner-layout">
+      <div class="box planner-panel smart-plan-panel">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Smart Plan Generator</h2>
+            <p>Generate an automatic study plan based on subjects, days, time, and session length.</p>
+          </div>
+        </div>
+
+        <label>Subjects</label>
+        <input id="smartSubjects" placeholder="Subjects: English, Grammar, Vocabulary">
+
+        <label>Number of Days</label>
+        <input id="smartDays" type="number" value="7" min="1" max="30">
+
+        <label>Start Time</label>
+        <input id="smartStart" type="time" value="17:00">
+
+        <label>Session Minutes</label>
+        <input id="smartMinutes" type="number" value="45" min="15">
+
+        <button class="violet" onclick="generateSmartPlan()">Generate Smart Plan</button>
+      </div>
+
+      <div class="box planner-panel today-tasks-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Today’s Tasks</h2>
+            <p>See what you should study today and follow your daily progress.</p>
+          </div>
+        </div>
+
+        <div id="todayTasks"></div>
+      </div>
+
+      <div class="box planner-panel add-plan-panel">
+        <div class="panel-title">
+          <span class="panel-number">03</span>
+          <div>
+            <h2>Add Study Plan</h2>
+            <p>Create a custom task with subject, date, time, status, color, and goal.</p>
+          </div>
+        </div>
+
+        <label>Subject</label>
+        <input id="subject" placeholder="Subject">
+
+        <label>Study Date</label>
+        <input id="studyDate" type="date">
+
+        <label>Start Time</label>
+        <input id="startTime" type="time">
+
+        <label>End Time</label>
+        <input id="endTime" type="time">
+
+        <label>Plan Type</label>
+        <select id="planType">
+          <option value="daily">Daily / 7 days</option>
+          <option value="weekly">Weekly</option>
+          <option value="exam">Before Exam</option>
+        </select>
+
+        <label>Status</label>
+        <select id="planStatus">
+          <option value="not_started">Not Started</option>
+          <option value="in_progress">In Progress</option>
+          <option value="done">Completed</option>
+        </select>
+
+        <label>Subject Color</label>
+        <input id="subjectColor" type="color" value="#2563eb">
+
+        <label>Task / Goal</label>
+        <textarea id="task" placeholder="Task / goal"></textarea>
+
+        <div class="actions">
+          <button onclick="addPlan()">Add Plan</button>
+          <button class="gold" onclick="printPlans()">Print</button>
+          <button class="danger" onclick="clearAllPlans()">Clear All</button>
+        </div>
+      </div>
+
+      <div class="box planner-panel plans-list-panel">
+        <div class="panel-title">
+          <span class="panel-number">04</span>
+          <div>
+            <h2>My Plans</h2>
+            <p>Your saved study tasks and plans will appear here.</p>
+          </div>
+        </div>
+
+        <div id="plansList"></div>
+      </div>
+
+      <div class="box planner-panel calendar-panel">
+        <div class="panel-title">
+          <span class="panel-number">05</span>
+          <div>
+            <h2>Calendar View</h2>
+            <p>View your tasks by day and filter them by subject.</p>
+          </div>
+        </div>
+
+        <label>Filter by Subject</label>
+        <input id="subjectFilter" placeholder="Filter by subject" oninput="renderCalendar()">
+
+        <div id="calendarView"></div>
+      </div>
+    </div>
+  </div>
+</section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
