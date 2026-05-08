@@ -1264,3 +1264,50 @@ textarea{min-height:95px;resize:vertical}
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   Dictionaries Modern Layout
+   ========================================================= */
+
+.dictionaries-modern {
+  overflow: hidden;
+}
+
+.dictionaries-layout {
+  display: grid;
+  grid-template-columns: minmax(330px, 0.9fr) minmax(430px, 1.1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.dictionary-search-panel {
+  border-left: 6px solid var(--cyan);
+}
+
+.dictionary-category-panel {
+  border-left: 6px solid var(--gold);
+}
+
+#dictionaryResults,
+#dictionaryCategory {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+#dictionaryResults .box,
+#dictionaryCategory .box,
+#dictionaryResults > div,
+#dictionaryCategory > div {
+  border-left: 5px solid rgba(34, 211, 238, 0.75);
+  border-radius: 18px;
+}
+
+.dictionary-category-panel .actions button {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1050px) {
+  .dictionaries-layout {
+    grid-template-columns: 1fr;
+  }
+}

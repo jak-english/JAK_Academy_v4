@@ -813,24 +813,58 @@
 
 
 <section id="dictionaries" class="page">
-  <div class="card">
-    <span class="badge">Dictionaries</span>
-    <h1>Student Dictionaries 📚</h1>
-    <p class="msg">English-Arabic support for vocabulary, grammar terms, study words, and irregular verbs.</p>
-    <div class="grid two">
-      <div class="box">
-        <h2>Search Dictionary</h2>
-        <input id="dictionarySearch" placeholder="Search: passive / revise / achieve / break..." oninput="searchDictionary()">
+  <div class="card dictionaries-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Dictionaries</span>
+        <h1>Student Dictionaries 📚</h1>
+        <p>English-Arabic support for vocabulary, grammar terms, study words, and irregular verbs.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="renderDictionaryCategory('grammar')">Grammar</button>
+        <button class="gold" onclick="renderDictionaryCategory('vocabulary')">Vocabulary</button>
+        <button class="violet" onclick="renderDictionaryCategory('study')">Study Skills</button>
+        <button class="success" onclick="renderDictionaryCategory('irregular')">Irregular Verbs</button>
+      </div>
+    </div>
+
+    <div class="dictionaries-layout">
+      <div class="box dictionary-search-panel">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Search Dictionary</h2>
+            <p>Search for words, grammar terms, study vocabulary, or irregular verbs.</p>
+          </div>
+        </div>
+
+        <label>Search Word / Term</label>
+        <input
+          id="dictionarySearch"
+          placeholder="Search: passive / revise / achieve / break..."
+          oninput="searchDictionary()"
+        >
+
         <div id="dictionaryResults"></div>
       </div>
-      <div class="box">
-        <h2>Dictionary Categories</h2>
+
+      <div class="box dictionary-category-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Dictionary Categories</h2>
+            <p>Open ready-made vocabulary lists by learning category.</p>
+          </div>
+        </div>
+
         <div class="actions">
           <button onclick="renderDictionaryCategory('grammar')">Grammar</button>
           <button class="gold" onclick="renderDictionaryCategory('vocabulary')">Vocabulary</button>
           <button class="violet" onclick="renderDictionaryCategory('study')">Study Skills</button>
           <button class="success" onclick="renderDictionaryCategory('irregular')">Irregular Verbs</button>
         </div>
+
         <div id="dictionaryCategory"></div>
       </div>
     </div>
