@@ -1260,6 +1260,26 @@ function editExam(exam) {
 async function toggleExamStatus(examId, currentStatus) {
   const newStatus = currentStatus === "published" ? "draft" : "published";
 
+  // إذا المعلم يريد نشر الامتحان، لازم نتأكد أن فيه أسئلة أولًا
+  if (newStatus === "published") {
+    const { data: questions, error: questionsError } = await client
+      .from("questions")
+      .select("id")
+      .eq("exam_id", examId)
+      .limit(1);
+
+    if (questionsError) {
+      console.error("Check exam questions error:", questionsError);
+      alert("Could not check exam questions.");
+      return;
+    }
+
+    if (!questions || questions.length === 0) {
+      alert("You must add questions before publishing this exam.");
+      return;
+    }
+  }
+
   const { error } = await client
     .from("exams")
     .update({ status: newStatus })
