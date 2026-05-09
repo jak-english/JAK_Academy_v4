@@ -1119,6 +1119,38 @@
   <div id="studyMethodExplanation" class="study-method-explanation"></div>
   <div id="studySystemSchedule" class="study-system-schedule"></div>
 </div>
+<div class="box study-analytics-panel">
+  <div class="panel-title">
+    <span class="panel-number">06</span>
+    <div>
+      <h2>Study Analytics 📊</h2>
+      <p>Track your study time, completed tasks, subjects, and progress rate.</p>
+    </div>
+  </div>
+
+  <div id="studyAnalyticsCards" class="grid three"></div>
+
+  <div class="study-charts-grid">
+    <div class="box">
+      <h2>Subject Distribution</h2>
+      <div id="subjectDistributionChart"></div>
+    </div>
+
+    <div class="box">
+      <h2>Daily Study Minutes</h2>
+      <div id="dailyStudyChart"></div>
+    </div>
+
+    <div class="box">
+      <h2>Task Status</h2>
+      <div id="taskStatusChart"></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="violet" onclick="window.renderStudyAnalytics()">Refresh Study Analytics</button>
+  </div>
+</div>
     <div class="planner-layout">
       <div class="box planner-panel smart-plan-panel">
         <div class="panel-title">

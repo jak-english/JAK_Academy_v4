@@ -1478,3 +1478,71 @@ textarea{min-height:95px;resize:vertical}
   background: var(--gold);
   color: #111827;
 }
+/* =========================================================
+   Study Analytics / Planner Charts
+   ========================================================= */
+
+.study-analytics-panel {
+  border-left: 6px solid var(--green);
+  margin-bottom: 18px;
+}
+
+.study-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.analytics-card-box {
+  border-left: 5px solid var(--gold);
+}
+
+.analytics-card-box h2 {
+  margin-bottom: 8px;
+}
+
+.analytics-card-box p {
+  font-size: 32px;
+  font-weight: 950;
+  color: var(--gold);
+  margin: 8px 0;
+}
+
+.analytics-card-box span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.analytics-bar-row {
+  margin: 14px 0;
+}
+
+.analytics-bar-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.analytics-bar-track {
+  width: 100%;
+  height: 14px;
+  background: rgba(255,255,255,.10);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.analytics-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  min-width: 6px;
+}
+
+@media (max-width: 1050px) {
+  .study-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}

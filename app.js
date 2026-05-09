@@ -3007,7 +3007,171 @@ function generateStudySystemSchedule() {
 
   renderStudyMethodExplanation();
 }
+function getPlannerData() {
+  try {
+    return JSON.parse(localStorage.getItem("jakPlansV5")) || [];
+  } catch (error) {
+    console.error("Planner data parse error:", error);
+    return [];
+  }
+}
 
+function timeToMinutes(time) {
+  if (!time || !String(time).includes(":")) return 0;
+
+  const [hours, minutes] = String(time).split(":").map(Number);
+  return (hours * 60) + minutes;
+}
+
+function calculatePlanMinutes(plan) {
+  const start = timeToMinutes(plan.start);
+  const end = timeToMinutes(plan.end);
+
+  if (!start || !end || end <= start) return 0;
+
+  return end - start;
+}
+
+function renderMiniBar(label, value, maxValue, color) {
+  const percent = maxValue > 0 ? Math.round((value / maxValue) * 100) : 0;
+
+  return `
+    <div class="analytics-bar-row">
+      <div class="analytics-bar-label">
+        <strong>${safeText(label)}</strong>
+        <span>${safeText(value)}</span>
+      </div>
+      <div class="analytics-bar-track">
+        <div class="analytics-bar-fill" style="width:${percent}%; background:${safeText(color || "#22d3ee")}"></div>
+      </div>
+    </div>
+  `;
+}
+
+
+
+function renderStudyAnalytics() {
+  const plans = getPlannerData();
+
+  const cardsBox = document.getElementById("studyAnalyticsCards");
+  const subjectChart = document.getElementById("subjectDistributionChart");
+  const dailyChart = document.getElementById("dailyStudyChart");
+  const statusChart = document.getElementById("taskStatusChart");
+
+  if (!cardsBox || !subjectChart || !dailyChart || !statusChart) {
+    console.warn("Study analytics containers not found.");
+    return;
+  }
+
+  if (!plans.length) {
+    cardsBox.innerHTML = `
+      <div class="box">
+        <h2>No Study Data Yet</h2>
+        <p>Add study plans first to see analytics.</p>
+      </div>
+    `;
+    subjectChart.innerHTML = "";
+    dailyChart.innerHTML = "";
+    statusChart.innerHTML = "";
+    return;
+  }
+
+  const totalPlans = plans.length;
+  const completedPlans = plans.filter(p => p.status === "done").length;
+  const inProgressPlans = plans.filter(p => p.status === "in_progress").length;
+  const notStartedPlans = plans.filter(p => p.status === "not_started").length;
+
+  const totalMinutes = plans.reduce((sum, plan) => {
+    return sum + calculatePlanMinutes(plan);
+  }, 0);
+
+  const completionRate = totalPlans > 0
+    ? Math.round((completedPlans / totalPlans) * 100)
+    : 0;
+
+  const subjects = {};
+  const dailyMinutes = {};
+
+  plans.forEach(plan => {
+    const subject = plan.subject || "Unknown";
+    const date = plan.date || "No date";
+    const minutes = calculatePlanMinutes(plan);
+
+    subjects[subject] = (subjects[subject] || 0) + minutes;
+    dailyMinutes[date] = (dailyMinutes[date] || 0) + minutes;
+  });
+
+  const uniqueSubjects = Object.keys(subjects).length;
+
+  cardsBox.innerHTML = `
+    <div class="box analytics-card-box">
+      <h2>Total Plans</h2>
+      <p>${safeText(totalPlans)}</p>
+      <span>All saved study tasks</span>
+    </div>
+
+    <div class="box analytics-card-box">
+      <h2>Completed Tasks</h2>
+      <p>${safeText(completedPlans)}</p>
+      <span>Finished study tasks</span>
+    </div>
+
+    <div class="box analytics-card-box">
+      <h2>Completion Rate</h2>
+      <p>${safeText(completionRate)}%</p>
+      <span>Task completion percentage</span>
+    </div>
+
+    <div class="box analytics-card-box">
+      <h2>Total Study Time</h2>
+      <p>${safeText(totalMinutes)} min</p>
+      <span>${safeText(Math.round((totalMinutes / 60) * 10) / 10)} hours</span>
+    </div>
+
+    <div class="box analytics-card-box">
+      <h2>Subjects</h2>
+      <p>${safeText(uniqueSubjects)}</p>
+      <span>Different subjects studied</span>
+    </div>
+
+    <div class="box analytics-card-box">
+      <h2>In Progress</h2>
+      <p>${safeText(inProgressPlans)}</p>
+      <span>Tasks currently active</span>
+    </div>
+  `;
+
+  subjectChart.innerHTML = Object.entries(subjects).map(([subject, minutes]) => `
+    <div class="analytics-row">
+      <strong>${safeText(subject)}</strong>
+      <span>${safeText(minutes)} min</span>
+    </div>
+  `).join("");
+
+  dailyChart.innerHTML = Object.entries(dailyMinutes)
+    .sort(([a], [b]) => String(a).localeCompare(String(b)))
+    .map(([date, minutes]) => `
+      <div class="analytics-row">
+        <strong>${safeText(date)}</strong>
+        <span>${safeText(minutes)} min</span>
+      </div>
+    `).join("");
+
+  statusChart.innerHTML = `
+    <div class="analytics-row">
+      <strong>Completed</strong>
+      <span>${safeText(completedPlans)}</span>
+    </div>
+    <div class="analytics-row">
+      <strong>In Progress</strong>
+      <span>${safeText(inProgressPlans)}</span>
+    </div>
+    <div class="analytics-row">
+      <strong>Not Started</strong>
+      <span>${safeText(notStartedPlans)}</span>
+    </div>
+  `;
+}
 
 window.goDashboard = goDashboard;
 window.logout = logout;
@@ -3040,6 +3204,7 @@ window.clearSelectedTeacher = clearSelectedTeacher;
 window.renderSelectedTeacherInfo = renderSelectedTeacherInfo;
 window.renderStudyMethodExplanation = renderStudyMethodExplanation;
 window.generateStudySystemSchedule = generateStudySystemSchedule;
+window.renderStudyAnalytics = renderStudyAnalytics;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");
