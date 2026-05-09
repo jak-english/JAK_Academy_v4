@@ -3050,6 +3050,78 @@ function renderMiniBar(label, value, maxValue, color) {
 
 
 
+function renderAnalyticsBar(label, value, maxValue, color) {
+  const percent = maxValue > 0 ? Math.round((value / maxValue) * 100) : 0;
+
+  return `
+    <div class="analytics-row">
+      <div class="analytics-row-top">
+        <strong>${safeText(label)}</strong>
+        <span>${safeText(value)}</span>
+      </div>
+      <div class="analytics-progress">
+        <div class="analytics-progress-fill" style="width:${percent}%; background:${safeText(color)}"></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAnalyticsBar(label, value, maxValue, color) {
+  const percent = maxValue > 0 ? Math.round((value / maxValue) * 100) : 0;
+
+  return `
+    <div class="analytics-row">
+      <div class="analytics-row-top">
+        <strong>${safeText(label)}</strong>
+        <span>${safeText(value)}</span>
+      </div>
+      <div class="analytics-progress">
+        <div class="analytics-progress-fill" style="width:${percent}%; background:${safeText(color)}"></div>
+      </div>
+    </div>
+  `;
+}
+function getPlannerData() {
+  try {
+    return JSON.parse(localStorage.getItem("jakPlansV5")) || [];
+  } catch (error) {
+    console.error("Planner data parse error:", error);
+    return [];
+  }
+}
+
+function timeToMinutes(time) {
+  if (!time || !String(time).includes(":")) return 0;
+
+  const [hours, minutes] = String(time).split(":").map(Number);
+  return (hours * 60) + minutes;
+}
+
+function calculatePlanMinutes(plan) {
+  const start = timeToMinutes(plan.start);
+  const end = timeToMinutes(plan.end);
+
+  if (!start || !end || end <= start) return 0;
+
+  return end - start;
+}
+
+function renderAnalyticsBar(label, value, maxValue, color) {
+  const percent = maxValue > 0 ? Math.round((value / maxValue) * 100) : 0;
+
+  return `
+    <div class="analytics-row">
+      <div class="analytics-row-top">
+        <strong>${safeText(label)}</strong>
+        <span>${safeText(value)}</span>
+      </div>
+      <div class="analytics-progress">
+        <div class="analytics-progress-fill" style="width:${percent}%; background:${safeText(color)}"></div>
+      </div>
+    </div>
+  `;
+}
+
 function renderStudyAnalytics() {
   const plans = getPlannerData();
 
@@ -3057,6 +3129,7 @@ function renderStudyAnalytics() {
   const subjectChart = document.getElementById("subjectDistributionChart");
   const dailyChart = document.getElementById("dailyStudyChart");
   const statusChart = document.getElementById("taskStatusChart");
+  const recommendationsBox = document.getElementById("studyRecommendations");
 
   if (!cardsBox || !subjectChart || !dailyChart || !statusChart) {
     console.warn("Study analytics containers not found.");
@@ -3073,6 +3146,7 @@ function renderStudyAnalytics() {
     subjectChart.innerHTML = "";
     dailyChart.innerHTML = "";
     statusChart.innerHTML = "";
+    if (recommendationsBox) recommendationsBox.innerHTML = "";
     return;
   }
 
@@ -3141,36 +3215,77 @@ function renderStudyAnalytics() {
     </div>
   `;
 
-  subjectChart.innerHTML = Object.entries(subjects).map(([subject, minutes]) => `
-    <div class="analytics-row">
-      <strong>${safeText(subject)}</strong>
-      <span>${safeText(minutes)} min</span>
-    </div>
-  `).join("");
+  const maxSubjectMinutes = Math.max(...Object.values(subjects), 1);
+
+  subjectChart.innerHTML = Object.entries(subjects)
+    .map(([subject, minutes]) => {
+      const color = plans.find(p => p.subject === subject)?.color || "#22d3ee";
+      return renderAnalyticsBar(`${subject} (${minutes} min)`, minutes, maxSubjectMinutes, color);
+    })
+    .join("");
+
+  const maxDailyMinutes = Math.max(...Object.values(dailyMinutes), 1);
 
   dailyChart.innerHTML = Object.entries(dailyMinutes)
     .sort(([a], [b]) => String(a).localeCompare(String(b)))
-    .map(([date, minutes]) => `
-      <div class="analytics-row">
-        <strong>${safeText(date)}</strong>
-        <span>${safeText(minutes)} min</span>
-      </div>
-    `).join("");
+    .map(([date, minutes]) => {
+      return renderAnalyticsBar(`${date} (${minutes} min)`, minutes, maxDailyMinutes, "#fbbf24");
+    })
+    .join("");
+
+  const statusCounts = {
+    Completed: completedPlans,
+    "In Progress": inProgressPlans,
+    "Not Started": notStartedPlans
+  };
+
+  const maxStatus = Math.max(...Object.values(statusCounts), 1);
 
   statusChart.innerHTML = `
-    <div class="analytics-row">
-      <strong>Completed</strong>
-      <span>${safeText(completedPlans)}</span>
-    </div>
-    <div class="analytics-row">
-      <strong>In Progress</strong>
-      <span>${safeText(inProgressPlans)}</span>
-    </div>
-    <div class="analytics-row">
-      <strong>Not Started</strong>
-      <span>${safeText(notStartedPlans)}</span>
-    </div>
+    ${renderAnalyticsBar("Completed", completedPlans, maxStatus, "#16a34a")}
+    ${renderAnalyticsBar("In Progress", inProgressPlans, maxStatus, "#fbbf24")}
+    ${renderAnalyticsBar("Not Started", notStartedPlans, maxStatus, "#f97316")}
   `;
+
+  if (recommendationsBox) {
+    const sortedSubjects = Object.entries(subjects).sort((a, b) => b[1] - a[1]);
+    const mostStudied = sortedSubjects[0]?.[0] || "No subject";
+    const leastStudied = sortedSubjects[sortedSubjects.length - 1]?.[0] || "No subject";
+
+    let recommendation = "";
+
+    if (completionRate === 0) {
+      recommendation = "Your study time is planned, but no tasks are completed yet. Start by completing one easy task today to build momentum.";
+    } else if (completionRate < 50) {
+      recommendation = "Your completion rate is still low. Reduce the number of tasks and focus on finishing fewer tasks well.";
+    } else if (completionRate < 80) {
+      recommendation = "Good progress. Try to increase consistency by completing one task every day.";
+    } else {
+      recommendation = "Excellent progress. You are studying consistently. Move to advanced practice and timed exams.";
+    }
+
+    recommendationsBox.innerHTML = `
+      <div class="recommendation-card">
+        <h3>Most Studied Subject</h3>
+        <p>${safeText(mostStudied)} is your most studied subject so far.</p>
+      </div>
+
+      <div class="recommendation-card">
+        <h3>Least Studied Subject</h3>
+        <p>${safeText(leastStudied)} needs more attention in your next plan.</p>
+      </div>
+
+      <div class="recommendation-card">
+        <h3>Smart Advice</h3>
+        <p>${safeText(recommendation)}</p>
+      </div>
+
+      <div class="recommendation-card">
+        <h3>Suggested Next Step</h3>
+        <p>Complete at least one task today, then refresh your analytics to see your progress change.</p>
+      </div>
+    `;
+  }
 }
 
 window.goDashboard = goDashboard;

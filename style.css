@@ -1546,3 +1546,62 @@ textarea{min-height:95px;resize:vertical}
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   Premium Study Analytics Visuals
+   ========================================================= */
+
+.study-recommendations-panel {
+  margin-top: 18px;
+  border-left: 6px solid var(--violet);
+}
+
+.analytics-row {
+  margin: 14px 0;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.analytics-row-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.analytics-progress {
+  height: 13px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  overflow: hidden;
+}
+
+.analytics-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  min-width: 8px;
+  background: linear-gradient(90deg, var(--cyan), var(--blue));
+}
+
+.recommendation-card {
+  margin: 12px 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.11);
+  border-left: 5px solid var(--gold);
+}
+
+.recommendation-card h3 {
+  margin: 0 0 8px;
+  color: var(--gold);
+}
+
+.recommendation-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
