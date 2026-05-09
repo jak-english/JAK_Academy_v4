@@ -672,7 +672,13 @@ async function loadStudentExams() {
     });
   }
 
-  // 3) Filter by grade/class
+  // 3) Hide published exams with zero real questions
+  exams = exams.filter(exam => {
+    const realQuestionCount = questionCountMap[exam.id] || 0;
+    return realQuestionCount > 0;
+  });
+
+  // 4) Filter by grade/class
   const filterValue = filterInput?.value.trim().toLowerCase() || "";
 
   if (filterValue) {
@@ -684,13 +690,13 @@ async function loadStudentExams() {
 
   if (status) {
     status.textContent = filterValue
-      ? `Showing exams for: ${filterInput.value.trim()}`
-      : "Showing all exams";
+      ? `Showing ready exams for: ${filterInput.value.trim()}`
+      : "Showing ready published exams only";
   }
 
-  list.innerHTML = exams.length ? "" : "No exams found";
+  list.innerHTML = exams.length ? "" : "No ready exams found";
 
-  // 4) Render student exam cards
+  // 5) Render student exam cards
   exams.forEach(exam => {
     const box = document.createElement("div");
     box.className = "box";
@@ -705,23 +711,12 @@ async function loadStudentExams() {
 
       <p>
         <strong>Status:</strong>
-        ${
-          exam.status === "published"
-            ? '<span class="badge published">🟢 Published</span>'
-            : '<span class="badge draft">🟡 Draft</span>'
-        }
+        <span class="badge published">🟢 Published</span>
       </p>
 
       <p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
 
-      <p>
-        <strong>Questions:</strong>
-        ${
-          realQuestionCount > 0
-            ? safeText(realQuestionCount)
-            : '<span class="badge draft">⚠️ No questions added yet</span>'
-        }
-      </p>
+      <p><strong>Questions:</strong> ${safeText(realQuestionCount)}</p>
 
       <p><strong>Time:</strong> ⏱ ${safeText(exam.time_limit || 10)} min</p>
     `;
