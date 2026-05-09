@@ -1324,3 +1324,73 @@ textarea{min-height:95px;resize:vertical}
   background: linear-gradient(135deg, #fbbf24, #f97316) !important;
   color: #111827 !important;
 }
+
+/* =========================================================
+   Teachers / Choose Teacher Modern Layout
+   ========================================================= */
+
+.teachers-modern {
+  overflow: hidden;
+}
+
+.teachers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.teacher-card {
+  min-height: 320px;
+  position: relative;
+  overflow: hidden;
+  border-left: 6px solid var(--cyan);
+}
+
+.teacher-card:nth-child(2) {
+  border-left-color: var(--violet);
+}
+
+.teacher-card:nth-child(3) {
+  border-left-color: var(--gold);
+}
+
+.teacher-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--cyan), var(--blue), var(--violet));
+  color: white;
+  font-weight: 950;
+  font-size: 20px;
+  box-shadow: 0 18px 35px rgba(34, 211, 238, 0.18);
+  margin-bottom: 16px;
+}
+
+.teacher-card .panel-number {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+}
+
+.teacher-card h2 {
+  margin-bottom: 10px;
+}
+
+.teacher-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.teacher-card button {
+  margin-top: 12px;
+  width: 100%;
+}
+
+@media (max-width: 1050px) {
+  .teachers-grid {
+    grid-template-columns: 1fr;
+  }
+}

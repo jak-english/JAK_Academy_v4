@@ -2370,6 +2370,15 @@ function clearTeacherExamFilter() {
 
   loadTeacherExams();
 }
+function chooseTeacher(teacherName, subject) {
+  localStorage.setItem("selectedTeacherName", teacherName);
+  localStorage.setItem("selectedTeacherSubject", subject);
+
+  alert("Selected teacher: " + teacherName + " / " + subject);
+
+  showPage("studentExams");
+  loadStudentExams();
+}
 
 window.goDashboard = goDashboard;
 window.logout = logout;
@@ -2396,6 +2405,7 @@ window.toggleReviewLater = toggleReviewLater;
 window.previousQuestion = previousQuestion;
 window.nextQuestion = nextQuestion;
 window.submitExam = submitExam;
+window.chooseTeacher = chooseTeacher;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");

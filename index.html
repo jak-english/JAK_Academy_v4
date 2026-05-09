@@ -15,6 +15,7 @@
   </div>
   <nav>
   <button onclick="showPage('home')">Home</button>
+  <button onclick="showPage('teachersPage')">Teachers</button>
   <button onclick="goDashboard()">Dashboard</button>
   <button onclick="window.location.href='login.html'">Login / Sign in</button>
   <button onclick="showPage('studentExams')">Exams</button>
@@ -477,6 +478,54 @@
           Refresh Requests
         </button>
         <div id="premiumRequestsList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="teachersPage" class="page">
+  <div class="card teachers-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Choose Teacher</span>
+        <h1>Choose Your Teacher 👨‍🏫</h1>
+        <p>Select your teacher or subject, then open the available exams.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="showPage('studentDashboard')">Back to Dashboard</button>
+        <button class="gold" onclick="showPage('studentExams'); loadStudentExams()">All Exams</button>
+      </div>
+    </div>
+
+    <div class="teachers-grid">
+      <div class="box teacher-card">
+        <div class="teacher-avatar">JAK</div>
+        <span class="panel-number">01</span>
+        <h2>Jalal Abu Khadra</h2>
+        <p><strong>Subject:</strong> English</p>
+        <p><strong>Grades:</strong> Grade 9, Grade 10, Grade 11, Tawjihi</p>
+        <p>English exams, vocabulary, grammar, writing, and smart study tools.</p>
+        <button onclick="chooseTeacher('Jalal Abu Khadra', 'English')">View Exams</button>
+      </div>
+
+      <div class="box teacher-card">
+        <div class="teacher-avatar">MATH</div>
+        <span class="panel-number">02</span>
+        <h2>Math Teacher</h2>
+        <p><strong>Subject:</strong> Mathematics</p>
+        <p><strong>Grades:</strong> Grade 8, Grade 9, Grade 10, Tawjihi</p>
+        <p>Math exams, symbols, equations, and future placement tests.</p>
+        <button class="violet" onclick="chooseTeacher('Math Teacher', 'Math')">View Exams</button>
+      </div>
+
+      <div class="box teacher-card">
+        <div class="teacher-avatar">+</div>
+        <span class="panel-number">03</span>
+        <h2>More Teachers Soon</h2>
+        <p><strong>Subject:</strong> Coming soon</p>
+        <p><strong>Grades:</strong> Multiple grades</p>
+        <p>More teachers and subjects can be added later from the admin dashboard.</p>
+        <button class="secondary" onclick="alert('More teachers will be added soon.')">Coming Soon</button>
       </div>
     </div>
   </div>
