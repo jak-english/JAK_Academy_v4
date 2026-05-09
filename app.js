@@ -2379,6 +2379,26 @@ function chooseTeacher(teacherName, subject) {
   showPage("studentExams");
   loadStudentExams();
 }
+function chooseTeacherById(teacherId, teacherName, subject) {
+  localStorage.setItem("selectedTeacherId", teacherId);
+  localStorage.setItem("selectedTeacherName", teacherName);
+  localStorage.setItem("selectedTeacherSubject", subject);
+
+  alert("Selected teacher: " + teacherName + " / " + subject);
+
+  showPage("studentExams");
+  loadStudentExams();
+}
+function clearSelectedTeacher() {
+  localStorage.removeItem("selectedTeacherId");
+  localStorage.removeItem("selectedTeacherName");
+  localStorage.removeItem("selectedTeacherSubject");
+
+  alert("Teacher filter cleared.");
+
+  showPage("studentExams");
+  loadStudentExams();
+}
 
 window.goDashboard = goDashboard;
 window.logout = logout;
@@ -2405,7 +2425,9 @@ window.toggleReviewLater = toggleReviewLater;
 window.previousQuestion = previousQuestion;
 window.nextQuestion = nextQuestion;
 window.submitExam = submitExam;
-window.chooseTeacher = chooseTeacher;
+window.chooseTeacher = chooseTeacher; 
+window.chooseTeacherById = chooseTeacherById;
+window.clearSelectedTeacher = clearSelectedTeacher;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");
