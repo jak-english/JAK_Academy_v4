@@ -251,7 +251,7 @@ async function loadTeacherExams() {
 
   if (r.error) {
     list.innerHTML = "Error";
-    console.error(r.error);
+    console.error("Load teacher exams error:", r.error);
     return;
   }
 
@@ -286,16 +286,27 @@ async function loadTeacherExams() {
       <p>${safeText(exam.description || "")}</p>
 
       <p><strong>Type:</strong> ${safeText(exam.exam_type || "multiple_choice")}</p>
-<p>
-  <strong>Status:</strong>
-  ${
-    exam.status === "published"
-      ? '<span class="badge">🟢 Published</span>'
-      : '<span class="badge">🟡 Draft</span>'
-  }
-</p>
+
+      <p>
+        <strong>Status:</strong>
+        ${
+          exam.status === "published"
+            ? '<span class="badge published">🟢 Published</span>'
+            : '<span class="badge draft">🟡 Draft</span>'
+        }
+      </p>
+
       <p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
-      <p><strong>Questions:</strong> ${safeText(exam.question_count || 0)}</p>
+
+      <p>
+        <strong>Questions:</strong>
+        ${
+          Number(exam.question_count || 0) > 0
+            ? safeText(exam.question_count)
+            : '<span class="badge draft">⚠️ No questions added yet</span>'
+        }
+      </p>
+
       <p><strong>Duration:</strong> ⏱ ${safeText(exam.time_limit || 10)} min</p>
 
       <p><strong>Exam Code:</strong> ${safeText(examCode)}</p>
@@ -311,6 +322,7 @@ async function loadTeacherExams() {
     editBtn.textContent = "Edit Exam";
     editBtn.onclick = () => editExam(exam);
     d.appendChild(editBtn);
+
     const publishBtn = document.createElement("button");
     publishBtn.textContent = exam.status === "published" ? "Unpublish Exam" : "Publish Exam";
     publishBtn.onclick = () => toggleExamStatus(exam.id, exam.status || "draft");
@@ -639,10 +651,28 @@ async function loadStudentExams() {
       <h3>${safeText(exam.title)}</h3>
       <p>${safeText(exam.description || "")}</p>
 
-      <p><strong>Type:</strong> ${safeText(exam.exam_type || "multiple_choice")}</p>
-      <p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
-      <p><strong>Questions:</strong> ${safeText(exam.question_count || 0)}</p>
-      <p><strong>Time:</strong> ⏱ ${safeText(exam.time_limit || 10)} min</p>
+    <p><strong>Type:</strong> ${safeText(exam.exam_type || "multiple_choice")}</p>
+
+<p>
+  <strong>Status:</strong>
+  ${
+    exam.status === "published"
+      ? '<span class="badge published">🟢 Published</span>'
+      : '<span class="badge draft">🟡 Draft</span>'
+  }
+</p>
+
+<p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
+
+<p>
+  <strong>Questions:</strong>
+  ${
+    Number(exam.question_count || 0) > 0
+      ? safeText(exam.question_count)
+      : '<span class="badge draft">⚠️ No questions added yet</span>'
+  }
+</p>
+    <p><strong>Time:</strong> ⏱ ${safeText(exam.time_limit || 10)} min</p>
     `;
 
     const btn = document.createElement("button");

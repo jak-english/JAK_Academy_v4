@@ -1311,3 +1311,16 @@ textarea{min-height:95px;resize:vertical}
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   Exam Status Badges
+   ========================================================= */
+
+.badge.published {
+  background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+  color: #ffffff !important;
+}
+
+.badge.draft {
+  background: linear-gradient(135deg, #fbbf24, #f97316) !important;
+  color: #111827 !important;
+}
