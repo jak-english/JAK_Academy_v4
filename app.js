@@ -1690,6 +1690,14 @@ function openPlanner() {
   renderCalendar();
   updatePlannerStats();
   renderTodayTasks();
+
+  if (typeof renderStudyMethodExplanation === "function") {
+    renderStudyMethodExplanation();
+  }
+
+  if (typeof renderStudyAnalytics === "function") {
+    renderStudyAnalytics();
+  }
 }
 
 function getPlans() {
