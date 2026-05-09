@@ -1774,42 +1774,111 @@ function statusLabel(status) {
 }
 
 function loadPlans() {
-  if (!$('plansList')) return;
+  if (!$("plansList")) return;
+
   const plans = getPlans().sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
+
   plansList.innerHTML = plans.length ? "" : "No plans yet";
 
-  plans.forEach((p, i) => {
+  plans.forEach((p) => {
     const d = document.createElement("div");
     d.className = "box plan-card";
     d.style.borderLeft = `8px solid ${p.color || getSubjectColor(p.subject)}`;
+
     d.innerHTML = `
       <span class="badge">${safeText(p.type)}</span>
       <h3>${safeText(p.subject)}</h3>
+
       <p>📅 ${safeText(p.date)}</p>
       <p>⏰ ${safeText(p.start)} → ${safeText(p.end)}</p>
       <p>${safeText(p.task)}</p>
-      <p><b>Status:</b> ${statusLabel(p.status)}</p>
+
+      <p>
+        <b>Status:</b>
+        ${
+          p.status === "done"
+            ? '<span class="badge published">✅ Completed</span>'
+            : p.status === "in_progress"
+              ? '<span class="badge draft">🔄 In Progress</span>'
+              : '<span class="badge">🕒 Not Started</span>'
+        }
+      </p>
+
       <div class="actions">
-        <button class="success" onclick="updatePlanStatus(${i}, 'done')">Done</button>
-        <button class="gold" onclick="updatePlanStatus(${i}, 'in_progress')">In Progress</button>
-        <button class="danger" onclick="deletePlan(${i})">Delete</button>
+        <button class="success" onclick="updatePlanStatusById('${p.id}', 'done')">✅ Mark Done</button>
+        <button class="gold" onclick="updatePlanStatusById('${p.id}', 'in_progress')">🔄 In Progress</button>
+        <button class="secondary" onclick="updatePlanStatusById('${p.id}', 'not_started')">🕒 Not Started</button>
+        <button class="danger" onclick="deletePlanById('${p.id}')">Delete</button>
       </div>
     `;
+
     plansList.appendChild(d);
   });
 }
-
-function updatePlanStatus(index, status) {
+function updatePlanStatusById(planId, newStatus) {
   const plans = getPlans();
-  if (!plans[index]) return;
-  plans[index].status = status;
-  savePlans(plans);
+
+  const updatedPlans = plans.map(plan => {
+    if (plan.id === planId) {
+      return {
+        ...plan,
+        status: newStatus
+      };
+    }
+
+    return plan;
+  });
+
+  localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
+
   loadPlans();
   renderCalendar();
   updatePlannerStats();
   renderTodayTasks();
+
+  if (typeof renderStudyAnalytics === "function") {
+    renderStudyAnalytics();
+  }
 }
 
+function deletePlanById(planId) {
+  if (!confirm("Delete this study plan?")) return;
+
+  const plans = getPlans();
+  const updatedPlans = plans.filter(plan => plan.id !== planId);
+
+  localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
+
+  loadPlans();
+  renderCalendar();
+  updatePlannerStats();
+  renderTodayTasks();
+
+  if (typeof renderStudyAnalytics === "function") {
+    renderStudyAnalytics();
+  }
+}
+function updatePlanStatus(index, status) {
+  const plans = getPlans();
+
+  if (!plans[index]) {
+    alert("Plan not found.");
+    return;
+  }
+
+  plans[index].status = status;
+
+  savePlans(plans);
+
+  loadPlans();
+  renderCalendar();
+  updatePlannerStats();
+  renderTodayTasks();
+
+  if (typeof renderStudyAnalytics === "function") {
+    renderStudyAnalytics();
+  }
+}
 function deletePlan(i) {
   const plans = getPlans();
   plans.splice(i, 1);
