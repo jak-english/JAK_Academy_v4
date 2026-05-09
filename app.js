@@ -2781,18 +2781,25 @@ function generateStudySystemSchedule() {
 
   if (!methodSelect || !output) return;
 
-  const method = studyMethods[methodSelect.value];
+  const methodKey = methodSelect.value;
+  const method = studyMethods[methodKey];
+
   const subject = subjectInput?.value.trim() || "Study Subject";
-  const days = daysInput?.value.trim() || "Available days";
+  const daysText = daysInput?.value.trim() || "Sunday, Monday, Tuesday";
   const start = startInput?.value || "17:00";
   const sessionMinutes = Number(sessionInput?.value || 25);
   const breakMinutes = Number(breakInput?.value || 5);
   const sessions = Number(sessionsInput?.value || 4);
   const examDate = examDateInput?.value || "";
 
+  const days = daysText
+    .split(",")
+    .map(day => day.trim())
+    .filter(Boolean);
+
   let scheduleHtml = "";
 
-  if (methodSelect.value === "pomodoro") {
+  if (methodKey === "pomodoro") {
     let currentTime = start;
 
     for (let i = 1; i <= sessions; i++) {
@@ -2801,7 +2808,7 @@ function generateStudySystemSchedule() {
 
       scheduleHtml += `
         <div class="mini-plan">
-          <strong>Session ${i}</strong><br>
+          <strong>Pomodoro Session ${i}</strong><br>
           ${safeText(currentTime)} - ${safeText(studyEnd)}: ${safeText(subject)} Focus Study<br>
           ${safeText(studyEnd)} - ${safeText(breakEnd)}: Short Break
         </div>
@@ -2809,36 +2816,177 @@ function generateStudySystemSchedule() {
 
       currentTime = breakEnd;
     }
-  } else if (methodSelect.value === "spaced") {
-    const reviewSteps = ["Today", "After 1 day", "After 3 days", "After 7 days", "Before exam"];
+  }
+
+  else if (methodKey === "spaced") {
+    const reviewSteps = [
+      "Today: First learning session",
+      "After 1 day: Quick review",
+      "After 3 days: Practice questions",
+      "After 7 days: Full review",
+      "Before exam: Final revision"
+    ];
 
     scheduleHtml = reviewSteps.map((step, index) => `
       <div class="mini-plan">
         <strong>Review ${index + 1}</strong><br>
-        ${safeText(step)}: Review ${safeText(subject)} using active questions.
+        ${safeText(step)}<br>
+        Topic: ${safeText(subject)}
       </div>
     `).join("");
-  } else if (methodSelect.value === "deepWork") {
-    const end = addMinutesToTime(start, Math.max(sessionMinutes, 60));
+  }
+
+  else if (methodKey === "activeRecall") {
+    for (let i = 1; i <= sessions; i++) {
+      scheduleHtml += `
+        <div class="mini-plan">
+          <strong>Active Recall Round ${i}</strong><br>
+          Study ${safeText(subject)} briefly, close the book, then answer questions from memory.<br>
+          Suggested time: ${safeText(sessionMinutes)} minutes.
+        </div>
+      `;
+    }
+  }
+
+  else if (methodKey === "timeBlocking") {
+    let currentTime = start;
+
+    const blocks = days.length ? days : ["Day 1", "Day 2", "Day 3"];
+
+    blocks.forEach((day, index) => {
+      const end = addMinutesToTime(currentTime, sessionMinutes);
+
+      scheduleHtml += `
+        <div class="mini-plan">
+          <strong>${safeText(day)} - Block ${index + 1}</strong><br>
+          ${safeText(currentTime)} - ${safeText(end)}: ${safeText(subject)}<br>
+          One clear task only. No multitasking.
+        </div>
+      `;
+
+      currentTime = addMinutesToTime(end, breakMinutes);
+    });
+  }
+
+  else if (methodKey === "deepWork") {
+    const deepMinutes = Math.max(sessionMinutes, 60);
+    const end = addMinutesToTime(start, deepMinutes);
+
     scheduleHtml = `
       <div class="mini-plan">
         <strong>Deep Work Block</strong><br>
-        ${safeText(start)} - ${safeText(end)}: Focus deeply on ${safeText(subject)} without distractions.
+        ${safeText(start)} - ${safeText(end)}: Deep focus on ${safeText(subject)}<br>
+        Rule: phone away, one task, no distractions.
+      </div>
+
+      <div class="mini-plan">
+        <strong>Reflection</strong><br>
+        After the session, write what you finished and what was difficult.
       </div>
     `;
-  } else if (methodSelect.value === "examCountdown") {
+  }
+
+  else if (methodKey === "weeklyPlan") {
+    const weeklyDays = days.length ? days : ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday"];
+
+    scheduleHtml = weeklyDays.map((day, index) => `
+      <div class="mini-plan">
+        <strong>${safeText(day)}</strong><br>
+        ${safeText(subject)} - Session ${index + 1}<br>
+        Focus: lesson review + practice questions.
+      </div>
+    `).join("");
+  }
+
+  else if (methodKey === "examCountdown") {
     scheduleHtml = `
       <div class="mini-plan exam">
         <strong>Exam Countdown Plan</strong><br>
         Exam Date: ${safeText(examDate || "Not selected")}<br>
-        Start with weak topics, solve timed questions, and review mistakes daily.
+        Step 1: List weak topics.<br>
+        Step 2: Study the most important topic first.<br>
+        Step 3: Solve timed questions.<br>
+        Step 4: Review your mistakes before the exam.
       </div>
     `;
-  } else {
+  }
+
+  else if (methodKey === "feynman") {
+    scheduleHtml = `
+      <div class="mini-plan">
+        <strong>Feynman Step 1</strong><br>
+        Choose ${safeText(subject)} and explain it in very simple words.
+      </div>
+
+      <div class="mini-plan">
+        <strong>Feynman Step 2</strong><br>
+        Find the part you cannot explain clearly.
+      </div>
+
+      <div class="mini-plan">
+        <strong>Feynman Step 3</strong><br>
+        Restudy that weak part, then explain it again.
+      </div>
+    `;
+  }
+
+  else if (methodKey === "cornell") {
+    scheduleHtml = `
+      <div class="mini-plan">
+        <strong>Cornell Notes Layout</strong><br>
+        Notes area: write key ideas from ${safeText(subject)}.<br>
+        Side area: write questions and keywords.<br>
+        Bottom area: write a short summary.
+      </div>
+    `;
+  }
+
+  else if (methodKey === "leitner") {
+    scheduleHtml = `
+      <div class="mini-plan">
+        <strong>Leitner Flashcards</strong><br>
+        Create cards for ${safeText(subject)}.<br>
+        Correct cards move forward. Wrong cards stay for daily review.
+      </div>
+
+      <div class="mini-plan">
+        <strong>Review System</strong><br>
+        Box 1: daily review<br>
+        Box 2: every 2–3 days<br>
+        Box 3: weekly review
+      </div>
+    `;
+  }
+
+  else if (methodKey === "mistakeNotebook") {
+    scheduleHtml = `
+      <div class="mini-plan">
+        <strong>Mistake Notebook</strong><br>
+        Write your wrong answer, the correct answer, and why the mistake happened.
+      </div>
+
+      <div class="mini-plan">
+        <strong>Weekly Review</strong><br>
+        Review all repeated mistakes before solving new questions.
+      </div>
+    `;
+  }
+
+  else if (methodKey === "mindMap") {
+    scheduleHtml = `
+      <div class="mini-plan">
+        <strong>Mind Map Plan</strong><br>
+        Put ${safeText(subject)} in the center.<br>
+        Add branches for rules, examples, keywords, and common mistakes.
+      </div>
+    `;
+  }
+
+  else {
     scheduleHtml = `
       <div class="mini-plan">
         <strong>${safeText(method?.title || "Study Plan")}</strong><br>
-        Days: ${safeText(days)}<br>
+        Days: ${safeText(daysText)}<br>
         Start: ${safeText(start)}<br>
         Subject: ${safeText(subject)}<br>
         Suggested: ${safeText(sessions)} focused sessions with realistic breaks.
@@ -2851,7 +2999,7 @@ function generateStudySystemSchedule() {
       <span class="badge">Generated Study Schedule</span>
       <h2>${safeText(method?.title || "Study System")}</h2>
       <p><strong>Subject:</strong> ${safeText(subject)}</p>
-      <p><strong>Available Days:</strong> ${safeText(days)}</p>
+      <p><strong>Available Days:</strong> ${safeText(daysText)}</p>
       ${scheduleHtml}
       <p class="msg">Tip: Start with a realistic plan. A small plan you follow is better than a perfect plan you ignore.</p>
     </div>
@@ -2859,6 +3007,7 @@ function generateStudySystemSchedule() {
 
   renderStudyMethodExplanation();
 }
+
 
 window.goDashboard = goDashboard;
 window.logout = logout;
