@@ -635,6 +635,8 @@ async function loadStudentExams() {
 
   list.innerHTML = "Loading exams...";
   if (status) status.textContent = "";
+ 
+  renderSelectedTeacherInfo(); 
 
   // 1) Load only published exams
   const r = await client
@@ -729,7 +731,7 @@ async function loadStudentExams() {
     box.appendChild(btn);
     list.appendChild(box);
   });
-}ل
+} 
 function clearStudentExamFilter() {
   const input = document.getElementById("studentExamGradeFilter");
   const status = document.getElementById("studentExamFilterStatus");
@@ -2399,6 +2401,30 @@ function clearSelectedTeacher() {
   showPage("studentExams");
   loadStudentExams();
 }
+function renderSelectedTeacherInfo() {
+  const box = document.getElementById("selectedTeacherInfo");
+  if (!box) return;
+
+  const teacherName = localStorage.getItem("selectedTeacherName");
+  const subject = localStorage.getItem("selectedTeacherSubject");
+
+  if (!teacherName) {
+    box.style.display = "none";
+    box.innerHTML = "";
+    return;
+  }
+
+  box.style.display = "block";
+  box.innerHTML = `
+    <div class="selected-teacher-row">
+      <div>
+        <strong>Showing exams for:</strong>
+        <span class="badge published">${safeText(teacherName)} / ${safeText(subject || "Subject")}</span>
+      </div>
+      <button class="secondary" onclick="clearSelectedTeacher()">Show All Teachers</button>
+    </div>
+  `;
+}
 
 window.goDashboard = goDashboard;
 window.logout = logout;
@@ -2428,6 +2454,7 @@ window.submitExam = submitExam;
 window.chooseTeacher = chooseTeacher; 
 window.chooseTeacherById = chooseTeacherById;
 window.clearSelectedTeacher = clearSelectedTeacher;
+window.renderSelectedTeacherInfo = renderSelectedTeacherInfo;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");
