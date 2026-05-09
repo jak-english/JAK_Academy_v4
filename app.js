@@ -2426,6 +2426,440 @@ function renderSelectedTeacherInfo() {
   `;
 }
 
+const studyMethods = {
+  pomodoro: {
+    title: "Pomodoro Technique",
+    arTitle: "تقنية بومودورو",
+    bestFor: "Students who lose focus quickly or feel overwhelmed by long study sessions.",
+    arBestFor: "مناسبة للطلاب الذين يفقدون التركيز بسرعة أو يشعرون أن الدراسة الطويلة متعبة.",
+    explanation:
+      "Pomodoro is a study method based on short focused sessions followed by short breaks. The common structure is 25 minutes of study and 5 minutes of rest.",
+    arExplanation:
+      "البومودورو هي طريقة دراسة تعتمد على جلسات تركيز قصيرة تتبعها استراحات قصيرة. الشكل المشهور هو 25 دقيقة دراسة و5 دقائق راحة.",
+    steps: [
+      "Choose one clear task.",
+      "Study for 25 minutes without distractions.",
+      "Take a 5-minute break.",
+      "Repeat 4 times.",
+      "Take a longer break after 4 sessions."
+    ],
+    mistakes: [
+      "Studying without a clear task.",
+      "Using the phone during the session.",
+      "Skipping breaks.",
+      "Making sessions too long at the beginning."
+    ],
+    analytics: "Track Pomodoro sessions per day, total focus minutes, and completion rate."
+  },
+
+  spaced: {
+    title: "Spaced Repetition",
+    arTitle: "المراجعة المتباعدة",
+    bestFor: "Vocabulary, grammar rules, formulas, definitions, and long-term memory.",
+    arBestFor: "مناسبة للمفردات والقواعد والقوانين والتعاريف والحفظ طويل المدى.",
+    explanation:
+      "Spaced repetition means reviewing information several times with increasing time gaps. Instead of studying once, you review after 1 day, 3 days, 7 days, and so on.",
+    arExplanation:
+      "المراجعة المتباعدة تعني مراجعة المعلومة أكثر من مرة بفواصل زمنية متزايدة: بعد يوم، بعد 3 أيام، بعد أسبوع، وهكذا.",
+    steps: [
+      "Study the lesson today.",
+      "Review it tomorrow.",
+      "Review it again after 3 days.",
+      "Review it after 7 days.",
+      "Review it before the exam."
+    ],
+    mistakes: [
+      "Reviewing only the night before the exam.",
+      "Repeating easy topics and ignoring weak ones.",
+      "Not writing mistakes down."
+    ],
+    analytics: "Track review dates, repeated topics, and memory improvement."
+  },
+
+  activeRecall: {
+    title: "Active Recall",
+    arTitle: "الاسترجاع النشط",
+    bestFor: "Students who read a lot but forget quickly.",
+    arBestFor: "مناسب للطلاب الذين يقرأون كثيرًا لكن ينسون بسرعة.",
+    explanation:
+      "Active recall means closing the book and trying to remember the answer by yourself. It is stronger than passive reading.",
+    arExplanation:
+      "الاسترجاع النشط يعني أن تغلق الكتاب وتحاول تذكر الإجابة بنفسك. هذه الطريقة أقوى من القراءة فقط.",
+    steps: [
+      "Study a small part.",
+      "Close the book.",
+      "Ask yourself questions.",
+      "Write or say the answer.",
+      "Check and correct."
+    ],
+    mistakes: [
+      "Reading only without testing yourself.",
+      "Checking the answer too quickly.",
+      "Avoiding hard questions."
+    ],
+    analytics: "Track correct recall attempts, wrong answers, and weak topics."
+  },
+
+  timeBlocking: {
+    title: "Time Blocking",
+    arTitle: "تقسيم الوقت إلى بلوكات",
+    bestFor: "Busy students who need clear organization.",
+    arBestFor: "مناسب للطلاب المشغولين الذين يحتاجون تنظيمًا واضحًا.",
+    explanation:
+      "Time blocking means dividing your day into clear blocks. Each block has one subject or task.",
+    arExplanation:
+      "تقسيم الوقت يعني تقسيم اليوم إلى فترات واضحة، وكل فترة لها مادة أو مهمة محددة.",
+    steps: [
+      "Write your available hours.",
+      "Choose the most important subjects.",
+      "Assign each subject a time block.",
+      "Add breaks.",
+      "Review the schedule at night."
+    ],
+    mistakes: [
+      "Filling the whole day without breaks.",
+      "Ignoring prayer, meals, family, and rest.",
+      "Making an unrealistic schedule."
+    ],
+    analytics: "Track planned time vs actual study time."
+  },
+
+  deepWork: {
+    title: "Deep Work",
+    arTitle: "الدراسة العميقة",
+    bestFor: "Difficult topics, writing, problem solving, and exam preparation.",
+    arBestFor: "مناسبة للمواد الصعبة والكتابة وحل المسائل والتحضير الجاد للامتحان.",
+    explanation:
+      "Deep Work is a long focus session without distractions. It is usually 60–90 minutes.",
+    arExplanation:
+      "الدراسة العميقة هي جلسة تركيز طويلة بدون مشتتات، غالبًا من 60 إلى 90 دقيقة.",
+    steps: [
+      "Choose one difficult task.",
+      "Remove distractions.",
+      "Study for 60–90 minutes.",
+      "Take a real break.",
+      "Write what you achieved."
+    ],
+    mistakes: [
+      "Using the phone.",
+      "Trying to study many subjects in one deep session.",
+      "Starting with 90 minutes if you are not used to it."
+    ],
+    analytics: "Track deep work minutes and difficult tasks completed."
+  },
+
+  weeklyPlan: {
+    title: "Weekly Study Plan",
+    arTitle: "الخطة الأسبوعية",
+    bestFor: "Students who want balanced study across subjects.",
+    arBestFor: "مناسبة للطلاب الذين يريدون توزيع الدراسة على المواد بشكل متوازن.",
+    explanation:
+      "A weekly plan distributes subjects across the week so the student does not study randomly.",
+    arExplanation:
+      "الخطة الأسبوعية توزع المواد على أيام الأسبوع حتى لا يدرس الطالب بعشوائية.",
+    steps: [
+      "List your subjects.",
+      "Choose weak subjects first.",
+      "Distribute sessions across the week.",
+      "Add one review day.",
+      "Add one light day."
+    ],
+    mistakes: [
+      "Putting all hard subjects on one day.",
+      "Not reviewing at the end of the week.",
+      "Making the plan too full."
+    ],
+    analytics: "Track weekly completion percentage and subject balance."
+  },
+
+  examCountdown: {
+    title: "Before Exam Plan",
+    arTitle: "خطة ما قبل الامتحان",
+    bestFor: "Students who have an exam soon.",
+    arBestFor: "مناسبة للطلاب الذين لديهم امتحان قريب.",
+    explanation:
+      "An exam countdown plan organizes revision based on the number of days left before the exam.",
+    arExplanation:
+      "خطة ما قبل الامتحان تنظم المراجعة حسب عدد الأيام المتبقية قبل الامتحان.",
+    steps: [
+      "Write the exam date.",
+      "List all topics.",
+      "Start with weak topics.",
+      "Practice under time.",
+      "Review mistakes before the exam."
+    ],
+    mistakes: [
+      "Starting too late.",
+      "Only reading without solving questions.",
+      "Ignoring mistakes."
+    ],
+    analytics: "Track days left, topics completed, and exam readiness."
+  },
+
+  feynman: {
+    title: "Feynman Technique",
+    arTitle: "طريقة فاينمان",
+    bestFor: "Understanding difficult lessons deeply.",
+    arBestFor: "مناسبة لفهم الدروس الصعبة بعمق.",
+    explanation:
+      "The Feynman Technique means explaining the lesson in simple words as if you are teaching a younger student.",
+    arExplanation:
+      "طريقة فاينمان تعني أن تشرح الدرس بكلمات بسيطة كأنك تعلّمه لطالب أصغر منك.",
+    steps: [
+      "Choose a topic.",
+      "Explain it simply.",
+      "Find the parts you cannot explain.",
+      "Restudy those parts.",
+      "Explain again."
+    ],
+    mistakes: [
+      "Using complicated words.",
+      "Copying from the book.",
+      "Not checking weak points."
+    ],
+    analytics: "Track topics explained and weak explanation areas."
+  },
+
+  cornell: {
+    title: "Cornell Notes",
+    arTitle: "ملاحظات كورنيل",
+    bestFor: "Organizing lesson notes and summaries.",
+    arBestFor: "مناسبة لتنظيم الملاحظات والتلخيص.",
+    explanation:
+      "Cornell Notes divide the page into notes, keywords/questions, and summary.",
+    arExplanation:
+      "طريقة كورنيل تقسم الصفحة إلى ملاحظات، كلمات/أسئلة، وملخص.",
+    steps: [
+      "Write notes during study.",
+      "Add questions or keywords on the side.",
+      "Write a short summary.",
+      "Review using the questions.",
+      "Test yourself."
+    ],
+    mistakes: [
+      "Writing everything from the book.",
+      "Not making questions.",
+      "Skipping the summary."
+    ],
+    analytics: "Track completed summaries and review sessions."
+  },
+
+  leitner: {
+    title: "Leitner Flashcards",
+    arTitle: "بطاقات لايتنر",
+    bestFor: "Vocabulary, formulas, grammar rules, and definitions.",
+    arBestFor: "مناسبة للمفردات والقوانين والقواعد والتعاريف.",
+    explanation:
+      "Leitner is a flashcard system where easy cards move forward and difficult cards are reviewed more often.",
+    arExplanation:
+      "نظام لايتنر يستخدم بطاقات؛ البطاقة السهلة تنتقل للأمام، والصعبة تُراجع أكثر.",
+    steps: [
+      "Create flashcards.",
+      "Test yourself.",
+      "Move correct cards forward.",
+      "Keep wrong cards in frequent review.",
+      "Repeat regularly."
+    ],
+    mistakes: [
+      "Making too many cards at once.",
+      "Only reading cards without testing.",
+      "Ignoring wrong cards."
+    ],
+    analytics: "Track mastered cards, difficult cards, and review frequency."
+  },
+
+  mistakeNotebook: {
+    title: "Mistake Notebook",
+    arTitle: "دفتر الأخطاء",
+    bestFor: "Students who repeat the same mistakes.",
+    arBestFor: "مناسب للطلاب الذين يكررون نفس الأخطاء.",
+    explanation:
+      "A mistake notebook is a place where students write repeated mistakes, corrections, and the reason for the mistake.",
+    arExplanation:
+      "دفتر الأخطاء هو مكان يكتب فيه الطالب أخطاءه المتكررة، التصحيح، وسبب الخطأ.",
+    steps: [
+      "Write the wrong answer.",
+      "Write the correct answer.",
+      "Write why the mistake happened.",
+      "Review before exams.",
+      "Turn mistakes into practice questions."
+    ],
+    mistakes: [
+      "Writing mistakes without corrections.",
+      "Not reviewing the notebook.",
+      "Blaming luck instead of finding the reason."
+    ],
+    analytics: "Track repeated mistakes and improvement over time."
+  },
+
+  mindMap: {
+    title: "Mind Map Study",
+    arTitle: "الدراسة بالخرائط الذهنية",
+    bestFor: "Visual learners and big units with many ideas.",
+    arBestFor: "مناسبة للطلاب البصريين والوحدات الكبيرة كثيرة الأفكار.",
+    explanation:
+      "Mind maps organize ideas visually using branches, keywords, and connections.",
+    arExplanation:
+      "الخرائط الذهنية تنظم الأفكار بصريًا باستخدام الفروع والكلمات المفتاحية والروابط.",
+    steps: [
+      "Write the main topic in the center.",
+      "Add main branches.",
+      "Add keywords only.",
+      "Use colors or symbols.",
+      "Review by explaining the map."
+    ],
+    mistakes: [
+      "Writing long paragraphs.",
+      "Making the map messy.",
+      "Using too many colors without meaning."
+    ],
+    analytics: "Track maps created and topics reviewed."
+  }
+};
+
+function renderStudyMethodExplanation() {
+  const select = document.getElementById("studyMethodSelect");
+  const box = document.getElementById("studyMethodExplanation");
+
+  if (!select || !box) return;
+
+  const method = studyMethods[select.value];
+
+  if (!method) {
+    box.innerHTML = "";
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="box study-method-card">
+      <span class="badge">${safeText(method.title)}</span>
+      <h2>${safeText(method.title)} / ${safeText(method.arTitle)}</h2>
+
+      <h3>What is it? / ما هو؟</h3>
+      <p>${safeText(method.explanation)}</p>
+      <p>${safeText(method.arExplanation)}</p>
+
+      <h3>Best for / مناسب لـ</h3>
+      <p>${safeText(method.bestFor)}</p>
+      <p>${safeText(method.arBestFor)}</p>
+
+      <h3>Steps / الخطوات</h3>
+      <ul>
+        ${method.steps.map(step => `<li>${safeText(step)}</li>`).join("")}
+      </ul>
+
+      <h3>Mistakes to avoid / أخطاء يجب تجنبها</h3>
+      <ul>
+        ${method.mistakes.map(item => `<li>${safeText(item)}</li>`).join("")}
+      </ul>
+
+      <h3>Analytics / الإحصائيات</h3>
+      <p>${safeText(method.analytics)}</p>
+    </div>
+  `;
+}
+
+function addMinutesToTime(time, minutesToAdd) {
+  const [h, m] = String(time || "17:00").split(":").map(Number);
+  const date = new Date();
+  date.setHours(h || 17, m || 0, 0, 0);
+  date.setMinutes(date.getMinutes() + Number(minutesToAdd || 0));
+
+  return date.toTimeString().slice(0, 5);
+}
+
+function generateStudySystemSchedule() {
+  const methodSelect = document.getElementById("studyMethodSelect");
+  const subjectInput = document.getElementById("studySystemSubject");
+  const daysInput = document.getElementById("studySystemDays");
+  const startInput = document.getElementById("studySystemStart");
+  const sessionInput = document.getElementById("studySystemSession");
+  const breakInput = document.getElementById("studySystemBreak");
+  const sessionsInput = document.getElementById("studySystemSessions");
+  const examDateInput = document.getElementById("studySystemExamDate");
+  const output = document.getElementById("studySystemSchedule");
+
+  if (!methodSelect || !output) return;
+
+  const method = studyMethods[methodSelect.value];
+  const subject = subjectInput?.value.trim() || "Study Subject";
+  const days = daysInput?.value.trim() || "Available days";
+  const start = startInput?.value || "17:00";
+  const sessionMinutes = Number(sessionInput?.value || 25);
+  const breakMinutes = Number(breakInput?.value || 5);
+  const sessions = Number(sessionsInput?.value || 4);
+  const examDate = examDateInput?.value || "";
+
+  let scheduleHtml = "";
+
+  if (methodSelect.value === "pomodoro") {
+    let currentTime = start;
+
+    for (let i = 1; i <= sessions; i++) {
+      const studyEnd = addMinutesToTime(currentTime, sessionMinutes);
+      const breakEnd = addMinutesToTime(studyEnd, breakMinutes);
+
+      scheduleHtml += `
+        <div class="mini-plan">
+          <strong>Session ${i}</strong><br>
+          ${safeText(currentTime)} - ${safeText(studyEnd)}: ${safeText(subject)} Focus Study<br>
+          ${safeText(studyEnd)} - ${safeText(breakEnd)}: Short Break
+        </div>
+      `;
+
+      currentTime = breakEnd;
+    }
+  } else if (methodSelect.value === "spaced") {
+    const reviewSteps = ["Today", "After 1 day", "After 3 days", "After 7 days", "Before exam"];
+
+    scheduleHtml = reviewSteps.map((step, index) => `
+      <div class="mini-plan">
+        <strong>Review ${index + 1}</strong><br>
+        ${safeText(step)}: Review ${safeText(subject)} using active questions.
+      </div>
+    `).join("");
+  } else if (methodSelect.value === "deepWork") {
+    const end = addMinutesToTime(start, Math.max(sessionMinutes, 60));
+    scheduleHtml = `
+      <div class="mini-plan">
+        <strong>Deep Work Block</strong><br>
+        ${safeText(start)} - ${safeText(end)}: Focus deeply on ${safeText(subject)} without distractions.
+      </div>
+    `;
+  } else if (methodSelect.value === "examCountdown") {
+    scheduleHtml = `
+      <div class="mini-plan exam">
+        <strong>Exam Countdown Plan</strong><br>
+        Exam Date: ${safeText(examDate || "Not selected")}<br>
+        Start with weak topics, solve timed questions, and review mistakes daily.
+      </div>
+    `;
+  } else {
+    scheduleHtml = `
+      <div class="mini-plan">
+        <strong>${safeText(method?.title || "Study Plan")}</strong><br>
+        Days: ${safeText(days)}<br>
+        Start: ${safeText(start)}<br>
+        Subject: ${safeText(subject)}<br>
+        Suggested: ${safeText(sessions)} focused sessions with realistic breaks.
+      </div>
+    `;
+  }
+
+  output.innerHTML = `
+    <div class="box generated-study-plan">
+      <span class="badge">Generated Study Schedule</span>
+      <h2>${safeText(method?.title || "Study System")}</h2>
+      <p><strong>Subject:</strong> ${safeText(subject)}</p>
+      <p><strong>Available Days:</strong> ${safeText(days)}</p>
+      ${scheduleHtml}
+      <p class="msg">Tip: Start with a realistic plan. A small plan you follow is better than a perfect plan you ignore.</p>
+    </div>
+  `;
+
+  renderStudyMethodExplanation();
+}
+
 window.goDashboard = goDashboard;
 window.logout = logout;
 window.showPage = showPage;
@@ -2455,6 +2889,8 @@ window.chooseTeacher = chooseTeacher;
 window.chooseTeacherById = chooseTeacherById;
 window.clearSelectedTeacher = clearSelectedTeacher;
 window.renderSelectedTeacherInfo = renderSelectedTeacherInfo;
+window.renderStudyMethodExplanation = renderStudyMethodExplanation;
+window.generateStudySystemSchedule = generateStudySystemSchedule;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");

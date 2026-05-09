@@ -1431,3 +1431,50 @@ textarea{min-height:95px;resize:vertical}
     width: 100%;
   }
 }
+
+/* =========================================================
+   Smart Study Systems Planner
+   ========================================================= */
+
+.study-system-panel {
+  border-left: 6px solid var(--violet);
+  margin-bottom: 18px;
+}
+
+.study-method-explanation,
+.study-system-schedule {
+  margin-top: 16px;
+}
+
+.study-method-card {
+  border-left: 6px solid var(--cyan);
+}
+
+.study-method-card h3 {
+  margin-top: 18px;
+  color: var(--gold);
+}
+
+.study-method-card ul {
+  margin: 8px 0 0;
+  padding-left: 22px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.generated-study-plan {
+  border-left: 6px solid var(--green);
+}
+
+.generated-study-plan .mini-plan {
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(37, 99, 235, 0.75);
+  color: white;
+}
+
+.generated-study-plan .mini-plan.exam {
+  background: var(--gold);
+  color: #111827;
+}

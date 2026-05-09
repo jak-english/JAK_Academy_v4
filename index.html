@@ -536,6 +536,7 @@
       <div>
         <span class="badge">Student Exams</span>
         <h1>Available Exams</h1>
+        <div id="selectedTeacherInfo" class="box selected-teacher-info"></div>
         <p>Open a shared exam by code, filter exams by grade/class, or start any published exam.</p>
       </div>
 
@@ -1047,7 +1048,77 @@
     </div>
 
     <div id="plannerStats" class="grid three"></div>
+<div class="box study-system-panel">
+  <div class="panel-title">
+    <span class="panel-number">00</span>
+    <div>
+      <h2>Smart Study Systems 🌍</h2>
+      <p>Choose a global study method, understand it, then generate a professional study schedule.</p>
+    </div>
+  </div>
 
+  <div class="grid two">
+    <div>
+      <label>Choose Study System</label>
+<select id="studyMethodSelect" onchange="window.renderStudyMethodExplanation()">        <option value="pomodoro">Pomodoro Technique</option>
+        <option value="spaced">Spaced Repetition</option>
+        <option value="activeRecall">Active Recall</option>
+        <option value="timeBlocking">Time Blocking</option>
+        <option value="deepWork">Deep Work</option>
+        <option value="weeklyPlan">Weekly Study Plan</option>
+        <option value="examCountdown">Before Exam Plan</option>
+        <option value="feynman">Feynman Technique</option>
+        <option value="cornell">Cornell Notes</option>
+        <option value="leitner">Leitner Flashcards</option>
+        <option value="mistakeNotebook">Mistake Notebook</option>
+        <option value="mindMap">Mind Map Study</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Subject / Topic</label>
+      <input id="studySystemSubject" placeholder="English Grammar / Vocabulary / Math...">
+    </div>
+
+    <div>
+      <label>Available Days</label>
+      <input id="studySystemDays" placeholder="Sunday, Monday, Tuesday">
+    </div>
+
+    <div>
+      <label>Preferred Start Time</label>
+      <input id="studySystemStart" type="time" value="17:00">
+    </div>
+
+    <div>
+      <label>Session Length Minutes</label>
+      <input id="studySystemSession" type="number" value="25" min="10">
+    </div>
+
+    <div>
+      <label>Break Minutes</label>
+      <input id="studySystemBreak" type="number" value="5" min="0">
+    </div>
+
+    <div>
+      <label>Number of Sessions</label>
+      <input id="studySystemSessions" type="number" value="4" min="1">
+    </div>
+
+    <div>
+      <label>Exam Date Optional</label>
+      <input id="studySystemExamDate" type="date">
+    </div>
+  </div>
+
+<div class="actions">
+  <button class="violet" onclick="window.generateStudySystemSchedule()">Generate Study Schedule</button>
+  <button class="gold" onclick="window.renderStudyMethodExplanation()">Show Explanation</button>
+</div>
+
+  <div id="studyMethodExplanation" class="study-method-explanation"></div>
+  <div id="studySystemSchedule" class="study-system-schedule"></div>
+</div>
     <div class="planner-layout">
       <div class="box planner-panel smart-plan-panel">
         <div class="panel-title">
