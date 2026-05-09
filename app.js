@@ -243,6 +243,7 @@ async function loadTeacherExams() {
   const user = await getCurrentUser();
   if (!user) return;
 
+  // 1) Load teacher exams
   const r = await client
     .from("exams")
     .select("*")
@@ -255,9 +256,30 @@ async function loadTeacherExams() {
     return;
   }
 
-  const filterValue = filterInput?.value.trim().toLowerCase() || "";
-
   let rows = r.data || [];
+
+  // 2) Load real question counts from questions table
+  const examIds = rows.map(exam => exam.id).filter(Boolean);
+
+  let questionCountMap = {};
+
+  if (examIds.length > 0) {
+    const { data: questions, error: questionsError } = await client
+      .from("questions")
+      .select("id, exam_id")
+      .in("exam_id", examIds);
+
+    if (questionsError) {
+      console.warn("Load question counts error:", questionsError);
+    }
+
+    (questions || []).forEach(q => {
+      questionCountMap[q.exam_id] = (questionCountMap[q.exam_id] || 0) + 1;
+    });
+  }
+
+  // 3) Filter by grade/class if needed
+  const filterValue = filterInput?.value.trim().toLowerCase() || "";
 
   if (filterValue) {
     rows = rows.filter(exam => {
@@ -274,12 +296,15 @@ async function loadTeacherExams() {
 
   list.innerHTML = rows.length ? "" : "No exams found";
 
+  // 4) Render exam cards
   rows.forEach(exam => {
     const d = document.createElement("div");
     d.className = "box";
 
     const examCode = exam.id;
     const examLink = `${window.location.origin}${window.location.pathname}?exam=${exam.id}`;
+
+    const realQuestionCount = questionCountMap[exam.id] || 0;
 
     d.innerHTML = `
       <h3>${safeText(exam.title)}</h3>
@@ -301,8 +326,8 @@ async function loadTeacherExams() {
       <p>
         <strong>Questions:</strong>
         ${
-          Number(exam.question_count || 0) > 0
-            ? safeText(exam.question_count)
+          realQuestionCount > 0
+            ? safeText(realQuestionCount)
             : '<span class="badge draft">⚠️ No questions added yet</span>'
         }
       </p>
