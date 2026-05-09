@@ -2557,6 +2557,7 @@ async function openExamFromShareLink() {
 
   console.log("Shared exam detected:", examId);
 
+  // 1) Load exam
   const { data: exam, error } = await client
     .from("exams")
     .select("*")
@@ -2569,6 +2570,31 @@ async function openExamFromShareLink() {
     return;
   }
 
+  // 2) Check exam status
+  if (exam.status !== "published") {
+    alert("This exam is not available yet. Please contact your teacher.");
+    return;
+  }
+
+  // 3) Check real questions count
+  const { data: questions, error: questionsError } = await client
+    .from("questions")
+    .select("id")
+    .eq("exam_id", exam.id)
+    .limit(1);
+
+  if (questionsError) {
+    console.error("Shared exam questions check error:", questionsError);
+    alert("Could not check exam readiness.");
+    return;
+  }
+
+  if (!questions || questions.length === 0) {
+    alert("This exam is not ready yet. Please contact your teacher.");
+    return;
+  }
+
+  // 4) Open preview only if exam is ready
   previewExam(
     exam.id,
     exam.title,
@@ -2587,8 +2613,9 @@ async function openExamByCode() {
     return;
   }
 
-  if (msg) msg.textContent = "Opening exam...";
+  if (msg) msg.textContent = "Checking exam...";
 
+  // 1) Load exam
   const { data: exam, error } = await client
     .from("exams")
     .select("*")
@@ -2601,6 +2628,31 @@ async function openExamByCode() {
     return;
   }
 
+  // 2) Check exam status
+  if (exam.status !== "published") {
+    if (msg) msg.textContent = "This exam is not available yet. Please contact your teacher.";
+    return;
+  }
+
+  // 3) Check real questions count
+  const { data: questions, error: questionsError } = await client
+    .from("questions")
+    .select("id")
+    .eq("exam_id", exam.id)
+    .limit(1);
+
+  if (questionsError) {
+    console.error("Check exam questions error:", questionsError);
+    if (msg) msg.textContent = "Could not check exam readiness.";
+    return;
+  }
+
+  if (!questions || questions.length === 0) {
+    if (msg) msg.textContent = "This exam is not ready yet. Please contact your teacher.";
+    return;
+  }
+
+  // 4) Open preview only if exam is ready
   if (msg) msg.textContent = "Exam found ✅";
 
   previewExam(
