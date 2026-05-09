@@ -3253,14 +3253,75 @@ function renderStudyAnalytics() {
   });
 
   const uniqueSubjects = Object.keys(subjects).length;
+const sortedDaily = Object.entries(dailyMinutes)
+  .sort(([a], [b]) => String(a).localeCompare(String(b)));
 
+const bestStudyDayEntry = Object.entries(dailyMinutes)
+  .sort((a, b) => b[1] - a[1])[0];
+
+const bestStudyDay = bestStudyDayEntry ? bestStudyDayEntry[0] : "No data";
+const bestStudyMinutes = bestStudyDayEntry ? bestStudyDayEntry[1] : 0;
+
+const sortedSubjectsByMinutes = Object.entries(subjects)
+  .sort((a, b) => b[1] - a[1]);
+
+const mostProductiveSubject = sortedSubjectsByMinutes[0]?.[0] || "No subject";
+
+const studyDates = [...new Set(
+  plans
+    .filter(plan => calculatePlanMinutes(plan) > 0)
+    .map(plan => plan.date)
+)].sort();
+
+let studyStreak = 0;
+
+if (studyDates.length > 0) {
+  studyStreak = 1;
+
+  for (let i = studyDates.length - 1; i > 0; i--) {
+    const current = new Date(studyDates[i]);
+    const previous = new Date(studyDates[i - 1]);
+    const diffDays = Math.round((current - previous) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) {
+      studyStreak++;
+    } else {
+      break;
+    }
+  }
+}
+
+const weeklyGoalMinutes = 300;
+const weeklyGoalRate = Math.min(Math.round((totalMinutes / weeklyGoalMinutes) * 100), 100);
   cardsBox.innerHTML = `
     <div class="box analytics-card-box">
       <h2>Total Plans</h2>
       <p>${safeText(totalPlans)}</p>
       <span>All saved study tasks</span>
     </div>
+    <div class="box analytics-card-box">
+      <h2>Study Streak</h2>
+      <p>${safeText(studyStreak)} days</p>
+      <span>Consecutive planned study days</span>
+    </div>
 
+    <div class="box analytics-card-box">
+      <h2>Best Study Day</h2>
+      <p>${safeText(bestStudyMinutes)} min</p>
+      <span>${safeText(bestStudyDay)}</span>
+    </div>
+
+    <div class="box analytics-card-box">
+      <h2>Top Subject</h2>
+      <p>${safeText(mostProductiveSubject)}</p>
+      <span>Most studied subject</span>
+    </div>
+
+    <div class="box analytics-card-box">
+      <h2>Weekly Goal</h2>
+      <p>${safeText(weeklyGoalRate)}%</p>
+      <span>${safeText(totalMinutes)} / ${safeText(weeklyGoalMinutes)} min</span>
+    </div>
     <div class="box analytics-card-box">
       <h2>Completed Tasks</h2>
       <p>${safeText(completedPlans)}</p>
