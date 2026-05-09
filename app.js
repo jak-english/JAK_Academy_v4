@@ -636,22 +636,44 @@ async function loadStudentExams() {
   list.innerHTML = "Loading exams...";
   if (status) status.textContent = "";
 
+  // 1) Load only published exams
   const r = await client
-  .from("exams")
-  .select("*")
-  .eq("status", "published")
-  .order("created_at", { ascending: false });
+    .from("exams")
+    .select("*")
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
 
   if (r.error) {
     list.innerHTML = "Error loading exams";
-    console.error(r.error);
+    console.error("Load student exams error:", r.error);
     if (status) status.textContent = "Error loading exams.";
     return;
   }
 
-  const filterValue = filterInput?.value.trim().toLowerCase() || "";
-
   let exams = r.data || [];
+
+  // 2) Load real question counts from questions table
+  const examIds = exams.map(exam => exam.id).filter(Boolean);
+
+  let questionCountMap = {};
+
+  if (examIds.length > 0) {
+    const { data: questions, error: questionsError } = await client
+      .from("questions")
+      .select("id, exam_id")
+      .in("exam_id", examIds);
+
+    if (questionsError) {
+      console.warn("Load student question counts error:", questionsError);
+    }
+
+    (questions || []).forEach(q => {
+      questionCountMap[q.exam_id] = (questionCountMap[q.exam_id] || 0) + 1;
+    });
+  }
+
+  // 3) Filter by grade/class
+  const filterValue = filterInput?.value.trim().toLowerCase() || "";
 
   if (filterValue) {
     exams = exams.filter(exam => {
@@ -668,41 +690,46 @@ async function loadStudentExams() {
 
   list.innerHTML = exams.length ? "" : "No exams found";
 
+  // 4) Render student exam cards
   exams.forEach(exam => {
     const box = document.createElement("div");
     box.className = "box";
+
+    const realQuestionCount = questionCountMap[exam.id] || 0;
 
     box.innerHTML = `
       <h3>${safeText(exam.title)}</h3>
       <p>${safeText(exam.description || "")}</p>
 
-    <p><strong>Type:</strong> ${safeText(exam.exam_type || "multiple_choice")}</p>
+      <p><strong>Type:</strong> ${safeText(exam.exam_type || "multiple_choice")}</p>
 
-<p>
-  <strong>Status:</strong>
-  ${
-    exam.status === "published"
-      ? '<span class="badge published">🟢 Published</span>'
-      : '<span class="badge draft">🟡 Draft</span>'
-  }
-</p>
+      <p>
+        <strong>Status:</strong>
+        ${
+          exam.status === "published"
+            ? '<span class="badge published">🟢 Published</span>'
+            : '<span class="badge draft">🟡 Draft</span>'
+        }
+      </p>
 
-<p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
+      <p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
 
-<p>
-  <strong>Questions:</strong>
-  ${
-    Number(exam.question_count || 0) > 0
-      ? safeText(exam.question_count)
-      : '<span class="badge draft">⚠️ No questions added yet</span>'
-  }
-</p>
-    <p><strong>Time:</strong> ⏱ ${safeText(exam.time_limit || 10)} min</p>
+      <p>
+        <strong>Questions:</strong>
+        ${
+          realQuestionCount > 0
+            ? safeText(realQuestionCount)
+            : '<span class="badge draft">⚠️ No questions added yet</span>'
+        }
+      </p>
+
+      <p><strong>Time:</strong> ⏱ ${safeText(exam.time_limit || 10)} min</p>
     `;
 
     const btn = document.createElement("button");
     btn.textContent = "Start Exam 🚀";
-    btn.onclick = () => previewExam(exam.id, exam.title, exam.description, exam.time_limit);
+    btn.onclick = () =>
+      previewExam(exam.id, exam.title, exam.description, exam.time_limit);
 
     box.appendChild(btn);
     list.appendChild(box);
