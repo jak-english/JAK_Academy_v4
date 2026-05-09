@@ -1605,3 +1605,185 @@ textarea{min-height:95px;resize:vertical}
   color: var(--muted);
   line-height: 1.7;
 }
+/* =========================================================
+   Premium Planner Analytics Dashboard
+   ========================================================= */
+
+.study-analytics-panel {
+  border-left: 6px solid var(--green);
+  margin-bottom: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.study-analytics-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(22, 163, 74, 0.12), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(34, 211, 238, 0.10), transparent 35%);
+  pointer-events: none;
+}
+
+.study-analytics-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.analytics-card-box {
+  border-left: 5px solid var(--gold);
+  min-height: 160px;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.analytics-card-box:hover {
+  transform: translateY(-3px);
+  border-color: rgba(251, 191, 36, .75);
+  box-shadow: 0 22px 45px rgba(0,0,0,.25);
+}
+
+.analytics-card-box h2 {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.analytics-card-box p {
+  font-size: clamp(30px, 4vw, 42px);
+  font-weight: 950;
+  color: var(--gold);
+  margin: 8px 0;
+  line-height: 1;
+}
+
+.analytics-card-box span {
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+/* Charts Grid */
+.study-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.study-charts-grid > .box {
+  border-left: 5px solid var(--cyan);
+  min-height: 260px;
+}
+
+.study-charts-grid > .box:nth-child(2) {
+  border-left-color: var(--gold);
+}
+
+.study-charts-grid > .box:nth-child(3) {
+  border-left-color: var(--violet);
+}
+
+.study-charts-grid h2 {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+/* Progress Bars */
+.analytics-row {
+  margin: 14px 0;
+  padding: 13px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.analytics-row-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+  color: var(--muted);
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.analytics-row-top strong {
+  color: var(--text);
+}
+
+.analytics-row-top span {
+  color: var(--gold);
+}
+
+.analytics-progress {
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  overflow: hidden;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,.18);
+}
+
+.analytics-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  min-width: 8px;
+  box-shadow: 0 0 16px rgba(34, 211, 238, .28);
+}
+
+/* Recommendations */
+.study-recommendations-panel {
+  margin-top: 18px;
+  border-left: 6px solid var(--violet);
+  background:
+    radial-gradient(circle at top right, rgba(124, 58, 237, .16), transparent 35%),
+    linear-gradient(180deg, rgba(18,52,86,.82), rgba(11,31,54,.88));
+}
+
+#studyRecommendations {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.recommendation-card {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  border-left: 5px solid var(--gold);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(251,191,36,.55);
+  box-shadow: 0 18px 40px rgba(0,0,0,.24);
+}
+
+.recommendation-card h3 {
+  margin: 0 0 10px;
+  color: var(--gold);
+  font-size: 19px;
+}
+
+.recommendation-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-weight: 700;
+}
+
+/* Mobile */
+@media (max-width: 1050px) {
+  .study-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #studyRecommendations {
+    grid-template-columns: 1fr;
+  }
+}
