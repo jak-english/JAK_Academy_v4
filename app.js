@@ -729,7 +729,7 @@ async function loadStudentExams() {
     box.appendChild(btn);
     list.appendChild(box);
   });
-}
+}ل
 function clearStudentExamFilter() {
   const input = document.getElementById("studentExamGradeFilter");
   const status = document.getElementById("studentExamFilterStatus");
@@ -787,8 +787,32 @@ function previewExam(id, title, description, timeLimit) {
 }
 
 async function startSolvingExam() {
-  if (!currentPreviewExam) return;
+  if (!currentPreviewExam) {
+    alert("No exam selected.");
+    return;
+  }
 
+  // 1) Check exam status first
+  const examCheck = await client
+    .from("exams")
+    .select("id, title, status, time_limit")
+    .eq("id", currentPreviewExam.id)
+    .single();
+
+  if (examCheck.error || !examCheck.data) {
+    console.error("Exam check error:", examCheck.error);
+    alert("This exam could not be found.");
+    return;
+  }
+
+  const exam = examCheck.data;
+
+  if (exam.status !== "published") {
+    alert("This exam is not available yet. Please contact your teacher.");
+    return;
+  }
+
+  // 2) Load real questions
   const r = await client
     .from("questions")
     .select("*")
@@ -796,22 +820,24 @@ async function startSolvingExam() {
     .order("created_at", { ascending: true });
 
   if (r.error) {
-    alert("Error loading questions");
+    console.error("Load questions error:", r.error);
+    alert("Error loading questions.");
     return;
   }
 
   solvingQuestions = r.data || [];
 
+  // 3) Stop empty exams even if opened by old link/code
   if (!solvingQuestions.length) {
-    alert("This exam has no questions yet.");
+    alert("This exam is not ready yet. Please contact your teacher.");
     return;
   }
 
   currentQuestionIndex = 0;
   studentAnswers = {};
   reviewLater = {};
-  remainingSeconds = currentPreviewExam.timeLimit * 60;
-  solverExamTitle.textContent = currentPreviewExam.title || "Exam";
+  remainingSeconds = Number(exam.time_limit || currentPreviewExam.timeLimit || 10) * 60;
+  solverExamTitle.textContent = exam.title || currentPreviewExam.title || "Exam";
 
   showPage("examSolver");
   startTimer();
