@@ -3392,16 +3392,25 @@ const weeklyGoalRate = Math.min(Math.round((totalMinutes / weeklyGoalMinutes) * 
 
     let recommendation = "";
 
-    if (completionRate === 0) {
-      recommendation = "Your study time is planned, but no tasks are completed yet. Start by completing one easy task today to build momentum.";
-    } else if (completionRate < 50) {
-      recommendation = "Your completion rate is still low. Reduce the number of tasks and focus on finishing fewer tasks well.";
-    } else if (completionRate < 80) {
-      recommendation = "Good progress. Try to increase consistency by completing one task every day.";
-    } else {
-      recommendation = "Excellent progress. You are studying consistently. Move to advanced practice and timed exams.";
-    }
-
+   if (weeklyGoalRate >= 100 && completionRate < 50) {
+  recommendation =
+    "Great! You reached your weekly study-time goal, but your task completion rate is still low. Focus on finishing tasks, not adding more study time.";
+} else if (weeklyGoalRate < 50) {
+  recommendation =
+    "Your study time is still below the weekly goal. Try adding short focused sessions this week. Even 25 minutes a day can make a big difference.";
+} else if (completionRate === 0) {
+  recommendation =
+    "Your study time is planned, but no tasks are completed yet. Start by completing one easy task today to build momentum.";
+} else if (completionRate < 50) {
+  recommendation =
+    "Your completion rate is still low. Reduce the number of tasks and focus on finishing fewer tasks well.";
+} else if (completionRate < 80) {
+  recommendation =
+    "Good progress. Try to increase consistency by completing one task every day.";
+} else {
+  recommendation =
+    "Excellent progress. You are studying consistently. Move to advanced practice and timed exams.";
+}
     recommendationsBox.innerHTML = `
       <div class="recommendation-card">
         <h3>Most Studied Subject</h3>
