@@ -2564,3 +2564,143 @@ textarea{min-height:95px;resize:vertical}
     padding: 14px !important;
   }
 }
+/* =========================================================
+   Mobile Fix - Teacher Dashboard
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .teacher-dashboard-modern {
+    padding: 14px !important;
+  }
+
+  .teacher-dashboard-modern .dashboard-header {
+    display: block;
+  }
+
+  .teacher-dashboard-modern .dashboard-header h1 {
+    font-size: 26px !important;
+    line-height: 1.2;
+  }
+
+  .teacher-dashboard-modern .dashboard-header p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .teacher-dashboard-modern .dashboard-quick-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .teacher-dashboard-modern .dashboard-quick-actions button {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .teacher-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .teacher-panel,
+  .teacher-tool-card {
+    padding: 14px !important;
+    overflow-x: hidden;
+  }
+
+  .teacher-dashboard-modern .panel-title {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .teacher-dashboard-modern .panel-title h2 {
+    font-size: 20px !important;
+    line-height: 1.25;
+  }
+
+  .teacher-dashboard-modern .panel-title p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .teacher-dashboard-modern input,
+  .teacher-dashboard-modern select,
+  .teacher-dashboard-modern textarea {
+    width: 100%;
+    font-size: 15px;
+    padding: 11px 12px;
+  }
+
+  .teacher-dashboard-modern textarea {
+    min-height: 95px;
+  }
+
+  .teacher-dashboard-modern .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .teacher-dashboard-modern .actions button {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  #teacherExamList,
+  #teacherResultsList {
+    overflow-wrap: anywhere;
+  }
+
+  #teacherExamList .box,
+  #teacherExamList > div,
+  #teacherResultsList .box,
+  #teacherResultsList > div {
+    width: 100%;
+    max-width: 100%;
+    padding: 14px !important;
+    overflow-wrap: anywhere;
+  }
+
+  #teacherExamList button,
+  #teacherResultsList button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .teacher-tools-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  #teacherResultsSummary {
+    padding: 14px !important;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 480px) {
+  .teacher-dashboard-modern {
+    padding: 12px !important;
+  }
+
+  .teacher-dashboard-modern .dashboard-header h1 {
+    font-size: 23px !important;
+  }
+
+  .teacher-dashboard-modern .panel-title h2 {
+    font-size: 18px !important;
+  }
+
+  .teacher-panel,
+  .teacher-tool-card {
+    border-radius: 16px;
+  }
+}
