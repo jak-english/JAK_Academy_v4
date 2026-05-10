@@ -2704,3 +2704,111 @@ textarea{min-height:95px;resize:vertical}
     border-radius: 16px;
   }
 }
+/* =========================================================
+   Mobile Fix - Student Dashboard
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .student-dashboard-modern {
+    padding: 14px !important;
+  }
+
+  .student-dashboard-modern .dashboard-header {
+    display: block;
+  }
+
+  .student-dashboard-modern .dashboard-header h1 {
+    font-size: 26px !important;
+    line-height: 1.2;
+  }
+
+  .student-dashboard-modern .dashboard-header p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .student-dashboard-modern .dashboard-quick-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .student-dashboard-modern .dashboard-quick-actions button {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .student-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .student-main-card,
+  .student-tool-card,
+  #studentExamStatsBox {
+    padding: 14px !important;
+    overflow-x: hidden;
+    overflow-wrap: anywhere;
+  }
+
+  .student-dashboard-modern .panel-title {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .student-dashboard-modern .panel-title h2 {
+    font-size: 20px !important;
+    line-height: 1.25;
+  }
+
+  .student-dashboard-modern .panel-title p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .student-dashboard-modern button {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .student-tools-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .student-tool-card .tool-icon {
+    font-size: 28px;
+  }
+
+  #studentTodayTasks,
+  #studentProgressBox,
+  #studentAdviceBox,
+  #studentExamStatsBox {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-dashboard-modern {
+    padding: 12px !important;
+  }
+
+  .student-dashboard-modern .dashboard-header h1 {
+    font-size: 23px !important;
+  }
+
+  .student-dashboard-modern .panel-title h2 {
+    font-size: 18px !important;
+  }
+
+  .student-main-card,
+  .student-tool-card {
+    border-radius: 16px;
+  }
+}
