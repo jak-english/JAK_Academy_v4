@@ -9,12 +9,13 @@
 <body>
 <header>
   <div class="brand">
-  <img src="logo.png" class="logo-img" alt="JAK Logo" onload="this.style.display='block';document.querySelector('.logo-fallback').style.display='none'">
+  <img src="logo.png" class="logo-img" alt="JAK Logo" onload="this.style.display='block';document.querySelector('.logo-fallback').style.display='none'" onerror="this.style.display='none';document.querySelector('.logo-fallback').style.display='flex'">
     <div class="logo-fallback">JAK</div>
     <div><div class="brand-title">JAK Academy</div><div class="brand-sub">Learning is Fun ✨</div></div>
   </div>
   <nav>
   <button onclick="showPage('home')">Home</button>
+  <button onclick="showPage('teachersPage')">Teachers</button>
   <button onclick="goDashboard()">Dashboard</button>
   <button onclick="window.location.href='login.html'">Login / Sign in</button>
   <button onclick="showPage('studentExams')">Exams</button>
@@ -139,56 +140,171 @@
     </div>
   </div>
 </section>
-      <h3>Premium System</h3>
-        <p>Manage paid access, requests, plans, and teacher/student tools.</p>
-      </div>
-    </div>
-  </div>
-</section>
 <section id="premium" class="page">
-  <div class="card">
-    <h1>💎 Premium Plans</h1>
+  <div class="card premium-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Premium & Admin</span>
+        <h1>💎 Premium Plans</h1>
+        <p>Manage premium access, payment information, and user roles from one organized panel.</p>
+      </div>
 
-    <!-- CliQ Payment -->
-    <div id="paymentInfo"></div>
-
-    <!-- USERS TABLE -->
-    <div class="box" style="margin-top:20px;">
-      <h2>👥 Users Management</h2>
-      <button onclick="loadUsers()">Load Users</button>
-      <p id="usersStatus"></p>
-
-      <div style="overflow-x:auto;">
-        <table style="width:100%; text-align:center; margin-top:15px;">
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Premium</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="usersTable"></tbody>
-        </table>
+      <div class="dashboard-quick-actions">
+        <button onclick="renderPaymentInfo()">Refresh Payment Info</button>
+        <button class="gold" onclick="loadUsers()">Load Users</button>
+        <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
       </div>
     </div>
 
+    <div class="premium-layout">
+      <div class="box premium-payment-panel">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Payment & Premium Info</h2>
+            <p>Students and teachers can view available premium plans and payment instructions.</p>
+          </div>
+        </div>
+
+        <div id="paymentInfo"></div>
+      </div>
+
+      <div class="box premium-users-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Users Management</h2>
+            <p>Manage user roles, premium access, and profile records safely.</p>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button onclick="loadUsers()">Load Users</button>
+        </div>
+
+        <p id="usersStatus" class="msg"></p>
+
+        <div class="users-table-wrap">
+          <table class="table-like users-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Premium</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 <section id="studentDashboard" class="page">
-  <div class="card">
-    <span class="badge">Student Dashboard</span>
-<h1>Welcome, <span id="userName"></span></h1>    <div class="grid three">
-      <div class="box"><h2>Exams</h2><button onclick="showPage('studentExams');loadStudentExams()">Open Exams</button></div>
-      <div class="box"><h2>My Results</h2><button onclick="showPage('myResults');loadMyResults()">Open Results</button></div>
-      <div class="box"><h2>Today’s Tasks</h2><div id="studentTodayTasks"></div><button onclick="openPlanner()">Open Planner</button></div>
-      <div class="box" id="studentProgressBox"><h2>Study Progress</h2><p>Open dashboard to load progress.</p></div>
-      <div class="box"><h2>Smart Assistant</h2><button onclick="showPage('studentAssistant')">Ask Assistant</button></div>
-      <div class="box" id="studentAdviceBox"><h2>Daily Study Advice</h2><p>Open dashboard to load advice.</p></div>
-      <div class="box"><h2>Dictionaries</h2><button onclick="showPage('dictionaries');renderDictionaryHome()">Open Dictionaries</button></div>
-      <div class="box"><h2>Games</h2><button onclick="showPage('games');renderGamesHome()">Open Games</button></div>
-      <div id="studentExamStatsBox" class="box"></div>
-      <div class="box"><h2>Premium</h2><button onclick="showPage('premium');renderPaymentInfo()">Request Premium</button></div>
+  <div class="card student-dashboard-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Student Dashboard</span>
+        <h1>Welcome, <span id="userName"></span></h1>
+        <p>Your learning space: exams, results, planner, advice, games, dictionaries, and progress analytics.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="showPage('studentExams');loadStudentExams()">Open Exams</button>
+        <button class="gold" onclick="showPage('myResults');loadMyResults()">My Results</button>
+        <button class="violet" onclick="openPlanner()">Planner</button>
+      </div>
+    </div>
+
+    <div class="student-layout">
+
+      <div class="box student-main-card exams-card">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Exams</h2>
+            <p>Open published exams, use exam codes, and start solving.</p>
+          </div>
+        </div>
+        <button onclick="showPage('studentExams');loadStudentExams()">Open Exams</button>
+      </div>
+
+      <div class="box student-main-card results-card">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>My Results</h2>
+            <p>Review your exam history, scores, percentages, and dates.</p>
+          </div>
+        </div>
+        <button onclick="showPage('myResults');loadMyResults()">Open Results</button>
+      </div>
+
+      <div class="box student-main-card tasks-card">
+        <div class="panel-title">
+          <span class="panel-number">03</span>
+          <div>
+            <h2>Today’s Tasks</h2>
+            <p>Follow your daily study tasks and planner activities.</p>
+          </div>
+        </div>
+        <div id="studentTodayTasks"></div>
+        <button onclick="openPlanner()">Open Planner</button>
+      </div>
+
+      <div class="box student-main-card" id="studentProgressBox">
+        <div class="panel-title">
+          <span class="panel-number">04</span>
+          <div>
+            <h2>Study Progress</h2>
+            <p>Open dashboard to load progress.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="box student-main-card" id="studentAdviceBox">
+        <div class="panel-title">
+          <span class="panel-number">05</span>
+          <div>
+            <h2>Daily Study Advice</h2>
+            <p>Open dashboard to load advice.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="studentExamStatsBox" class="box student-main-card analytics-card"></div>
+
+      <div class="student-tools-grid">
+        <div class="box student-tool-card">
+          <span class="tool-icon">🤖</span>
+          <h2>Smart Assistant</h2>
+          <p>Ask for help, explanations, and study guidance.</p>
+          <button onclick="showPage('studentAssistant')">Ask Assistant</button>
+        </div>
+
+        <div class="box student-tool-card">
+          <span class="tool-icon">📚</span>
+          <h2>Dictionaries</h2>
+          <p>Use learning dictionaries for vocabulary and meanings.</p>
+          <button onclick="showPage('dictionaries');renderDictionaryHome()">Open Dictionaries</button>
+        </div>
+
+        <div class="box student-tool-card">
+          <span class="tool-icon">🎮</span>
+          <h2>Games</h2>
+          <p>Practice English through interactive learning games.</p>
+          <button onclick="showPage('games');renderGamesHome()">Open Games</button>
+        </div>
+
+        <div class="box student-tool-card">
+          <span class="tool-icon">💎</span>
+          <h2>Premium</h2>
+          <p>Request premium access and unlock extra learning tools.</p>
+          <button onclick="showPage('premium');renderPaymentInfo()">Request Premium</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -360,86 +476,358 @@
     </div>
   </div>
 </section>
+<section id="teachersPage" class="page">
+  <div class="card teachers-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Choose Teacher</span>
+        <h1>Choose Your Teacher 👨‍🏫</h1>
+        <p>Select your teacher or subject, then open the available exams.</p>
+      </div>
 
-<section id="studentExams" class="page">
-  <div class="card">
-    <span class="badge">Exams</span>
-    <h1>Available Exams</h1>
-
-    <div class="box">
-      <h2>Open Exam by Code</h2>
-      <input id="examCodeInput" placeholder="Paste exam code here">
-      <button onclick="openExamByCode()">Open Exam</button>
-      <p id="examCodeMsg" class="msg"></p>
+      <div class="dashboard-quick-actions">
+        <button onclick="showPage('studentDashboard')">Back to Dashboard</button>
+        <button class="gold" onclick="showPage('studentExams'); loadStudentExams()">All Exams</button>
+      </div>
     </div>
-<div class="box">
-  <h2>Filter Exams</h2>
 
-  <input id="studentExamGradeFilter" placeholder="Filter by Grade / Class e.g. 2008, Grade 11">
+    <div class="teachers-grid">
+      <div class="box teacher-card">
+        <div class="teacher-avatar">JAK</div>
+        <span class="panel-number">01</span>
+        <h2>Jalal Abu Khadra</h2>
+        <p><strong>Subject:</strong> English</p>
+        <p><strong>Grades:</strong> Grade 9, Grade 10, Grade 11, Tawjihi</p>
+        <p>English exams, vocabulary, grammar, writing, and smart study tools.</p>
+<button onclick="chooseTeacherById('e1e8cfb3-7c82-44ec-bd9e-18566a1c1d92', 'Jalal Abu Khadra', 'English')">View Exams</button>      </div>
 
-  <button onclick="loadStudentExams()">Apply Filter</button>
+      <div class="box teacher-card">
+        <div class="teacher-avatar">MATH</div>
+        <span class="panel-number">02</span>
+        <h2>Math Teacher</h2>
+        <p><strong>Subject:</strong> Mathematics</p>
+        <p><strong>Grades:</strong> Grade 8, Grade 9, Grade 10, Tawjihi</p>
+        <p>Math exams, symbols, equations, and future placement tests.</p>
+        <button class="violet" onclick="chooseTeacher('Math Teacher', 'Math')">View Exams</button>
+      </div>
 
-  <button onclick="clearStudentExamFilter()">Clear Filter</button>
-
-  <p id="studentExamFilterStatus" class="msg"></p>
-</div>
-    <button onclick="loadStudentExams()">Refresh Exams</button>
-
-    <div id="studentExamList" class="grid three"></div>
+      <div class="box teacher-card">
+        <div class="teacher-avatar">+</div>
+        <span class="panel-number">03</span>
+        <h2>More Teachers Soon</h2>
+        <p><strong>Subject:</strong> Coming soon</p>
+        <p><strong>Grades:</strong> Multiple grades</p>
+        <p>More teachers and subjects can be added later from the admin dashboard.</p>
+        <button class="secondary" onclick="alert('More teachers will be added soon.')">Coming Soon</button>
+      </div>
+    </div>
   </div>
 </section>
-<section id="questionManager" class="page"><div class="card"><span class="badge">Question Manager</span><h1 id="questionExamTitle">Manage Questions</h1>
-<div class="grid two"><div class="box"><h2>Add Question</h2><select id="questionType" onchange="handleQuestionTypeChange()"><option value="mcq">Multiple Choice</option><option value="true_false">True / False</option></select><textarea id="questionText" placeholder="Question text"></textarea>
-<div id="mcqOptions"><input id="optionA" placeholder="Option A"><input id="optionB" placeholder="Option B"><input id="optionC" placeholder="Option C"><input id="optionD" placeholder="Option D"><select id="mcqCorrectAnswer"><option value="A">Correct A</option><option value="B">Correct B</option><option value="C">Correct C</option><option value="D">Correct D</option></select></div>
-<div id="trueFalseOptions" style="display:none"><select id="tfCorrectAnswer"><option value="True">True</option><option value="False">False</option></select></div>
-<textarea id="questionExplanation" placeholder="Optional explanation"></textarea><button id="saveQuestionBtn" onclick="addQuestion()">Save Question</button><button class="secondary" onclick="showPage('teacherDashboard')">Back</button><p id="questionMsg" class="msg"></p></div><div class="box"><h2>Questions</h2><button onclick="loadQuestions()">Refresh</button><div id="questionList"></div></div></div></div></section>
 
+<section id="studentExams" class="page">
+  <div class="card exams-page-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Student Exams</span>
+        <h1>Available Exams</h1>
+        <p>Open a shared exam by code, filter exams by grade/class, or start any published exam.</p>
+        <div id="selectedTeacherInfo" class="box selected-teacher-info"></div>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="loadStudentExams()">Refresh Exams</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="exams-control-grid">
+      <div class="box exam-control-card">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Open Exam by Code</h2>
+            <p>Paste the exam code from your teacher to open the exam directly.</p>
+          </div>
+        </div>
+
+        <input id="examCodeInput" placeholder="Paste exam code here">
+
+        <button onclick="openExamByCode()">Open Exam</button>
+
+        <p id="examCodeMsg" class="msg"></p>
+      </div>
+
+      <div class="box exam-control-card">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Filter Exams</h2>
+            <p>Show exams for your grade, class, or generation only.</p>
+          </div>
+        </div>
+
+        <input id="studentExamGradeFilter" placeholder="Filter by Grade / Class e.g. 2008, Grade 11">
+
+        <div class="actions">
+          <button onclick="loadStudentExams()">Apply Filter</button>
+          <button class="secondary" onclick="clearStudentExamFilter()">Clear Filter</button>
+        </div>
+
+        <p id="studentExamFilterStatus" class="msg"></p>
+      </div>
+    </div>
+
+    <div class="box exams-list-panel">
+      <div class="panel-title">
+        <span class="panel-number">03</span>
+        <div>
+          <h2>Published Exams</h2>
+          <p>Choose an exam and start solving when you are ready.</p>
+        </div>
+      </div>
+
+      <button onclick="loadStudentExams()">Refresh Exams</button>
+
+      <div id="studentExamList" class="grid three"></div>
+    </div>
+  </div>
+</section>
+<section id="questionManager" class="page">
+  <div class="card question-manager-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Question Manager</span>
+        <h1 id="questionExamTitle">Manage Questions</h1>
+        <p>Add, edit, delete, and organize questions for this exam.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="loadQuestions()">Refresh Questions</button>
+        <button class="secondary" onclick="showPage('teacherDashboard')">Back to Teacher Dashboard</button>
+      </div>
+    </div>
+
+    <div class="question-manager-layout">
+      <div class="box question-form-panel">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Add / Edit Question</h2>
+            <p>Choose the question type, add options, select the correct answer, and save.</p>
+          </div>
+        </div>
+
+        <label>Question Type</label>
+        <select id="questionType" onchange="handleQuestionTypeChange()">
+          <option value="mcq">Multiple Choice</option>
+          <option value="true_false">True / False</option>
+        </select>
+
+        <label>Question Text</label>
+        <textarea id="questionText" placeholder="Question text"></textarea>
+
+        <div id="mcqOptions">
+          <label>Option A</label>
+          <input id="optionA" placeholder="Option A">
+
+          <label>Option B</label>
+          <input id="optionB" placeholder="Option B">
+
+          <label>Option C</label>
+          <input id="optionC" placeholder="Option C">
+
+          <label>Option D</label>
+          <input id="optionD" placeholder="Option D">
+
+          <label>Correct Answer</label>
+          <select id="mcqCorrectAnswer">
+            <option value="A">Correct A</option>
+            <option value="B">Correct B</option>
+            <option value="C">Correct C</option>
+            <option value="D">Correct D</option>
+          </select>
+        </div>
+
+        <div id="trueFalseOptions" style="display:none">
+          <label>Correct Answer</label>
+          <select id="tfCorrectAnswer">
+            <option value="True">True</option>
+            <option value="False">False</option>
+          </select>
+        </div>
+
+        <label>Explanation</label>
+        <textarea id="questionExplanation" placeholder="Optional explanation"></textarea>
+
+        <button id="saveQuestionBtn" onclick="addQuestion()">Save Question</button>
+
+        <p id="questionMsg" class="msg"></p>
+      </div>
+
+      <div class="box question-list-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Questions List</h2>
+            <p>Review all questions, edit them, or delete any question you do not need.</p>
+          </div>
+        </div>
+
+        <button onclick="loadQuestions()">Refresh</button>
+
+        <div id="questionList"></div>
+      </div>
+    </div>
+  </div>
+</section>
 <section id="takeExam" class="page"><div class="card"><span class="badge">Exam Preview</span><h1 id="takeExamTitle">Exam</h1><p id="takeExamDesc"></p><p id="takeExamTime"></p><button onclick="startSolvingExam()">Start Solving</button><button class="secondary" onclick="showPage('studentExams')">Back</button></div></section>
 
 <section id="examSolver" class="page">
-  <div class="card">
-    <span class="badge">Solving Exam</span>
-    <h1 id="solverExamTitle">Exam</h1>
+  <div class="card exam-solver-modern">
+    <div class="solver-header">
+      <div>
+        <span class="badge">Solving Exam</span>
+        <h1 id="solverExamTitle">Exam</h1>
+        <p id="examProgressText">Question 1 of 1</p>
+      </div>
 
-    <div class="timer" id="examTimer">00:00</div>
+      <div class="solver-timer-card">
+        <span>Time Remaining</span>
+        <div class="timer" id="examTimer">00:00</div>
+      </div>
+    </div>
 
-    <div class="box tip-card">
-      <p id="examProgressText">Question 1 of 1</p>
+    <div class="solver-status-card">
       <p id="examAutoSaveStatus">Answers are saved automatically on this device.</p>
     </div>
 
-    <div id="questionNav" class="question-nav"></div>
+    <div class="solver-layout">
+      <div class="box solver-nav-panel">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Question Navigation</h2>
+            <p>Move between questions and mark questions for review.</p>
+          </div>
+        </div>
 
-    <div class="box">
-      <h2 id="solverQuestionText">Question</h2>
-      <div id="solverOptions"></div>
+        <div id="questionNav" class="question-nav"></div>
+      </div>
+
+      <div class="box solver-question-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Current Question</h2>
+            <p>Choose the best answer carefully before moving on.</p>
+          </div>
+        </div>
+
+        <h2 id="solverQuestionText">Question</h2>
+        <div id="solverOptions"></div>
+      </div>
     </div>
 
-    <div class="actions">
+    <div class="solver-actions">
       <button class="secondary" onclick="previousQuestion()">Previous</button>
       <button onclick="nextQuestion()">Next</button>
-      <button class="gold" onclick="toggleReviewLater()">Review Later</button>
-      <button class="success" onclick="submitExam(false)">Submit Exam</button>
+<button class="gold" onclick="window.toggleReviewLater()">Review Later</button>      <button class="success" onclick="submitExam(false)">Submit Exam</button>
     </div>
   </div>
 </section>
-<section id="examResult" class="page"><div class="card"><span class="badge">Exam Result</span><h1 id="resultTitle">Result</h1>
-<h2 id="scoreText"></h2><div id="studyAdviceAfterResult" class="box tip-card"></div><div id="resultDetails"></div><button onclick="showPage('studentExams');loadStudentExams()">Back to Exams</button><button class="gold" onclick="window.print()">Print Result</button></div></section>
+<section id="examResult" class="page">
+  <div class="card exam-result-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Exam Result</span>
+        <h1 id="resultTitle">Result</h1>
+        <p>Your score, feedback, and detailed answer review.</p>
+      </div>
 
-<section id="myResults" class="page"><div class="card"><span class="badge">My Results</span><h1>My Exam Results</h1><button onclick="loadMyResults()">Refresh</button><div id="myResultsList"></div></div></section>
+      <div class="dashboard-quick-actions">
+        <button onclick="showPage('studentExams');loadStudentExams()">Back to Exams</button>
+        <button class="gold" onclick="window.print()">Print Result</button>
+      </div>
+    </div>
 
-<section id="leaderboard" class="page"><div class="card"><span class="badge">Leaderboard</span><h1>Leaderboard 🏆</h1><div class="actions"><button onclick="loadLeaderboard('daily')">Daily</button><button class="gold" onclick="loadLeaderboard('weekly')">Weekly</button></div><div id="leaderboardList"></div></div></section>
+    <div class="result-score-card">
+      <span>Your Score</span>
+      <h2 id="scoreText"></h2>
+    </div>
 
-<section id="studySystem" class="page"><div class="card"><span class="badge">Study System</span><h1>How Should Students Study? 📚</h1>
-<div class="grid two">
-<div class="box tip-card"><h2>Foundation System</h2><p>20 minutes grammar + 20 minutes vocabulary + 20 minutes practice questions.</p><p>مناسب للطلاب الضعاف أو البداية.</p></div>
-<div class="box tip-card"><h2>Exam Preparation System</h2><p>Practice under time, correct mistakes, then repeat weak topics.</p><p>مناسب قبل الامتحان.</p></div>
-<div class="box tip-card"><h2>Active Recall</h2><p>Close the book and try to remember. Then check and correct.</p><p>لا تقرأ فقط؛ اختبر نفسك.</p></div>
-<div class="box tip-card"><h2>Mistakes Notebook</h2><p>Write every repeated mistake and review it before exams.</p><p>دفتر الأخطاء سر التحسن.</p></div>
-<div class="box tip-card"><h2>Weekly Routine</h2><p>Day 1 grammar, Day 2 vocabulary, Day 3 reading, Day 4 writing, Day 5 exam, Day 6 correction, Day 7 light review.</p></div>
-<div class="box tip-card"><h2>Smart Advice by Score</h2><p>Below 50%: review basics. 50–79%: practice more. 80%+: move to advanced questions.</p></div>
-</div></div></section>
+    <div class="box result-advice-card" id="studyAdviceAfterResult"></div>
 
+    <div class="box result-details-panel">
+      <div class="panel-title">
+        <span class="panel-number">01</span>
+        <div>
+          <h2>Answer Review</h2>
+          <p>Check your answers, correct answers, and explanations.</p>
+        </div>
+      </div>
+
+      <div id="resultDetails"></div>
+    </div>
+  </div>
+</section>
+<section id="myResults" class="page">
+  <div class="card results-history-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">My Results</span>
+        <h1>My Exam Results</h1>
+        <p>Review your exam history, scores, percentages, and submitted dates.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="loadMyResults()">Refresh Results</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="box results-list-panel">
+      <div class="panel-title">
+        <span class="panel-number">01</span>
+        <div>
+          <h2>Results History</h2>
+          <p>Your completed exams will appear below.</p>
+        </div>
+      </div>
+
+      <div id="myResultsList"></div>
+    </div>
+  </div>
+</section>
+
+<section id="leaderboard" class="page">
+  <div class="card leaderboard-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Leaderboard</span>
+        <h1>Leaderboard 🏆</h1>
+        <p>See top students and best exam performance.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="loadLeaderboard('daily')">Daily</button>
+        <button class="gold" onclick="loadLeaderboard('weekly')">Weekly</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="box leaderboard-list-panel">
+      <div class="panel-title">
+        <span class="panel-number">01</span>
+        <div>
+          <h2>Ranking</h2>
+          <p>The leaderboard shows the best result for each student.</p>
+        </div>
+      </div>
+
+      <div id="leaderboardList"></div>
+    </div>
+  </div>
+</section>
 <section id="studentAssistant" class="page">
   <div class="card">
     <span class="badge">Smart Student Assistant</span>
@@ -468,24 +856,58 @@
 
 
 <section id="dictionaries" class="page">
-  <div class="card">
-    <span class="badge">Dictionaries</span>
-    <h1>Student Dictionaries 📚</h1>
-    <p class="msg">English-Arabic support for vocabulary, grammar terms, study words, and irregular verbs.</p>
-    <div class="grid two">
-      <div class="box">
-        <h2>Search Dictionary</h2>
-        <input id="dictionarySearch" placeholder="Search: passive / revise / achieve / break..." oninput="searchDictionary()">
+  <div class="card dictionaries-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Dictionaries</span>
+        <h1>Student Dictionaries 📚</h1>
+        <p>English-Arabic support for vocabulary, grammar terms, study words, and irregular verbs.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="renderDictionaryCategory('grammar')">Grammar</button>
+        <button class="gold" onclick="renderDictionaryCategory('vocabulary')">Vocabulary</button>
+        <button class="violet" onclick="renderDictionaryCategory('study')">Study Skills</button>
+        <button class="success" onclick="renderDictionaryCategory('irregular')">Irregular Verbs</button>
+      </div>
+    </div>
+
+    <div class="dictionaries-layout">
+      <div class="box dictionary-search-panel">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Search Dictionary</h2>
+            <p>Search for words, grammar terms, study vocabulary, or irregular verbs.</p>
+          </div>
+        </div>
+
+        <label>Search Word / Term</label>
+        <input
+          id="dictionarySearch"
+          placeholder="Search: passive / revise / achieve / break..."
+          oninput="searchDictionary()"
+        >
+
         <div id="dictionaryResults"></div>
       </div>
-      <div class="box">
-        <h2>Dictionary Categories</h2>
+
+      <div class="box dictionary-category-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Dictionary Categories</h2>
+            <p>Open ready-made vocabulary lists by learning category.</p>
+          </div>
+        </div>
+
         <div class="actions">
           <button onclick="renderDictionaryCategory('grammar')">Grammar</button>
           <button class="gold" onclick="renderDictionaryCategory('vocabulary')">Vocabulary</button>
           <button class="violet" onclick="renderDictionaryCategory('study')">Study Skills</button>
           <button class="success" onclick="renderDictionaryCategory('irregular')">Irregular Verbs</button>
         </div>
+
         <div id="dictionaryCategory"></div>
       </div>
     </div>
@@ -493,23 +915,479 @@
 </section>
 
 <section id="games" class="page">
-  <div class="card">
-    <span class="badge">Learning Games</span>
-    <h1>Games 🎮</h1>
-    <div class="grid two">
-      <div class="box"><h2>Irregular Verbs Game</h2><p>Choose the correct form and collect points.</p><button onclick="startIrregularGame()">Start</button></div>
-      <div class="box"><h2>Hangman Vocabulary</h2><p>Practise curriculum vocabulary by guessing letters.</p><button onclick="startHangmanGame()">Start</button></div>
+  <div class="card games-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Learning Games</span>
+        <h1>Games 🎮</h1>
+        <p>Practice English in a fun way through vocabulary and irregular verbs games.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="window.startIrregularGame()">Irregular Verbs</button>
+        <button class="gold" onclick="window.startHangmanGame()">Hangman</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
     </div>
-    <div id="gameArea" style="margin-top:16px"></div>
+
+    <div class="games-layout">
+      <div class="box game-card">
+        <div class="game-icon">📝</div>
+        <span class="panel-number">01</span>
+        <h2>Irregular Verbs Game</h2>
+        <p>Choose the correct verb form, collect points, and improve your grammar memory.</p>
+        <button onclick="window.startIrregularGame()">Start Game</button>
+      </div>
+
+      <div class="box game-card">
+        <div class="game-icon">🎯</div>
+        <span class="panel-number">02</span>
+        <h2>Hangman Vocabulary</h2>
+        <p>Practise curriculum vocabulary by guessing letters before the word is complete.</p>
+        <button class="gold" onclick="window.startHangmanGame()">Start Game</button>
+      </div>
+    </div>
+
+    <div class="box game-area-panel">
+      <div class="panel-title">
+        <span class="panel-number">03</span>
+        <div>
+          <h2>Game Area</h2>
+          <p>Your selected game will appear here.</p>
+        </div>
+      </div>
+
+      <div id="gameArea"></div>
+    </div>
   </div>
 </section>
 
-<section id="aiCenter" class="page"><div class="card"><span class="badge">AI Center</span><h1>AI Question Builder 🤖</h1><div class="grid two"><div class="box ai-card"><h2>AI-ready Question Builder</h2><input id="aiTopic" placeholder="Topic: Present Simple / Passive Voice..."><select id="aiType"><option>MCQ</option><option>True / False</option><option>Grammar</option><option>Vocabulary</option></select><input id="aiCount" type="number" value="5"><button onclick="mockAIQuestions()">Generate Preview</button><p class="msg">Safe local preview now. Real OpenAI connection should be added later through Netlify Functions only, not directly in frontend.</p></div><div class="box"><h2>Preview</h2><div id="aiPreview"></div></div></div></div></section>
+<section id="aiCenter" class="page">
+  <div class="card ai-center-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">AI Center</span>
+        <h1>AI Question Builder 🤖</h1>
+        <p>Generate exam question previews now, and prepare for real AI integration later through a secure backend.</p>
+      </div>
 
+      <div class="dashboard-quick-actions">
+        <button class="violet" onclick="mockAIQuestions()">Generate Preview</button>
+        <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="ai-center-layout">
+      <div class="box ai-builder-panel ai-card">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Question Generator</h2>
+            <p>Choose a topic, question type, and number of questions to generate a safe local preview.</p>
+          </div>
+        </div>
+
+        <label>Topic</label>
+        <input id="aiTopic" placeholder="Topic: Present Simple / Passive Voice...">
+
+        <label>Question Type</label>
+        <select id="aiType">
+          <option>MCQ</option>
+          <option>True / False</option>
+          <option>Grammar</option>
+          <option>Vocabulary</option>
+        </select>
+
+        <label>Number of Questions</label>
+        <input id="aiCount" type="number" value="5">
+
+        <button class="violet" onclick="mockAIQuestions()">Generate Preview</button>
+
+        <p class="msg">
+          Safe local preview now. Real OpenAI connection should be added later through Netlify Functions only, not directly in frontend.
+        </p>
+      </div>
+
+      <div class="box ai-preview-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Preview</h2>
+            <p>Generated preview questions will appear here before being saved or reviewed.</p>
+          </div>
+        </div>
+
+        <div id="aiPreview"></div>
+      </div>
+    </div>
+  </div>
+</section>
 <section id="mathTools" class="page"><div class="card"><span class="badge">Math Tools</span><h1>Math Symbols & Patterns 📐</h1><div class="grid two"><div class="box"><h2>Symbol Keyboard</h2><div class="math-symbols" id="mathSymbols"></div><textarea id="mathEditor" placeholder="Write equation here..."></textarea></div><div class="box"><h2>Templates</h2><button onclick="insertMath('x^2 + 3x + 2 = 0')">Quadratic</button><button onclick="insertMath('\\frac{a}{b}')">Fraction</button><button onclick="insertMath('√x')">Root</button><button onclick="insertMath('f(x)=2x+1')">Function</button></div></div></div></section>
 
 
-<section id="planner" class="page"><div class="card"><span class="badge">Study Planner</span><h1>Study Planner + Colored Calendar</h1><div id="plannerStats" class="grid three"></div><div class="box tip-card"><h2>Smart Plan Generator</h2><div class="grid two"><input id="smartSubjects" placeholder="Subjects: English, Grammar, Vocabulary"><input id="smartDays" type="number" value="7" min="1" max="30"><input id="smartStart" type="time" value="17:00"><input id="smartMinutes" type="number" value="45" min="15"></div><button class="violet" onclick="generateSmartPlan()">Generate Smart Plan</button></div><h2>Today’s Tasks</h2><div id="todayTasks"></div><div class="grid two"><input id="subject" placeholder="Subject"><input id="studyDate" type="date"><input id="startTime" type="time"><input id="endTime" type="time"><select id="planType"><option value="daily">Daily / 7 days</option><option value="weekly">Weekly</option><option value="exam">Before Exam</option></select><select id="planStatus"><option value="not_started">Not Started</option><option value="in_progress">In Progress</option><option value="done">Completed</option></select><input id="subjectColor" type="color" value="#2563eb"><textarea id="task" placeholder="Task / goal"></textarea></div><div class="actions"><button onclick="addPlan()">Add Plan</button><button class="gold" onclick="printPlans()">Print</button><button class="danger" onclick="clearAllPlans()">Clear All</button></div><h2>My Plans</h2><div id="plansList"></div><h2>Calendar View</h2><input id="subjectFilter" placeholder="Filter by subject" oninput="renderCalendar()"><div id="calendarView"></div></div></section>
+<section id="studySystem" class="page">
+  <div class="card study-system-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Study System</span>
+        <h1>How Should Students Study? 📚</h1>
+        <p>Learn practical study systems that help you revise, practise, remember, and improve your exam results.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button onclick="openPlanner()">Open Planner</button>
+        <button class="gold" onclick="showPage('studentExams'); loadStudentExams()">Open Exams</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="box tip-card">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Foundation System</h2>
+            <p>For students who need to build basics step by step.</p>
+          </div>
+        </div>
+        <p><strong>Plan:</strong> 20 minutes grammar + 20 minutes vocabulary + 20 minutes practice questions.</p>
+        <p>مناسب للطلاب الضعاف أو الطلاب الذين يريدون بداية منظمة.</p>
+      </div>
+
+      <div class="box tip-card">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Exam Preparation System</h2>
+            <p>For students preparing for quizzes, school exams, or Tawjihi-style tests.</p>
+          </div>
+        </div>
+        <p><strong>Plan:</strong> Practise under time, correct mistakes, then repeat weak topics.</p>
+        <p>مناسب قبل الامتحان لأنه يركز على الوقت والأخطاء.</p>
+      </div>
+
+      <div class="box tip-card">
+        <div class="panel-title">
+          <span class="panel-number">03</span>
+          <div>
+            <h2>Active Recall</h2>
+            <p>Test yourself instead of reading passively.</p>
+          </div>
+        </div>
+        <p>Close the book and try to remember. Then check and correct.</p>
+        <p>لا تقرأ فقط؛ اختبر نفسك حتى تثبت المعلومة.</p>
+      </div>
+
+      <div class="box tip-card">
+        <div class="panel-title">
+          <span class="panel-number">04</span>
+          <div>
+            <h2>Mistakes Notebook</h2>
+            <p>Turn your repeated mistakes into a study plan.</p>
+          </div>
+        </div>
+        <p>Write every repeated mistake and review it before exams.</p>
+        <p>دفتر الأخطاء سر التحسن الحقيقي.</p>
+      </div>
+
+      <div class="box tip-card">
+        <div class="panel-title">
+          <span class="panel-number">05</span>
+          <div>
+            <h2>Weekly Routine</h2>
+            <p>A balanced weekly study routine.</p>
+          </div>
+        </div>
+        <p>Day 1 grammar, Day 2 vocabulary, Day 3 reading, Day 4 writing, Day 5 exam, Day 6 correction, Day 7 light review.</p>
+      </div>
+
+      <div class="box tip-card">
+        <div class="panel-title">
+          <span class="panel-number">06</span>
+          <div>
+            <h2>Smart Advice by Score</h2>
+            <p>Choose your next step according to your score.</p>
+          </div>
+        </div>
+        <p>Below 50%: review basics. 50–79%: practise more. 80%+: move to advanced questions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="planner" class="page">
+  <div class="card planner-modern">
+    <div class="dashboard-header">
+      <div>
+        <span class="badge">Study Planner</span>
+        <h1>Study Planner + Colored Calendar</h1>
+        <p>Create smart study plans, track daily tasks, analyze progress, and organize subjects with a colored calendar.</p>
+      </div>
+
+      <div class="dashboard-quick-actions">
+        <button class="violet" onclick="generateSmartPlan()">Generate Smart Plan</button>
+        <button class="gold" onclick="printPlans()">Print</button>
+        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      </div>
+    </div>
+
+    <div id="plannerStats" class="grid three"></div>
+
+    <div class="box study-system-panel">
+      <div class="panel-title">
+        <span class="panel-number">00</span>
+        <div>
+          <h2>Smart Study Systems 🌍</h2>
+          <p>Choose a global study method, understand it, then generate a professional study schedule.</p>
+        </div>
+      </div>
+
+      <div class="grid two">
+        <div>
+          <label>Choose Study System</label>
+          <select id="studyMethodSelect" onchange="window.renderStudyMethodExplanation()">
+            <option value="pomodoro">Pomodoro Technique</option>
+            <option value="spaced">Spaced Repetition</option>
+            <option value="activeRecall">Active Recall</option>
+            <option value="timeBlocking">Time Blocking</option>
+            <option value="deepWork">Deep Work</option>
+            <option value="weeklyPlan">Weekly Study Plan</option>
+            <option value="examCountdown">Before Exam Plan</option>
+            <option value="feynman">Feynman Technique</option>
+            <option value="cornell">Cornell Notes</option>
+            <option value="leitner">Leitner Flashcards</option>
+            <option value="mistakeNotebook">Mistake Notebook</option>
+            <option value="mindMap">Mind Map Study</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Subject / Topic</label>
+          <input id="studySystemSubject" placeholder="English Grammar / Vocabulary / Math...">
+        </div>
+
+        <div>
+          <label>Available Days</label>
+          <input id="studySystemDays" placeholder="Sunday, Monday, Tuesday">
+        </div>
+
+        <div>
+          <label>Preferred Start Time</label>
+          <input id="studySystemStart" type="time" value="17:00">
+        </div>
+
+        <div>
+          <label>Session Length Minutes</label>
+          <input id="studySystemSession" type="number" value="25" min="10">
+        </div>
+
+        <div>
+          <label>Break Minutes</label>
+          <input id="studySystemBreak" type="number" value="5" min="0">
+        </div>
+
+        <div>
+          <label>Number of Sessions</label>
+          <input id="studySystemSessions" type="number" value="4" min="1">
+        </div>
+
+        <div>
+          <label>Exam Date Optional</label>
+          <input id="studySystemExamDate" type="date">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="violet" onclick="window.generateStudySystemSchedule()">Generate Study Schedule</button>
+        <button class="gold" onclick="window.renderStudyMethodExplanation()">Show Explanation</button>
+      </div>
+
+      <div id="studyMethodExplanation" class="study-method-explanation"></div>
+      <div id="studySystemSchedule" class="study-system-schedule"></div>
+    </div>
+
+    <div class="box study-analytics-panel">
+      <div class="panel-title">
+        <span class="panel-number">06</span>
+        <div>
+          <h2>Study Analytics 📊</h2>
+          <p>Track study time, completed tasks, subject balance, streak, weekly goal, and progress rate.</p>
+        </div>
+      </div>
+
+      <div id="studyAnalyticsCards" class="grid three"></div>
+
+      <div class="study-charts-grid">
+        <div class="box">
+          <h2>Subject Distribution</h2>
+          <div id="subjectDistributionChart"></div>
+        </div>
+
+        <div class="box">
+          <h2>Daily Study Minutes</h2>
+          <div id="dailyStudyChart"></div>
+        </div>
+
+        <div class="box">
+          <h2>Task Status</h2>
+          <div id="taskStatusChart"></div>
+        </div>
+      </div>
+
+      <div class="box study-recommendations-panel">
+        <div class="panel-title">
+          <span class="panel-number">07</span>
+          <div>
+            <h2>Smart Study Recommendations 💡</h2>
+            <p>Personal advice based on your study habits and progress.</p>
+          </div>
+        </div>
+
+        <div id="studyRecommendations"></div>
+      </div>
+
+      <div class="box weekly-goal-panel">
+        <div class="panel-title">
+          <span class="panel-number">08</span>
+          <div>
+            <h2>Weekly Study Goal 🎯</h2>
+            <p>Set your weekly study target in minutes. The analytics will compare your actual study time with this goal.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <label>Weekly Goal Minutes</label>
+            <input id="weeklyGoalInput" type="number" value="300" min="30" step="30">
+          </div>
+
+          <div class="actions">
+            <button class="gold" onclick="window.saveWeeklyStudyGoal()">Save Weekly Goal</button>
+          </div>
+        </div>
+
+        <p id="weeklyGoalMsg" class="msg"></p>
+      </div>
+
+      <div class="actions">
+        <button class="violet" onclick="window.renderStudyAnalytics()">Refresh Study Analytics</button>
+      </div>
+    </div>
+
+    <div class="planner-layout">
+      <div class="box planner-panel smart-plan-panel">
+        <div class="panel-title">
+          <span class="panel-number">01</span>
+          <div>
+            <h2>Smart Plan Generator</h2>
+            <p>Generate an automatic study plan based on subjects, days, time, and session length.</p>
+          </div>
+        </div>
+
+        <label>Subjects</label>
+        <input id="smartSubjects" placeholder="Subjects: English, Grammar, Vocabulary">
+
+        <label>Number of Days</label>
+        <input id="smartDays" type="number" value="7" min="1" max="30">
+
+        <label>Start Time</label>
+        <input id="smartStart" type="time" value="17:00">
+
+        <label>Session Minutes</label>
+        <input id="smartMinutes" type="number" value="45" min="15">
+
+        <button class="violet" onclick="generateSmartPlan()">Generate Smart Plan</button>
+      </div>
+
+      <div class="box planner-panel today-tasks-panel">
+        <div class="panel-title">
+          <span class="panel-number">02</span>
+          <div>
+            <h2>Today’s Tasks</h2>
+            <p>See what you should study today and follow your daily progress.</p>
+          </div>
+        </div>
+
+        <div id="todayTasks"></div>
+      </div>
+
+      <div class="box planner-panel add-plan-panel">
+        <div class="panel-title">
+          <span class="panel-number">03</span>
+          <div>
+            <h2>Add Study Plan</h2>
+            <p>Create a custom task with subject, date, time, status, color, and goal.</p>
+          </div>
+        </div>
+
+        <label>Subject</label>
+        <input id="subject" placeholder="Subject">
+
+        <label>Study Date</label>
+        <input id="studyDate" type="date">
+
+        <label>Start Time</label>
+        <input id="startTime" type="time">
+
+        <label>End Time</label>
+        <input id="endTime" type="time">
+
+        <label>Plan Type</label>
+        <select id="planType">
+          <option value="daily">Daily / 7 days</option>
+          <option value="weekly">Weekly</option>
+          <option value="exam">Before Exam</option>
+        </select>
+
+        <label>Status</label>
+        <select id="planStatus">
+          <option value="not_started">Not Started</option>
+          <option value="in_progress">In Progress</option>
+          <option value="done">Completed</option>
+        </select>
+
+        <label>Subject Color</label>
+        <input id="subjectColor" type="color" value="#2563eb">
+
+        <label>Task / Goal</label>
+        <textarea id="task" placeholder="Task / goal"></textarea>
+
+        <div class="actions">
+          <button onclick="addPlan()">Add Plan</button>
+          <button class="gold" onclick="printPlans()">Print</button>
+          <button class="danger" onclick="clearAllPlans()">Clear All</button>
+        </div>
+      </div>
+
+      <div class="box planner-panel plans-list-panel">
+        <div class="panel-title">
+          <span class="panel-number">04</span>
+          <div>
+            <h2>My Plans</h2>
+            <p>Your saved study tasks and plans will appear here.</p>
+          </div>
+        </div>
+
+        <div id="plansList"></div>
+      </div>
+
+      <div class="box planner-panel calendar-panel">
+        <div class="panel-title">
+          <span class="panel-number">05</span>
+          <div>
+            <h2>Calendar View</h2>
+            <p>View your tasks by day and filter them by subject.</p>
+          </div>
+        </div>
+
+        <label>Filter by Subject</label>
+        <input id="subjectFilter" placeholder="Filter by subject" oninput="renderCalendar()">
+
+        <div id="calendarView"></div>
+      </div>
+    </div>
+  </div>
+</section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
