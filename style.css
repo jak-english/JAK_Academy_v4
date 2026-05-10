@@ -1899,3 +1899,90 @@ textarea{min-height:95px;resize:vertical}
     min-width: 680px;
   }
 }
+/* =========================================================
+   Mobile Fix - Header / Navigation
+   ========================================================= */
+
+@media (max-width: 768px) {
+  header {
+    padding: 10px 12px !important;
+    gap: 10px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .brand {
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .logo-img,
+  .logo-fallback {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px;
+    font-size: 16px;
+  }
+
+  .brand-title {
+    font-size: 20px !important;
+    line-height: 1.1;
+  }
+
+  .brand-sub {
+    font-size: 12px !important;
+  }
+
+  nav {
+    width: 100%;
+    display: flex !important;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 8px 2px 4px;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+
+  nav::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  nav::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,.25);
+    border-radius: 999px;
+  }
+
+  nav button {
+    flex: 0 0 auto;
+    min-width: max-content;
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+    border-radius: 12px !important;
+    scroll-snap-align: start;
+  }
+
+  main {
+    padding-top: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 8px 10px !important;
+  }
+
+  .brand-title {
+    font-size: 18px !important;
+  }
+
+  .brand-sub {
+    font-size: 11px !important;
+  }
+
+  nav button {
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+  }
+}
