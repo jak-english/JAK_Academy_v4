@@ -2812,3 +2812,157 @@ textarea{min-height:95px;resize:vertical}
     border-radius: 16px;
   }
 }
+/* =========================================================
+   Mobile Fix - Games + Dictionaries
+   ========================================================= */
+
+@media (max-width: 768px) {
+  /* Games Page */
+  .games-modern,
+  .dictionaries-modern {
+    padding: 14px !important;
+  }
+
+  .games-modern .dashboard-header,
+  .dictionaries-modern .dashboard-header {
+    display: block;
+  }
+
+  .games-modern .dashboard-header h1,
+  .dictionaries-modern .dashboard-header h1 {
+    font-size: 26px !important;
+    line-height: 1.2;
+  }
+
+  .games-modern .dashboard-header p,
+  .dictionaries-modern .dashboard-header p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .games-modern .dashboard-quick-actions,
+  .dictionaries-modern .dashboard-quick-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .games-modern .dashboard-quick-actions button,
+  .dictionaries-modern .dashboard-quick-actions button {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .games-layout,
+  .dictionaries-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .game-card,
+  .game-area-panel,
+  .dictionary-search-panel,
+  .dictionary-category-panel {
+    padding: 14px !important;
+    overflow-x: hidden;
+    overflow-wrap: anywhere;
+  }
+
+  .games-modern .panel-title,
+  .dictionaries-modern .panel-title {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .games-modern .panel-title h2,
+  .dictionaries-modern .panel-title h2 {
+    font-size: 20px !important;
+    line-height: 1.25;
+  }
+
+  .games-modern .panel-title p,
+  .dictionaries-modern .panel-title p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .game-card button,
+  .game-area-panel button,
+  .dictionary-search-panel button,
+  .dictionary-category-panel button,
+  .dictionaries-modern .actions button {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 12px;
+    margin-top: 6px;
+  }
+
+  .game-icon {
+    font-size: 34px !important;
+  }
+
+  #gameArea {
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+
+  #gameArea button {
+    min-width: 42px;
+    margin: 4px;
+    padding: 9px 10px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+
+  #dictionarySearch {
+    width: 100%;
+    font-size: 15px;
+    padding: 11px 12px;
+  }
+
+  #dictionaryResults,
+  #dictionaryCategory {
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+
+  .dictionaries-modern .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .games-modern,
+  .dictionaries-modern {
+    padding: 12px !important;
+  }
+
+  .games-modern .dashboard-header h1,
+  .dictionaries-modern .dashboard-header h1 {
+    font-size: 23px !important;
+  }
+
+  .games-modern .panel-title h2,
+  .dictionaries-modern .panel-title h2 {
+    font-size: 18px !important;
+  }
+
+  .game-card,
+  .game-area-panel,
+  .dictionary-search-panel,
+  .dictionary-category-panel {
+    border-radius: 16px;
+  }
+
+  #gameArea button {
+    min-width: 38px;
+    font-size: 13px;
+  }
+}
