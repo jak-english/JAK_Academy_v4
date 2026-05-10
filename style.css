@@ -1986,3 +1986,233 @@ textarea{min-height:95px;resize:vertical}
     padding: 8px 10px !important;
   }
 }
+/* =========================================================
+   Mobile Fix - Student Exams Page
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .exams-page-modern {
+    padding: 14px !important;
+  }
+
+  .exams-page-modern .dashboard-header {
+    display: block;
+  }
+
+  .exams-page-modern .dashboard-header h1 {
+    font-size: 26px;
+    line-height: 1.2;
+  }
+
+  .exams-page-modern .dashboard-header p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .exams-page-modern .dashboard-quick-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .exams-page-modern .dashboard-quick-actions button {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .exams-control-grid {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .exam-control-card,
+  .exams-list-panel {
+    padding: 14px !important;
+  }
+
+  .exams-page-modern .panel-title {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .exams-page-modern .panel-title h2 {
+    font-size: 20px;
+  }
+
+  .exams-page-modern .panel-title p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  #studentExamList {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  #studentExamList .box,
+  #studentExamList > div {
+    width: 100%;
+    max-width: 100%;
+    padding: 14px !important;
+    overflow-wrap: anywhere;
+  }
+
+  #studentExamList button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  #examCodeInput,
+  #studentExamGradeFilter {
+    width: 100%;
+    font-size: 15px;
+    padding: 11px 12px;
+  }
+
+  .selected-teacher-info {
+    margin-top: 12px;
+    padding: 12px !important;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 480px) {
+  .exams-page-modern .dashboard-header h1 {
+    font-size: 23px;
+  }
+
+  .exams-page-modern .badge {
+    font-size: 12px;
+  }
+
+  .exam-control-card,
+  .exams-list-panel {
+    border-radius: 16px;
+  }
+
+  #studentExamList {
+    gap: 10px;
+  }
+}
+/* =========================================================
+   Mobile Fix - Student Exams Page
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .exams-page-modern {
+    padding: 14px !important;
+  }
+
+  .exams-page-modern .dashboard-header {
+    display: block;
+  }
+
+  .exams-page-modern .dashboard-header h1 {
+    font-size: 26px;
+    line-height: 1.2;
+  }
+
+  .exams-page-modern .dashboard-header p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .exams-page-modern .dashboard-quick-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .exams-page-modern .dashboard-quick-actions button {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .exams-control-grid {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .exam-control-card,
+  .exams-list-panel {
+    padding: 14px !important;
+  }
+
+  .exams-page-modern .panel-title {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .exams-page-modern .panel-title h2 {
+    font-size: 20px;
+  }
+
+  .exams-page-modern .panel-title p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  #studentExamList {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  #studentExamList .box,
+  #studentExamList > div {
+    width: 100%;
+    max-width: 100%;
+    padding: 14px !important;
+    overflow-wrap: anywhere;
+  }
+
+  #studentExamList button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  #examCodeInput,
+  #studentExamGradeFilter {
+    width: 100%;
+    font-size: 15px;
+    padding: 11px 12px;
+  }
+
+  .selected-teacher-info {
+    margin-top: 12px;
+    padding: 12px !important;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 480px) {
+  .exams-page-modern .dashboard-header h1 {
+    font-size: 23px;
+  }
+
+  .exams-page-modern .badge {
+    font-size: 12px;
+  }
+
+  .exam-control-card,
+  .exams-list-panel {
+    border-radius: 16px;
+  }
+
+  #studentExamList {
+    gap: 10px;
+  }
+}
