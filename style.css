@@ -1787,3 +1787,115 @@ textarea{min-height:95px;resize:vertical}
     grid-template-columns: 1fr;
   }
 }
+/* =========================================================
+   Mobile Fix - Premium Page
+   ========================================================= */
+
+@media (max-width: 768px) {
+  /* Premium page spacing */
+  .premium-modern {
+    padding: 14px !important;
+  }
+
+  .premium-modern .dashboard-header {
+    display: block;
+    gap: 12px;
+  }
+
+  .premium-modern .dashboard-header h1 {
+    font-size: 26px;
+    line-height: 1.2;
+  }
+
+  .premium-modern .dashboard-header p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .premium-modern .dashboard-quick-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .premium-modern .dashboard-quick-actions button {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  /* Premium layout becomes one column */
+  .premium-layout {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .premium-payment-panel,
+  .premium-users-panel {
+    padding: 14px !important;
+    overflow-x: hidden;
+  }
+
+  .premium-modern .panel-title {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .premium-modern .panel-title h2 {
+    font-size: 20px;
+  }
+
+  .premium-modern .panel-title p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* Users table scrolls horizontally instead of breaking screen */
+  .users-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .users-table {
+    min-width: 720px;
+  }
+
+  .users-table th,
+  .users-table td {
+    font-size: 13px;
+    padding: 8px;
+    white-space: nowrap;
+  }
+
+  .users-table button {
+    font-size: 12px;
+    padding: 7px 9px;
+    margin: 3px;
+  }
+
+  #paymentInfo {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 480px) {
+  .premium-modern .dashboard-header h1 {
+    font-size: 23px;
+  }
+
+  .premium-modern .badge {
+    font-size: 12px;
+  }
+
+  .premium-modern .box {
+    border-radius: 16px;
+  }
+
+  .users-table {
+    min-width: 680px;
+  }
+}
