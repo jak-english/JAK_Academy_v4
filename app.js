@@ -1694,7 +1694,9 @@ function openPlanner() {
   if (typeof renderStudyMethodExplanation === "function") {
     renderStudyMethodExplanation();
   }
-
+if (typeof loadWeeklyStudyGoalInput === "function") {
+  loadWeeklyStudyGoalInput();
+}
   if (typeof renderStudyAnalytics === "function") {
     renderStudyAnalytics();
   }
@@ -3291,7 +3293,7 @@ if (studyDates.length > 0) {
   }
 }
 
-const weeklyGoalMinutes = 300;
+const weeklyGoalMinutes = getWeeklyStudyGoal();
 const weeklyGoalRate = Math.min(Math.round((totalMinutes / weeklyGoalMinutes) * 100), 100);
   cardsBox.innerHTML = `
     <div class="box analytics-card-box">
@@ -3434,6 +3436,35 @@ const weeklyGoalRate = Math.min(Math.round((totalMinutes / weeklyGoalMinutes) * 
     `;
   }
 }
+function getWeeklyStudyGoal() {
+  const savedGoal = Number(localStorage.getItem("jakWeeklyStudyGoal") || 300);
+  return savedGoal > 0 ? savedGoal : 300;
+}
+
+function saveWeeklyStudyGoal() {
+  const input = document.getElementById("weeklyGoalInput");
+  const msg = document.getElementById("weeklyGoalMsg");
+
+  const goal = Number(input?.value || 300);
+
+  if (!goal || goal < 30) {
+    if (msg) msg.textContent = "Please enter a realistic goal. Minimum: 30 minutes.";
+    return;
+  }
+
+  localStorage.setItem("jakWeeklyStudyGoal", String(goal));
+
+  if (msg) msg.textContent = "Weekly study goal saved ✅";
+
+  if (typeof renderStudyAnalytics === "function") {
+    renderStudyAnalytics();
+  }
+}
+
+function loadWeeklyStudyGoalInput() {
+  const input = document.getElementById("weeklyGoalInput");
+  if (input) input.value = getWeeklyStudyGoal();
+}
 
 window.goDashboard = goDashboard;
 window.logout = logout;
@@ -3467,6 +3498,9 @@ window.renderSelectedTeacherInfo = renderSelectedTeacherInfo;
 window.renderStudyMethodExplanation = renderStudyMethodExplanation;
 window.generateStudySystemSchedule = generateStudySystemSchedule;
 window.renderStudyAnalytics = renderStudyAnalytics;
+window.getWeeklyStudyGoal = getWeeklyStudyGoal;
+window.saveWeeklyStudyGoal = saveWeeklyStudyGoal;
+window.loadWeeklyStudyGoalInput = loadWeeklyStudyGoalInput;
 if (typeof deleteExam === "function") {
   window.deleteExam = deleteExam;
   console.log("✅ deleteExam connected to window");
