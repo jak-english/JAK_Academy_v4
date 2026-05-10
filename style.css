@@ -2385,3 +2385,182 @@ textarea{min-height:95px;resize:vertical}
     grid-column: auto;
   }
 }
+/* =========================================================
+   Mobile Fix - Planner Page
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .planner-modern {
+    padding: 14px !important;
+  }
+
+  .planner-modern .dashboard-header {
+    display: block;
+  }
+
+  .planner-modern .dashboard-header h1 {
+    font-size: 26px !important;
+    line-height: 1.2;
+  }
+
+  .planner-modern .dashboard-header p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .planner-modern .dashboard-quick-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .planner-modern .dashboard-quick-actions button {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  #plannerStats {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .planner-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .planner-panel,
+  .study-system-panel,
+  .study-analytics-panel,
+  .study-recommendations-panel,
+  .weekly-goal-panel {
+    padding: 14px !important;
+    overflow-x: hidden;
+  }
+
+  .planner-modern .panel-title {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .planner-modern .panel-title h2 {
+    font-size: 20px !important;
+    line-height: 1.25;
+  }
+
+  .planner-modern .panel-title p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .planner-modern .grid.two,
+  .planner-modern .grid.three,
+  .study-analytics-panel .grid.three {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .planner-modern input,
+  .planner-modern select,
+  .planner-modern textarea {
+    width: 100%;
+    font-size: 15px;
+    padding: 11px 12px;
+  }
+
+  .planner-modern textarea {
+    min-height: 95px;
+  }
+
+  .planner-modern .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .planner-modern .actions button {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  #studyMethodExplanation,
+  #studySystemSchedule {
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+
+  .study-charts-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  #studyRecommendations {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .analytics-card-box {
+    min-height: auto;
+    padding: 14px !important;
+  }
+
+  .analytics-card-box p {
+    font-size: 30px !important;
+  }
+
+  .analytics-row {
+    padding: 12px !important;
+  }
+
+  .analytics-row-top {
+    font-size: 13px;
+    gap: 8px;
+  }
+
+  .plan-card {
+    padding: 14px !important;
+    overflow-wrap: anywhere;
+  }
+
+  #plansList .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  #calendarView {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 480px) {
+  .planner-modern {
+    padding: 12px !important;
+  }
+
+  .planner-modern .dashboard-header h1 {
+    font-size: 23px !important;
+  }
+
+  .planner-modern .panel-title h2 {
+    font-size: 18px !important;
+  }
+
+  .analytics-card-box p {
+    font-size: 26px !important;
+  }
+
+  .recommendation-card {
+    padding: 14px !important;
+  }
+}
