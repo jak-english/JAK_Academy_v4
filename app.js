@@ -1031,11 +1031,18 @@ function getUnansweredNumbers() {
 async function submitExam(autoSubmit) {
   if (!autoSubmit) {
     const unanswered = getUnansweredNumbers();
+
     if (unanswered.length > 0) {
-      alert("You still have unanswered questions: " + unanswered.join(", ") + ". Please answer them before submitting.");
-      return;
+      const confirmSubmit = confirm(
+        "You still have unanswered questions: " +
+        unanswered.join(", ") +
+        ".\n\nAre you sure you want to submit anyway?"
+      );
+
+      if (!confirmSubmit) return;
+    } else {
+      if (!confirm("Submit exam now?")) return;
     }
-    if (!confirm("Submit exam now?")) return;
   }
 
   if (timerInterval) clearInterval(timerInterval);
@@ -1046,6 +1053,7 @@ async function submitExam(autoSubmit) {
   solvingQuestions.forEach(q => {
     const ans = studentAnswers[q.id] || null;
     const ok = ans === q.correct_answer;
+
     if (ok) correct++;
 
     answers.push({
@@ -1061,7 +1069,8 @@ async function submitExam(autoSubmit) {
   });
 
   const total = solvingQuestions.length;
-  const percentage = Math.round((correct / total) * 100);
+  const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+
   await saveExamResult(correct, total, percentage, answers);
 
   resultTitle.textContent = currentPreviewExam.title || "Result";
@@ -1072,13 +1081,15 @@ async function submitExam(autoSubmit) {
   answers.forEach((a, i) => {
     const div = document.createElement("div");
     div.className = "box " + (a.is_correct ? "correct" : "wrong");
+
     div.innerHTML = `
       <h3>${i + 1}. ${safeText(a.question_text)}</h3>
       <p><b>Status:</b> ${a.is_correct ? "✅ Correct" : "❌ Wrong"}</p>
-      <p><b>Your answer:</b> ${a.student_answer || "No answer"} - ${safeText(a.student_answer_text)}</p>
-      <p><b>Correct answer:</b> ${a.correct_answer} - ${safeText(a.correct_answer_text)}</p>
+      <p><b>Your answer:</b> ${a.student_answer || "No answer"} - ${safeText(a.student_answer_text || "No answer")}</p>
+      <p><b>Correct answer:</b> ${safeText(a.correct_answer)} - ${safeText(a.correct_answer_text)}</p>
       <p><b>Explanation:</b> ${safeText(a.explanation) || "-"}</p>
     `;
+
     resultDetails.appendChild(div);
   });
 
@@ -1138,7 +1149,6 @@ async function loadTeacherResults(filter = "all") {
   if (summary) summary.innerHTML = "";
   if (status) status.textContent = "Loading results...";
 
-  // 1) Load exam results
   const { data: resultsRaw, error } = await client
     .from("exam_results")
     .select("*, exams(title)")
@@ -1158,7 +1168,6 @@ async function loadTeacherResults(filter = "all") {
     return;
   }
 
-  // 2) Apply filter
   let results = [...resultsRaw];
 
   if (filter === "passed") {
@@ -1210,7 +1219,6 @@ async function loadTeacherResults(filter = "all") {
     return;
   }
 
-  // 3) Sort filtered results
   results.sort((a, b) => {
     const percentageDiff = Number(b.percentage || 0) - Number(a.percentage || 0);
     if (percentageDiff !== 0) return percentageDiff;
@@ -1223,7 +1231,6 @@ async function loadTeacherResults(filter = "all") {
     return dateB - dateA;
   });
 
-  // 4) Collect student IDs
   const studentIds = [
     ...new Set(
       results
@@ -1232,7 +1239,6 @@ async function loadTeacherResults(filter = "all") {
     )
   ];
 
-  // 5) Load profiles separately
   let profilesMap = {};
 
   if (studentIds.length > 0) {
@@ -1250,14 +1256,32 @@ async function loadTeacherResults(filter = "all") {
     });
   }
 
-  // 6) Teacher results summary based on the selected filter
   const totalSubmissions = results.length;
-
   const percentages = results.map(result => Number(result.percentage || 0));
 
   const averageScore = Math.round(
     percentages.reduce((sum, value) => sum + value, 0) / totalSubmissions
   );
+
+  const highestScore = Math.max(...percentages);
+  const lowestScore = Math.min(...percentages);
+
+  const passedCount = results.filter(result => Number(result.percentage || 0) >= 50).length;
+  const failedCount = results.filter(result => Number(result.percentage || 0) < 50).length;
+
+  const passRate = Math.round((passedCount / totalSubmissions) * 100);
+
+  const uniqueStudentsCount = new Set(
+    results
+      .map(result => result.student_id)
+      .filter(Boolean)
+  ).size;
+
+  const uniqueExamsCount = new Set(
+    results
+      .map(result => result.exam_id)
+      .filter(Boolean)
+  ).size;
 
   const topResult = results.reduce((best, current) => {
     const bestPercentage = Number(best.percentage || 0);
@@ -1274,7 +1298,23 @@ async function loadTeacherResults(filter = "all") {
     return best;
   }, results[0]);
 
+  const weakestResult = results.reduce((weakest, current) => {
+    const weakestPercentage = Number(weakest.percentage || 0);
+    const currentPercentage = Number(current.percentage || 0);
+
+    if (currentPercentage < weakestPercentage) return current;
+
+    if (currentPercentage === weakestPercentage) {
+      const weakestScore = Number(weakest.score || 0);
+      const currentScore = Number(current.score || 0);
+      if (currentScore < weakestScore) return current;
+    }
+
+    return weakest;
+  }, results[0]);
+
   const topProfile = profilesMap[topResult.student_id];
+  const weakestProfile = profilesMap[weakestResult.student_id];
 
   const topStudentName =
     topProfile?.full_name ||
@@ -1282,7 +1322,48 @@ async function loadTeacherResults(filter = "all") {
     topResult.student_id ||
     "Unknown Student";
 
-  const below50Count = results.filter(result => Number(result.percentage || 0) < 50).length;
+  const weakestStudentName =
+    weakestProfile?.full_name ||
+    weakestProfile?.email ||
+    weakestResult.student_id ||
+    "Unknown Student";
+
+  const examStats = {};
+
+  results.forEach(result => {
+    const examTitle = result.exams?.title || "Exam";
+    const percentage = Number(result.percentage || 0);
+
+    if (!examStats[examTitle]) {
+      examStats[examTitle] = {
+        attempts: 0,
+        totalPercentage: 0,
+        best: percentage,
+        lowest: percentage
+      };
+    }
+
+    examStats[examTitle].attempts += 1;
+    examStats[examTitle].totalPercentage += percentage;
+    examStats[examTitle].best = Math.max(examStats[examTitle].best, percentage);
+    examStats[examTitle].lowest = Math.min(examStats[examTitle].lowest, percentage);
+  });
+
+  const examStatsHtml = Object.entries(examStats)
+    .map(([examTitle, stats]) => {
+      const avg = Math.round(stats.totalPercentage / stats.attempts);
+
+      return `
+        <div class="box">
+          <h3>${safeText(examTitle)}</h3>
+          <p><strong>Attempts:</strong> ${safeText(stats.attempts)}</p>
+          <p><strong>Average:</strong> ${safeText(avg)}%</p>
+          <p><strong>Best:</strong> ${safeText(stats.best)}%</p>
+          <p><strong>Lowest:</strong> ${safeText(stats.lowest)}%</p>
+        </div>
+      `;
+    })
+    .join("");
 
   const filterTitle =
     filter === "passed" ? "Passed Students" :
@@ -1292,13 +1373,72 @@ async function loadTeacherResults(filter = "all") {
 
   if (summary) {
     summary.innerHTML = `
-      <h3>Teacher Analytics Summary 📊</h3>
+      <div class="panel-title">
+        <span class="panel-number">A</span>
+        <div>
+          <h2>Teacher Results Analytics 📊</h2>
+          <p>Current Filter: <strong>${safeText(filterTitle)}</strong></p>
+        </div>
+      </div>
 
-      <p><strong>Current Filter:</strong> ${safeText(filterTitle)}</p>
-      <p><strong>Total Shown:</strong> ${safeText(totalSubmissions)}</p>
-      <p><strong>Average Score:</strong> ${safeText(averageScore)}%</p>
-      <p><strong>Top Student:</strong> ${safeText(topStudentName)}</p>
-      <p><strong>Students Below 50%:</strong> ${safeText(below50Count)}</p>
+      <div class="actions" style="margin: 12px 0;">
+        <button onclick="loadTeacherResults('all')">All Results</button>
+        <button class="success" onclick="loadTeacherResults('passed')">Passed</button>
+        <button class="danger" onclick="loadTeacherResults('failed')">Below 50%</button>
+        <button class="gold" onclick="loadTeacherResults('best')">Best Per Student</button>
+      </div>
+
+      <div class="grid three">
+        <div class="box analytics-card-box">
+          <h2>Total Attempts</h2>
+          <p>${safeText(totalSubmissions)}</p>
+          <span>Shown submissions</span>
+        </div>
+
+        <div class="box analytics-card-box">
+          <h2>Class Average</h2>
+          <p>${safeText(averageScore)}%</p>
+          <span>Average performance</span>
+        </div>
+
+        <div class="box analytics-card-box">
+          <h2>Pass Rate</h2>
+          <p>${safeText(passRate)}%</p>
+          <span>${safeText(passedCount)} passed / ${safeText(failedCount)} below 50%</span>
+        </div>
+
+        <div class="box analytics-card-box">
+          <h2>Students</h2>
+          <p>${safeText(uniqueStudentsCount)}</p>
+          <span>Unique students</span>
+        </div>
+
+        <div class="box analytics-card-box">
+          <h2>Exams</h2>
+          <p>${safeText(uniqueExamsCount)}</p>
+          <span>Different exams</span>
+        </div>
+
+        <div class="box analytics-card-box">
+          <h2>Best Score</h2>
+          <p>${safeText(highestScore)}%</p>
+          <span>${safeText(topStudentName)}</span>
+        </div>
+
+        <div class="box analytics-card-box">
+          <h2>Lowest Score</h2>
+          <p>${safeText(lowestScore)}%</p>
+          <span>${safeText(weakestStudentName)}</span>
+        </div>
+      </div>
+
+      <div class="box" style="margin-top: 14px;">
+        <h2>Exam Breakdown</h2>
+        <p>Attempts, average, best score, and lowest score for each exam.</p>
+        <div class="grid three">
+          ${examStatsHtml}
+        </div>
+      </div>
     `;
   }
 
@@ -1306,7 +1446,6 @@ async function loadTeacherResults(filter = "all") {
     status.textContent = "Results loaded: " + results.length + " | Filter: " + filterTitle;
   }
 
-  // 7) Render results
   list.innerHTML = "";
 
   results.forEach(result => {
@@ -1330,6 +1469,11 @@ async function loadTeacherResults(filter = "all") {
       ? new Date(result.submitted_at).toLocaleString()
       : "Date not available";
 
+    const statusLabel =
+      Number(percentage) >= 80 ? "🟢 Excellent" :
+      Number(percentage) >= 50 ? "🟡 Needs Practice" :
+      "🔴 Needs Support";
+
     const d = document.createElement("div");
     d.className = "box";
 
@@ -1337,6 +1481,7 @@ async function loadTeacherResults(filter = "all") {
       <h3>${safeText(studentName)}</h3>
       <p><strong>Exam:</strong> ${safeText(examTitle)}</p>
       <p><strong>Score:</strong> ${safeText(score)}/${safeText(total)} (${safeText(percentage)}%)</p>
+      <p><strong>Status:</strong> ${safeText(statusLabel)}</p>
       <p><strong>Submitted:</strong> ${safeText(submittedDate)}</p>
     `;
 
