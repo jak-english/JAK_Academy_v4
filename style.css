@@ -2216,3 +2216,172 @@ textarea{min-height:95px;resize:vertical}
     gap: 10px;
   }
 }
+/* =========================================================
+   Mobile Fix - Exam Solver Page
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .exam-solver-modern {
+    padding: 14px !important;
+  }
+
+  .solver-header {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .solver-header h1 {
+    font-size: 24px !important;
+    line-height: 1.2;
+  }
+
+  .solver-header p,
+  #examProgressText {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .solver-timer-card {
+    width: 100%;
+    padding: 12px !important;
+    text-align: center;
+    border-radius: 16px;
+  }
+
+  .solver-timer-card span {
+    font-size: 13px;
+  }
+
+  .timer,
+  #examTimer {
+    font-size: 28px !important;
+    line-height: 1.1;
+  }
+
+  .solver-status-card {
+    padding: 10px 12px !important;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 12px 0;
+  }
+
+  .solver-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px;
+  }
+
+  .solver-nav-panel,
+  .solver-question-panel {
+    padding: 14px !important;
+    overflow-x: hidden;
+  }
+
+  .exam-solver-modern .panel-title {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .exam-solver-modern .panel-title h2 {
+    font-size: 19px;
+  }
+
+  .exam-solver-modern .panel-title p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  #questionNav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #questionNav button,
+  .question-pill {
+    flex: 0 0 auto;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+  }
+
+  #solverQuestionText {
+    font-size: 20px !important;
+    line-height: 1.5;
+    margin: 10px 0 14px;
+    overflow-wrap: anywhere;
+  }
+
+  #solverOptions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  #solverOptions button {
+    width: 100%;
+    text-align: left;
+    padding: 12px 14px !important;
+    font-size: 15px !important;
+    line-height: 1.5;
+    border-radius: 14px !important;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .solver-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .solver-actions button {
+    width: 100%;
+    padding: 11px 12px !important;
+    font-size: 14px !important;
+    border-radius: 14px !important;
+  }
+
+  .solver-actions .success {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .exam-solver-modern {
+    padding: 12px !important;
+  }
+
+  .solver-header h1 {
+    font-size: 21px !important;
+  }
+
+  .timer,
+  #examTimer {
+    font-size: 24px !important;
+  }
+
+  #solverQuestionText {
+    font-size: 18px !important;
+  }
+
+  #solverOptions button {
+    font-size: 14px !important;
+    padding: 11px 12px !important;
+  }
+
+  .solver-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .solver-actions .success {
+    grid-column: auto;
+  }
+}
