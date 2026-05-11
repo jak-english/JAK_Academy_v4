@@ -3273,3 +3273,239 @@ textarea{min-height:95px;resize:vertical}
     font-size: 12px;
   }
 }
+/* =========================================================
+   Modern Exam Question UI Patch
+   Safe CSS Only
+   ========================================================= */
+
+/* Main question panel */
+.solver-question-panel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px !important;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, .16), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(124, 58, 237, .14), transparent 35%),
+    rgba(15, 23, 42, .92) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,.28);
+}
+
+.solver-question-panel::before {
+  content: "Question Focus";
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .9px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  pointer-events: none;
+}
+
+/* Question text */
+#solverQuestionText {
+  position: relative;
+  margin: 18px 0 22px !important;
+  padding: 18px 20px;
+  border-radius: 22px;
+  font-size: clamp(22px, 3vw, 34px) !important;
+  line-height: 1.5 !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+  border: 1px solid rgba(255,255,255,.13);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+/* Options container */
+#solverOptions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+/* Options as modern cards */
+#solverOptions label,
+#solverOptions button,
+#solverOptions .option-card {
+  position: relative;
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 58px;
+  padding: 15px 18px !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255,255,255,.13) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.04)) !important;
+  color: var(--text) !important;
+  font-size: 16px !important;
+  font-weight: 800;
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 14px 32px rgba(0,0,0,.18);
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Hide native radio but keep logic working */
+#solverOptions input[type="radio"] {
+  transform: scale(1.15);
+  accent-color: #22d3ee;
+}
+
+/* Hover effect */
+#solverOptions label:hover,
+#solverOptions button:hover,
+#solverOptions .option-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(34,211,238,.55) !important;
+  background:
+    linear-gradient(135deg, rgba(34,211,238,.16), rgba(255,255,255,.06)) !important;
+  box-shadow: 0 18px 42px rgba(34,211,238,.12);
+}
+
+/* Selected answer */
+#solverOptions label.selected,
+#solverOptions button.selected,
+#solverOptions .option-card.selected {
+  border-color: rgba(34,197,94,.75) !important;
+  background:
+    linear-gradient(135deg, rgba(34,197,94,.22), rgba(34,211,238,.08)) !important;
+  box-shadow:
+    0 18px 45px rgba(34,197,94,.14),
+    inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+#solverOptions label.selected::after,
+#solverOptions button.selected::after,
+#solverOptions .option-card.selected::after {
+  content: "✓";
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(34,197,94,.95);
+  color: #06121f;
+  font-weight: 1000;
+}
+
+/* Question navigation modern pills */
+#questionNav button,
+.question-nav button {
+  border-radius: 14px !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  background: rgba(255,255,255,.08) !important;
+  color: var(--text) !important;
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(0,0,0,.16);
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+
+#questionNav button:hover,
+.question-nav button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(34,211,238,.55) !important;
+}
+
+/* Current question nav if your JS adds active/current classes */
+#questionNav button.active,
+#questionNav button.current,
+.question-nav button.active,
+.question-nav button.current {
+  background: linear-gradient(135deg, #22d3ee, #7c3aed) !important;
+  color: white !important;
+}
+
+/* Solver actions */
+.solver-actions {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 24px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+.solver-actions button {
+  font-weight: 900;
+  box-shadow: 0 14px 28px rgba(0,0,0,.20);
+}
+
+/* Review Later button special look */
+.solver-actions .gold {
+  background: linear-gradient(135deg, #f59e0b, #fde68a) !important;
+  color: #1f1300 !important;
+}
+
+/* Submit button stronger */
+.solver-actions .success {
+  background: linear-gradient(135deg, #22c55e, #22d3ee) !important;
+  color: #06121f !important;
+}
+
+/* Mobile improvements */
+@media (max-width: 768px) {
+  .solver-question-panel {
+    border-radius: 22px !important;
+  }
+
+  .solver-question-panel::before {
+    display: none;
+  }
+
+  #solverQuestionText {
+    padding: 15px;
+    font-size: 20px !important;
+    border-radius: 18px;
+  }
+
+  #solverOptions {
+    gap: 10px;
+  }
+
+  #solverOptions label,
+  #solverOptions button,
+  #solverOptions .option-card {
+    min-height: 54px;
+    padding: 13px 14px !important;
+    font-size: 15px !important;
+    border-radius: 16px !important;
+  }
+
+  #solverOptions label.selected::after,
+  #solverOptions button.selected::after,
+  #solverOptions .option-card.selected::after {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+  }
+
+  .solver-actions {
+    padding: 12px;
+    border-radius: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  #solverQuestionText {
+    font-size: 18px !important;
+  }
+
+  #solverOptions label,
+  #solverOptions button,
+  #solverOptions .option-card {
+    font-size: 14px !important;
+  }
+}
