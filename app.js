@@ -4409,6 +4409,8 @@ async function loadTeacherResources() {
 
     d.innerHTML = `
       <span class="badge">${resource.is_premium ? "💎 Premium" : "Free"}</span>
+      <span class="badge">${resource.is_visible ? "👁️ Visible" : "🙈 Hidden"}</span>
+
       <h3>${safeText(resource.title)}</h3>
       <p>${safeText(resource.description || "No description")}</p>
       <p><strong>Subject:</strong> ${safeText(resource.subject || "Not specified")}</p>
@@ -4427,6 +4429,14 @@ async function loadTeacherResources() {
           onclick="toggleResourcePremium('${resource.id}', ${resource.is_premium === true})"
         >
           ${resource.is_premium ? "Make Free 🔓" : "Make Premium 💎"}
+        </button>
+
+        <button 
+          type="button" 
+          class="secondary" 
+          onclick="toggleResourceVisibility('${resource.id}', ${resource.is_visible === true})"
+        >
+          ${resource.is_visible ? "Hide 🙈" : "Show 👁️"}
         </button>
 
         <button 
@@ -4484,6 +4494,30 @@ async function deleteTeacherResource(resourceId, filePath, title) {
   if (msg) msg.textContent = "Resource deleted successfully.";
 
   await loadTeacherResources();
+
+  if (typeof loadStudentResources === "function") {
+    await loadStudentResources();
+  }
+}
+async function toggleResourceVisibility(resourceId, currentStatus) {
+  const newStatus = !currentStatus;
+
+  const { error } = await client
+    .from("resources")
+    .update({ is_visible: newStatus })
+    .eq("id", resourceId);
+
+  if (error) {
+    console.error("Toggle visibility error:", error);
+    alert("Could not update resource visibility.");
+    return;
+  }
+
+  alert(newStatus ? "Resource is now visible 👁️" : "Resource is now hidden 🙈");
+
+  if (typeof loadTeacherResources === "function") {
+    await loadTeacherResources();
+  }
 
   if (typeof loadStudentResources === "function") {
     await loadStudentResources();
@@ -4581,8 +4615,8 @@ async function loadStudentResources() {
     d.className = "box resource-card student-resource-card";
 
     d.innerHTML = `
-      <span class="badge">${resource.is_premium ? "💎 Premium" : "Free"}</span>
-      <h3>${safeText(resource.title || "Untitled Resource")}</h3>
+<span class="badge">${resource.is_premium ? "💎 Premium" : "Free"}</span>
+<span class="badge">${resource.is_visible ? "👁️ Visible" : "🙈 Hidden"}</span>      <h3>${safeText(resource.title || "Untitled Resource")}</h3>
       <p>${safeText(resource.description || "No description")}</p>
       <p><strong>Subject:</strong> ${safeText(resource.subject || "Not specified")}</p>
       <p><strong>Grade:</strong> ${safeText(resource.grade || "Not specified")}</p>
@@ -4665,3 +4699,4 @@ window.loadStudentResources = loadStudentResources;
 window.clearStudentResourceFilters = clearStudentResourceFilters;
 window.toggleResourcePremium = toggleResourcePremium;
 window.deleteTeacherResource = deleteTeacherResource;
+window.toggleResourceVisibility = toggleResourceVisibility;
