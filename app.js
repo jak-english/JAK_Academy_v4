@@ -4183,7 +4183,13 @@ function addRecommendedTaskToPlanner(type) {
   if (typeof renderTodayTasks === "function") renderTodayTasks();
   if (typeof renderStudyAnalytics === "function") renderStudyAnalytics();
 
-  alert("Recommended task added to your Planner ✅");
+const goToPlanner = confirm(
+  "Recommended task added to your Planner ✅\n\nDo you want to open Planner now?"
+);
+
+if (goToPlanner && typeof openPlanner === "function") {
+  openPlanner();
+}
 }
 
 window.addRecommendedTaskToPlanner = addRecommendedTaskToPlanner;
