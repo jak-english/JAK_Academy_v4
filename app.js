@@ -1139,6 +1139,9 @@ function getStudyAdvice(p) {
         <p><strong>Task:</strong> Review the basic rules of this exam topic and solve 10 easy practice questions.</p>
         <p><strong>Study Type:</strong> Foundation Review</p>
         <p><strong>Suggested Time:</strong> 30–45 minutes</p>
+        <button class="violet" onclick="addRecommendedTaskToPlanner('foundation')">
+          Add this task to my Planner
+        </button>
       </div>
 
       <div class="next-action-card">
@@ -1158,6 +1161,9 @@ function getStudyAdvice(p) {
         <p><strong>Task:</strong> Revise your mistakes, then solve a short timed practice exam.</p>
         <p><strong>Study Type:</strong> Mistake Correction + Timed Practice</p>
         <p><strong>Suggested Time:</strong> 30 minutes</p>
+        <button class="violet" onclick="addRecommendedTaskToPlanner('practice')">
+          Add this task to my Planner
+        </button>
       </div>
 
       <div class="next-action-card">
@@ -1176,6 +1182,9 @@ function getStudyAdvice(p) {
       <p><strong>Task:</strong> Solve advanced questions and challenge yourself with harder examples.</p>
       <p><strong>Study Type:</strong> Advanced Practice</p>
       <p><strong>Suggested Time:</strong> 20–30 minutes</p>
+      <button class="violet" onclick="addRecommendedTaskToPlanner('advanced')">
+        Add this task to my Planner
+      </button>
     </div>
 
     <div class="next-action-card">
@@ -1184,7 +1193,6 @@ function getStudyAdvice(p) {
     </div>
   `;
 }
-
 async function saveExamResult(score, total, percentage, answers) {
   const user = await getCurrentUser();
   if (!user || !currentPreviewExam) return;
@@ -4089,3 +4097,93 @@ setInterval(() => {
   }
 }, 800);
 window.updateExamAnswerStats = updateExamAnswerStats;
+
+function addMinutesToClock(time, minutesToAdd) {
+  const [hours, minutes] = String(time || "17:00").split(":").map(Number);
+  const date = new Date();
+  date.setHours(hours || 17, minutes || 0, 0, 0);
+  date.setMinutes(date.getMinutes() + minutesToAdd);
+
+  return date.toTimeString().slice(0, 5);
+}
+
+function getTomorrowDateString() {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString().split("T")[0];
+}
+
+function addRecommendedTaskToPlanner(type) {
+  const plans = getPlans();
+
+  const examTitle =
+    currentPreviewExam?.title ||
+    currentPreviewExam?.description ||
+    "Exam Review";
+
+  let recommendation = {
+    subject: examTitle,
+    type: "exam",
+    task: "Review this exam and practise similar questions.",
+    minutes: 30,
+    color: "#2563eb"
+  };
+
+  if (type === "foundation") {
+    recommendation = {
+      subject: examTitle,
+      type: "exam",
+      task: "Foundation review: revise the basic rules of this exam topic and solve 10 easy practice questions.",
+      minutes: 45,
+      color: "#ef4444"
+    };
+  }
+
+  if (type === "practice") {
+    recommendation = {
+      subject: examTitle,
+      type: "exam",
+      task: "Mistake correction: review your wrong answers, write them in a mistake notebook, then solve a short timed practice exam.",
+      minutes: 30,
+      color: "#f59e0b"
+    };
+  }
+
+  if (type === "advanced") {
+    recommendation = {
+      subject: examTitle,
+      type: "exam",
+      task: "Advanced practice: solve harder exam-style questions and create one question of your own.",
+      minutes: 30,
+      color: "#22c55e"
+    };
+  }
+
+  const start = "17:00";
+  const end = addMinutesToClock(start, recommendation.minutes);
+
+  const newPlan = {
+    id: "exam-rec-" + Date.now(),
+    subject: recommendation.subject,
+    date: getTomorrowDateString(),
+    start,
+    end,
+    type: recommendation.type,
+    task: recommendation.task,
+    color: recommendation.color,
+    status: "not_started"
+  };
+
+  plans.push(newPlan);
+  savePlans(plans);
+
+  if (typeof loadPlans === "function") loadPlans();
+  if (typeof renderCalendar === "function") renderCalendar();
+  if (typeof updatePlannerStats === "function") updatePlannerStats();
+  if (typeof renderTodayTasks === "function") renderTodayTasks();
+  if (typeof renderStudyAnalytics === "function") renderStudyAnalytics();
+
+  alert("Recommended task added to your Planner ✅");
+}
+
+window.addRecommendedTaskToPlanner = addRecommendedTaskToPlanner;
