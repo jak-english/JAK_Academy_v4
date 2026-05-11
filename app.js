@@ -1129,9 +1129,60 @@ async function submitExam(autoSubmit) {
 }
 
 function getStudyAdvice(p) {
-  if (p < 50) return "<h2>Study Advice</h2><p>Review basics first: grammar rules, vocabulary meanings, and solve easy questions again.</p>";
-  if (p < 80) return "<h2>Study Advice</h2><p>Good work. Focus on your mistakes and practise timed questions.</p>";
-  return "<h2>Study Advice</h2><p>Excellent. Move to advanced questions and teach the idea to someone else.</p>";
+  if (p < 50) {
+    return `
+      <h2>Study Advice</h2>
+      <p>Review basics first: grammar rules, vocabulary meanings, and solve easy questions again.</p>
+
+      <div class="planner-recommendation-card">
+        <h3>Recommended Planner Task 📅</h3>
+        <p><strong>Task:</strong> Review the basic rules of this exam topic and solve 10 easy practice questions.</p>
+        <p><strong>Study Type:</strong> Foundation Review</p>
+        <p><strong>Suggested Time:</strong> 30–45 minutes</p>
+      </div>
+
+      <div class="next-action-card">
+        <h3>Next Step 🎯</h3>
+        <p>Add a study task to your planner for tomorrow and focus on the questions you got wrong.</p>
+      </div>
+    `;
+  }
+
+  if (p < 80) {
+    return `
+      <h2>Study Advice</h2>
+      <p>Good work. Focus on your mistakes and practise timed questions.</p>
+
+      <div class="planner-recommendation-card">
+        <h3>Recommended Planner Task 📅</h3>
+        <p><strong>Task:</strong> Revise your mistakes, then solve a short timed practice exam.</p>
+        <p><strong>Study Type:</strong> Mistake Correction + Timed Practice</p>
+        <p><strong>Suggested Time:</strong> 30 minutes</p>
+      </div>
+
+      <div class="next-action-card">
+        <h3>Next Step 🎯</h3>
+        <p>Write your mistakes in a mistake notebook, then repeat similar questions.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <h2>Study Advice</h2>
+    <p>Excellent. Move to advanced questions and teach the idea to someone else.</p>
+
+    <div class="planner-recommendation-card">
+      <h3>Recommended Planner Task 📅</h3>
+      <p><strong>Task:</strong> Solve advanced questions and challenge yourself with harder examples.</p>
+      <p><strong>Study Type:</strong> Advanced Practice</p>
+      <p><strong>Suggested Time:</strong> 20–30 minutes</p>
+    </div>
+
+    <div class="next-action-card">
+      <h3>Next Step 🎯</h3>
+      <p>Try to explain the rule to another student or create your own exam-style question.</p>
+    </div>
+  `;
 }
 
 async function saveExamResult(score, total, percentage, answers) {
