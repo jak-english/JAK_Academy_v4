@@ -1463,7 +1463,40 @@ async function loadTeacherResults(filter = "all") {
     examStats[examTitle].best = Math.max(examStats[examTitle].best, percentage);
     examStats[examTitle].lowest = Math.min(examStats[examTitle].lowest, percentage);
   });
+  const examInsights = Object.entries(examStats).map(([examTitle, stats]) => {
+    const avg = Math.round(stats.totalPercentage / stats.attempts);
 
+    return {
+      examTitle,
+      average: avg,
+      attempts: stats.attempts,
+      best: stats.best,
+      lowest: stats.lowest
+    };
+  });
+
+  const weakestExam = examInsights.length
+    ? examInsights.reduce((weakest, current) =>
+        current.average < weakest.average ? current : weakest
+      )
+    : null;
+
+  const strongestExam = examInsights.length
+    ? examInsights.reduce((strongest, current) =>
+        current.average > strongest.average ? current : strongest
+      )
+    : null;
+
+  const studentsNeedSupport = results.filter(result =>
+    Number(result.percentage || 0) < 50
+  ).length;
+
+  const recommendedAction =
+    studentsNeedSupport >= 5
+      ? "Create a revision exam and assign targeted practice for weak students."
+      : studentsNeedSupport > 0
+        ? "Review the weakest exam and give short remedial tasks."
+        : "Great performance. You can assign a more challenging follow-up exam.";
   const examStatsHtml = Object.entries(examStats)
     .map(([examTitle, stats]) => {
       const avg = Math.round(stats.totalPercentage / stats.attempts);
@@ -1546,7 +1579,35 @@ async function loadTeacherResults(filter = "all") {
           <span>${safeText(weakestStudentName)}</span>
         </div>
       </div>
+      <div class="box" style="margin-top: 14px;">
+        <h2>Smart Insights 🧠</h2>
+        <p>Automatic teaching recommendations based on student performance.</p>
 
+        <div class="grid three">
+          <div class="box analytics-card-box">
+            <h2>Weakest Exam</h2>
+            <p>${safeText(weakestExam ? weakestExam.average + "%" : "N/A")}</p>
+            <span>${safeText(weakestExam ? weakestExam.examTitle : "No exam data")}</span>
+          </div>
+
+          <div class="box analytics-card-box">
+            <h2>Strongest Exam</h2>
+            <p>${safeText(strongestExam ? strongestExam.average + "%" : "N/A")}</p>
+            <span>${safeText(strongestExam ? strongestExam.examTitle : "No exam data")}</span>
+          </div>
+
+          <div class="box analytics-card-box">
+            <h2>Need Support</h2>
+            <p>${safeText(studentsNeedSupport)}</p>
+            <span>Students below 50%</span>
+          </div>
+        </div>
+
+        <div class="box" style="margin-top: 12px;">
+          <h3>Recommended Teacher Action</h3>
+          <p>${safeText(recommendedAction)}</p>
+        </div>
+      </div>
       <div class="box" style="margin-top: 14px;">
         <h2>Exam Breakdown</h2>
         <p>Attempts, average, best score, and lowest score for each exam.</p>
