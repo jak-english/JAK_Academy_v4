@@ -1578,27 +1578,37 @@ async function loadTeacherResults(filter = "all") {
     });
 
   const studentAnalysisHtml = studentAnalysis
-    .slice(0, 6)
-    .map(student => {
-      const weakExamsText = student.weakExams.length
-        ? [...new Set(student.weakExams)].slice(0, 3).join(", ")
-        : "No major weak exam";
+  .slice(0, 6)
+  .map(student => {
+    const weakExamsText = student.weakExams.length
+      ? [...new Set(student.weakExams)].slice(0, 3).join(", ")
+      : "No major weak exam";
 
-      return `
-        <div class="box">
-          <h3>${safeText(student.studentName)}</h3>
-          <p><strong>Attempts:</strong> ${safeText(student.attempts)}</p>
-          <p><strong>Average:</strong> ${safeText(student.average)}%</p>
-          <p><strong>Best:</strong> ${safeText(student.best)}%</p>
-          <p><strong>Lowest:</strong> ${safeText(student.lowest)}%</p>
-          <p><strong>Below 50%:</strong> ${safeText(student.below50)} time(s)</p>
-          <p><strong>Risk Level:</strong> ${safeText(student.riskLevel)}</p>
-          <p><strong>Weak Exams:</strong> ${safeText(weakExamsText)}</p>
-          <p><strong>Teacher Advice:</strong> ${safeText(student.advice)}</p>
+    return `
+      <div class="box">
+        <h3>${safeText(student.studentName)}</h3>
+        <p><strong>Attempts:</strong> ${safeText(student.attempts)}</p>
+        <p><strong>Average:</strong> ${safeText(student.average)}%</p>
+        <p><strong>Best:</strong> ${safeText(student.best)}%</p>
+        <p><strong>Lowest:</strong> ${safeText(student.lowest)}%</p>
+        <p><strong>Below 50%:</strong> ${safeText(student.below50)} time(s)</p>
+        <p><strong>Risk Level:</strong> ${safeText(student.riskLevel)}</p>
+        <p><strong>Weak Exams:</strong> ${safeText(weakExamsText)}</p>
+        <p><strong>Teacher Advice:</strong> ${safeText(student.advice)}</p>
+
+        <div class="actions" style="margin-top: 12px;">
+          <button 
+            type="button" 
+            class="gold"
+            onclick="createStudentSupportPlan('${student.studentId}', '${safeText(student.studentName)}', ${student.average}, ${student.below50}, '${safeText(student.riskLevel)}', '${safeText(weakExamsText)}')"
+          >
+            Create Support Plan 📘
+          </button>
         </div>
-      `;
-    })
-    .join("");
+      </div>
+    `;
+  })
+  .join("");
 
   const examStatsHtml = Object.entries(examStats)
     .map(([examTitle, stats]) => {
@@ -1778,6 +1788,67 @@ async function loadTeacherResults(filter = "all") {
     list.appendChild(d);
   });
 }
+function createStudentSupportPlan(studentId, studentName, average, below50, riskLevel, weakExamsText) {
+  const planLevel =
+    average < 50 || below50 >= 2
+      ? "High Support Plan"
+      : average < 70
+        ? "Practice Support Plan"
+        : "Enrichment Plan";
+
+  const mainFocus =
+    average < 50 || below50 >= 2
+      ? "Review weak lessons, correct mistakes, and solve remedial exercises."
+      : average < 70
+        ? "Practice selected weak points and complete short revision tasks."
+        : "Challenge the student with advanced exercises and enrichment tasks.";
+
+  const weeklyTasks =
+    average < 50 || below50 >= 2
+      ? [
+          "Day 1: Review the weakest exam and write down all mistakes.",
+          "Day 2: Restudy the related lesson with examples.",
+          "Day 3: Solve 10 easy remedial questions.",
+          "Day 4: Solve 10 mixed practice questions.",
+          "Day 5: Take a short follow-up quiz."
+        ]
+      : average < 70
+        ? [
+            "Day 1: Review mistakes from the latest exam.",
+            "Day 2: Practice 10 questions on weak areas.",
+            "Day 3: Correct wrong answers and write the rule/example.",
+            "Day 4: Solve a short mixed quiz.",
+            "Day 5: Review progress with the teacher."
+          ]
+        : [
+            "Day 1: Solve advanced challenge questions.",
+            "Day 2: Explain one difficult idea in writing.",
+            "Day 3: Complete a timed mini-quiz.",
+            "Day 4: Try a higher-level task.",
+            "Day 5: Set a new goal based on performance."
+          ];
+
+  const planText = `
+Support Plan for: ${studentName}
+
+Student ID: ${studentId}
+Average: ${average}%
+Below 50% Attempts: ${below50}
+Risk Level: ${riskLevel}
+Weak Exams: ${weakExamsText}
+
+Plan Type: ${planLevel}
+
+Main Focus:
+${mainFocus}
+
+Weekly Tasks:
+${weeklyTasks.map((task, index) => `${index + 1}. ${task}`).join("\n")}
+  `.trim();
+
+  alert(planText);
+}
+
 function editExam(exam) {
   editingExamId = exam.id;
 
@@ -4875,3 +4946,4 @@ window.clearStudentResourceFilters = clearStudentResourceFilters;
 window.toggleResourcePremium = toggleResourcePremium;
 window.deleteTeacherResource = deleteTeacherResource;
 window.toggleResourceVisibility = toggleResourceVisibility;
+window.createStudentSupportPlan = createStudentSupportPlan;
