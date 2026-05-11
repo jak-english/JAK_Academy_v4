@@ -3958,3 +3958,51 @@ if (typeof removeUserProfile === "function") window.removeUserProfile = removeUs
 
 console.log("✅ Final window bindings loaded");
 console.log("✅ APP.JS FINISHED");
+function updateExamAnswerStats() {
+  const box = document.getElementById("examAnswerStats");
+  if (!box) return;
+
+  if (!Array.isArray(solvingQuestions) || solvingQuestions.length === 0) {
+    box.innerHTML = "";
+    return;
+  }
+
+  const total = solvingQuestions.length;
+
+  const answered = solvingQuestions.filter(q => {
+    return (
+      studentAnswers &&
+      studentAnswers[q.id] !== undefined &&
+      studentAnswers[q.id] !== null &&
+      studentAnswers[q.id] !== ""
+    );
+  }).length;
+
+  const unanswered = total - answered;
+
+  const reviewCount = Object.values(reviewLater || {}).filter(Boolean).length;
+
+  box.innerHTML = `
+    <div class="exam-stats-grid">
+      <span>✅ Answered: <strong>${answered}</strong></span>
+      <span>⚠️ Unanswered: <strong>${unanswered}</strong></span>
+      <span>⭐ Review Later: <strong>${reviewCount}</strong></span>
+    </div>
+  `;
+}
+
+// Auto-update exam stats safely while exam page is open
+setInterval(() => {
+    const examSolver = document.getElementById("examSolver");
+
+  if (!examSolver) return;
+
+  const isActive =
+    examSolver.classList.contains("active") ||
+    window.getComputedStyle(examSolver).display !== "none";
+
+  if (isActive) {
+    updateExamAnswerStats();
+  }
+}, 800);
+window.updateExamAnswerStats = updateExamAnswerStats;
