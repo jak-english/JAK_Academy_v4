@@ -959,16 +959,48 @@ function renderQuestionNav() {
 
   solvingQuestions.forEach((q, i) => {
     const p = document.createElement("div");
+
+    const isCurrent = i === currentQuestionIndex;
+    const isAnswered =
+      studentAnswers[q.id] !== undefined &&
+      studentAnswers[q.id] !== null &&
+      studentAnswers[q.id] !== "";
+
+    const isReview = !!reviewLater[q.id];
+
     p.className = "question-pill";
-    if (i === currentQuestionIndex) p.classList.add("active");
-    if (studentAnswers[q.id]) p.classList.add("answered");
-    if (reviewLater[q.id]) p.classList.add("review");
-    p.textContent = i + 1;
-    p.title = reviewLater[q.id] ? "Marked for review" : "";
+
+    if (isCurrent) p.classList.add("active");
+    if (isAnswered) p.classList.add("answered");
+    if (!isAnswered) p.classList.add("unanswered");
+    if (isReview) p.classList.add("review");
+
+    p.innerHTML = `
+      <span class="question-pill-number">${i + 1}</span>
+      ${isReview ? '<span class="question-pill-icon">⭐</span>' : ""}
+      ${isAnswered && !isReview ? '<span class="question-pill-icon">✓</span>' : ""}
+    `;
+
+    let statusText = "Unanswered";
+    if (isAnswered) statusText = "Answered";
+    if (isReview) statusText += " / Marked for review";
+    if (isCurrent) statusText += " / Current question";
+
+    p.title = "Question " + (i + 1) + " - " + statusText;
+
     p.onclick = () => {
       currentQuestionIndex = i;
       renderSolver();
+
+      if (typeof saveExamProgress === "function") {
+        saveExamProgress();
+      }
+
+      if (typeof updateExamAnswerStats === "function") {
+        updateExamAnswerStats();
+      }
     };
+
     questionNav.appendChild(p);
   });
 }
