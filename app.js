@@ -1835,7 +1835,27 @@ function createStudentSupportPlan(studentId, studentName, average, below50, risk
             "Try a higher-level task.",
             "Set a new goal based on performance."
           ];
+  const copyText = `
+Student Support Plan
 
+Student: ${studentName}
+Student ID: ${studentId}
+Average: ${average}%
+Below 50% Attempts: ${below50}
+Risk Level: ${riskLevel}
+Weak Exams: ${weakExamsText || "No major weak exam"}
+
+Plan Type: ${planLevel}
+
+Main Focus:
+${mainFocus}
+
+Weekly Tasks:
+${weeklyTasks.map((task, index) => `${index + 1}. ${task}`).join("\n")}
+  `.trim();
+
+  planBox.dataset.copyText = copyText;
+          
   planContent.innerHTML = `
     <div class="support-plan-grid">
       <div class="support-plan-card">
@@ -1872,7 +1892,31 @@ function closeStudentSupportPlan() {
   if (planContent) planContent.innerHTML = "";
   if (planBox) planBox.style.display = "none";
 }
+async function copyStudentSupportPlan() {
+  const planBox = document.getElementById("studentSupportPlanBox");
+  const text = planBox?.dataset?.copyText;
 
+  if (!text) {
+    alert("No support plan to copy.");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Support plan copied ✅");
+  } catch (error) {
+    console.error("Copy support plan error:", error);
+
+    const temp = document.createElement("textarea");
+    temp.value = text;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    temp.remove();
+
+    alert("Support plan copied ✅");
+  }
+}
 function editExam(exam) {
   editingExamId = exam.id;
 
@@ -4972,3 +5016,4 @@ window.deleteTeacherResource = deleteTeacherResource;
 window.toggleResourceVisibility = toggleResourceVisibility;
 window.createStudentSupportPlan = createStudentSupportPlan;
 window.closeStudentSupportPlan = closeStudentSupportPlan;
+window.copyStudentSupportPlan = copyStudentSupportPlan;
