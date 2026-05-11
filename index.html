@@ -382,7 +382,6 @@
         </div>
 
         <p id="teacherExamFilterStatus" class="msg"></p>
-
         <div id="teacherExamList"></div>
       </div>
 
@@ -402,54 +401,78 @@
         </div>
 
         <p id="teacherResultsStatus" class="msg"></p>
-
         <div id="teacherResultsSummary" class="box"></div>
-
         <div id="teacherResultsList"></div>
       </div>
 
-      <!-- Extra Tools -->
-       <div class="box teacher-panel resources-upload-panel">
-  <div class="panel-title">
-    <span class="panel-number">04</span>
-    <div>
-      <h2>Teacher Resources 📂</h2>
-      <p>Upload PDF, Word, images, worksheets, answer keys, and study files for students.</p>
-    </div>
-  </div>
+      <!-- Teacher Resources Upload -->
+      <div class="box teacher-panel resources-upload-panel">
+        <div class="panel-title">
+          <span class="panel-number">04</span>
+          <div>
+            <h2>Teacher Resources 📂</h2>
+            <p>Upload PDF, Word, images, worksheets, answer keys, and study files for students.</p>
+          </div>
+        </div>
 
-  <label>Resource Title</label>
-  <input id="resourceTitle" placeholder="Example: Unit 1 Vocabulary Sheet">
+        <label>Resource Title</label>
+        <input id="resourceTitle" placeholder="Example: Unit 1 Vocabulary Sheet">
 
-  <label>Description</label>
-  <textarea id="resourceDesc" placeholder="Short description for students"></textarea>
+        <label>Description</label>
+        <textarea id="resourceDesc" placeholder="Short description for students"></textarea>
 
-  <label>Subject</label>
-  <input id="resourceSubject" placeholder="English / Grammar / Vocabulary">
+        <label>Subject</label>
+        <input id="resourceSubject" placeholder="English / Grammar / Vocabulary">
 
-  <label>Grade / Class</label>
-  <input id="resourceGrade" placeholder="Grade 10 / Grade 11 / 2008 / 2009">
+        <label>Grade / Class</label>
+        <input id="resourceGrade" placeholder="Grade 10 / Grade 11 / 2008 / 2009">
 
-  <label>Unit</label>
-  <input id="resourceUnit" placeholder="Unit 1 / Lesson 2A">
+        <label>Unit</label>
+        <input id="resourceUnit" placeholder="Unit 1 / Lesson 2A">
 
-  <label>Upload File</label>
-  <input id="resourceFile" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp">
+        <label>Upload File</label>
+        <input id="resourceFile" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp">
 
-  <label class="check-line">
-    <input id="resourcePremium" type="checkbox">
-    Premium resource
-  </label>
+        <label class="check-line">
+          <input id="resourcePremium" type="checkbox">
+          Premium resource
+        </label>
 
-  <div class="actions">
-    <button onclick="uploadTeacherResource()">Upload Resource</button>
-    <button class="secondary" onclick="loadTeacherResources()">Load My Resources</button>
-  </div>
+        <div class="actions">
+          <button onclick="uploadTeacherResource()">Upload Resource</button>
+          <button class="secondary" onclick="loadTeacherResources()">Load My Resources</button>
+        </div>
 
-  <p id="resourceUploadMsg" class="msg"></p>
+        <p id="resourceUploadMsg" class="msg"></p>
+        <div id="teacherResourcesList"></div>
+      </div>
 
-  <div id="teacherResourcesList"></div>
-</div>
+      <!-- Student Resources List -->
+      <div class="box student-panel student-resources-panel">
+        <div class="panel-title">
+          <span class="panel-number">05</span>
+          <div>
+            <h2>Student Resources 📚</h2>
+            <p>Browse worksheets, answer keys, PDFs, and study files shared by teachers.</p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <input id="studentResourceSubjectFilter" type="text" placeholder="Filter by subject e.g. Grammar">
+          <input id="studentResourceGradeFilter" type="text" placeholder="Filter by grade e.g. Grade 10">
+          <input id="studentResourceUnitFilter" type="text" placeholder="Filter by unit e.g. Unit One">
+        </div>
+
+        <div class="actions">
+          <button type="button" onclick="loadStudentResources()">Load Resources</button>
+          <button type="button" class="secondary" onclick="clearStudentResourceFilters()">Clear Filters</button>
+        </div>
+
+        <p id="studentResourcesMsg" class="msg"></p>
+        <div id="studentResourcesList"></div>
+      </div>
+
+      <!-- Extra Teacher Tools -->
       <div class="teacher-tools-grid">
         <div class="box teacher-tool-card ai-card">
           <span class="tool-icon">🤖</span>

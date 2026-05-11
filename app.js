@@ -4351,6 +4351,28 @@ const filePath = `${user.id}/${Date.now()}-${safeName}`;
     alert("Unexpected error while uploading.");
   }
 }
+async function toggleResourcePremium(resourceId, currentStatus) {
+  const newStatus = !currentStatus;
+
+  const { error } = await client
+    .from("resources")
+    .update({ is_premium: newStatus })
+    .eq("id", resourceId);
+
+  if (error) {
+    console.error("Toggle premium error:", error);
+    alert("Could not update resource premium status.");
+    return;
+  }
+
+  alert(newStatus ? "Resource is now Premium 💎" : "Resource is now Free 🔓");
+
+  await loadTeacherResources();
+
+  if (typeof loadStudentResources === "function") {
+    await loadStudentResources();
+  }
+}
 
 async function loadTeacherResources() {
   const list = document.getElementById("teacherResourcesList");
@@ -4398,6 +4420,22 @@ async function loadTeacherResources() {
         <a href="${resource.file_url}" target="_blank" rel="noopener">
           <button type="button">Open / Download</button>
         </a>
+
+        <button 
+          type="button" 
+          class="secondary" 
+          onclick="toggleResourcePremium('${resource.id}', ${resource.is_premium === true})"
+        >
+          ${resource.is_premium ? "Make Free 🔓" : "Make Premium 💎"}
+        </button>
+
+        <button 
+          type="button" 
+          class="danger" 
+          onclick="deleteTeacherResource('${resource.id}', '${resource.file_path}', '${safeText(resource.title || "this resource")}')"
+        >
+          Delete 🗑️
+        </button>
       </div>
     `;
 
@@ -4405,6 +4443,185 @@ async function loadTeacherResources() {
   });
 
   if (msg) msg.textContent = "Resources loaded: " + data.length;
+}
+async function deleteTeacherResource(resourceId, filePath, title) {
+  const confirmDelete = confirm(
+    `Are you sure you want to delete "${title}"?\n\nThis will permanently delete the file and remove it from resources.`
+  );
+
+  if (!confirmDelete) return;
+
+  const msg = document.getElementById("resourceUploadMsg");
+  if (msg) msg.textContent = "Deleting resource...";
+
+  if (filePath) {
+    const { error: storageError } = await client.storage
+      .from("resources")
+      .remove([filePath]);
+
+    if (storageError) {
+      console.error("Storage delete error:", storageError);
+      alert("Could not delete the file from storage.");
+      if (msg) msg.textContent = "Could not delete file from storage.";
+      return;
+    }
+  }
+
+  const { error: dbError } = await client
+    .from("resources")
+    .delete()
+    .eq("id", resourceId);
+
+  if (dbError) {
+    console.error("Database delete error:", dbError);
+    alert("File was removed from storage, but the database record could not be deleted.");
+    if (msg) msg.textContent = "Database delete failed.";
+    return;
+  }
+
+  alert("Resource deleted successfully ✅");
+
+  if (msg) msg.textContent = "Resource deleted successfully.";
+
+  await loadTeacherResources();
+
+  if (typeof loadStudentResources === "function") {
+    await loadStudentResources();
+  }
+}
+
+async function loadStudentResources() {
+  const list = document.getElementById("studentResourcesList");
+  const msg = document.getElementById("studentResourcesMsg");
+
+  const subjectFilter = document
+    .getElementById("studentResourceSubjectFilter")
+    ?.value.trim()
+    .toLowerCase();
+
+  const gradeFilter = document
+    .getElementById("studentResourceGradeFilter")
+    ?.value.trim()
+    .toLowerCase();
+
+  const unitFilter = document
+    .getElementById("studentResourceUnitFilter")
+    ?.value.trim()
+    .toLowerCase();
+
+  if (!list) return;
+
+  list.innerHTML = "Loading resources...";
+  if (msg) msg.textContent = "Loading resources...";
+  const { data: userData } = await client.auth.getUser();
+  const currentUser = userData?.user;
+
+  let currentProfile = null;
+
+  if (currentUser) {
+    const { data: profileData } = await client
+      .from("profiles")
+      .select("role, is_premium")
+      .eq("id", currentUser.id)
+      .single();
+
+    currentProfile = profileData;
+  }
+
+  const currentRole = String(currentProfile?.role || "").toLowerCase();
+
+  const canAccessPremiumResources =
+    currentProfile?.is_premium === true ||
+    currentRole.includes("teacher") ||
+    currentRole.includes("admin") ||
+    currentRole.includes("super_admin");
+  const { data, error } = await client
+    .from("resources")
+    .select("*")
+    .eq("is_visible", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Load student resources error:", error);
+    list.innerHTML = "<p>Could not load resources.</p>";
+    if (msg) msg.textContent = "Could not load resources.";
+    return;
+  }
+
+  let resources = data || [];
+
+  if (subjectFilter) {
+    resources = resources.filter(resource =>
+      String(resource.subject || "").toLowerCase().includes(subjectFilter)
+    );
+  }
+
+  if (gradeFilter) {
+    resources = resources.filter(resource =>
+      String(resource.grade || "").toLowerCase().includes(gradeFilter)
+    );
+  }
+
+  if (unitFilter) {
+    resources = resources.filter(resource =>
+      String(resource.unit || "").toLowerCase().includes(unitFilter)
+    );
+  }
+
+  if (resources.length === 0) {
+    list.innerHTML = "<p>No resources found.</p>";
+    if (msg) msg.textContent = "No resources found.";
+    return;
+  }
+
+  list.innerHTML = "";
+
+  resources.forEach(resource => {
+    const d = document.createElement("div");
+    d.className = "box resource-card student-resource-card";
+
+    d.innerHTML = `
+      <span class="badge">${resource.is_premium ? "💎 Premium" : "Free"}</span>
+      <h3>${safeText(resource.title || "Untitled Resource")}</h3>
+      <p>${safeText(resource.description || "No description")}</p>
+      <p><strong>Subject:</strong> ${safeText(resource.subject || "Not specified")}</p>
+      <p><strong>Grade:</strong> ${safeText(resource.grade || "Not specified")}</p>
+      <p><strong>Unit:</strong> ${safeText(resource.unit || "Not specified")}</p>
+      <p><strong>Type:</strong> ${safeText(resource.file_type || "file")}</p>
+
+      ${resource.is_premium && !canAccessPremiumResources
+  ? `
+    <div class="actions">
+      <button type="button" class="secondary" disabled>Premium Resource 🔒</button>
+    </div>
+    <p class="msg">Upgrade to Premium to access this file.</p>
+  `
+  : `
+    <div class="actions">
+      <a href="${resource.file_url}" target="_blank" rel="noopener">
+        <button type="button">Open / Download</button>
+      </a>
+    </div>
+  `
+      }
+    `;
+
+    list.appendChild(d);
+  });
+
+  if (msg) msg.textContent = "Resources loaded: " + resources.length;
+}
+
+function clearStudentResourceFilters() {
+  const subject = document.getElementById("studentResourceSubjectFilter");
+  const grade = document.getElementById("studentResourceGradeFilter");
+  const unit = document.getElementById("studentResourceUnitFilter");
+
+  if (subject) subject.value = "";
+  if (grade) grade.value = "";
+  if (unit) unit.value = "";
+
+  loadStudentResources();
 }
 async function protectResourcesUploadPanel() {
   const panel = document.querySelector(".resources-upload-panel");
@@ -4444,3 +4661,7 @@ async function protectResourcesUploadPanel() {
 }
 window.uploadTeacherResource = uploadTeacherResource;
 window.loadTeacherResources = loadTeacherResources;
+window.loadStudentResources = loadStudentResources;
+window.clearStudentResourceFilters = clearStudentResourceFilters;
+window.toggleResourcePremium = toggleResourcePremium;
+window.deleteTeacherResource = deleteTeacherResource;
