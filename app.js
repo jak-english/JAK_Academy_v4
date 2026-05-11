@@ -1107,8 +1107,7 @@ async function submitExam(autoSubmit) {
 
   resultTitle.textContent = currentPreviewExam.title || "Result";
   scoreText.textContent = `Your score: ${correct} / ${total} (${percentage}%)`;
-  studyAdviceAfterResult.innerHTML = getStudyAdvice(percentage);
-  resultDetails.innerHTML = "";
+studyAdviceAfterResult.innerHTML = getStudyAdvice(percentage, answers);  resultDetails.innerHTML = "";
 
   answers.forEach((a, i) => {
     const div = document.createElement("div");
@@ -1128,25 +1127,50 @@ async function submitExam(autoSubmit) {
   showPage("examResult");
 }
 
-function getStudyAdvice(p) {
-  if (p < 50) {
+function getStudyAdvice(p, answers = []) {
+  const noAnswerCount = answers.filter(a => !a.student_answer).length;
+  const wrongCount = answers.filter(a => !a.is_correct && a.student_answer).length;
+
+  if (noAnswerCount > 0) {
     return `
       <h2>Study Advice</h2>
-      <p>Review basics first: grammar rules, vocabulary meanings, and solve easy questions again.</p>
+      <p>You left ${noAnswerCount} question(s) unanswered. Focus on time management and answering every question before submitting.</p>
 
       <div class="planner-recommendation-card">
         <h3>Recommended Planner Task 📅</h3>
-        <p><strong>Task:</strong> Review the basic rules of this exam topic and solve 10 easy practice questions.</p>
-        <p><strong>Study Type:</strong> Foundation Review</p>
-        <p><strong>Suggested Time:</strong> 30–45 minutes</p>
-        <button class="violet" onclick="addRecommendedTaskToPlanner('foundation')">
+        <p><strong>Task:</strong> Practise timed answering. Solve a short exam and make sure you answer every question before time ends.</p>
+        <p><strong>Study Type:</strong> Timed Answering Practice</p>
+        <p><strong>Suggested Time:</strong> 25–30 minutes</p>
+        <button class="violet" onclick="addRecommendedTaskToPlanner('no_answer')">
           Add this task to my Planner
         </button>
       </div>
 
       <div class="next-action-card">
         <h3>Next Step 🎯</h3>
-        <p>Add a study task to your planner for tomorrow and focus on the questions you got wrong.</p>
+        <p>Repeat a short quiz and focus on answering all questions, even if you are not 100% sure.</p>
+      </div>
+    `;
+  }
+
+  if (p < 50 || wrongCount > 0) {
+    return `
+      <h2>Study Advice</h2>
+      <p>You need to review your wrong answers carefully and practise similar questions.</p>
+
+      <div class="planner-recommendation-card">
+        <h3>Recommended Planner Task 📅</h3>
+        <p><strong>Task:</strong> Review your wrong questions, write the mistakes in a mistake notebook, and solve 10 similar questions.</p>
+        <p><strong>Study Type:</strong> Mistake Correction</p>
+        <p><strong>Suggested Time:</strong> 30–45 minutes</p>
+        <button class="violet" onclick="addRecommendedTaskToPlanner('wrong_answers')">
+          Add this task to my Planner
+        </button>
+      </div>
+
+      <div class="next-action-card">
+        <h3>Next Step 🎯</h3>
+        <p>Focus on the exact questions you missed, then repeat the rule with easier examples.</p>
       </div>
     `;
   }
@@ -1154,12 +1178,12 @@ function getStudyAdvice(p) {
   if (p < 80) {
     return `
       <h2>Study Advice</h2>
-      <p>Good work. Focus on your mistakes and practise timed questions.</p>
+      <p>Good work. Focus on speed and practise timed questions.</p>
 
       <div class="planner-recommendation-card">
         <h3>Recommended Planner Task 📅</h3>
-        <p><strong>Task:</strong> Revise your mistakes, then solve a short timed practice exam.</p>
-        <p><strong>Study Type:</strong> Mistake Correction + Timed Practice</p>
+        <p><strong>Task:</strong> Solve a short timed practice exam and review your answers.</p>
+        <p><strong>Study Type:</strong> Timed Practice</p>
         <p><strong>Suggested Time:</strong> 30 minutes</p>
         <button class="violet" onclick="addRecommendedTaskToPlanner('practice')">
           Add this task to my Planner
@@ -1168,7 +1192,7 @@ function getStudyAdvice(p) {
 
       <div class="next-action-card">
         <h3>Next Step 🎯</h3>
-        <p>Write your mistakes in a mistake notebook, then repeat similar questions.</p>
+        <p>Try to improve your speed and avoid careless mistakes.</p>
       </div>
     `;
   }
@@ -1189,7 +1213,7 @@ function getStudyAdvice(p) {
 
     <div class="next-action-card">
       <h3>Next Step 🎯</h3>
-      <p>Try to explain the rule to another student or create your own exam-style question.</p>
+      <p>Create your own exam-style question or explain the rule to another student.</p>
     </div>
   `;
 }
