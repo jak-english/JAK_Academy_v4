@@ -1463,6 +1463,7 @@ async function loadTeacherResults(filter = "all") {
     examStats[examTitle].best = Math.max(examStats[examTitle].best, percentage);
     examStats[examTitle].lowest = Math.min(examStats[examTitle].lowest, percentage);
   });
+
   const examInsights = Object.entries(examStats).map(([examTitle, stats]) => {
     const avg = Math.round(stats.totalPercentage / stats.attempts);
 
@@ -1497,6 +1498,108 @@ async function loadTeacherResults(filter = "all") {
       : studentsNeedSupport > 0
         ? "Review the weakest exam and give short remedial tasks."
         : "Great performance. You can assign a more challenging follow-up exam.";
+
+  const studentStats = {};
+
+  results.forEach(result => {
+    if (!result.student_id) return;
+
+    const percentage = Number(result.percentage || 0);
+    const examTitle = result.exams?.title || "Exam";
+
+    if (!studentStats[result.student_id]) {
+      const profile = profilesMap[result.student_id];
+
+      studentStats[result.student_id] = {
+        studentId: result.student_id,
+        studentName:
+          profile?.full_name ||
+          profile?.email ||
+          result.student_id ||
+          "Unknown Student",
+        attempts: 0,
+        totalPercentage: 0,
+        best: percentage,
+        lowest: percentage,
+        below50: 0,
+        weakExams: [],
+        latestDate: result.submitted_at || null
+      };
+    }
+
+    const stats = studentStats[result.student_id];
+
+    stats.attempts += 1;
+    stats.totalPercentage += percentage;
+    stats.best = Math.max(stats.best, percentage);
+    stats.lowest = Math.min(stats.lowest, percentage);
+
+    if (percentage < 50) {
+      stats.below50 += 1;
+      stats.weakExams.push(examTitle);
+    }
+
+    const oldTime = stats.latestDate ? new Date(stats.latestDate).getTime() : 0;
+    const newTime = result.submitted_at ? new Date(result.submitted_at).getTime() : 0;
+
+    if (newTime > oldTime) {
+      stats.latestDate = result.submitted_at;
+    }
+  });
+
+  const studentAnalysis = Object.values(studentStats)
+    .map(student => {
+      const average = Math.round(student.totalPercentage / student.attempts);
+
+      const riskLevel =
+        average < 50 || student.below50 >= 2
+          ? "High Support 🔴"
+          : average < 70
+            ? "Needs Practice 🟡"
+            : "Strong 🟢";
+
+      const advice =
+        average < 50 || student.below50 >= 2
+          ? "Assign a remedial task and follow up closely."
+          : average < 70
+            ? "Give short targeted practice on weak exams."
+            : "Give enrichment tasks or a more challenging exam.";
+
+      return {
+        ...student,
+        average,
+        riskLevel,
+        advice
+      };
+    })
+    .sort((a, b) => {
+      if (b.below50 !== a.below50) return b.below50 - a.below50;
+      return a.average - b.average;
+    });
+
+  const studentAnalysisHtml = studentAnalysis
+    .slice(0, 6)
+    .map(student => {
+      const weakExamsText = student.weakExams.length
+        ? [...new Set(student.weakExams)].slice(0, 3).join(", ")
+        : "No major weak exam";
+
+      return `
+        <div class="box">
+          <h3>${safeText(student.studentName)}</h3>
+          <p><strong>Attempts:</strong> ${safeText(student.attempts)}</p>
+          <p><strong>Average:</strong> ${safeText(student.average)}%</p>
+          <p><strong>Best:</strong> ${safeText(student.best)}%</p>
+          <p><strong>Lowest:</strong> ${safeText(student.lowest)}%</p>
+          <p><strong>Below 50%:</strong> ${safeText(student.below50)} time(s)</p>
+          <p><strong>Risk Level:</strong> ${safeText(student.riskLevel)}</p>
+          <p><strong>Weak Exams:</strong> ${safeText(weakExamsText)}</p>
+          <p><strong>Teacher Advice:</strong> ${safeText(student.advice)}</p>
+        </div>
+      `;
+    })
+    .join("");
+
   const examStatsHtml = Object.entries(examStats)
     .map(([examTitle, stats]) => {
       const avg = Math.round(stats.totalPercentage / stats.attempts);
@@ -1579,6 +1682,7 @@ async function loadTeacherResults(filter = "all") {
           <span>${safeText(weakestStudentName)}</span>
         </div>
       </div>
+
       <div class="box" style="margin-top: 14px;">
         <h2>Smart Insights 🧠</h2>
         <p>Automatic teaching recommendations based on student performance.</p>
@@ -1608,6 +1712,16 @@ async function loadTeacherResults(filter = "all") {
           <p>${safeText(recommendedAction)}</p>
         </div>
       </div>
+
+      <div class="box" style="margin-top: 14px;">
+        <h2>Student Weakness Analysis 🧩</h2>
+        <p>Students are sorted by support priority: repeated low scores and lower averages appear first.</p>
+
+        <div class="grid three">
+          ${studentAnalysisHtml || "<p>No student analysis available.</p>"}
+        </div>
+      </div>
+
       <div class="box" style="margin-top: 14px;">
         <h2>Exam Breakdown</h2>
         <p>Attempts, average, best score, and lowest score for each exam.</p>
