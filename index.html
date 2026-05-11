@@ -401,8 +401,27 @@
         </div>
 
         <p id="teacherResultsStatus" class="msg"></p>
-        <div id="teacherResultsSummary" class="box"></div>
-        <div id="teacherResultsList"></div>
+<div id="teacherResultsSummary" class="box"></div>
+
+<!-- Student Support Plan Preview -->
+<div id="studentSupportPlanBox" class="box support-plan-box" style="display: none;">
+  <div class="panel-title">
+    <span class="panel-number">📘</span>
+    <div>
+      <h2>Student Support Plan</h2>
+      <p>A suggested plan based on the student's performance and weak areas.</p>
+    </div>
+  </div>
+
+  <div id="studentSupportPlanContent"></div>
+
+  <div class="actions">
+    <button type="button" class="secondary" onclick="closeStudentSupportPlan()">Close</button>
+  </div>
+</div>
+
+<div id="teacherResultsList"></div>
+  <div id="teacherResultsList"></div>
       </div>
 
       <!-- Teacher Resources Upload -->

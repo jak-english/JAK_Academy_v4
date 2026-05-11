@@ -4421,3 +4421,187 @@ textarea{min-height:95px;resize:vertical}
     border-radius: 22px !important;
   }
 }
+/* ===============================
+   Generated Student Support Plan
+   =============================== */
+
+.support-plan-box {
+  position: relative !important;
+  margin-top: 22px !important;
+  padding: 24px !important;
+  border-radius: 28px !important;
+  border: 2px solid rgba(59, 130, 246, 0.55) !important;
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.26), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.18), transparent 35%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.9)) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.42),
+    0 0 35px rgba(59, 130, 246, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  overflow: hidden !important;
+}
+
+.support-plan-box::before {
+  content: "Generated Support Plan ✨";
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #3b82f6, #7c3aed);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  box-shadow: 0 10px 28px rgba(59, 130, 246, 0.35);
+  z-index: 3;
+}
+
+.support-plan-box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  transform: translateX(-100%);
+  animation: supportPlanSweep 6s infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes supportPlanSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  45%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.support-plan-box .panel-title,
+.support-plan-box #studentSupportPlanContent,
+.support-plan-box .actions {
+  position: relative;
+  z-index: 2;
+}
+
+.support-plan-box .panel-title {
+  padding-right: 190px;
+}
+
+.support-plan-box .panel-title h2 {
+  color: #93c5fd !important;
+  font-size: 1.6rem !important;
+}
+
+.support-plan-box .panel-title p {
+  color: rgba(226, 232, 240, 0.85) !important;
+}
+
+.support-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.support-plan-card,
+.support-plan-tasks {
+  border-radius: 22px;
+  padding: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.16), transparent 35%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.72), rgba(15, 23, 42, 0.62));
+  border: 1px solid rgba(147, 197, 253, 0.22);
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.support-plan-card h3,
+.support-plan-tasks h3 {
+  color: #facc15 !important;
+  font-size: 1.18rem !important;
+  margin-bottom: 10px !important;
+}
+
+.support-plan-card p,
+.support-plan-tasks li {
+  color: rgba(241, 245, 249, 0.92) !important;
+  line-height: 1.65;
+  margin: 7px 0;
+}
+
+.support-plan-card strong {
+  color: #93c5fd !important;
+  font-weight: 900;
+}
+
+.support-plan-tasks {
+  margin-top: 16px;
+}
+
+.support-plan-tasks ol {
+  margin: 10px 0 0 22px;
+  padding: 0;
+}
+
+.support-plan-tasks li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.support-plan-tasks li:last-child {
+  border-bottom: none;
+}
+
+.support-plan-box .actions {
+  margin-top: 18px !important;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.support-plan-box .actions button {
+  border-radius: 999px !important;
+  padding: 11px 18px !important;
+  font-weight: 900 !important;
+  background: linear-gradient(135deg, #3b82f6, #7c3aed) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.26) !important;
+}
+
+.support-plan-box .actions button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+@media (max-width: 700px) {
+  .support-plan-box {
+    padding: 18px !important;
+    border-radius: 22px !important;
+  }
+
+  .support-plan-box::before {
+    position: relative;
+    display: inline-block;
+    top: auto;
+    right: auto;
+    margin-bottom: 12px;
+  }
+
+  .support-plan-box .panel-title {
+    padding-right: 0;
+  }
+
+  .support-plan-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .support-plan-box .actions button {
+    width: 100%;
+  }
+}

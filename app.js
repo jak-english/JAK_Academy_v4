@@ -1789,12 +1789,20 @@ async function loadTeacherResults(filter = "all") {
   });
 }
 function createStudentSupportPlan(studentId, studentName, average, below50, riskLevel, weakExamsText) {
+  const planBox = document.getElementById("studentSupportPlanBox");
+  const planContent = document.getElementById("studentSupportPlanContent");
+
+  if (!planBox || !planContent) {
+    alert("Support plan box is missing in the page.");
+    return;
+  }
+
   const planLevel =
     average < 50 || below50 >= 2
-      ? "High Support Plan"
+      ? "High Support Plan 🔴"
       : average < 70
-        ? "Practice Support Plan"
-        : "Enrichment Plan";
+        ? "Practice Support Plan 🟡"
+        : "Enrichment Plan 🟢";
 
   const mainFocus =
     average < 50 || below50 >= 2
@@ -1806,47 +1814,63 @@ function createStudentSupportPlan(studentId, studentName, average, below50, risk
   const weeklyTasks =
     average < 50 || below50 >= 2
       ? [
-          "Day 1: Review the weakest exam and write down all mistakes.",
-          "Day 2: Restudy the related lesson with examples.",
-          "Day 3: Solve 10 easy remedial questions.",
-          "Day 4: Solve 10 mixed practice questions.",
-          "Day 5: Take a short follow-up quiz."
+          "Review the weakest exam and write down all mistakes.",
+          "Restudy the related lesson with examples.",
+          "Solve 10 easy remedial questions.",
+          "Solve 10 mixed practice questions.",
+          "Take a short follow-up quiz."
         ]
       : average < 70
         ? [
-            "Day 1: Review mistakes from the latest exam.",
-            "Day 2: Practice 10 questions on weak areas.",
-            "Day 3: Correct wrong answers and write the rule/example.",
-            "Day 4: Solve a short mixed quiz.",
-            "Day 5: Review progress with the teacher."
+            "Review mistakes from the latest exam.",
+            "Practice 10 questions on weak areas.",
+            "Correct wrong answers and write the rule/example.",
+            "Solve a short mixed quiz.",
+            "Review progress with the teacher."
           ]
         : [
-            "Day 1: Solve advanced challenge questions.",
-            "Day 2: Explain one difficult idea in writing.",
-            "Day 3: Complete a timed mini-quiz.",
-            "Day 4: Try a higher-level task.",
-            "Day 5: Set a new goal based on performance."
+            "Solve advanced challenge questions.",
+            "Explain one difficult idea in writing.",
+            "Complete a timed mini-quiz.",
+            "Try a higher-level task.",
+            "Set a new goal based on performance."
           ];
 
-  const planText = `
-Support Plan for: ${studentName}
+  planContent.innerHTML = `
+    <div class="support-plan-grid">
+      <div class="support-plan-card">
+        <h3>${safeText(studentName)}</h3>
+        <p><strong>Student ID:</strong> ${safeText(studentId)}</p>
+        <p><strong>Average:</strong> ${safeText(average)}%</p>
+        <p><strong>Below 50% Attempts:</strong> ${safeText(below50)}</p>
+        <p><strong>Risk Level:</strong> ${safeText(riskLevel)}</p>
+        <p><strong>Weak Exams:</strong> ${safeText(weakExamsText || "No major weak exam")}</p>
+      </div>
 
-Student ID: ${studentId}
-Average: ${average}%
-Below 50% Attempts: ${below50}
-Risk Level: ${riskLevel}
-Weak Exams: ${weakExamsText}
+      <div class="support-plan-card">
+        <h3>${safeText(planLevel)}</h3>
+        <p><strong>Main Focus:</strong></p>
+        <p>${safeText(mainFocus)}</p>
+      </div>
+    </div>
 
-Plan Type: ${planLevel}
+    <div class="support-plan-tasks">
+      <h3>Weekly Tasks</h3>
+      <ol>
+        ${weeklyTasks.map(task => `<li>${safeText(task)}</li>`).join("")}
+      </ol>
+    </div>
+  `;
 
-Main Focus:
-${mainFocus}
+  planBox.style.display = "block";
+  planBox.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+function closeStudentSupportPlan() {
+  const planBox = document.getElementById("studentSupportPlanBox");
+  const planContent = document.getElementById("studentSupportPlanContent");
 
-Weekly Tasks:
-${weeklyTasks.map((task, index) => `${index + 1}. ${task}`).join("\n")}
-  `.trim();
-
-  alert(planText);
+  if (planContent) planContent.innerHTML = "";
+  if (planBox) planBox.style.display = "none";
 }
 
 function editExam(exam) {
@@ -4947,3 +4971,4 @@ window.toggleResourcePremium = toggleResourcePremium;
 window.deleteTeacherResource = deleteTeacherResource;
 window.toggleResourceVisibility = toggleResourceVisibility;
 window.createStudentSupportPlan = createStudentSupportPlan;
+window.closeStudentSupportPlan = closeStudentSupportPlan;
