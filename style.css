@@ -3624,3 +3624,38 @@ textarea{min-height:95px;resize:vertical}
     font-size: 10px;
   }
 }
+/* =========================================================
+   Teacher Resources Upload
+   ========================================================= */
+
+.resources-upload-panel {
+  border-left: 6px solid #22d3ee;
+}
+
+.resource-card {
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+}
+
+.resource-card a {
+  text-decoration: none;
+}
+
+.resource-card .actions button {
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .resources-upload-panel input,
+  .resources-upload-panel textarea {
+    width: 100%;
+  }
+
+  .resource-card {
+    padding: 14px !important;
+  }
+
+  .resource-card .actions button {
+    width: 100%;
+  }
+}

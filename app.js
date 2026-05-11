@@ -1918,15 +1918,21 @@ function insertMath(t) {
 }
 
 const syms = ["√", "π", "∞", "≤", "≥", "≠", "≈", "±", "×", "÷", "∑", "∆", "θ", "α", "β", "x²", "x³", "∫"];
+
 window.addEventListener("DOMContentLoaded", async () => {
   displayQuestion();
   bootStableApp();
   loadUserName();
 
+  if (typeof protectResourcesUploadPanel === "function") {
+    protectResourcesUploadPanel();
+  }
+
   // 🔥 dashboard
   if (window.location.hash === "#dashboard") {
     goDashboard();
   }
+});
 
   // ✅ math tools
   const container = $("mathSymbols");
@@ -1939,7 +1945,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       container.appendChild(b);
     });
   }
-});
 
 // =========================
 // Advanced Study Planner + Colored Calendar
@@ -4172,7 +4177,25 @@ function addRecommendedTaskToPlanner(type) {
       color: "#f59e0b"
     };
   }
+if (type === "no_answer") {
+  recommendation = {
+    subject: examTitle,
+    type: "exam",
+    task: "Timed answering practice: solve a short exam and make sure you answer every question before time ends.",
+    minutes: 30,
+    color: "#f59e0b"
+  };
+}
 
+if (type === "wrong_answers") {
+  recommendation = {
+    subject: examTitle,
+    type: "exam",
+    task: "Mistake correction: review your wrong questions, write them in a mistake notebook, and solve 10 similar questions.",
+    minutes: 45,
+    color: "#ef4444"
+  };
+}
   if (type === "advanced") {
     recommendation = {
       subject: examTitle,
@@ -4217,3 +4240,207 @@ if (goToPlanner && typeof openPlanner === "function") {
 }
 
 window.addRecommendedTaskToPlanner = addRecommendedTaskToPlanner;
+
+function cleanFileName(name) {
+  return String(name || "file")
+    .replace(/[^a-zA-Z0-9.\-_]/g, "-")
+    .replace(/-+/g, "-")
+    .toLowerCase();
+}
+
+async function uploadTeacherResource() {
+  const titleEl = document.getElementById("resourceTitle");
+  const descEl = document.getElementById("resourceDesc");
+  const subjectEl = document.getElementById("resourceSubject");
+  const gradeEl = document.getElementById("resourceGrade");
+  const unitEl = document.getElementById("resourceUnit");
+  const fileEl = document.getElementById("resourceFile");
+  const premiumEl = document.getElementById("resourcePremium");
+  const msg = document.getElementById("resourceUploadMsg");
+
+  if (msg) msg.textContent = "Preparing upload...";
+
+  const title = titleEl?.value.trim();
+  const description = descEl?.value.trim() || "";
+  const subject = subjectEl?.value.trim() || "";
+  const grade = gradeEl?.value.trim() || "";
+  const unit = unitEl?.value.trim() || "";
+  const file = fileEl?.files?.[0];
+
+  if (!title || !file) {
+    alert("Please add a title and choose a file.");
+    if (msg) msg.textContent = "Title and file are required.";
+    return;
+  }
+
+  try {
+    const { data: userData } = await client.auth.getUser();
+    const teacherId = userData?.user?.id || null;
+
+    const safeName = cleanFileName(file.name);
+const filePath = `${user.id}/${Date.now()}-${safeName}`;
+    if (msg) msg.textContent = "Uploading file...";
+
+    const { error: uploadError } = await client.storage
+      .from("resources")
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error("Resource upload error:", uploadError);
+      if (msg) msg.textContent = "Upload failed: " + uploadError.message;
+      alert("Upload failed: " + uploadError.message);
+      return;
+    }
+
+    const { data: publicUrlData } = client.storage
+      .from("resources")
+      .getPublicUrl(filePath);
+
+    const fileUrl = publicUrlData?.publicUrl;
+
+    if (!fileUrl) {
+      if (msg) msg.textContent = "Could not create public file URL.";
+      alert("Could not create public file URL.");
+      return;
+    }
+
+    if (msg) msg.textContent = "Saving resource record...";
+
+    const { error: insertError } = await client
+      .from("resources")
+      .insert([
+        {
+          teacher_id: teacherId,
+          title,
+          description,
+          file_url: fileUrl,
+          file_path: filePath,
+          file_type: file.type || file.name.split(".").pop() || "",
+          subject,
+          grade,
+          unit,
+          is_premium: !!premiumEl?.checked,
+          is_visible: true
+        }
+      ]);
+
+    if (insertError) {
+      console.error("Resource insert error:", insertError);
+      if (msg) msg.textContent = "File uploaded, but database save failed: " + insertError.message;
+      alert("File uploaded, but database save failed: " + insertError.message);
+      return;
+    }
+
+    if (msg) msg.textContent = "Resource uploaded successfully ✅";
+
+    if (titleEl) titleEl.value = "";
+    if (descEl) descEl.value = "";
+    if (subjectEl) subjectEl.value = "";
+    if (gradeEl) gradeEl.value = "";
+    if (unitEl) unitEl.value = "";
+    if (fileEl) fileEl.value = "";
+    if (premiumEl) premiumEl.checked = false;
+
+    await loadTeacherResources();
+  } catch (err) {
+    console.error("Unexpected upload error:", err);
+    if (msg) msg.textContent = "Unexpected error while uploading.";
+    alert("Unexpected error while uploading.");
+  }
+}
+
+async function loadTeacherResources() {
+  const list = document.getElementById("teacherResourcesList");
+  const msg = document.getElementById("resourceUploadMsg");
+
+  if (!list) return;
+
+  list.innerHTML = "Loading resources...";
+  if (msg) msg.textContent = "Loading resources...";
+
+  const { data, error } = await client
+    .from("resources")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Load resources error:", error);
+    list.innerHTML = "<p>Could not load resources.</p>";
+    if (msg) msg.textContent = "Could not load resources.";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    list.innerHTML = "<p>No resources uploaded yet.</p>";
+    if (msg) msg.textContent = "No resources uploaded yet.";
+    return;
+  }
+
+  list.innerHTML = "";
+
+  data.forEach(resource => {
+    const d = document.createElement("div");
+    d.className = "box resource-card";
+
+    d.innerHTML = `
+      <span class="badge">${resource.is_premium ? "💎 Premium" : "Free"}</span>
+      <h3>${safeText(resource.title)}</h3>
+      <p>${safeText(resource.description || "No description")}</p>
+      <p><strong>Subject:</strong> ${safeText(resource.subject || "Not specified")}</p>
+      <p><strong>Grade:</strong> ${safeText(resource.grade || "Not specified")}</p>
+      <p><strong>Unit:</strong> ${safeText(resource.unit || "Not specified")}</p>
+      <p><strong>Type:</strong> ${safeText(resource.file_type || "file")}</p>
+
+      <div class="actions">
+        <a href="${resource.file_url}" target="_blank" rel="noopener">
+          <button type="button">Open / Download</button>
+        </a>
+      </div>
+    `;
+
+    list.appendChild(d);
+  });
+
+  if (msg) msg.textContent = "Resources loaded: " + data.length;
+}
+async function protectResourcesUploadPanel() {
+  const panel = document.querySelector(".resources-upload-panel");
+  if (!panel) return;
+
+  // Hide by default
+  panel.style.display = "none";
+
+  const { data: userData, error: userError } = await client.auth.getUser();
+  const user = userData?.user;
+
+  if (userError || !user) {
+    panel.style.display = "none";
+    return;
+  }
+
+  const { data: profile, error: profileError } = await client
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profileError || !profile) {
+    panel.style.display = "none";
+    return;
+  }
+
+  const role = String(profile.role || "").toLowerCase();
+
+  const canUploadResources =
+    role.includes("teacher") ||
+    role.includes("admin") ||
+    role.includes("super_admin");
+
+  // Empty string restores original CSS display
+  panel.style.display = canUploadResources ? "" : "none";
+}
+window.uploadTeacherResource = uploadTeacherResource;
+window.loadTeacherResources = loadTeacherResources;
