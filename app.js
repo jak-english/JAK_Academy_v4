@@ -2136,7 +2136,7 @@ async function loadSavedSupportPlans() {
       <p><strong>Main Focus:</strong> ${safeText(plan.main_focus || "No focus listed")}</p>
       <p><strong>Created:</strong> ${safeText(createdDate)}</p>
 
-      <div class="support-plan-tasks">
+            <div class="support-plan-tasks">
         <h3>Weekly Tasks</h3>
         ${
           tasks.length
@@ -2144,12 +2144,82 @@ async function loadSavedSupportPlans() {
             : "<p>No tasks saved.</p>"
         }
       </div>
+
+      <div class="actions" style="margin-top: 12px;">
+        <button 
+          type="button" 
+          class="gold"
+          onclick="addSupportPlanTasksToPlanner('${plan.id}')"
+        >
+          Add Tasks to Planner ✅
+        </button>
+      </div>
+    
     `;
 
     list.appendChild(d);
   });
 
   if (msg) msg.textContent = "Saved support plans loaded: " + data.length;
+}
+async function addSupportPlanTasksToPlanner(planId) {
+  const { data: plan, error } = await client
+    .from("support_plans")
+    .select("*")
+    .eq("id", planId)
+    .single();
+
+  if (error || !plan) {
+    console.error("Load support plan for planner error:", error);
+    alert("Could not load this support plan.");
+    return;
+  }
+
+  const tasks = Array.isArray(plan.weekly_tasks) ? plan.weekly_tasks : [];
+
+  if (!tasks.length) {
+    alert("This support plan has no weekly tasks.");
+    return;
+  }
+
+  const existingPlans = JSON.parse(localStorage.getItem("jakPlansV5") || "[]");
+
+  const today = new Date();
+
+  const newPlannerTasks = tasks.map((task, index) => {
+    const taskDate = new Date(today);
+    taskDate.setDate(today.getDate() + index);
+
+    const dateString = taskDate.toISOString().split("T")[0];
+
+    return {
+      id: "support-" + plan.id + "-" + Date.now() + "-" + index,
+      subject: "Support Plan",
+      date: dateString,
+      start: "16:00",
+      end: "16:30",
+      type: "Support Plan",
+      task: task,
+      color: "#3b82f6",
+      status: "not-started",
+      source: "support_plan",
+      support_plan_id: plan.id
+    };
+  });
+
+  const updatedPlans = [...existingPlans, ...newPlannerTasks];
+
+  localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
+
+  alert("Support plan tasks added to Planner ✅");
+
+  if (typeof renderPlanner === "function") {
+    renderPlanner();
+  }
+
+  if (typeof renderStudyAnalytics === "function") {
+    renderStudyAnalytics();
+  }
 }
 async function loadMySupportPlans() {
   const list = document.getElementById("mySupportPlansList");
@@ -5334,3 +5404,4 @@ window.printStudentSupportPlan = printStudentSupportPlan;
 window.saveStudentSupportPlan = saveStudentSupportPlan;window.saveStudentSupportPlan = saveStudentSupportPlan;
 window.loadSavedSupportPlans = loadSavedSupportPlans;
 window.loadMySupportPlans = loadMySupportPlans;
+window.addSupportPlanTasksToPlanner = addSupportPlanTasksToPlanner;
