@@ -2680,12 +2680,18 @@ function openPlanner() {
   updatePlannerStats();
   renderTodayTasks();
 
+  if (typeof renderPlannerSystemContext === "function") {
+    renderPlannerSystemContext();
+  }
+
   if (typeof renderStudyMethodExplanation === "function") {
     renderStudyMethodExplanation();
   }
-if (typeof loadWeeklyStudyGoalInput === "function") {
-  loadWeeklyStudyGoalInput();
-}
+
+  if (typeof loadWeeklyStudyGoalInput === "function") {
+    loadWeeklyStudyGoalInput();
+  }
+
   if (typeof renderStudyAnalytics === "function") {
     renderStudyAnalytics();
   }
@@ -2694,7 +2700,6 @@ if (typeof loadWeeklyStudyGoalInput === "function") {
 function getPlans() {
   return JSON.parse(localStorage.getItem("jakPlansV5")) || [];
 }
-
 function savePlans(plans) {
   localStorage.setItem("jakPlansV5", JSON.stringify(plans));
 }
@@ -5472,6 +5477,80 @@ async function protectResourcesUploadPanel() {
   // Empty string restores original CSS display
   panel.style.display = canUploadResources ? "" : "none";
 }
+function getCurrentStudySystem() {
+  return localStorage.getItem("jakCurrentStudySystem") || "all";
+}
+
+function setCurrentStudySystem(system) {
+  const selectedSystem = system || "all";
+
+  localStorage.setItem("jakCurrentStudySystem", selectedSystem);
+
+  if (typeof renderPlannerSystemContext === "function") {
+    renderPlannerSystemContext();
+  }
+
+  if (typeof renderStudyAnalytics === "function") {
+    renderStudyAnalytics();
+  }
+
+  if (typeof renderTodayTasks === "function") {
+    renderTodayTasks();
+  }
+
+  if (typeof renderCalendar === "function") {
+    renderCalendar();
+  }
+
+  console.log("Current Study System:", selectedSystem);
+}
+
+function getPlannerTasksByCurrentSystem() {
+  const currentSystem = getCurrentStudySystem();
+  const plans = getPlannerData();
+
+  if (currentSystem === "all") {
+    return plans;
+  }
+
+  return plans.filter(plan =>
+    plan.system === currentSystem ||
+    plan.source === currentSystem
+  );
+}
+
+function renderPlannerSystemContext() {
+  const box = document.getElementById("plannerSystemContext");
+  if (!box) return;
+
+  const currentSystem = getCurrentStudySystem();
+
+  const labels = {
+    all: "All Tasks 🌐",
+    support_plan: "Support Plan 📘",
+    pomodoro: "Pomodoro ⏱️",
+    active_recall: "Active Recall 🧠",
+    spaced: "Spaced Repetition 🔁",
+    manual: "Manual Tasks ✍️"
+  };
+
+  box.innerHTML = `
+    <div class="box planner-system-context-card">
+      <span class="badge">Smart Planner Auto-Switch</span>
+      <h2>${safeText(labels[currentSystem] || currentSystem)}</h2>
+      <p>The planner is now showing the selected study context without deleting or changing old tasks.</p>
+
+      <div class="actions">
+        <button type="button" onclick="setCurrentStudySystem('all')">All 🌐</button>
+        <button type="button" class="gold" onclick="setCurrentStudySystem('support_plan')">Support Plan 📘</button>
+        <button type="button" class="secondary" onclick="setCurrentStudySystem('pomodoro')">Pomodoro ⏱️</button>
+        <button type="button" class="secondary" onclick="setCurrentStudySystem('active_recall')">Active Recall 🧠</button>
+        <button type="button" class="secondary" onclick="setCurrentStudySystem('spaced')">Spaced Review 🔁</button>
+        <button type="button" class="secondary" onclick="setCurrentStudySystem('manual')">Manual ✍️</button>
+      </div>
+    </div>
+  `;
+}
 window.uploadTeacherResource = uploadTeacherResource;
 window.loadTeacherResources = loadTeacherResources;
 window.loadStudentResources = loadStudentResources;
@@ -5487,3 +5566,7 @@ window.saveStudentSupportPlan = saveStudentSupportPlan;window.saveStudentSupport
 window.loadSavedSupportPlans = loadSavedSupportPlans;
 window.loadMySupportPlans = loadMySupportPlans;
 window.addSupportPlanTasksToPlanner = addSupportPlanTasksToPlanner;
+window.getCurrentStudySystem = getCurrentStudySystem;
+window.setCurrentStudySystem = setCurrentStudySystem;
+window.getPlannerTasksByCurrentSystem = getPlannerTasksByCurrentSystem;
+window.renderPlannerSystemContext = renderPlannerSystemContext;
