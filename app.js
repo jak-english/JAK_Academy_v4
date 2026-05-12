@@ -2182,7 +2182,17 @@ async function addSupportPlanTasksToPlanner(planId) {
     return;
   }
 
-  const existingPlans = JSON.parse(localStorage.getItem("jakPlansV5") || "[]");
+  const existingPlans = getPlannerData();
+
+  const alreadyAdded = existingPlans.some(task =>
+    task.source === "support_plan" &&
+    task.support_plan_id === plan.id
+  );
+
+  if (alreadyAdded) {
+    alert("This support plan is already added to Planner ✅");
+    return;
+  }
 
   const today = new Date();
 
@@ -2201,20 +2211,37 @@ async function addSupportPlanTasksToPlanner(planId) {
       type: "Support Plan",
       task: task,
       color: "#3b82f6",
-      status: "not-started",
+
+      // Planner-compatible status
+      status: "not_started",
+
+      // Future Planner metadata
       source: "support_plan",
+      system: "support_plan",
       support_plan_id: plan.id
     };
   });
 
   const updatedPlans = [...existingPlans, ...newPlannerTasks];
 
-  localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
+  savePlannerData(updatedPlans);
 
   alert("Support plan tasks added to Planner ✅");
 
   if (typeof renderPlanner === "function") {
     renderPlanner();
+  }
+
+  if (typeof renderCalendar === "function") {
+    renderCalendar();
+  }
+
+  if (typeof renderTodayTasks === "function") {
+    renderTodayTasks();
+  }
+
+  if (typeof updatePlannerStats === "function") {
+    updatePlannerStats();
   }
 
   if (typeof renderStudyAnalytics === "function") {
@@ -4123,12 +4150,67 @@ function renderAnalyticsBar(label, value, maxValue, color) {
   `;
 }
 function getPlannerData() {
+  let plans = [];
+
   try {
-    return JSON.parse(localStorage.getItem("jakPlansV5")) || [];
+    plans = JSON.parse(localStorage.getItem("jakPlansV5") || "[]");
   } catch (error) {
     console.error("Planner data parse error:", error);
-    return [];
+    plans = [];
   }
+
+  return plans.map((plan, index) => {
+    const normalizedStatus =
+      plan.status === "not-started" ? "not_started" :
+      plan.status === "in-progress" ? "in_progress" :
+      plan.status === "completed" ? "done" :
+      plan.status || "not_started";
+
+    const normalizedSource =
+      plan.source ||
+      plan.system ||
+      (plan.support_plan_id ? "support_plan" : "manual");
+
+    const normalizedSystem =
+      plan.system ||
+      normalizedSource ||
+      "manual";
+
+    return {
+      ...plan,
+
+      // Keep old IDs if they exist; only create one if missing
+      id: plan.id || `plan-${Date.now()}-${index}`,
+
+      // Normalize status so analytics works correctly
+      status: normalizedStatus,
+
+      // Future Planner metadata
+      source: normalizedSource,
+      system: normalizedSystem,
+
+      // Safe defaults
+      subject: plan.subject || (
+        normalizedSource === "support_plan" ? "Support Plan" : "Study"
+      ),
+      type: plan.type || (
+        normalizedSource === "support_plan" ? "Support Plan" : "Manual"
+      ),
+      task: plan.task || plan.title || "Study task",
+      date: plan.date || new Date().toISOString().split("T")[0],
+      start: plan.start || "16:00",
+      end: plan.end || "16:30",
+      color: plan.color || (
+        normalizedSource === "support_plan" ? "#3b82f6" :
+        normalizedSource === "pomodoro" ? "#f59e0b" :
+        normalizedSource === "active_recall" ? "#8b5cf6" :
+        "#22c55e"
+      )
+    };
+  });
+}
+function savePlannerData(plans) {
+  localStorage.setItem("jakPlansV5", JSON.stringify(plans || []));
 }
 
 function timeToMinutes(time) {
