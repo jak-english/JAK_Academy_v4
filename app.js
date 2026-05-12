@@ -2947,14 +2947,35 @@ function renderCalendar() {
 function renderTodayTasks() {
   const target = $("todayTasks") || $("studentTodayTasks");
   if (!target) return;
+
   const today = new Date().toISOString().split("T")[0];
-  const tasks = getPlans().filter(p => p.date === today).sort((a, b) => a.start.localeCompare(b.start));
+
+  const plans =
+    typeof getPlannerTasksByCurrentSystem === "function"
+      ? getPlannerTasksByCurrentSystem()
+      : getPlannerData();
+
+  const tasks = plans
+    .filter(p => p.date === today)
+    .sort((a, b) => String(a.start || "").localeCompare(String(b.start || "")));
+
   target.innerHTML = tasks.length ? "" : "No tasks for today";
+
   tasks.forEach(p => {
     const div = document.createElement("div");
     div.className = "mini-plan";
     div.style.background = p.color || getSubjectColor(p.subject);
-    div.innerHTML = `<b>${safeText(p.subject)}</b> | ${safeText(p.start)} → ${safeText(p.end)}<br>${safeText(p.task)}<br><small>${statusLabel(p.status)}</small>`;
+
+    div.innerHTML = `
+      <b>${safeText(p.subject)}</b> 
+      <span class="badge">${safeText(p.system || p.source || "manual")}</span>
+      | ${safeText(p.start)} → ${safeText(p.end)}
+      <br>
+      ${safeText(p.task)}
+      <br>
+      <small>${statusLabel(p.status)}</small>
+    `;
+
     target.appendChild(div);
   });
 }
