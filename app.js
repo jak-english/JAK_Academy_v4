@@ -5572,19 +5572,46 @@ function renderPlannerSystemContext() {
     manual: "Manual Tasks ✍️"
   };
 
+  const descriptions = {
+    all: "You are viewing all saved study tasks from every system.",
+    support_plan: "You are viewing tasks created from teacher support plans only.",
+    pomodoro: "You are viewing Pomodoro-focused study tasks only.",
+    active_recall: "You are viewing Active Recall study tasks only.",
+    spaced: "You are viewing Spaced Repetition review tasks only.",
+    manual: "You are viewing manually created study tasks only."
+  };
+
+  const currentLabel = labels[currentSystem] || currentSystem;
+  const currentDescription =
+    descriptions[currentSystem] ||
+    "The planner is showing the selected study context.";
+
   box.innerHTML = `
     <div class="box planner-system-context-card">
-      <span class="badge">Smart Planner Auto-Switch</span>
-      <h2>${safeText(labels[currentSystem] || currentSystem)}</h2>
-      <p>The planner is now showing the selected study context without deleting or changing old tasks.</p>
+      <div class="planner-system-header">
+        <div>
+          <span class="badge">Smart Planner Auto-Switch</span>
+          <h2>Current System: ${safeText(currentLabel)}</h2>
+          <p>${safeText(currentDescription)}</p>
+        </div>
 
-      <div class="actions">
-        <button type="button" onclick="setCurrentStudySystem('all')">All 🌐</button>
-        <button type="button" class="gold" onclick="setCurrentStudySystem('support_plan')">Support Plan 📘</button>
-        <button type="button" class="secondary" onclick="setCurrentStudySystem('pomodoro')">Pomodoro ⏱️</button>
-        <button type="button" class="secondary" onclick="setCurrentStudySystem('active_recall')">Active Recall 🧠</button>
-        <button type="button" class="secondary" onclick="setCurrentStudySystem('spaced')">Spaced Review 🔁</button>
-        <button type="button" class="secondary" onclick="setCurrentStudySystem('manual')">Manual ✍️</button>
+        <div class="planner-system-pill">
+          <span>Showing</span>
+          <strong>${safeText(currentLabel)}</strong>
+        </div>
+      </div>
+
+      <p class="msg">
+        Other tasks are still saved safely. Switching systems only changes what you see now; it does not delete or change old tasks.
+      </p>
+
+      <div class="actions planner-system-actions">
+        <button type="button" class="${currentSystem === "all" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('all')">All 🌐</button>
+        <button type="button" class="${currentSystem === "support_plan" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('support_plan')">Support Plan 📘</button>
+        <button type="button" class="${currentSystem === "pomodoro" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('pomodoro')">Pomodoro ⏱️</button>
+        <button type="button" class="${currentSystem === "active_recall" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('active_recall')">Active Recall 🧠</button>
+        <button type="button" class="${currentSystem === "spaced" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('spaced')">Spaced Review 🔁</button>
+        <button type="button" class="${currentSystem === "manual" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('manual')">Manual ✍️</button>
       </div>
     </div>
   `;

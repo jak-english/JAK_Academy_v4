@@ -4605,3 +4605,120 @@ textarea{min-height:95px;resize:vertical}
     width: 100%;
   }
 }
+/* ===============================
+   Smart Planner Current System UI
+   =============================== */
+
+.planner-system-context-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px !important;
+  padding: 24px !important;
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.22), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.88)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.planner-system-context-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  transform: translateX(-100%);
+  animation: plannerSystemSweep 7s infinite;
+  pointer-events: none;
+}
+
+@keyframes plannerSystemSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  45%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.planner-system-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.planner-system-header h2 {
+  color: #facc15 !important;
+  font-size: 1.55rem !important;
+  margin: 10px 0 8px !important;
+}
+
+.planner-system-header p,
+.planner-system-context-card .msg {
+  color: rgba(241, 245, 249, 0.88) !important;
+  line-height: 1.6;
+}
+
+.planner-system-pill {
+  min-width: 190px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(250, 204, 21, 0.18), rgba(59, 130, 246, 0.12));
+  border: 1px solid rgba(250, 204, 21, 0.34);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24);
+}
+
+.planner-system-pill span {
+  display: block;
+  color: rgba(226, 232, 240, 0.82);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 5px;
+}
+
+.planner-system-pill strong {
+  display: block;
+  color: #fef3c7;
+  font-size: 1.05rem;
+  font-weight: 950;
+}
+
+.planner-system-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px !important;
+}
+
+.planner-system-actions button {
+  border-radius: 999px !important;
+  padding: 10px 15px !important;
+  font-weight: 900 !important;
+}
+
+@media (max-width: 700px) {
+  .planner-system-header {
+    flex-direction: column;
+  }
+
+  .planner-system-pill {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .planner-system-actions button {
+    width: 100%;
+  }
+}
