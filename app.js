@@ -2151,6 +2151,85 @@ async function loadSavedSupportPlans() {
 
   if (msg) msg.textContent = "Saved support plans loaded: " + data.length;
 }
+async function loadMySupportPlans() {
+  const list = document.getElementById("mySupportPlansList");
+  const msg = document.getElementById("mySupportPlansMsg");
+
+  if (!list) return;
+
+  list.innerHTML = "Loading your support plans...";
+  if (msg) msg.textContent = "Loading your support plans...";
+
+  const { data: userData, error: userError } = await client.auth.getUser();
+  const user = userData?.user;
+
+  if (userError || !user) {
+    list.innerHTML = "<p>Please log in to view your support plans.</p>";
+    if (msg) msg.textContent = "Please log in first.";
+    return;
+  }
+
+  const { data, error } = await client
+    .from("support_plans")
+    .select("*")
+    .eq("student_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Load my support plans error:", error);
+    list.innerHTML = "<p>Could not load your support plans.</p>";
+    if (msg) msg.textContent = "Could not load your support plans.";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    list.innerHTML = "<p>No support plans assigned yet.</p>";
+    if (msg) msg.textContent = "No support plans assigned yet.";
+    return;
+  }
+
+  list.innerHTML = "";
+
+  data.forEach(plan => {
+    const tasks = Array.isArray(plan.weekly_tasks)
+      ? plan.weekly_tasks
+      : [];
+
+    const createdDate = plan.created_at
+      ? new Date(plan.created_at).toLocaleString()
+      : "Date not available";
+
+    const d = document.createElement("div");
+    d.className = "box saved-support-plan-card student-support-plan-card";
+
+    d.innerHTML = `
+      <span class="badge">${safeText(plan.status || "active")}</span>
+      <span class="badge">${safeText(plan.plan_type || "Support Plan")}</span>
+
+      <h3>${safeText(plan.plan_type || "Support Plan")}</h3>
+
+      <p><strong>Risk Level:</strong> ${safeText(plan.risk_level || "Not specified")}</p>
+      <p><strong>Average:</strong> ${safeText(plan.average ?? "N/A")}%</p>
+      <p><strong>Below 50%:</strong> ${safeText(plan.below_50_count ?? 0)} time(s)</p>
+      <p><strong>Weak Exams:</strong> ${safeText(plan.weak_exams || "No weak exams listed")}</p>
+      <p><strong>Main Focus:</strong> ${safeText(plan.main_focus || "No focus listed")}</p>
+      <p><strong>Created:</strong> ${safeText(createdDate)}</p>
+
+      <div class="support-plan-tasks">
+        <h3>Weekly Tasks</h3>
+        ${
+          tasks.length
+            ? `<ol>${tasks.map(task => `<li>${safeText(task)}</li>`).join("")}</ol>`
+            : "<p>No tasks saved.</p>"
+        }
+      </div>
+    `;
+
+    list.appendChild(d);
+  });
+
+  if (msg) msg.textContent = "Support plans loaded: " + data.length;
+}
 function editExam(exam) {
   editingExamId = exam.id;
 
@@ -5254,3 +5333,4 @@ window.copyStudentSupportPlan = copyStudentSupportPlan;
 window.printStudentSupportPlan = printStudentSupportPlan;
 window.saveStudentSupportPlan = saveStudentSupportPlan;window.saveStudentSupportPlan = saveStudentSupportPlan;
 window.loadSavedSupportPlans = loadSavedSupportPlans;
+window.loadMySupportPlans = loadMySupportPlans;
