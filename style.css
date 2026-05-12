@@ -135,8 +135,133 @@ textarea{min-height:95px;resize:vertical}
 .correct{border:2px solid var(--green)}
 .wrong{border:2px solid var(--red)}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(140px,1fr));gap:10px;overflow-x:auto}
-.calendar-day{min-height:120px;border-radius:16px;padding:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
-.mini-plan{margin:7px 0;padding:8px;border-radius:12px;background:var(--blue);font-size:13px}
+.calendar-day {
+  min-height: 140px;
+  border-radius: 24px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at top left, rgba(124, 58, 237, 0.16), transparent 30%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.70), rgba(15, 23, 42, 0.58));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+}
+
+.calendar-day > b {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #c4b5fd;
+  font-size: 1rem;
+}
+/* ===============================
+   Future Planner Task Cards
+   =============================== */
+
+.mini-plan {
+  position: relative;
+  overflow: hidden;
+  margin: 10px 0 !important;
+  padding: 14px 16px !important;
+  border-radius: 18px !important;
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.16), transparent 30%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.84)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+  color: #f8fafc !important;
+  font-size: 13.5px !important;
+  line-height: 1.55 !important;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease !important;
+}
+
+.mini-plan::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 5px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #facc15, #3b82f6);
+}
+
+.mini-plan::after {
+  content: "JAK";
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  font-size: 2.2rem;
+  font-weight: 1000;
+  letter-spacing: -3px;
+  color: rgba(255, 255, 255, 0.035);
+  pointer-events: none;
+}
+
+.mini-plan:hover {
+  transform: translateY(-3px);
+  border-color: rgba(250, 204, 21, 0.42) !important;
+  box-shadow:
+    0 20px 46px rgba(0, 0, 0, 0.34),
+    0 0 20px rgba(250, 204, 21, 0.10) !important;
+}
+
+.mini-plan b {
+  color: #facc15 !important;
+  font-size: 0.98rem;
+}
+
+.mini-plan small {
+  display: inline-block;
+  margin-top: 7px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.16);
+  border: 1px solid rgba(147, 197, 253, 0.28);
+  color: #bfdbfe !important;
+  font-weight: 800;
+}
+
+.mini-plan .badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.14);
+  border: 1px solid rgba(250, 204, 21, 0.28);
+  color: #fef3c7;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 18px;
+  margin-top: 16px;
+  align-items: stretch;
+}
+
+.calendar-day {
+  border-radius: 24px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at top left, rgba(124, 58, 237, 0.16), transparent 30%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.70), rgba(15, 23, 42, 0.58));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+}
+
+.calendar-day > b {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #c4b5fd;
+  font-size: 1rem;
+}
 .mini-plan.weekly{background:var(--violet)}
 .mini-plan.exam{background:var(--gold);color:#111827}
 .table-like{width:100%;border-collapse:collapse}
