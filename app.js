@@ -1854,9 +1854,25 @@ Weekly Tasks:
 ${weeklyTasks.map((task, index) => `${index + 1}. ${task}`).join("\n")}
   `.trim();
 
-  planBox.dataset.copyText = copyText;
-          
-  planContent.innerHTML = `
+planBox.dataset.copyText = copyText;
+
+const planPayload = {
+  student_id: studentId,
+  student_name: studentName,
+  plan_type: planLevel,
+  risk_level: riskLevel,
+  average: Number(average),
+  below_50_count: Number(below50),
+  weak_exams: weakExamsText || "No major weak exam",
+  main_focus: mainFocus,
+  weekly_tasks: weeklyTasks,
+  status: "active",
+  source: "teacher_results_analytics"
+};
+
+planBox.dataset.planPayload = JSON.stringify(planPayload);
+
+planContent.innerHTML = `
     <div class="support-plan-grid">
       <div class="support-plan-card">
         <h3>${safeText(studentName)}</h3>
@@ -2012,6 +2028,58 @@ function printStudentSupportPlan() {
   `);
 
   printWindow.document.close();
+}
+async function saveStudentSupportPlan() {
+  const planBox = document.getElementById("studentSupportPlanBox");
+  const rawPayload = planBox?.dataset?.planPayload;
+
+  if (!rawPayload) {
+    alert("No support plan to save.");
+    return;
+  }
+
+  const { data: userData, error: userError } = await client.auth.getUser();
+  const currentUser = userData?.user;
+
+  if (userError || !currentUser) {
+    alert("Please log in first.");
+    return;
+  }
+
+  let payload;
+
+  try {
+    payload = JSON.parse(rawPayload);
+  } catch (error) {
+    console.error("Support plan payload parse error:", error);
+    alert("Could not read support plan data.");
+    return;
+  }
+
+  const { error } = await client
+    .from("support_plans")
+    .insert({
+      teacher_id: currentUser.id,
+      student_id: payload.student_id,
+      student_name: payload.student_name,
+      plan_type: payload.plan_type,
+      risk_level: payload.risk_level,
+      average: payload.average,
+      below_50_count: payload.below_50_count,
+      weak_exams: payload.weak_exams,
+      main_focus: payload.main_focus,
+      weekly_tasks: payload.weekly_tasks,
+      status: payload.status || "active",
+      source: payload.source || "teacher_results_analytics"
+    });
+
+  if (error) {
+    console.error("Save support plan error:", error);
+    alert("Could not save support plan.");
+    return;
+  }
+
+  alert("Support plan saved to planner ✅");
 }
 function editExam(exam) {
   editingExamId = exam.id;
@@ -5114,3 +5182,4 @@ window.createStudentSupportPlan = createStudentSupportPlan;
 window.closeStudentSupportPlan = closeStudentSupportPlan;
 window.copyStudentSupportPlan = copyStudentSupportPlan;
 window.printStudentSupportPlan = printStudentSupportPlan;
+window.saveStudentSupportPlan = saveStudentSupportPlan;window.saveStudentSupportPlan = saveStudentSupportPlan;
