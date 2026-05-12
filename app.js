@@ -4251,8 +4251,10 @@ function renderAnalyticsBar(label, value, maxValue, color) {
 }
 
 function renderStudyAnalytics() {
-  const plans = getPlannerData();
-
+const plans =
+  typeof getPlannerTasksByCurrentSystem === "function"
+    ? getPlannerTasksByCurrentSystem()
+    : getPlannerData();
   const cardsBox = document.getElementById("studyAnalyticsCards");
   const subjectChart = document.getElementById("subjectDistributionChart");
   const dailyChart = document.getElementById("dailyStudyChart");
