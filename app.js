@@ -2909,36 +2909,51 @@ function updatePlannerStats() {
 }
 
 function renderCalendar() {
-  if (!$('calendarView')) return;
-  const plans = getPlans();
+  if (!$("calendarView")) return;
+
+  const plans =
+    typeof getPlannerTasksByCurrentSystem === "function"
+      ? getPlannerTasksByCurrentSystem()
+      : getPlannerData();
+
   const filter = $("subjectFilter")?.value.trim().toLowerCase() || "";
-  const filtered = filter ? plans.filter(p => p.subject.toLowerCase().includes(filter)) : plans;
+
+  const filtered = filter
+    ? plans.filter(p => String(p.subject || "").toLowerCase().includes(filter))
+    : plans;
 
   calendarView.innerHTML = filtered.length ? '<div class="calendar-grid"></div>' : "No plans yet";
+
   const grid = calendarView.querySelector(".calendar-grid");
   if (!grid) return;
 
   const grouped = {};
+
   filtered.forEach(p => {
-    if (!grouped[p.date]) grouped[p.date] = [];
-    grouped[p.date].push(p);
+    const date = p.date || "No date";
+    if (!grouped[date]) grouped[date] = [];
+    grouped[date].push(p);
   });
 
   Object.keys(grouped).sort().forEach(date => {
     const day = document.createElement("div");
     day.className = "calendar-day";
-    day.innerHTML = "<b>📅 " + date + "</b>";
+    day.innerHTML = "<b>📅 " + safeText(date) + "</b>";
 
-    grouped[date].sort((a, b) => a.start.localeCompare(b.start)).forEach(p => {
-      day.innerHTML += `
-        <div class="mini-plan ${safeText(p.type)}" style="background:${p.color || getSubjectColor(p.subject)}">
-          <b>${safeText(p.subject)}</b><br>
-          ${safeText(p.start)} → ${safeText(p.end)}<br>
-          ${safeText(p.task)}<br>
-          <small>${statusLabel(p.status)}</small>
-        </div>
-      `;
-    });
+    grouped[date]
+      .sort((a, b) => String(a.start || "").localeCompare(String(b.start || "")))
+      .forEach(p => {
+        day.innerHTML += `
+          <div class="mini-plan ${safeText(p.type || "manual")}" style="background:${p.color || getSubjectColor(p.subject)}">
+            <b>${safeText(p.subject)}</b>
+            <span class="badge">${safeText(p.system || p.source || "manual")}</span>
+            <br>
+            ${safeText(p.start)} → ${safeText(p.end)}<br>
+            ${safeText(p.task)}<br>
+            <small>${statusLabel(p.status)}</small>
+          </div>
+        `;
+      });
 
     grid.appendChild(day);
   });
