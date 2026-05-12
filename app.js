@@ -2081,6 +2081,76 @@ async function saveStudentSupportPlan() {
 
   alert("Support plan saved to planner ✅");
 }
+async function loadSavedSupportPlans() {
+  const list = document.getElementById("savedSupportPlansList");
+  const msg = document.getElementById("savedSupportPlansMsg");
+
+  if (!list) return;
+
+  list.innerHTML = "Loading saved support plans...";
+  if (msg) msg.textContent = "Loading saved support plans...";
+
+  const { data, error } = await client
+    .from("support_plans")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Load saved support plans error:", error);
+    list.innerHTML = "<p>Could not load saved support plans.</p>";
+    if (msg) msg.textContent = "Could not load saved support plans.";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    list.innerHTML = "<p>No saved support plans yet.</p>";
+    if (msg) msg.textContent = "No saved support plans yet.";
+    return;
+  }
+
+  list.innerHTML = "";
+
+  data.forEach(plan => {
+    const tasks = Array.isArray(plan.weekly_tasks)
+      ? plan.weekly_tasks
+      : [];
+
+    const createdDate = plan.created_at
+      ? new Date(plan.created_at).toLocaleString()
+      : "Date not available";
+
+    const d = document.createElement("div");
+    d.className = "box saved-support-plan-card";
+
+    d.innerHTML = `
+      <span class="badge">${safeText(plan.status || "active")}</span>
+      <span class="badge">${safeText(plan.source || "support_plan")}</span>
+
+      <h3>${safeText(plan.student_name || "Unknown Student")}</h3>
+
+      <p><strong>Plan Type:</strong> ${safeText(plan.plan_type || "Support Plan")}</p>
+      <p><strong>Risk Level:</strong> ${safeText(plan.risk_level || "Not specified")}</p>
+      <p><strong>Average:</strong> ${safeText(plan.average ?? "N/A")}%</p>
+      <p><strong>Below 50%:</strong> ${safeText(plan.below_50_count ?? 0)} time(s)</p>
+      <p><strong>Weak Exams:</strong> ${safeText(plan.weak_exams || "No weak exams listed")}</p>
+      <p><strong>Main Focus:</strong> ${safeText(plan.main_focus || "No focus listed")}</p>
+      <p><strong>Created:</strong> ${safeText(createdDate)}</p>
+
+      <div class="support-plan-tasks">
+        <h3>Weekly Tasks</h3>
+        ${
+          tasks.length
+            ? `<ol>${tasks.map(task => `<li>${safeText(task)}</li>`).join("")}</ol>`
+            : "<p>No tasks saved.</p>"
+        }
+      </div>
+    `;
+
+    list.appendChild(d);
+  });
+
+  if (msg) msg.textContent = "Saved support plans loaded: " + data.length;
+}
 function editExam(exam) {
   editingExamId = exam.id;
 
@@ -5183,3 +5253,4 @@ window.closeStudentSupportPlan = closeStudentSupportPlan;
 window.copyStudentSupportPlan = copyStudentSupportPlan;
 window.printStudentSupportPlan = printStudentSupportPlan;
 window.saveStudentSupportPlan = saveStudentSupportPlan;window.saveStudentSupportPlan = saveStudentSupportPlan;
+window.loadSavedSupportPlans = loadSavedSupportPlans;
