@@ -4634,12 +4634,43 @@ if (studyDates.length > 0) {
 
 const weeklyGoalMinutes = getWeeklyStudyGoal();
 const weeklyGoalRate = Math.min(Math.round((totalMinutes / weeklyGoalMinutes) * 100), 100);
-  cardsBox.innerHTML = `
+
+const currentSystem =
+  typeof getCurrentStudySystem === "function"
+    ? getCurrentStudySystem()
+    : "all";
+
+const analyticsSystemLabelMap = {
+  all: "All Study Systems",
+  support_plan: "Support Plan",
+  pomodoro: "Pomodoro",
+  active_recall: "Active Recall",
+  spaced_repetition: "Spaced Repetition",
+  time_blocking: "Time Blocking",
+  deep_work: "Deep Work",
+  weekly_plan: "Weekly Plan",
+  before_exam: "Before Exam Plan",
+  feynman: "Feynman Technique",
+  cornell_notes: "Cornell Notes",
+  leitner: "Leitner Flashcards",
+  mistake_notebook: "Mistake Notebook",
+  mind_map: "Mind Map",
+  manual: "Manual Plan"
+};
+
+const analyticsSystemLabel =
+  analyticsSystemLabelMap[currentSystem] || currentSystem;
+
+cardsBox.innerHTML = `
+    <div class="box analytics-card-box">
+      <h2>Current Analytics</h2>
+      <p>${safeText(analyticsSystemLabel)}</p>
+      <span>Data shown for the selected study system</span>
+    </div>
     <div class="box analytics-card-box">
       <h2>Total Plans</h2>
       <p>${safeText(totalPlans)}</p>
-      <span>All saved study tasks</span>
-    </div>
+<span>Tasks in this study system</span>    </div>
     <div class="box analytics-card-box">
       <h2>Study Streak</h2>
       <p>${safeText(studyStreak)} days</p>
