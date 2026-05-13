@@ -4014,6 +4014,88 @@ function normalizeStudySystemKey(methodKey) {
 
   return map[methodKey] || methodKey || "manual";
 }
+function getTodayDateString() {
+  return new Date().toISOString().split("T")[0];
+}
+
+function addDaysToDateString(dateString, daysToAdd) {
+  const date = dateString ? new Date(dateString) : new Date();
+  date.setDate(date.getDate() + daysToAdd);
+  return date.toISOString().split("T")[0];
+}
+
+function getStudyTaskDate(index, methodKey, examDate) {
+  const today = getTodayDateString();
+
+  if (methodKey === "spaced") {
+    const spacedOffsets = [0, 1, 3, 7, 10];
+    return addDaysToDateString(today, spacedOffsets[index] || index);
+  }
+
+  if (methodKey === "examCountdown" && examDate) {
+    const exam = new Date(examDate);
+    const taskDate = new Date(exam);
+    const daysBefore = Math.max(1, 4 - index);
+    taskDate.setDate(exam.getDate() - daysBefore);
+    return taskDate.toISOString().split("T")[0];
+  }
+
+  return addDaysToDateString(today, index);
+}
+
+function getTodayDateString() {
+  return new Date().toISOString().split("T")[0];
+}
+
+function formatLocalDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getTodayDateString() {
+  return formatLocalDate(new Date());
+}
+
+function addDaysToDateString(dateString, daysToAdd) {
+  const date = dateString ? new Date(dateString + "T00:00:00") : new Date();
+  date.setDate(date.getDate() + daysToAdd);
+  return formatLocalDate(date);
+}
+
+function getStudyTaskDate(index, methodKey, examDate) {
+  const today = getTodayDateString();
+
+  if (methodKey === "spaced") {
+    const spacedOffsets = [0, 1, 3, 7, 10];
+    return addDaysToDateString(today, spacedOffsets[index] || index);
+  }
+
+  if (methodKey === "examCountdown" && examDate) {
+    const exam = new Date(examDate);
+
+    if (!isNaN(exam.getTime())) {
+      const taskDate = new Date(exam);
+      const daysBefore = Math.max(1, 4 - index);
+      taskDate.setDate(exam.getDate() - daysBefore);
+      return taskDate.toISOString().split("T")[0];
+    }
+  }
+
+  return addDaysToDateString(today, index);
+}
+
+function getStudyTaskStartTime(start, index, sessionMinutes, breakMinutes, methodKey) {
+  if (methodKey === "pomodoro") {
+    return index === 0
+      ? start
+      : addMinutesToTime(start, index * (sessionMinutes + breakMinutes));
+  }
+
+  return start;
+}
+
 function generateStudySystemSchedule() {
   const methodSelect = document.getElementById("studyMethodSelect");
   const subjectInput = document.getElementById("studySystemSubject");
@@ -4028,7 +4110,11 @@ function generateStudySystemSchedule() {
   if (!methodSelect || !output) return;
 
   const methodKey = methodSelect.value;
-  const selectedSystem = normalizeStudySystemKey(methodKey);
+  const selectedSystem =
+    typeof normalizeStudySystemKey === "function"
+      ? normalizeStudySystemKey(methodKey)
+      : methodKey;
+
   const method = studyMethods[methodKey];
 
   const subject = subjectInput?.value.trim() || "Study Subject";
@@ -4044,8 +4130,8 @@ function generateStudySystemSchedule() {
     .map(day => day.trim())
     .filter(Boolean);
 
-let scheduleHtml = "";
-let generatedTasks = [];
+  let scheduleHtml = "";
+  let generatedTasks = [];
 
   if (methodKey === "pomodoro") {
     let currentTime = start;
@@ -4053,10 +4139,12 @@ let generatedTasks = [];
     for (let i = 1; i <= sessions; i++) {
       const studyEnd = addMinutesToTime(currentTime, sessionMinutes);
       const breakEnd = addMinutesToTime(studyEnd, breakMinutes);
+      const taskDate = getStudyTaskDate(i - 1, methodKey, examDate);
 
       scheduleHtml += `
         <div class="mini-plan">
           <strong>Pomodoro Session ${i}</strong><br>
+          Date: ${safeText(taskDate)}<br>
           ${safeText(currentTime)} - ${safeText(studyEnd)}: ${safeText(subject)} Focus Study<br>
           ${safeText(studyEnd)} - ${safeText(breakEnd)}: Short Break
         </div>
@@ -4075,20 +4163,28 @@ let generatedTasks = [];
       "Before exam: Final revision"
     ];
 
-    scheduleHtml = reviewSteps.map((step, index) => `
-      <div class="mini-plan">
-        <strong>Review ${index + 1}</strong><br>
-        ${safeText(step)}<br>
-        Topic: ${safeText(subject)}
-      </div>
-    `).join("");
+    scheduleHtml = reviewSteps.map((step, index) => {
+      const taskDate = getStudyTaskDate(index, methodKey, examDate);
+
+      return `
+        <div class="mini-plan">
+          <strong>Review ${index + 1}</strong><br>
+          Date: ${safeText(taskDate)}<br>
+          ${safeText(step)}<br>
+          Topic: ${safeText(subject)}
+        </div>
+      `;
+    }).join("");
   }
 
   else if (methodKey === "activeRecall") {
     for (let i = 1; i <= sessions; i++) {
+      const taskDate = getStudyTaskDate(i - 1, methodKey, examDate);
+
       scheduleHtml += `
         <div class="mini-plan">
           <strong>Active Recall Round ${i}</strong><br>
+          Date: ${safeText(taskDate)}<br>
           Study ${safeText(subject)} briefly, close the book, then answer questions from memory.<br>
           Suggested time: ${safeText(sessionMinutes)} minutes.
         </div>
@@ -4098,15 +4194,16 @@ let generatedTasks = [];
 
   else if (methodKey === "timeBlocking") {
     let currentTime = start;
-
     const blocks = days.length ? days : ["Day 1", "Day 2", "Day 3"];
 
     blocks.forEach((day, index) => {
       const end = addMinutesToTime(currentTime, sessionMinutes);
+      const taskDate = getStudyTaskDate(index, methodKey, examDate);
 
       scheduleHtml += `
         <div class="mini-plan">
           <strong>${safeText(day)} - Block ${index + 1}</strong><br>
+          Date: ${safeText(taskDate)}<br>
           ${safeText(currentTime)} - ${safeText(end)}: ${safeText(subject)}<br>
           One clear task only. No multitasking.
         </div>
@@ -4119,10 +4216,12 @@ let generatedTasks = [];
   else if (methodKey === "deepWork") {
     const deepMinutes = Math.max(sessionMinutes, 60);
     const end = addMinutesToTime(start, deepMinutes);
+    const taskDate = getStudyTaskDate(0, methodKey, examDate);
 
     scheduleHtml = `
       <div class="mini-plan">
         <strong>Deep Work Block</strong><br>
+        Date: ${safeText(taskDate)}<br>
         ${safeText(start)} - ${safeText(end)}: Deep focus on ${safeText(subject)}<br>
         Rule: phone away, one task, no distractions.
       </div>
@@ -4135,15 +4234,22 @@ let generatedTasks = [];
   }
 
   else if (methodKey === "weeklyPlan") {
-    const weeklyDays = days.length ? days : ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday"];
+    const weeklyDays = days.length
+      ? days
+      : ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday"];
 
-    scheduleHtml = weeklyDays.map((day, index) => `
-      <div class="mini-plan">
-        <strong>${safeText(day)}</strong><br>
-        ${safeText(subject)} - Session ${index + 1}<br>
-        Focus: lesson review + practice questions.
-      </div>
-    `).join("");
+    scheduleHtml = weeklyDays.map((day, index) => {
+      const taskDate = getStudyTaskDate(index, methodKey, examDate);
+
+      return `
+        <div class="mini-plan">
+          <strong>${safeText(day)}</strong><br>
+          Date: ${safeText(taskDate)}<br>
+          ${safeText(subject)} - Session ${index + 1}<br>
+          Focus: lesson review + practice questions.
+        </div>
+      `;
+    }).join("");
   }
 
   else if (methodKey === "examCountdown") {
@@ -4163,16 +4269,19 @@ let generatedTasks = [];
     scheduleHtml = `
       <div class="mini-plan">
         <strong>Feynman Step 1</strong><br>
+        Date: ${safeText(getStudyTaskDate(0, methodKey, examDate))}<br>
         Choose ${safeText(subject)} and explain it in very simple words.
       </div>
 
       <div class="mini-plan">
         <strong>Feynman Step 2</strong><br>
+        Date: ${safeText(getStudyTaskDate(1, methodKey, examDate))}<br>
         Find the part you cannot explain clearly.
       </div>
 
       <div class="mini-plan">
         <strong>Feynman Step 3</strong><br>
+        Date: ${safeText(getStudyTaskDate(2, methodKey, examDate))}<br>
         Restudy that weak part, then explain it again.
       </div>
     `;
@@ -4182,6 +4291,7 @@ let generatedTasks = [];
     scheduleHtml = `
       <div class="mini-plan">
         <strong>Cornell Notes Layout</strong><br>
+        Date: ${safeText(getStudyTaskDate(0, methodKey, examDate))}<br>
         Notes area: write key ideas from ${safeText(subject)}.<br>
         Side area: write questions and keywords.<br>
         Bottom area: write a short summary.
@@ -4193,12 +4303,14 @@ let generatedTasks = [];
     scheduleHtml = `
       <div class="mini-plan">
         <strong>Leitner Flashcards</strong><br>
+        Date: ${safeText(getStudyTaskDate(0, methodKey, examDate))}<br>
         Create cards for ${safeText(subject)}.<br>
         Correct cards move forward. Wrong cards stay for daily review.
       </div>
 
       <div class="mini-plan">
         <strong>Review System</strong><br>
+        Date: ${safeText(getStudyTaskDate(1, methodKey, examDate))}<br>
         Box 1: daily review<br>
         Box 2: every 2–3 days<br>
         Box 3: weekly review
@@ -4210,11 +4322,13 @@ let generatedTasks = [];
     scheduleHtml = `
       <div class="mini-plan">
         <strong>Mistake Notebook</strong><br>
+        Date: ${safeText(getStudyTaskDate(0, methodKey, examDate))}<br>
         Write your wrong answer, the correct answer, and why the mistake happened.
       </div>
 
       <div class="mini-plan">
         <strong>Weekly Review</strong><br>
+        Date: ${safeText(getStudyTaskDate(1, methodKey, examDate))}<br>
         Review all repeated mistakes before solving new questions.
       </div>
     `;
@@ -4224,6 +4338,7 @@ let generatedTasks = [];
     scheduleHtml = `
       <div class="mini-plan">
         <strong>Mind Map Plan</strong><br>
+        Date: ${safeText(getStudyTaskDate(0, methodKey, examDate))}<br>
         Put ${safeText(subject)} in the center.<br>
         Add branches for rules, examples, keywords, and common mistakes.
       </div>
@@ -4234,6 +4349,7 @@ let generatedTasks = [];
     scheduleHtml = `
       <div class="mini-plan">
         <strong>${safeText(method?.title || "Study Plan")}</strong><br>
+        Date: ${safeText(getStudyTaskDate(0, methodKey, examDate))}<br>
         Days: ${safeText(daysText)}<br>
         Start: ${safeText(start)}<br>
         Subject: ${safeText(subject)}<br>
@@ -4252,6 +4368,7 @@ let generatedTasks = [];
       <p class="msg">Tip: Start with a realistic plan. A small plan you follow is better than a perfect plan you ignore.</p>
     </div>
   `;
+
   const existingPlans =
     typeof getPlannerData === "function"
       ? getPlannerData()
@@ -4260,23 +4377,32 @@ let generatedTasks = [];
   const now = Date.now();
 
   if (methodKey === "pomodoro") {
-    generatedTasks = Array.from({ length: sessions }, (_, index) => ({
-      id: `study-${selectedSystem}-${now}-${index}`,
-      task: `${subject} - Pomodoro Session ${index + 1}`,
-      subject,
-      date: "",
-      startTime: index === 0 ? start : "",
-      endTime: "",
-      type: "study_system",
-      status: "not_started",
-      source: "study_system",
-      system: selectedSystem,
-      method: methodKey,
-      minutes: sessionMinutes,
-      breakMinutes,
-      createdAt: new Date().toISOString()
-    }));
-  } else if (methodKey === "spaced") {
+    generatedTasks = Array.from({ length: sessions }, (_, index) => {
+      const taskStart = getStudyTaskStartTime(start, index, sessionMinutes, breakMinutes, methodKey);
+      const taskEnd = addMinutesToTime(taskStart, sessionMinutes);
+
+      return {
+        id: `study-${selectedSystem}-${now}-${index}`,
+        task: `${subject} - Pomodoro Session ${index + 1}`,
+        subject,
+        date: getStudyTaskDate(index, methodKey, examDate),
+        startTime: taskStart,
+        endTime: taskEnd,
+        start: taskStart,
+        end: taskEnd,
+        type: "study_system",
+        status: "not_started",
+        source: "study_system",
+        system: selectedSystem,
+        method: methodKey,
+        minutes: sessionMinutes,
+        breakMinutes,
+        createdAt: new Date().toISOString()
+      };
+    });
+  }
+
+  else if (methodKey === "spaced") {
     const reviewSteps = [
       "Today: First learning session",
       "After 1 day: Quick review",
@@ -4285,83 +4411,96 @@ let generatedTasks = [];
       "Before exam: Final revision"
     ];
 
-    generatedTasks = reviewSteps.map((step, index) => ({
-      id: `study-${selectedSystem}-${now}-${index}`,
-      task: `${subject} - ${step}`,
-      subject,
-      date: "",
-      startTime: start,
-      endTime: "",
-      type: "study_system",
-      status: "not_started",
-      source: "study_system",
-      system: selectedSystem,
-      method: methodKey,
-      minutes: sessionMinutes,
-      breakMinutes,
-      createdAt: new Date().toISOString()
-    }));
-  } else {
-    generatedTasks = Array.from({ length: Math.max(1, sessions) }, (_, index) => ({
-      id: `study-${selectedSystem}-${now}-${index}`,
-      task: `${subject} - ${method?.title || selectedSystem} Task ${index + 1}`,
-      subject,
-      date: "",
-      startTime: start,
-      endTime: "",
-      type: "study_system",
-      status: "not_started",
-      source: "study_system",
-      system: selectedSystem,
-      method: methodKey,
-      minutes: sessionMinutes,
-      breakMinutes,
-      createdAt: new Date().toISOString()
-    }));
+    generatedTasks = reviewSteps.map((step, index) => {
+      const taskStart = getStudyTaskStartTime(start, index, sessionMinutes, breakMinutes, methodKey);
+      const taskEnd = addMinutesToTime(taskStart, sessionMinutes);
+
+      return {
+        id: `study-${selectedSystem}-${now}-${index}`,
+        task: `${subject} - ${step}`,
+        subject,
+        date: getStudyTaskDate(index, methodKey, examDate),
+        startTime: taskStart,
+        endTime: taskEnd,
+        start: taskStart,
+        end: taskEnd,
+        type: "study_system",
+        status: "not_started",
+        source: "study_system",
+        system: selectedSystem,
+        method: methodKey,
+        minutes: sessionMinutes,
+        breakMinutes,
+        createdAt: new Date().toISOString()
+      };
+    });
   }
 
-const duplicateExists = existingPlans.some(p =>
-  p.source === "study_system" &&
-  p.system === selectedSystem &&
-  p.method === methodKey &&
-  String(p.subject || "").toLowerCase() === String(subject || "").toLowerCase()
-);
+  else {
+    generatedTasks = Array.from({ length: Math.max(1, sessions) }, (_, index) => {
+      const taskStart = getStudyTaskStartTime(start, index, sessionMinutes, breakMinutes, methodKey);
+      const taskEnd = addMinutesToTime(taskStart, sessionMinutes);
 
-if (duplicateExists) {
-  const replace = confirm(
-    "This study system plan already exists. Do you want to replace the old tasks?"
+      return {
+        id: `study-${selectedSystem}-${now}-${index}`,
+        task: `${subject} - ${method?.title || selectedSystem} Task ${index + 1}`,
+        subject,
+        date: getStudyTaskDate(index, methodKey, examDate),
+        startTime: taskStart,
+        endTime: taskEnd,
+        start: taskStart,
+        end: taskEnd,
+        type: "study_system",
+        status: "not_started",
+        source: "study_system",
+        system: selectedSystem,
+        method: methodKey,
+        minutes: sessionMinutes,
+        breakMinutes,
+        createdAt: new Date().toISOString()
+      };
+    });
+  }
+
+  const duplicateExists = existingPlans.some(p =>
+    p.source === "study_system" &&
+    p.system === selectedSystem &&
+    p.method === methodKey &&
+    String(p.subject || "").toLowerCase() === String(subject || "").toLowerCase()
   );
 
-  if (!replace) {
-    console.log("Duplicate study system plan skipped.");
-    return;
+  let finalPlans = [];
+
+  if (duplicateExists) {
+    const replace = confirm(
+      "This study system plan already exists. Do you want to replace the old tasks?"
+    );
+
+    if (!replace) {
+      console.log("Duplicate study system plan skipped.");
+      return;
+    }
+
+    const cleanedPlans = existingPlans.filter(p =>
+      !(
+        p.source === "study_system" &&
+        p.system === selectedSystem &&
+        p.method === methodKey &&
+        String(p.subject || "").toLowerCase() === String(subject || "").toLowerCase()
+      )
+    );
+
+    finalPlans = [...cleanedPlans, ...generatedTasks];
+  } else {
+    finalPlans = [...existingPlans, ...generatedTasks];
   }
-
-  const cleanedPlans = existingPlans.filter(p =>
-    !(
-      p.source === "study_system" &&
-      p.system === selectedSystem &&
-      p.method === methodKey &&
-      String(p.subject || "").toLowerCase() === String(subject || "").toLowerCase()
-    )
-  );
-
-  const updatedPlans = [...cleanedPlans, ...generatedTasks];
 
   if (typeof savePlannerData === "function") {
-    savePlannerData(updatedPlans);
+    savePlannerData(finalPlans);
   } else {
-    localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
+    localStorage.setItem("jakPlansV5", JSON.stringify(finalPlans));
   }
-} else {
-  const updatedPlans = [...existingPlans, ...generatedTasks];
 
-  if (typeof savePlannerData === "function") {
-    savePlannerData(updatedPlans);
-  } else {
-    localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
-  }
-}
   if (typeof setCurrentStudySystem === "function") {
     setCurrentStudySystem(selectedSystem);
   }
