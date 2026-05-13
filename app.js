@@ -3072,7 +3072,11 @@ function renderTodayTasks() {
 
   const tasks = plans
     .filter(p => p.date === today)
-    .sort((a, b) => String(a.start || "").localeCompare(String(b.start || "")));
+    .sort((a, b) => {
+      const aTime = a.startTime || a.start || "";
+      const bTime = b.startTime || b.start || "";
+      return String(aTime).localeCompare(String(bTime));
+    });
 
   target.innerHTML = tasks.length ? "" : "No tasks for today";
 
@@ -3081,10 +3085,13 @@ function renderTodayTasks() {
     div.className = "mini-plan";
     div.style.background = p.color || getSubjectColor(p.subject);
 
+    const start = p.startTime || p.start || "";
+    const end = p.endTime || p.end || "";
+
     div.innerHTML = `
       <b>${safeText(p.subject)}</b> 
       <span class="badge">${safeText(p.system || p.source || "manual")}</span>
-      | ${safeText(p.start)} → ${safeText(p.end)}
+      | ${safeText(start || "No start time")} → ${safeText(end || "No end time")}
       <br>
       ${safeText(p.task)}
       <br>
@@ -3100,6 +3107,7 @@ function renderTodayTasks() {
     target.appendChild(div);
   });
 }
+
 
 function printPlans() {
   openPlanner();
