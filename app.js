@@ -3982,7 +3982,30 @@ function addMinutesToTime(time, minutesToAdd) {
 
   return date.toTimeString().slice(0, 5);
 }
+function normalizeStudySystemKey(methodKey) {
+  const map = {
+    pomodoro: "pomodoro",
+    spaced: "spaced_repetition",
+    spaced_repetition: "spaced_repetition",
+    activeRecall: "active_recall",
+    active_recall: "active_recall",
+    timeBlocking: "time_blocking",
+    deepWork: "deep_work",
+    weeklyPlan: "weekly_plan",
+    weekly_plan: "weekly_plan",
+    examCountdown: "before_exam",
+    before_exam: "before_exam",
+    feynman: "feynman",
+    cornell: "cornell_notes",
+    leitner: "leitner",
+    mistakeNotebook: "mistake_notebook",
+    mistake_notebook: "mistake_notebook",
+    mindMap: "mind_map",
+    manual: "manual"
+  };
 
+  return map[methodKey] || methodKey || "manual";
+}
 function generateStudySystemSchedule() {
   const methodSelect = document.getElementById("studyMethodSelect");
   const subjectInput = document.getElementById("studySystemSubject");
@@ -3997,6 +4020,7 @@ function generateStudySystemSchedule() {
   if (!methodSelect || !output) return;
 
   const methodKey = methodSelect.value;
+  const selectedSystem = normalizeStudySystemKey(methodKey);
   const method = studyMethods[methodKey];
 
   const subject = subjectInput?.value.trim() || "Study Subject";
@@ -4012,7 +4036,8 @@ function generateStudySystemSchedule() {
     .map(day => day.trim())
     .filter(Boolean);
 
-  let scheduleHtml = "";
+let scheduleHtml = "";
+let generatedTasks = [];
 
   if (methodKey === "pomodoro") {
     let currentTime = start;
@@ -4219,9 +4244,96 @@ function generateStudySystemSchedule() {
       <p class="msg">Tip: Start with a realistic plan. A small plan you follow is better than a perfect plan you ignore.</p>
     </div>
   `;
+  const existingPlans =
+    typeof getPlannerData === "function"
+      ? getPlannerData()
+      : JSON.parse(localStorage.getItem("jakPlansV5") || "[]");
 
+  const now = Date.now();
+
+  if (methodKey === "pomodoro") {
+    generatedTasks = Array.from({ length: sessions }, (_, index) => ({
+      id: `study-${selectedSystem}-${now}-${index}`,
+      task: `${subject} - Pomodoro Session ${index + 1}`,
+      subject,
+      date: "",
+      startTime: index === 0 ? start : "",
+      endTime: "",
+      type: "study_system",
+      status: "not_started",
+      source: "study_system",
+      system: selectedSystem,
+      method: methodKey,
+      minutes: sessionMinutes,
+      breakMinutes,
+      createdAt: new Date().toISOString()
+    }));
+  } else if (methodKey === "spaced") {
+    const reviewSteps = [
+      "Today: First learning session",
+      "After 1 day: Quick review",
+      "After 3 days: Practice questions",
+      "After 7 days: Full review",
+      "Before exam: Final revision"
+    ];
+
+    generatedTasks = reviewSteps.map((step, index) => ({
+      id: `study-${selectedSystem}-${now}-${index}`,
+      task: `${subject} - ${step}`,
+      subject,
+      date: "",
+      startTime: start,
+      endTime: "",
+      type: "study_system",
+      status: "not_started",
+      source: "study_system",
+      system: selectedSystem,
+      method: methodKey,
+      minutes: sessionMinutes,
+      breakMinutes,
+      createdAt: new Date().toISOString()
+    }));
+  } else {
+    generatedTasks = Array.from({ length: Math.max(1, sessions) }, (_, index) => ({
+      id: `study-${selectedSystem}-${now}-${index}`,
+      task: `${subject} - ${method?.title || selectedSystem} Task ${index + 1}`,
+      subject,
+      date: "",
+      startTime: start,
+      endTime: "",
+      type: "study_system",
+      status: "not_started",
+      source: "study_system",
+      system: selectedSystem,
+      method: methodKey,
+      minutes: sessionMinutes,
+      breakMinutes,
+      createdAt: new Date().toISOString()
+    }));
+  }
+
+  const updatedPlans = [...existingPlans, ...generatedTasks];
+
+  if (typeof savePlannerData === "function") {
+    savePlannerData(updatedPlans);
+  } else {
+    localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
+  }
+
+  if (typeof setCurrentStudySystem === "function") {
+    setCurrentStudySystem(selectedSystem);
+  }
+
+  if (typeof loadPlans === "function") loadPlans();
+  if (typeof updatePlannerStats === "function") updatePlannerStats();
+  if (typeof renderTodayTasks === "function") renderTodayTasks();
+  if (typeof renderCalendar === "function") renderCalendar();
+  if (typeof renderStudyAnalytics === "function") renderStudyAnalytics();
+
+  console.log("Generated study system tasks:", generatedTasks);
   renderStudyMethodExplanation();
 }
+
 function getPlannerData() {
   try {
     return JSON.parse(localStorage.getItem("jakPlansV5")) || [];
@@ -5663,7 +5775,14 @@ function loadStudySystemPreset(system) {
       breakMinutes: 5,
       sessions: 2
     },
-
+mind_map: {
+  subject: "Mind map for grammar / vocabulary / unit revision",
+  days: "Sunday, Tuesday",
+  startTime: "18:30",
+  sessionLength: 30,
+  breakMinutes: 5,
+  sessions: 2
+    },
     before_exam: {
       subject: "Final revision / exam preparation",
       days: "Every day",
@@ -5712,7 +5831,25 @@ function loadStudySystemPreset(system) {
   const breakInput = document.getElementById("studySystemBreak");
   const sessionsInput = document.getElementById("studySystemSessions");
 
-  if (methodSelect) methodSelect.value = selectedSystem;
+const methodSelectValueMap = {
+  pomodoro: "pomodoro",
+  spaced_repetition: "spaced",
+  active_recall: "activeRecall",
+  time_blocking: "timeBlocking",
+  deep_work: "deepWork",
+  weekly_plan: "weeklyPlan",
+  before_exam: "examCountdown",
+  feynman: "feynman",
+  cornell_notes: "cornell",
+  leitner: "leitner",
+  mistake_notebook: "mistakeNotebook",
+  mind_map: "mindMap",
+  manual: "manual"
+};
+
+if (methodSelect) {
+  methodSelect.value = methodSelectValueMap[selectedSystem] || selectedSystem;
+}
   if (subjectInput) subjectInput.value = preset.subject;
   if (daysInput) daysInput.value = preset.days;
   if (startTimeInput) startTimeInput.value = preset.startTime;
@@ -5724,7 +5861,12 @@ function loadStudySystemPreset(system) {
 }
 
 function setCurrentStudySystem(system) {
-  const selectedSystem = system || "all";
+  const rawSystem = system || "all";
+
+  const selectedSystem =
+    typeof normalizeStudySystemKey === "function"
+      ? normalizeStudySystemKey(rawSystem)
+      : rawSystem;
 
   localStorage.setItem("jakCurrentStudySystem", selectedSystem);
 
