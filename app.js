@@ -2928,15 +2928,83 @@ function clearAllPlans() {
 }
 
 function updatePlannerStats() {
-  if (!$('plannerStats')) return;
-  const plans = getPlans();
+  const statsBox = $('plannerStats');
+  if (!statsBox) return;
+
+  const plans =
+    typeof getPlannerTasksByCurrentSystem === "function"
+      ? getPlannerTasksByCurrentSystem()
+      : (typeof getPlannerData === "function" ? getPlannerData() : getPlans());
+
   const total = plans.length;
+
   const done = plans.filter(p => p.status === "done").length;
+  const inProgress = plans.filter(p => p.status === "in_progress").length;
+  const notStarted = plans.filter(p => p.status === "not_started").length;
+
   const progress = total ? Math.round((done / total) * 100) : 0;
-  plannerStats.innerHTML = `
-    <div class="box"><h3>Total Tasks</h3><p>${total}</p></div>
-    <div class="box"><h3>Completed</h3><p>${done}</p></div>
-    <div class="box"><h3>Progress</h3><p>${progress}%</p><div class="progress"><span style="width:${progress}%"></span></div></div>
+
+  const currentSystem =
+    typeof getCurrentStudySystem === "function"
+      ? getCurrentStudySystem()
+      : "all";
+
+  const systemLabelMap = {
+    all: "All Tasks",
+    support_plan: "Support Plan",
+    pomodoro: "Pomodoro",
+    active_recall: "Active Recall",
+    spaced_repetition: "Spaced Repetition",
+    weekly: "Weekly Plan",
+    weekly_plan: "Weekly Plan",
+    before_exam: "Before Exam Plan",
+    custom: "Custom Plan",
+    manual: "Manual Plan",
+    deep_work: "Deep Work",
+    feynman: "Feynman Technique",
+    cornell_notes: "Cornell Notes",
+    sq3r: "SQ3R Reading Method",
+    pq4r: "PQ4R Reading Method",
+    leitner: "Leitner Flashcards",
+    mistake_notebook: "Mistake Notebook",
+    interleaving: "Interleaving Practice"
+  };
+
+  const systemLabel = systemLabelMap[currentSystem] || currentSystem;
+
+  statsBox.innerHTML = `
+    <div class="box">
+      <h3>Current Study System</h3>
+      <p>${systemLabel}</p>
+    </div>
+
+    <div class="box">
+      <h3>Total Tasks</h3>
+      <p>${total}</p>
+    </div>
+
+    <div class="box">
+      <h3>Completed</h3>
+      <p>${done}</p>
+    </div>
+
+    <div class="box">
+      <h3>In Progress</h3>
+      <p>${inProgress}</p>
+    </div>
+
+    <div class="box">
+      <h3>Not Started</h3>
+      <p>${notStarted}</p>
+    </div>
+
+    <div class="box">
+      <h3>Progress</h3>
+      <p>${progress}%</p>
+      <div class="progress">
+        <span style="width:${progress}%"></span>
+      </div>
+    </div>
   `;
 }
 
@@ -5556,14 +5624,120 @@ async function protectResourcesUploadPanel() {
 function getCurrentStudySystem() {
   return localStorage.getItem("jakCurrentStudySystem") || "all";
 }
+function loadStudySystemPreset(system) {
+  const selectedSystem = system || "all";
+
+  const presets = {
+    pomodoro: {
+      subject: "English Grammar / Vocabulary / Math",
+      days: "Sunday, Monday, Tuesday",
+      startTime: "17:00",
+      sessionLength: 25,
+      breakMinutes: 5,
+      sessions: 4
+    },
+
+    active_recall: {
+      subject: "Review questions / grammar rules / vocabulary",
+      days: "Sunday, Tuesday, Thursday",
+      startTime: "18:00",
+      sessionLength: 30,
+      breakMinutes: 5,
+      sessions: 3
+    },
+
+    spaced_repetition: {
+      subject: "Vocabulary / weak lessons / previous mistakes",
+      days: "Saturday, Monday, Wednesday",
+      startTime: "17:30",
+      sessionLength: 20,
+      breakMinutes: 5,
+      sessions: 3
+    },
+
+    mistake_notebook: {
+      subject: "Mistakes from exams / weak questions",
+      days: "Sunday, Wednesday",
+      startTime: "19:00",
+      sessionLength: 30,
+      breakMinutes: 5,
+      sessions: 2
+    },
+
+    before_exam: {
+      subject: "Final revision / exam preparation",
+      days: "Every day",
+      startTime: "18:00",
+      sessionLength: 45,
+      breakMinutes: 10,
+      sessions: 3
+    },
+
+    weekly_plan: {
+      subject: "Weekly study plan",
+      days: "Saturday, Sunday, Monday, Tuesday, Wednesday",
+      startTime: "17:00",
+      sessionLength: 40,
+      breakMinutes: 10,
+      sessions: 2
+    },
+
+    examCountdown: {
+      subject: "Final revision / exam preparation",
+      days: "Every day",
+      startTime: "18:00",
+      sessionLength: 45,
+      breakMinutes: 10,
+      sessions: 3
+    },
+
+    manual: {
+      subject: "",
+      days: "",
+      startTime: "17:00",
+      sessionLength: 25,
+      breakMinutes: 5,
+      sessions: 1
+    }
+  };
+
+  const preset = presets[selectedSystem];
+  if (!preset) return;
+
+  const methodSelect = document.getElementById("studyMethodSelect");
+  const subjectInput = document.getElementById("studySystemSubject");
+  const daysInput = document.getElementById("studySystemDays");
+  const startTimeInput = document.getElementById("studySystemStart");
+  const sessionLengthInput = document.getElementById("studySystemSession");
+  const breakInput = document.getElementById("studySystemBreak");
+  const sessionsInput = document.getElementById("studySystemSessions");
+
+  if (methodSelect) methodSelect.value = selectedSystem;
+  if (subjectInput) subjectInput.value = preset.subject;
+  if (daysInput) daysInput.value = preset.days;
+  if (startTimeInput) startTimeInput.value = preset.startTime;
+  if (sessionLengthInput) sessionLengthInput.value = preset.sessionLength;
+  if (breakInput) breakInput.value = preset.breakMinutes;
+  if (sessionsInput) sessionsInput.value = preset.sessions;
+
+  console.log("Study System preset loaded:", selectedSystem);
+}
 
 function setCurrentStudySystem(system) {
   const selectedSystem = system || "all";
 
   localStorage.setItem("jakCurrentStudySystem", selectedSystem);
 
+  if (typeof loadStudySystemPreset === "function") {
+    loadStudySystemPreset(selectedSystem);
+  }
+
   if (typeof renderPlannerSystemContext === "function") {
     renderPlannerSystemContext();
+  }
+
+  if (typeof updatePlannerStats === "function") {
+    updatePlannerStats();
   }
 
   if (typeof renderStudyAnalytics === "function") {
@@ -5580,19 +5754,33 @@ function setCurrentStudySystem(system) {
 
   console.log("Current Study System:", selectedSystem);
 }
+const studyMethodSelectEl = document.getElementById("studyMethodSelect");
+
+if (studyMethodSelectEl) {
+  studyMethodSelectEl.addEventListener("change", function () {
+    setCurrentStudySystem(this.value);
+  });
+}
 
 function getPlannerTasksByCurrentSystem() {
-  const currentSystem = getCurrentStudySystem();
-  const plans = getPlannerData();
+  const currentSystem =
+    typeof getCurrentStudySystem === "function"
+      ? getCurrentStudySystem()
+      : "all";
+
+  const plans =
+    typeof getPlannerData === "function"
+      ? getPlannerData()
+      : getPlans();
 
   if (currentSystem === "all") {
     return plans;
   }
 
-  return plans.filter(plan =>
-    plan.system === currentSystem ||
-    plan.source === currentSystem
-  );
+  return plans.filter(plan => {
+    const taskSystem = plan.system || plan.source || "manual";
+    return taskSystem === currentSystem;
+  });
 }
 
 function renderPlannerSystemContext() {
