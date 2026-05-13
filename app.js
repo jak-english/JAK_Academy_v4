@@ -4312,6 +4312,40 @@ let generatedTasks = [];
     }));
   }
 
+const duplicateExists = existingPlans.some(p =>
+  p.source === "study_system" &&
+  p.system === selectedSystem &&
+  p.method === methodKey &&
+  String(p.subject || "").toLowerCase() === String(subject || "").toLowerCase()
+);
+
+if (duplicateExists) {
+  const replace = confirm(
+    "This study system plan already exists. Do you want to replace the old tasks?"
+  );
+
+  if (!replace) {
+    console.log("Duplicate study system plan skipped.");
+    return;
+  }
+
+  const cleanedPlans = existingPlans.filter(p =>
+    !(
+      p.source === "study_system" &&
+      p.system === selectedSystem &&
+      p.method === methodKey &&
+      String(p.subject || "").toLowerCase() === String(subject || "").toLowerCase()
+    )
+  );
+
+  const updatedPlans = [...cleanedPlans, ...generatedTasks];
+
+  if (typeof savePlannerData === "function") {
+    savePlannerData(updatedPlans);
+  } else {
+    localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
+  }
+} else {
   const updatedPlans = [...existingPlans, ...generatedTasks];
 
   if (typeof savePlannerData === "function") {
@@ -4319,7 +4353,7 @@ let generatedTasks = [];
   } else {
     localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
   }
-
+}
   if (typeof setCurrentStudySystem === "function") {
     setCurrentStudySystem(selectedSystem);
   }
