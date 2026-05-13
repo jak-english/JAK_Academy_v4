@@ -3041,14 +3041,21 @@ function renderCalendar() {
     day.innerHTML = "<b>📅 " + safeText(date) + "</b>";
 
     grouped[date]
-      .sort((a, b) => String(a.start || "").localeCompare(String(b.start || "")))
+      .sort((a, b) => {
+        const aTime = a.startTime || a.start || "";
+        const bTime = b.startTime || b.start || "";
+        return String(aTime).localeCompare(String(bTime));
+      })
       .forEach(p => {
+        const start = p.startTime || p.start || "";
+        const end = p.endTime || p.end || "";
+
         day.innerHTML += `
           <div class="mini-plan ${safeText(p.type || "manual")}" style="background:${p.color || getSubjectColor(p.subject)}">
             <b>${safeText(p.subject)}</b>
             <span class="badge">${safeText(p.system || p.source || "manual")}</span>
             <br>
-            ${safeText(p.start)} → ${safeText(p.end)}<br>
+            ${safeText(start || "No start time")} → ${safeText(end || "No end time")}<br>
             ${safeText(p.task)}<br>
             <small>${statusLabel(p.status)}</small>
           </div>
