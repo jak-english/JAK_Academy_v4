@@ -2768,6 +2768,38 @@ function statusLabel(status) {
   if (status === "in_progress") return "In Progress 🔄";
   return "Not Started ⏳";
 }
+function updatePlannerTaskStatus(taskId, newStatus) {
+  const plans = getPlannerData();
+
+  const updatedPlans = plans.map(plan => {
+    if (plan.id !== taskId) return plan;
+
+    return {
+      ...plan,
+      status: newStatus
+    };
+  });
+
+  savePlannerData(updatedPlans);
+
+  if (typeof renderCalendar === "function") {
+    renderCalendar();
+  }
+
+  if (typeof renderTodayTasks === "function") {
+    renderTodayTasks();
+  }
+
+  if (typeof updatePlannerStats === "function") {
+    updatePlannerStats();
+  }
+
+  if (typeof renderStudyAnalytics === "function") {
+    renderStudyAnalytics();
+  }
+
+  console.log("Planner task status updated:", taskId, newStatus);
+}
 
 function loadPlans() {
   if (!$("plansList")) return;
@@ -2989,6 +3021,12 @@ function renderTodayTasks() {
       ${safeText(p.task)}
       <br>
       <small>${statusLabel(p.status)}</small>
+
+      <div class="planner-status-actions">
+        <button type="button" onclick="updatePlannerTaskStatus('${p.id}', 'not_started')">Not Started ⏳</button>
+        <button type="button" onclick="updatePlannerTaskStatus('${p.id}', 'in_progress')">In Progress 🟡</button>
+        <button type="button" onclick="updatePlannerTaskStatus('${p.id}', 'done')">Done ✅</button>
+      </div>
     `;
 
     target.appendChild(div);
@@ -5635,3 +5673,4 @@ window.getCurrentStudySystem = getCurrentStudySystem;
 window.setCurrentStudySystem = setCurrentStudySystem;
 window.getPlannerTasksByCurrentSystem = getPlannerTasksByCurrentSystem;
 window.renderPlannerSystemContext = renderPlannerSystemContext;
+window.updatePlannerTaskStatus = updatePlannerTaskStatus;
