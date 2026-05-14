@@ -4519,7 +4519,7 @@ function generateStudySystemSchedule() {
   if (typeof renderTodayTasks === "function") renderTodayTasks();
   if (typeof renderCalendar === "function") renderCalendar();
   if (typeof renderStudyAnalytics === "function") renderStudyAnalytics();
-
+  if (typeof renderStudySystemTimeline === "function") renderStudySystemTimeline();
   console.log("Generated study system tasks:", generatedTasks);
   renderStudyMethodExplanation();
 }
@@ -6155,7 +6155,6 @@ function setCurrentStudySystem(system) {
 
   localStorage.setItem("jakCurrentStudySystem", selectedSystem);
 
-  // ✅ This updates the select + form fields
   if (typeof loadStudySystemPreset === "function") {
     loadStudySystemPreset(selectedSystem);
   }
@@ -6184,15 +6183,15 @@ function setCurrentStudySystem(system) {
     renderStudySystemDashboard();
   }
 
-if (typeof renderStudySystemDashboard === "function") {
-  renderStudySystemDashboard();
-}
+  if (typeof renderStudySystemTimeline === "function") {
+    renderStudySystemTimeline();
+  }
 
-if (typeof updatePlannerTableTitle === "function") {
-  updatePlannerTableTitle();
-}
+  if (typeof updatePlannerTableTitle === "function") {
+    updatePlannerTableTitle();
+  }
 
-console.log("Current Study System:", selectedSystem);
+  console.log("Current Study System:", selectedSystem);
 }
 function getStudySystemLabel(system) {
   const labels = {
@@ -6392,6 +6391,55 @@ function renderStudySystemDashboard() {
       <strong>${safeText(smartAdvice)}</strong>
     </div>
   `;
+}
+function renderStudySystemTimeline() {
+  const timeline = document.getElementById("studySystemTimeline");
+  if (!timeline) return;
+
+  const tasks =
+    typeof getPlannerTasksByCurrentSystem === "function"
+      ? getPlannerTasksByCurrentSystem()
+      : [];
+
+  const today =
+    typeof getTodayDateString === "function"
+      ? getTodayDateString()
+      : new Date().toISOString().split("T")[0];
+
+  const upcoming = tasks
+    .filter(t => t.date && t.date >= today)
+    .sort((a, b) => {
+      const aKey = `${a.date || ""} ${a.startTime || a.start || ""}`;
+      const bKey = `${b.date || ""} ${b.startTime || b.start || ""}`;
+      return aKey.localeCompare(bKey);
+    })
+    .slice(0, 5);
+
+  if (!upcoming.length) {
+    timeline.innerHTML = `
+      <div class="study-timeline-empty">
+        <strong>No upcoming sessions</strong>
+        <span>Generate a study schedule to see your next tasks here.</span>
+      </div>
+    `;
+    return;
+  }
+
+  timeline.innerHTML = upcoming.map((task, index) => {
+    const start = task.startTime || task.start || "No start";
+    const end = task.endTime || task.end || "No end";
+
+    return `
+      <div class="study-timeline-item">
+        <div class="study-timeline-dot">${index + 1}</div>
+        <div class="study-timeline-content">
+          <span>${safeText(task.date)} • ${safeText(start)} → ${safeText(end)}</span>
+          <strong>${safeText(task.task || task.subject || "Study task")}</strong>
+          <small>${safeText(task.subject || "Study Subject")}</small>
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 const studyMethodSelectEl = document.getElementById("studyMethodSelect");
 
