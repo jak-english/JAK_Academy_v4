@@ -2966,9 +2966,10 @@ function updatePlannerStats() {
     sq3r: "SQ3R Reading Method",
     pq4r: "PQ4R Reading Method",
     leitner: "Leitner Flashcards",
-    mistake_notebook: "Mistake Notebook",
-    interleaving: "Interleaving Practice"
-  };
+mistake_notebook: "Mistake Notebook",
+mind_map: "Mind Map",
+interleaving: "Interleaving Practice"
+};
 
   const systemLabel = systemLabelMap[currentSystem] || currentSystem;
 
