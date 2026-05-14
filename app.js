@@ -6240,18 +6240,26 @@ function renderStudySystemDashboard() {
       ? getCurrentStudySystem()
       : "all";
 
-  const label = getStudySystemLabel(currentSystem);
+  const label =
+    typeof getStudySystemLabel === "function"
+      ? getStudySystemLabel(currentSystem)
+      : currentSystem;
 
   const heroName = document.getElementById("studySystemHeroName");
   if (heroName) {
     heroName.textContent = label;
   }
 
+  // Highlight active system card safely
   document.querySelectorAll(".study-system-card").forEach(card => {
     const onclickValue = card.getAttribute("onclick") || "";
+
+    const normalizedOnclick = onclickValue
+      .replace(/"/g, "'")
+      .toLowerCase();
+
     const isActive =
-      onclickValue.includes(`'${currentSystem}'`) ||
-      onclickValue.includes(`"${currentSystem}"`);
+      normalizedOnclick.includes(`'${String(currentSystem).toLowerCase()}'`);
 
     card.classList.toggle("active-study-system-card", isActive);
   });
@@ -6270,9 +6278,10 @@ function renderStudySystemDashboard() {
   const notStarted = tasks.filter(t => t.status === "not_started").length;
   const progress = total ? Math.round((done / total) * 100) : 0;
 
-  const today = typeof getTodayDateString === "function"
-    ? getTodayDateString()
-    : new Date().toISOString().split("T")[0];
+  const today =
+    typeof getTodayDateString === "function"
+      ? getTodayDateString()
+      : new Date().toISOString().split("T")[0];
 
   const upcomingTasks = tasks
     .filter(t => t.date && t.date >= today)
@@ -6283,16 +6292,68 @@ function renderStudySystemDashboard() {
     });
 
   const nextTask = upcomingTasks[0];
+  const lastTask = upcomingTasks[upcomingTasks.length - 1];
+
+  const nextTaskText = nextTask
+    ? `${safeText(nextTask.date)} • ${safeText(nextTask.startTime || nextTask.start || "No time")}`
+    : "No upcoming task";
+
+  const nextTaskName = nextTask
+    ? safeText(nextTask.task || nextTask.subject || "Study task")
+    : "Generate a schedule first";
+
+  const finishDate = lastTask
+    ? safeText(lastTask.date)
+    : "No timeline yet";
+
+  const adviceMap = {
+    all: "You are viewing all systems. Choose one method to focus your study dashboard.",
+    support_plan: "Start with the teacher support tasks first, then review your weakest exam areas.",
+    pomodoro: "Use short focused sessions. Do not skip breaks; they help your brain reset.",
+    active_recall: "Close the book and test yourself. The struggle to remember is part of learning.",
+    spaced_repetition: "Review on the scheduled days. Spaced review works only if you return before forgetting.",
+    time_blocking: "Protect the block from distractions. One task only, no multitasking.",
+    deep_work: "Remove distractions before starting. Deep work needs a clear target and a quiet environment.",
+    weekly_plan: "Follow the weekly rhythm. Small daily consistency beats last-minute pressure.",
+    before_exam: "Start with weak topics, then practise timed questions before the exam.",
+    feynman: "Explain the lesson in simple words. If you cannot explain it, restudy that part.",
+    cornell_notes: "Write questions in the side column and summarize the lesson at the bottom.",
+    leitner: "Move remembered cards forward and repeat weak cards more often.",
+    mistake_notebook: "Do not only write the correct answer. Write why your first answer was wrong.",
+    mind_map: "Start from one central idea, then add rules, examples, mistakes, and exam questions.",
+    manual: "Manual tasks give you freedom. Keep them specific, short, and measurable."
+  };
+
+  const smartAdvice =
+    adviceMap[currentSystem] ||
+    "Focus on one clear task now. A small completed step is better than a large ignored plan.";
+
+  const statusText =
+    total === 0
+      ? "No plan yet"
+      : progress === 100
+        ? "Completed"
+        : inProgress > 0
+          ? "In progress"
+          : "Ready to start";
 
   dashboard.innerHTML = `
-    <div class="study-mini-stat">
+    <div class="study-mini-stat study-system-main-stat">
       <span>Selected System</span>
       <strong>${safeText(label)}</strong>
     </div>
 
     <div class="study-mini-stat">
+      <span>Status</span>
+      <strong>${safeText(statusText)}</strong>
+    </div>
+
+    <div class="study-mini-stat">
       <span>Progress</span>
       <strong>${safeText(progress)}%</strong>
+      <div class="study-dashboard-progress">
+        <i style="width:${progress}%"></i>
+      </div>
     </div>
 
     <div class="study-mini-stat">
@@ -6317,13 +6378,18 @@ function renderStudySystemDashboard() {
 
     <div class="study-mini-stat">
       <span>Next Session</span>
-      <strong>
-        ${
-          nextTask
-            ? `${safeText(nextTask.date)} • ${safeText(nextTask.startTime || nextTask.start || "No time")}`
-            : "No upcoming task"
-        }
-      </strong>
+      <strong>${nextTaskText}</strong>
+      <small>${nextTaskName}</small>
+    </div>
+
+    <div class="study-mini-stat">
+      <span>Plan Ends</span>
+      <strong>${safeText(finishDate)}</strong>
+    </div>
+
+    <div class="study-mini-stat study-smart-advice-card">
+      <span>Smart Advice</span>
+      <strong>${safeText(smartAdvice)}</strong>
     </div>
   `;
 }
