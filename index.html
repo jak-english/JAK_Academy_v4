@@ -1147,92 +1147,218 @@
 
 
 <section id="studySystem" class="page">
-  <div class="card study-system-modern">
-    <div class="dashboard-header">
-      <div>
-        <span class="badge">Study System</span>
-        <h1>How Should Students Study? 📚</h1>
-        <p>Learn practical study systems that help you revise, practise, remember, and improve your exam results.</p>
+  <div class="study-command-center">
+
+    <!-- HERO -->
+    <div class="study-hero-panel">
+      <div class="study-hero-glow"></div>
+
+      <div class="study-hero-content">
+        <span class="badge">Smart Study System</span>
+        <h1>Study Command Center 🚀</h1>
+        <p>
+          Choose a powerful study method, generate a smart schedule, and track your progress through Planner,
+          Calendar, Today Tasks, and Analytics.
+        </p>
+
+        <div class="study-hero-actions">
+          <button onclick="openPlanner()">Open Planner</button>
+          <button class="gold" onclick="showPage('studentExams'); loadStudentExams()">Open Exams</button>
+          <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+        </div>
       </div>
 
-      <div class="dashboard-quick-actions">
-        <button onclick="openPlanner()">Open Planner</button>
-        <button class="gold" onclick="showPage('studentExams'); loadStudentExams()">Open Exams</button>
-        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+      <div class="study-orbit-card">
+        <h3>Current System</h3>
+        <p id="studySystemHeroName">Smart Mode</p>
+        <small>Your selected system updates Planner automatically.</small>
       </div>
     </div>
 
-    <div class="grid two">
-      <div class="box tip-card">
+    <!-- SYSTEM CARDS -->
+    <div class="study-section-title">
+      <div>
+        <span class="badge">Choose Your Method</span>
+        <h2>Pick a Study System</h2>
+      </div>
+      <p>Each system creates tasks with dates, start time, end time, analytics, and calendar tracking.</p>
+    </div>
+
+    <div class="study-system-grid">
+      <button class="study-system-card" onclick="setCurrentStudySystem('pomodoro')">
+        <span class="study-icon">⏱️</span>
+        <h3>Pomodoro</h3>
+        <p>Short focus sessions with breaks.</p>
+        <small>Best for concentration</small>
+      </button>
+
+      <button class="study-system-card" onclick="setCurrentStudySystem('spaced_repetition')">
+        <span class="study-icon">🔁</span>
+        <h3>Spaced Review</h3>
+        <p>Review information over increasing intervals.</p>
+        <small>Best for vocabulary and memory</small>
+      </button>
+
+      <button class="study-system-card" onclick="setCurrentStudySystem('active_recall')">
+        <span class="study-icon">🧠</span>
+        <h3>Active Recall</h3>
+        <p>Close the book and test yourself.</p>
+        <small>Best for exam readiness</small>
+      </button>
+
+      <button class="study-system-card" onclick="setCurrentStudySystem('mistake_notebook')">
+        <span class="study-icon">📓</span>
+        <h3>Mistake Notebook</h3>
+        <p>Turn repeated mistakes into a recovery plan.</p>
+        <small>Best for weak areas</small>
+      </button>
+
+      <button class="study-system-card" onclick="setCurrentStudySystem('mind_map')">
+        <span class="study-icon">🗺️</span>
+        <h3>Mind Map</h3>
+        <p>Organize lessons into branches and links.</p>
+        <small>Best for grammar and units</small>
+      </button>
+
+      <button class="study-system-card" onclick="setCurrentStudySystem('leitner')">
+        <span class="study-icon">🃏</span>
+        <h3>Leitner Flashcards</h3>
+        <p>Move cards forward when you remember them.</p>
+        <small>Best for vocabulary</small>
+      </button>
+
+      <button class="study-system-card" onclick="setCurrentStudySystem('deep_work')">
+        <span class="study-icon">🚀</span>
+        <h3>Deep Work</h3>
+        <p>One long distraction-free focus block.</p>
+        <small>Best for difficult lessons</small>
+      </button>
+
+      <button class="study-system-card" onclick="setCurrentStudySystem('before_exam')">
+        <span class="study-icon">🎯</span>
+        <h3>Before Exam</h3>
+        <p>Prioritize weak topics before the exam date.</p>
+        <small>Best for final revision</small>
+      </button>
+    </div>
+
+    <!-- CONTROL PANEL -->
+    <div class="study-control-layout">
+
+      <div class="study-control-panel">
         <div class="panel-title">
           <span class="panel-number">01</span>
           <div>
-            <h2>Foundation System</h2>
-            <p>For students who need to build basics step by step.</p>
+            <h2>Build Your Schedule</h2>
+            <p>Adjust the details, then generate your smart study schedule.</p>
           </div>
         </div>
-        <p><strong>Plan:</strong> 20 minutes grammar + 20 minutes vocabulary + 20 minutes practice questions.</p>
-        <p>مناسب للطلاب الضعاف أو الطلاب الذين يريدون بداية منظمة.</p>
+
+        <div class="study-form-grid">
+          <label>
+            Choose Study System
+            <select id="studyMethodSelect">
+              <option value="pomodoro">Pomodoro</option>
+              <option value="spaced">Spaced Review</option>
+              <option value="activeRecall">Active Recall</option>
+              <option value="timeBlocking">Time Blocking</option>
+              <option value="deepWork">Deep Work</option>
+              <option value="weeklyPlan">Weekly Plan</option>
+              <option value="examCountdown">Before Exam Plan</option>
+              <option value="feynman">Feynman Technique</option>
+              <option value="cornell">Cornell Notes</option>
+              <option value="leitner">Leitner Flashcards</option>
+              <option value="mistakeNotebook">Mistake Notebook</option>
+              <option value="mindMap">Mind Map</option>
+            </select>
+          </label>
+
+          <label>
+            Subject / Topic
+            <input id="studySystemSubject" type="text" placeholder="English Grammar / Vocabulary / Math..." />
+          </label>
+
+          <label>
+            Available Days
+            <input id="studySystemDays" type="text" placeholder="Sunday, Monday, Tuesday" />
+          </label>
+
+          <label>
+            Preferred Start Time
+            <input id="studySystemStart" type="time" value="17:00" />
+          </label>
+
+          <label>
+            Session Length Minutes
+            <input id="studySystemSession" type="number" value="25" />
+          </label>
+
+          <label>
+            Break Minutes
+            <input id="studySystemBreak" type="number" value="5" />
+          </label>
+
+          <label>
+            Number of Sessions
+            <input id="studySystemSessions" type="number" value="4" />
+          </label>
+
+          <label>
+            Exam Date Optional
+            <input id="studySystemExamDate" type="date" />
+          </label>
+        </div>
+
+        <div class="study-generate-actions">
+          <button class="violet" onclick="window.generateStudySystemSchedule()">Generate Study Schedule</button>
+          <button class="gold" onclick="window.renderStudyMethodExplanation()">Show Explanation</button>
+          <button class="secondary" onclick="openPlanner()">View in Planner</button>
+        </div>
       </div>
 
-      <div class="box tip-card">
+      <div class="study-live-panel">
         <div class="panel-title">
           <span class="panel-number">02</span>
           <div>
-            <h2>Exam Preparation System</h2>
-            <p>For students preparing for quizzes, school exams, or Tawjihi-style tests.</p>
+            <h2>Live System Dashboard</h2>
+            <p>Instant overview of the selected study method.</p>
           </div>
         </div>
-        <p><strong>Plan:</strong> Practise under time, correct mistakes, then repeat weak topics.</p>
-        <p>مناسب قبل الامتحان لأنه يركز على الوقت والأخطاء.</p>
-      </div>
 
-      <div class="box tip-card">
-        <div class="panel-title">
-          <span class="panel-number">03</span>
-          <div>
-            <h2>Active Recall</h2>
-            <p>Test yourself instead of reading passively.</p>
+        <div id="studySystemDashboard" class="study-system-dashboard">
+          <div class="study-mini-stat">
+            <span>Selected System</span>
+            <strong>Choose a method</strong>
+          </div>
+          <div class="study-mini-stat">
+            <span>Progress</span>
+            <strong>0%</strong>
+          </div>
+          <div class="study-mini-stat">
+            <span>Next Session</span>
+            <strong>No task yet</strong>
           </div>
         </div>
-        <p>Close the book and try to remember. Then check and correct.</p>
-        <p>لا تقرأ فقط؛ اختبر نفسك حتى تثبت المعلومة.</p>
-      </div>
 
-      <div class="box tip-card">
-        <div class="panel-title">
-          <span class="panel-number">04</span>
-          <div>
-            <h2>Mistakes Notebook</h2>
-            <p>Turn your repeated mistakes into a study plan.</p>
-          </div>
+        <div id="studyMethodExplanation" class="study-method-explanation">
+          Choose a study system to see smart advice here.
         </div>
-        <p>Write every repeated mistake and review it before exams.</p>
-        <p>دفتر الأخطاء سر التحسن الحقيقي.</p>
-      </div>
-
-      <div class="box tip-card">
-        <div class="panel-title">
-          <span class="panel-number">05</span>
-          <div>
-            <h2>Weekly Routine</h2>
-            <p>A balanced weekly study routine.</p>
-          </div>
-        </div>
-        <p>Day 1 grammar, Day 2 vocabulary, Day 3 reading, Day 4 writing, Day 5 exam, Day 6 correction, Day 7 light review.</p>
-      </div>
-
-      <div class="box tip-card">
-        <div class="panel-title">
-          <span class="panel-number">06</span>
-          <div>
-            <h2>Smart Advice by Score</h2>
-            <p>Choose your next step according to your score.</p>
-          </div>
-        </div>
-        <p>Below 50%: review basics. 50–79%: practise more. 80%+: move to advanced questions.</p>
       </div>
     </div>
+
+    <!-- GENERATED OUTPUT -->
+    <div class="study-output-panel">
+      <div class="panel-title">
+        <span class="panel-number">03</span>
+        <div>
+          <h2>Generated Schedule</h2>
+          <p>Your generated tasks will be saved to Planner and displayed here.</p>
+        </div>
+      </div>
+
+      <div id="studySystemSchedule"></div>
+    </div>
+
   </div>
 </section>
 
@@ -1485,8 +1611,7 @@
         <div class="panel-title">
           <span class="panel-number">04</span>
           <div>
-            <h2>My Plans</h2>
-            <p>Your saved study tasks and plans will appear here.</p>
+       <h2 id="plannerTableTitle">My Plans</h2>            <p>Your saved study tasks and plans will appear here.</p>
           </div>
         </div>
 

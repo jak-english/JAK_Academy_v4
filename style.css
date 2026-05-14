@@ -4891,3 +4891,529 @@ textarea{min-height:95px;resize:vertical}
   border-color: rgba(34, 197, 94, 0.40) !important;
   color: #dcfce7 !important;
 }
+/* =====================================================
+   Smart Study System Command Center V2 - Ultra Future UI
+   ===================================================== */
+
+#studySystem {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.18), transparent 26%),
+    radial-gradient(circle at 85% 8%, rgba(168, 85, 247, 0.22), transparent 28%),
+    radial-gradient(circle at 50% 100%, rgba(34, 197, 94, 0.08), transparent 35%),
+    linear-gradient(135deg, #020617 0%, #0f172a 48%, #111827 100%);
+  min-height: 100vh;
+  padding: 22px;
+}
+
+.study-command-center {
+  position: relative;
+  isolation: isolate;
+  padding: 32px;
+  border-radius: 38px;
+  overflow: hidden;
+  color: #e5e7eb;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.72), rgba(2, 6, 23, 0.9));
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow:
+    0 30px 100px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+}
+
+.study-command-center::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at top, black 0%, transparent 78%);
+}
+
+.study-command-center::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -3;
+  background:
+    conic-gradient(from 180deg, #22d3ee, #8b5cf6, #facc15, #22c55e, #22d3ee);
+  opacity: 0.22;
+  filter: blur(28px);
+}
+
+/* HERO */
+.study-hero-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
+  gap: 26px;
+  align-items: stretch;
+  padding: 34px;
+  border-radius: 36px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(34, 211, 238, 0.24), transparent 34%),
+    radial-gradient(circle at 75% 15%, rgba(168, 85, 247, 0.24), transparent 34%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.58));
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow:
+    inset 0 0 70px rgba(34, 211, 238, 0.08),
+    0 24px 70px rgba(0,0,0,0.35);
+}
+
+.study-hero-panel::before {
+  content: "";
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  right: -170px;
+  top: -210px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(34, 211, 238, 0.34), transparent 60%);
+  filter: blur(12px);
+}
+
+.study-hero-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.08) 45%, transparent 60%);
+  transform: translateX(-100%);
+  animation: studyShine 7s infinite;
+}
+
+@keyframes studyShine {
+  0%, 55% { transform: translateX(-100%); }
+  75%, 100% { transform: translateX(100%); }
+}
+
+.study-hero-content,
+.study-orbit-card,
+.study-section-title,
+.study-control-panel,
+.study-live-panel,
+.study-output-panel,
+.study-system-grid {
+  position: relative;
+  z-index: 2;
+}
+
+.study-hero-content h1 {
+  margin: 14px 0;
+  max-width: 900px;
+  font-size: clamp(2.6rem, 6vw, 6.2rem);
+  line-height: 0.92;
+  letter-spacing: -0.08em;
+  font-weight: 950;
+  background:
+    linear-gradient(90deg, #ffffff 0%, #67e8f9 35%, #c4b5fd 72%, #fde68a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 60px rgba(34, 211, 238, 0.18);
+}
+
+.study-hero-content p {
+  max-width: 760px;
+  color: #cbd5e1;
+  font-size: 1.12rem;
+  line-height: 1.85;
+}
+
+.study-hero-actions,
+.study-generate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.study-command-center button {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-weight: 850;
+  letter-spacing: 0.01em;
+  color: #ecfeff;
+  background:
+    linear-gradient(135deg, rgba(14, 165, 233, 0.95), rgba(99, 102, 241, 0.95));
+  box-shadow:
+    0 14px 32px rgba(59, 130, 246, 0.25),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+}
+
+.study-command-center button:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.1);
+  box-shadow:
+    0 18px 45px rgba(34, 211, 238, 0.32),
+    inset 0 1px 0 rgba(255,255,255,0.32);
+}
+
+.study-command-center button.gold {
+  color: #1f2937;
+  background: linear-gradient(135deg, #fde68a, #f59e0b);
+  box-shadow: 0 14px 35px rgba(245, 158, 11, 0.25);
+}
+
+.study-command-center button.secondary {
+  color: #e5e7eb;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  box-shadow: none;
+}
+
+.study-command-center button.violet {
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+}
+
+/* ORBIT CARD */
+.study-orbit-card {
+  min-height: 250px;
+  padding: 28px;
+  border-radius: 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(250, 204, 21, 0.26), transparent 34%),
+    radial-gradient(circle at 10% 90%, rgba(34, 211, 238, 0.16), transparent 38%),
+    rgba(2, 6, 23, 0.62);
+  border: 1px solid rgba(250, 204, 21, 0.28);
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.34),
+    inset 0 0 60px rgba(250, 204, 21, 0.06);
+}
+
+.study-orbit-card::before {
+  content: "";
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  right: 24px;
+  top: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  box-shadow:
+    0 0 0 18px rgba(250, 204, 21, 0.035),
+    0 0 0 38px rgba(34, 211, 238, 0.025);
+}
+
+.study-orbit-card h3 {
+  color: #fde68a;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.85rem;
+}
+
+.study-orbit-card p {
+  margin: 0 0 12px;
+  font-size: 2rem;
+  font-weight: 950;
+  color: #fff;
+}
+
+.study-orbit-card small {
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+/* TITLES */
+.study-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 22px;
+  margin: 34px 0 18px;
+}
+
+.study-section-title h2 {
+  margin: 8px 0 0;
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  color: #ffffff;
+  letter-spacing: -0.04em;
+}
+
+.study-section-title p {
+  color: #94a3b8;
+  max-width: 560px;
+  line-height: 1.75;
+}
+
+/* SYSTEM CARDS */
+.study-system-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.study-system-card {
+  min-height: 210px;
+  padding: 22px;
+  text-align: left;
+  border-radius: 30px;
+  color: #e5e7eb;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.82), rgba(30, 41, 59, 0.58));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow:
+    0 18px 48px rgba(0,0,0,0.28),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  transition:
+    transform 0.24s ease,
+    border-color 0.24s ease,
+    box-shadow 0.24s ease,
+    background 0.24s ease;
+}
+
+.study-system-card:hover {
+  transform: translateY(-8px) scale(1.015);
+  border-color: rgba(34, 211, 238, 0.68);
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.16), transparent 42%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.72));
+  box-shadow:
+    0 30px 80px rgba(34, 211, 238, 0.16),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.study-system-card .study-icon {
+  display: inline-flex;
+  width: 58px;
+  height: 58px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border-radius: 22px;
+  font-size: 1.85rem;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+.study-system-card h3 {
+  margin: 0 0 8px;
+  color: #ffffff;
+  font-size: 1.18rem;
+}
+
+.study-system-card p {
+  margin: 0 0 12px;
+  color: #cbd5e1;
+  line-height: 1.58;
+}
+
+.study-system-card small {
+  color: #67e8f9;
+  font-weight: 850;
+}
+
+/* CONTROL LAYOUT */
+.study-control-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.study-control-panel,
+.study-live-panel,
+.study-output-panel {
+  padding: 26px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.09), transparent 38%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.78), rgba(2, 6, 23, 0.72));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow:
+    0 22px 70px rgba(0,0,0,0.32),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  backdrop-filter: blur(18px);
+}
+
+.study-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+  margin-top: 22px;
+}
+
+.study-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  color: #cbd5e1;
+  font-weight: 850;
+  font-size: 0.93rem;
+}
+
+.study-form-grid input,
+.study-form-grid select {
+  width: 100%;
+  padding: 14px 15px;
+  border-radius: 18px;
+  color: #ffffff;
+  background: rgba(2, 6, 23, 0.68);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.study-form-grid input:focus,
+.study-form-grid select:focus {
+  border-color: rgba(34, 211, 238, 0.78);
+  box-shadow:
+    0 0 0 4px rgba(34, 211, 238, 0.12),
+    0 0 26px rgba(34, 211, 238, 0.16);
+}
+
+/* LIVE PANEL */
+.study-system-dashboard {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.study-mini-stat {
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.16), transparent 42%),
+    rgba(2, 6, 23, 0.58);
+  border: 1px solid rgba(148, 163, 184, 0.19);
+}
+
+.study-mini-stat::after {
+  content: "";
+  position: absolute;
+  inset: auto 16px 0 16px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #22d3ee, transparent);
+  opacity: 0.7;
+}
+
+.study-mini-stat span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.84rem;
+  margin-bottom: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.study-mini-stat strong {
+  display: block;
+  color: #ffffff;
+  font-size: 1.45rem;
+  letter-spacing: -0.03em;
+}
+
+.study-method-explanation {
+  margin-top: 18px;
+  padding: 20px;
+  border-radius: 24px;
+  color: #dbeafe;
+  line-height: 1.75;
+  background:
+    radial-gradient(circle at top left, rgba(96, 165, 250, 0.16), transparent 45%),
+    rgba(30, 64, 175, 0.16);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+/* OUTPUT */
+.study-output-panel {
+  margin-top: 26px;
+}
+
+.generated-study-plan {
+  margin-top: 18px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 38%),
+    linear-gradient(145deg, rgba(2, 6, 23, 0.78), rgba(15, 23, 42, 0.74)) !important;
+  border: 1px solid rgba(34, 211, 238, 0.28) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.generated-study-plan .mini-plan {
+  margin-top: 14px;
+  padding: 17px;
+  border-radius: 20px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+  border: 1px solid rgba(255,255,255,0.11);
+}
+
+/* BADGES */
+.study-command-center .badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.13);
+  color: #67e8f9;
+  border: 1px solid rgba(34, 211, 238, 0.28);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1150px) {
+  .study-system-grid {
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+  }
+
+  .study-hero-panel,
+  .study-control-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  #studySystem {
+    padding: 10px;
+  }
+
+  .study-command-center {
+    padding: 16px;
+    border-radius: 26px;
+  }
+
+  .study-hero-panel,
+  .study-control-panel,
+  .study-live-panel,
+  .study-output-panel {
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .study-hero-content h1 {
+    font-size: 2.7rem;
+  }
+
+  .study-section-title {
+    display: block;
+  }
+
+  .study-system-grid,
+  .study-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

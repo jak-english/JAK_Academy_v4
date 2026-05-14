@@ -3009,6 +3009,7 @@ interleaving: "Interleaving Practice"
   `;
 }
 
+
 function renderCalendar() {
   if (!$("calendarView")) return;
 
@@ -5957,7 +5958,10 @@ function getCurrentStudySystem() {
   return localStorage.getItem("jakCurrentStudySystem") || "all";
 }
 function loadStudySystemPreset(system) {
-  const selectedSystem = system || "all";
+  const selectedSystem =
+    typeof normalizeStudySystemKey === "function"
+      ? normalizeStudySystemKey(system || "all")
+      : (system || "all");
 
   const presets = {
     pomodoro: {
@@ -5995,21 +5999,32 @@ function loadStudySystemPreset(system) {
       breakMinutes: 5,
       sessions: 2
     },
-mind_map: {
-  subject: "Mind map for grammar / vocabulary / unit revision",
-  days: "Sunday, Tuesday",
-  startTime: "18:30",
-  sessionLength: 30,
-  breakMinutes: 5,
-  sessions: 2
+
+    mind_map: {
+      subject: "Mind map for grammar / vocabulary / unit revision",
+      days: "Sunday, Tuesday",
+      startTime: "18:30",
+      sessionLength: 30,
+      breakMinutes: 5,
+      sessions: 2
     },
-    before_exam: {
-      subject: "Final revision / exam preparation",
-      days: "Every day",
+
+    leitner: {
+      subject: "Vocabulary flashcards / weak words / definitions",
+      days: "Sunday, Monday, Wednesday, Thursday",
+      startTime: "17:00",
+      sessionLength: 25,
+      breakMinutes: 5,
+      sessions: 4
+    },
+
+    deep_work: {
+      subject: "Difficult lesson / writing / exam practice",
+      days: "Saturday, Tuesday",
       startTime: "18:00",
-      sessionLength: 45,
+      sessionLength: 60,
       breakMinutes: 10,
-      sessions: 3
+      sessions: 1
     },
 
     weekly_plan: {
@@ -6021,11 +6036,38 @@ mind_map: {
       sessions: 2
     },
 
-    examCountdown: {
+    before_exam: {
       subject: "Final revision / exam preparation",
       days: "Every day",
       startTime: "18:00",
       sessionLength: 45,
+      breakMinutes: 10,
+      sessions: 3
+    },
+
+    feynman: {
+      subject: "Explain grammar / vocabulary in simple words",
+      days: "Sunday, Wednesday",
+      startTime: "18:00",
+      sessionLength: 30,
+      breakMinutes: 5,
+      sessions: 3
+    },
+
+    cornell_notes: {
+      subject: "Lesson notes / grammar rules / vocabulary",
+      days: "Monday, Thursday",
+      startTime: "17:30",
+      sessionLength: 35,
+      breakMinutes: 5,
+      sessions: 2
+    },
+
+    time_blocking: {
+      subject: "Focused study block",
+      days: "Sunday, Tuesday, Thursday",
+      startTime: "17:00",
+      sessionLength: 40,
       breakMinutes: 10,
       sessions: 3
     },
@@ -6040,36 +6082,59 @@ mind_map: {
     }
   };
 
-  const preset = presets[selectedSystem];
-  if (!preset) return;
+  const methodSelectValueMap = {
+    pomodoro: "pomodoro",
+    spaced_repetition: "spaced",
+    active_recall: "activeRecall",
+    time_blocking: "timeBlocking",
+    deep_work: "deepWork",
+    weekly_plan: "weeklyPlan",
+    before_exam: "examCountdown",
+    feynman: "feynman",
+    cornell_notes: "cornell",
+    leitner: "leitner",
+    mistake_notebook: "mistakeNotebook",
+    mind_map: "mindMap",
+    manual: "manual"
+  };
 
-  const methodSelect = document.getElementById("studyMethodSelect");
-  const subjectInput = document.getElementById("studySystemSubject");
-  const daysInput = document.getElementById("studySystemDays");
-  const startTimeInput = document.getElementById("studySystemStart");
-  const sessionLengthInput = document.getElementById("studySystemSession");
-  const breakInput = document.getElementById("studySystemBreak");
-  const sessionsInput = document.getElementById("studySystemSessions");
+  const preset = presets[selectedSystem] || presets.manual;
 
-const methodSelectValueMap = {
-  pomodoro: "pomodoro",
-  spaced_repetition: "spaced",
-  active_recall: "activeRecall",
-  time_blocking: "timeBlocking",
-  deep_work: "deepWork",
-  weekly_plan: "weeklyPlan",
-  before_exam: "examCountdown",
-  feynman: "feynman",
-  cornell_notes: "cornell",
-  leitner: "leitner",
-  mistake_notebook: "mistakeNotebook",
-  mind_map: "mindMap",
-  manual: "manual"
-};
+ const studySystemSection = document.getElementById("studySystem");
 
-if (methodSelect) {
-  methodSelect.value = methodSelectValueMap[selectedSystem] || selectedSystem;
-}
+const methodSelect =
+  studySystemSection?.querySelector("#studyMethodSelect") ||
+  document.getElementById("studyMethodSelect");
+
+const subjectInput =
+  studySystemSection?.querySelector("#studySystemSubject") ||
+  document.getElementById("studySystemSubject");
+
+const daysInput =
+  studySystemSection?.querySelector("#studySystemDays") ||
+  document.getElementById("studySystemDays");
+
+const startTimeInput =
+  studySystemSection?.querySelector("#studySystemStart") ||
+  document.getElementById("studySystemStart");
+
+const sessionLengthInput =
+  studySystemSection?.querySelector("#studySystemSession") ||
+  document.getElementById("studySystemSession");
+
+const breakInput =
+  studySystemSection?.querySelector("#studySystemBreak") ||
+  document.getElementById("studySystemBreak");
+
+const sessionsInput =
+  studySystemSection?.querySelector("#studySystemSessions") ||
+  document.getElementById("studySystemSessions");
+
+
+  if (methodSelect) {
+    methodSelect.value = methodSelectValueMap[selectedSystem] || "pomodoro";
+  }
+
   if (subjectInput) subjectInput.value = preset.subject;
   if (daysInput) daysInput.value = preset.days;
   if (startTimeInput) startTimeInput.value = preset.startTime;
@@ -6090,6 +6155,7 @@ function setCurrentStudySystem(system) {
 
   localStorage.setItem("jakCurrentStudySystem", selectedSystem);
 
+  // ✅ This updates the select + form fields
   if (typeof loadStudySystemPreset === "function") {
     loadStudySystemPreset(selectedSystem);
   }
@@ -6114,7 +6180,152 @@ function setCurrentStudySystem(system) {
     renderCalendar();
   }
 
-  console.log("Current Study System:", selectedSystem);
+  if (typeof renderStudySystemDashboard === "function") {
+    renderStudySystemDashboard();
+  }
+
+if (typeof renderStudySystemDashboard === "function") {
+  renderStudySystemDashboard();
+}
+
+if (typeof updatePlannerTableTitle === "function") {
+  updatePlannerTableTitle();
+}
+
+console.log("Current Study System:", selectedSystem);
+}
+function getStudySystemLabel(system) {
+  const labels = {
+    all: "All Study Systems",
+    support_plan: "Support Plan",
+    pomodoro: "Pomodoro",
+    active_recall: "Active Recall",
+    spaced_repetition: "Spaced Review",
+    time_blocking: "Time Blocking",
+    deep_work: "Deep Work",
+    weekly_plan: "Weekly Plan",
+    before_exam: "Before Exam Plan",
+    feynman: "Feynman Technique",
+    cornell_notes: "Cornell Notes",
+    leitner: "Leitner Flashcards",
+    mistake_notebook: "Mistake Notebook",
+    mind_map: "Mind Map",
+    manual: "Manual Plan"
+  };
+
+  return labels[system] || system || "Smart Mode";
+}
+function updatePlannerTableTitle() {
+  const title = document.getElementById("plannerTableTitle");
+  if (!title) return;
+
+  const currentSystem =
+    typeof getCurrentStudySystem === "function"
+      ? getCurrentStudySystem()
+      : "all";
+
+  const label =
+    typeof getStudySystemLabel === "function"
+      ? getStudySystemLabel(currentSystem)
+      : currentSystem;
+
+  title.textContent =
+    currentSystem === "all"
+      ? "My Plans"
+      : `${label} Plans`;
+}
+function renderStudySystemDashboard() {
+  const currentSystem =
+    typeof getCurrentStudySystem === "function"
+      ? getCurrentStudySystem()
+      : "all";
+
+  const label = getStudySystemLabel(currentSystem);
+
+  const heroName = document.getElementById("studySystemHeroName");
+  if (heroName) {
+    heroName.textContent = label;
+  }
+
+  document.querySelectorAll(".study-system-card").forEach(card => {
+    const onclickValue = card.getAttribute("onclick") || "";
+    const isActive =
+      onclickValue.includes(`'${currentSystem}'`) ||
+      onclickValue.includes(`"${currentSystem}"`);
+
+    card.classList.toggle("active-study-system-card", isActive);
+  });
+
+  const dashboard = document.getElementById("studySystemDashboard");
+  if (!dashboard) return;
+
+  const tasks =
+    typeof getPlannerTasksByCurrentSystem === "function"
+      ? getPlannerTasksByCurrentSystem()
+      : [];
+
+  const total = tasks.length;
+  const done = tasks.filter(t => t.status === "done").length;
+  const inProgress = tasks.filter(t => t.status === "in_progress").length;
+  const notStarted = tasks.filter(t => t.status === "not_started").length;
+  const progress = total ? Math.round((done / total) * 100) : 0;
+
+  const today = typeof getTodayDateString === "function"
+    ? getTodayDateString()
+    : new Date().toISOString().split("T")[0];
+
+  const upcomingTasks = tasks
+    .filter(t => t.date && t.date >= today)
+    .sort((a, b) => {
+      const aKey = `${a.date || ""} ${a.startTime || a.start || ""}`;
+      const bKey = `${b.date || ""} ${b.startTime || b.start || ""}`;
+      return aKey.localeCompare(bKey);
+    });
+
+  const nextTask = upcomingTasks[0];
+
+  dashboard.innerHTML = `
+    <div class="study-mini-stat">
+      <span>Selected System</span>
+      <strong>${safeText(label)}</strong>
+    </div>
+
+    <div class="study-mini-stat">
+      <span>Progress</span>
+      <strong>${safeText(progress)}%</strong>
+    </div>
+
+    <div class="study-mini-stat">
+      <span>Total Tasks</span>
+      <strong>${safeText(total)}</strong>
+    </div>
+
+    <div class="study-mini-stat">
+      <span>Completed</span>
+      <strong>${safeText(done)}</strong>
+    </div>
+
+    <div class="study-mini-stat">
+      <span>In Progress</span>
+      <strong>${safeText(inProgress)}</strong>
+    </div>
+
+    <div class="study-mini-stat">
+      <span>Not Started</span>
+      <strong>${safeText(notStarted)}</strong>
+    </div>
+
+    <div class="study-mini-stat">
+      <span>Next Session</span>
+      <strong>
+        ${
+          nextTask
+            ? `${safeText(nextTask.date)} • ${safeText(nextTask.startTime || nextTask.start || "No time")}`
+            : "No upcoming task"
+        }
+      </strong>
+    </div>
+  `;
 }
 const studyMethodSelectEl = document.getElementById("studyMethodSelect");
 
@@ -6149,14 +6360,26 @@ function renderPlannerSystemContext() {
   const box = document.getElementById("plannerSystemContext");
   if (!box) return;
 
-  const currentSystem = getCurrentStudySystem();
+  const currentSystem =
+    typeof getCurrentStudySystem === "function"
+      ? getCurrentStudySystem()
+      : "all";
 
   const labels = {
-    all: "All Tasks 🌐",
+    all: "All Study Systems 🌐",
     support_plan: "Support Plan 📘",
     pomodoro: "Pomodoro ⏱️",
     active_recall: "Active Recall 🧠",
-    spaced: "Spaced Repetition 🔁",
+    spaced_repetition: "Spaced Review 🔁",
+    time_blocking: "Time Blocking 🧩",
+    deep_work: "Deep Work 🚀",
+    weekly_plan: "Weekly Plan 📅",
+    before_exam: "Before Exam Plan 🎯",
+    feynman: "Feynman Technique 🗣️",
+    cornell_notes: "Cornell Notes 📝",
+    leitner: "Leitner Flashcards 🃏",
+    mistake_notebook: "Mistake Notebook 📓",
+    mind_map: "Mind Map 🗺️",
     manual: "Manual Tasks ✍️"
   };
 
@@ -6165,7 +6388,16 @@ function renderPlannerSystemContext() {
     support_plan: "You are viewing tasks created from teacher support plans only.",
     pomodoro: "You are viewing Pomodoro-focused study tasks only.",
     active_recall: "You are viewing Active Recall study tasks only.",
-    spaced: "You are viewing Spaced Repetition review tasks only.",
+    spaced_repetition: "You are viewing Spaced Review tasks scheduled across different days.",
+    time_blocking: "You are viewing Time Blocking tasks only.",
+    deep_work: "You are viewing Deep Work focus blocks only.",
+    weekly_plan: "You are viewing Weekly Plan tasks only.",
+    before_exam: "You are viewing final revision tasks before an exam.",
+    feynman: "You are viewing Feynman explanation-based study tasks.",
+    cornell_notes: "You are viewing Cornell Notes study tasks.",
+    leitner: "You are viewing Leitner Flashcards tasks only.",
+    mistake_notebook: "You are viewing Mistake Notebook tasks created to fix repeated mistakes.",
+    mind_map: "You are viewing Mind Map tasks for organizing lessons visually.",
     manual: "You are viewing manually created study tasks only."
   };
 
@@ -6179,12 +6411,12 @@ function renderPlannerSystemContext() {
       <div class="planner-system-header">
         <div>
           <span class="badge">Smart Planner Auto-Switch</span>
-          <h2>Current System: ${safeText(currentLabel)}</h2>
+          <h2>${safeText(currentLabel)} View</h2>
           <p>${safeText(currentDescription)}</p>
         </div>
 
         <div class="planner-system-pill">
-          <span>Showing</span>
+          <span>Current View</span>
           <strong>${safeText(currentLabel)}</strong>
         </div>
       </div>
@@ -6198,7 +6430,12 @@ function renderPlannerSystemContext() {
         <button type="button" class="${currentSystem === "support_plan" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('support_plan')">Support Plan 📘</button>
         <button type="button" class="${currentSystem === "pomodoro" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('pomodoro')">Pomodoro ⏱️</button>
         <button type="button" class="${currentSystem === "active_recall" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('active_recall')">Active Recall 🧠</button>
-        <button type="button" class="${currentSystem === "spaced" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('spaced')">Spaced Review 🔁</button>
+        <button type="button" class="${currentSystem === "spaced_repetition" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('spaced_repetition')">Spaced Review 🔁</button>
+        <button type="button" class="${currentSystem === "mistake_notebook" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('mistake_notebook')">Mistake Notebook 📓</button>
+        <button type="button" class="${currentSystem === "mind_map" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('mind_map')">Mind Map 🗺️</button>
+        <button type="button" class="${currentSystem === "leitner" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('leitner')">Leitner 🃏</button>
+        <button type="button" class="${currentSystem === "deep_work" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('deep_work')">Deep Work 🚀</button>
+        <button type="button" class="${currentSystem === "before_exam" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('before_exam')">Before Exam 🎯</button>
         <button type="button" class="${currentSystem === "manual" ? "gold" : "secondary"}" onclick="setCurrentStudySystem('manual')">Manual ✍️</button>
       </div>
     </div>
