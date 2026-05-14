@@ -2798,6 +2798,14 @@ function updatePlannerTaskStatus(taskId, newStatus) {
     renderStudyAnalytics();
   }
 
+  if (typeof renderStudySystemDashboard === "function") {
+    renderStudySystemDashboard();
+  }
+
+  if (typeof renderStudySystemTimeline === "function") {
+    renderStudySystemTimeline();
+  }
+
   console.log("Planner task status updated:", taskId, newStatus);
 }
 
@@ -2844,7 +2852,10 @@ function loadPlans() {
   });
 }
 function updatePlanStatusById(planId, newStatus) {
-  const plans = getPlans();
+  const plans =
+    typeof getPlannerData === "function"
+      ? getPlannerData()
+      : getPlans();
 
   const updatedPlans = plans.map(plan => {
     if (plan.id === planId) {
@@ -2857,16 +2868,30 @@ function updatePlanStatusById(planId, newStatus) {
     return plan;
   });
 
-  localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
+  if (typeof savePlannerData === "function") {
+    savePlannerData(updatedPlans);
+  } else {
+    localStorage.setItem("jakPlansV5", JSON.stringify(updatedPlans));
+  }
 
-  loadPlans();
-  renderCalendar();
-  updatePlannerStats();
-  renderTodayTasks();
+  if (typeof loadPlans === "function") loadPlans();
+  if (typeof renderCalendar === "function") renderCalendar();
+  if (typeof updatePlannerStats === "function") updatePlannerStats();
+  if (typeof renderTodayTasks === "function") renderTodayTasks();
 
   if (typeof renderStudyAnalytics === "function") {
     renderStudyAnalytics();
   }
+
+  if (typeof renderStudySystemDashboard === "function") {
+    renderStudySystemDashboard();
+  }
+
+  if (typeof renderStudySystemTimeline === "function") {
+    renderStudySystemTimeline();
+  }
+
+  console.log("Planner task status updated:", planId, newStatus);
 }
 
 function deletePlanById(planId) {
@@ -6441,6 +6466,84 @@ function renderStudySystemTimeline() {
     `;
   }).join("");
 }
+
+
+function startNextStudySystemTask() {
+  const tasks =
+    typeof getPlannerTasksByCurrentSystem === "function"
+      ? getPlannerTasksByCurrentSystem()
+      : [];
+
+  const today =
+    typeof getTodayDateString === "function"
+      ? getTodayDateString()
+      : new Date().toISOString().split("T")[0];
+
+  const nextTask = tasks
+    .filter(t =>
+      t.id &&
+      t.date &&
+      t.date >= today &&
+      t.status !== "done"
+    )
+    .sort((a, b) => {
+      const aKey = `${a.date || ""} ${a.startTime || a.start || ""}`;
+      const bKey = `${b.date || ""} ${b.startTime || b.start || ""}`;
+      return aKey.localeCompare(bKey);
+    })[0];
+
+  if (!nextTask) {
+    alert("No upcoming task to start for this study system.");
+    return;
+  }
+
+  if (typeof updatePlannerTaskStatus === "function") {
+    updatePlannerTaskStatus(nextTask.id, "in_progress");
+  }
+
+  alert("Started: " + (nextTask.task || nextTask.subject || "Study task"));
+}
+
+function startNextStudySystemTask() {
+  const tasks =
+    typeof getPlannerTasksByCurrentSystem === "function"
+      ? getPlannerTasksByCurrentSystem()
+      : [];
+
+  const today =
+    typeof getTodayDateString === "function"
+      ? getTodayDateString()
+      : new Date().toISOString().split("T")[0];
+
+  const nextTask = tasks
+    .filter(task =>
+      task.id &&
+      task.date &&
+      task.date >= today &&
+      task.status !== "done"
+    )
+    .sort((a, b) => {
+      const aKey = `${a.date || ""} ${a.startTime || a.start || ""}`;
+      const bKey = `${b.date || ""} ${b.startTime || b.start || ""}`;
+      return aKey.localeCompare(bKey);
+    })[0];
+
+  if (!nextTask) {
+    alert("No upcoming task to start for this study system.");
+    return;
+  }
+
+  if (typeof updatePlanStatusById === "function") {
+    updatePlanStatusById(nextTask.id, "in_progress");
+  } else {
+    alert("Task status updater is not available.");
+    return;
+  }
+
+  alert("Started: " + (nextTask.task || nextTask.subject || "Study task"));
+}
+
+
 const studyMethodSelectEl = document.getElementById("studyMethodSelect");
 
 if (studyMethodSelectEl) {
@@ -6448,7 +6551,6 @@ if (studyMethodSelectEl) {
     setCurrentStudySystem(this.value);
   });
 }
-
 function getPlannerTasksByCurrentSystem() {
   const currentSystem =
     typeof getCurrentStudySystem === "function"
