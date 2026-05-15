@@ -7458,7 +7458,17 @@ Write your answer here:
 `;
 
   input.value = blueprint;
-
+if (typeof renderWritingBlueprintPreview === "function") {
+  renderWritingBlueprintPreview({
+    type,
+    typeLabel,
+    level,
+    learnerMode,
+    goal,
+    goalLabel,
+    topic
+  });
+}
   if (typeof scrollToWritingEditor === "function") {
     scrollToWritingEditor();
   }
@@ -7472,6 +7482,150 @@ if (typeof updateWritingCommandCenter === "function") {
     goal,
     topic
   });
+}
+function renderWritingBlueprintPreview(config) {
+  const preview = document.getElementById("writingBlueprintPreview");
+  if (!preview) return;
+
+  const connectorPath =
+    typeof getConnectorPathForBlueprint === "function"
+      ? getConnectorPathForBlueprint(config.type, config.learnerMode)
+      : [];
+
+  const vocabularyBank =
+    typeof getVocabularyBankForBlueprint === "function"
+      ? getVocabularyBankForBlueprint(config.topic, config.learnerMode)
+      : [];
+
+  const mistakeWarnings =
+    typeof getMistakeWarningsForBlueprint === "function"
+      ? getMistakeWarningsForBlueprint(config.topic, config.learnerMode)
+      : [];
+
+  const draftBlocks =
+    typeof getDraftBlocksForBlueprint === "function"
+      ? getDraftBlocksForBlueprint(config.type, config.learnerMode, config.topic)
+      : [];
+
+  const modelOpening =
+    typeof getModelOpeningForBlueprint === "function"
+      ? getModelOpeningForBlueprint(config.type, config.learnerMode, config.topic)
+      : "";
+
+  const rubric =
+    typeof getSuccessRubricForBlueprint === "function"
+      ? getSuccessRubricForBlueprint(config.learnerMode, config.type)
+      : [];
+
+  preview.innerHTML = `
+    <div class="blueprint-cards-grid">
+
+      <div class="blueprint-card blueprint-identity-card">
+        <span class="blueprint-label">Writing Identity</span>
+        <h3>${safeText(config.typeLabel)}</h3>
+        <p><strong>Topic:</strong> ${safeText(config.topic)}</p>
+        <p><strong>Level:</strong> ${safeText(config.level)}</p>
+        <p><strong>Mode:</strong> ${safeText(config.learnerMode)}</p>
+        <p><strong>Focus:</strong> ${safeText(config.goalLabel)}</p>
+      </div>
+
+      <div class="blueprint-card">
+        <span class="blueprint-label">Connector Path</span>
+        <h3>Flow Map</h3>
+        <div class="blueprint-chip-list">
+          ${connectorPath.map(connector => `
+            <span>${safeText(connector)}</span>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="blueprint-card">
+        <span class="blueprint-label">Vocabulary Upgrade</span>
+        <h3>Better Word Choices</h3>
+        <div class="blueprint-vocab-list">
+          ${vocabularyBank.map(row => `
+            <p>
+              <strong>${safeText(row.basic)}</strong>
+              <span>→ ${safeText(row.stronger)} → ${safeText(row.advanced)}</span>
+            </p>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="blueprint-card">
+        <span class="blueprint-label">Mistake Prevention</span>
+        <h3>Avoid These Errors</h3>
+        <div class="blueprint-mistake-list">
+          ${mistakeWarnings.slice(0, 3).map(item => `
+            <div>
+              <p class="wrong">❌ ${safeText(item.wrong)}</p>
+              <p class="right">✅ ${safeText(item.correct)}</p>
+              <small>${safeText(item.tip)}</small>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="blueprint-card blueprint-wide-card">
+        <span class="blueprint-label">Guided Draft Blocks</span>
+        <h3>Build Your Writing Step by Step</h3>
+        <div class="blueprint-block-list">
+          ${draftBlocks.map((block, index) => `
+            <div class="blueprint-draft-block">
+              <span>Block ${index + 1}</span>
+              <h4>${safeText(block.title)}</h4>
+              <p>${safeText(block.goal)}</p>
+              <button type="button" onclick="sendBlueprintBlockToEditor('${safeText(block.starter).replace(/'/g, "\\'")}')">
+                Use Starter
+              </button>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="blueprint-card blueprint-wide-card">
+        <span class="blueprint-label">Model Opening</span>
+        <h3>Professional Starting Point</h3>
+        <p>${safeText(modelOpening)}</p>
+        <button type="button" class="gold" onclick="sendBlueprintBlockToEditor('${safeText(modelOpening).replace(/'/g, "\\'")}')">
+          Use Model Opening
+        </button>
+      </div>
+
+      <div class="blueprint-card blueprint-wide-card">
+        <span class="blueprint-label">Success Rubric</span>
+        <h3>Before Submitting, Check This</h3>
+        <div class="blueprint-rubric-list">
+          ${rubric.map(item => `
+            <label>
+              <input type="checkbox">
+              <span>${safeText(item)}</span>
+            </label>
+          `).join("")}
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  console.log("Writing Blueprint Preview rendered.");
+}
+
+function sendBlueprintBlockToEditor(text) {
+  const input = document.getElementById("studentWritingInput");
+  if (!input) return;
+
+  const current = input.value.trim();
+
+  input.value = current
+    ? current + "\n\n" + text
+    : text;
+
+  if (typeof scrollToWritingEditor === "function") {
+    scrollToWritingEditor();
+  }
+
+  console.log("Blueprint block sent to editor.");
 }
 function updateWritingCommandCenter() {
   const learnerMode = document.getElementById("writingLearnerModeSelect")?.value || "school";
