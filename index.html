@@ -21,6 +21,7 @@
   <button onclick="showPage('studentExams')">Exams</button>
   <button onclick="openPlanner()">Planner</button>
   <button onclick="showPage('studySystem')">Study System</button>
+  <button onclick="showPage('writingAcademy')">Writing Academy ✍️</button>
   <button onclick="showPage('aiCenter')">AI Center</button>
   <button onclick="showPage('studentAssistant')">Assistant 🤖</button>
   <button onclick="showPage('games')">Games 🎮</button>
@@ -1380,7 +1381,432 @@
 
   </div>
 </section>
+<section id="writingAcademy" class="page">
+  <div class="writing-academy-shell">
 
+    <!-- HERO -->
+    <div class="writing-hero">
+      <div class="writing-hero-content">
+        <span class="writing-badge">JAK Academy • AI Writing</span>
+        <h1>AI Writing Learning Engine ✍️</h1>
+        <p>
+          Learn to write like a real writer — sentence by sentence, paragraph by paragraph.
+          Build strong sentences, organized paragraphs, powerful essays, and exam-ready writing.
+        </p>
+
+        <div class="writing-hero-actions">
+          <button onclick="scrollToWritingEditor()">Start Writing</button>
+          <button class="gold" onclick="showWritingMode('practice')">Practice Writing</button>
+          <button class="secondary" onclick="showWritingMode('coach')">AI Writing Coach</button>
+        </div>
+
+        <div class="writing-hero-stats">
+          <div>
+            <strong>Sentence</strong>
+            <span>Builder</span>
+          </div>
+          <div>
+            <strong>Paragraph</strong>
+            <span>Trainer</span>
+          </div>
+          <div>
+            <strong>Essay</strong>
+            <span>Academy</span>
+          </div>
+          <div>
+            <strong>AI</strong>
+            <span>Feedback Ready</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="writing-hologram">
+        <div class="writing-brain">🧠</div>
+        <h3>AI Writing Coach</h3>
+        <p>Grammar • Vocabulary • Connectors • Clarity • Cohesion</p>
+      </div>
+    </div>
+<!-- WRITING MISSION CONTROL -->
+<div class="writing-panel writing-mission-control">
+  <div class="writing-panel-header">
+    <div>
+      <span class="writing-section-number">00</span>
+      <h2>Writing Mission Control</h2>
+      <p>Choose the writing type, level, and target skill before starting.</p>
+    </div>
+    <span class="writing-ai-chip">Smart Mission</span>
+  </div>
+
+  <div class="writing-mission-grid">
+    <label>
+      Writing Type
+      <select id="writingTypeSelect">
+        <option value="opinion">Opinion Essay</option>
+        <option value="forAgainst">For & Against Essay</option>
+        <option value="formalEmail">Formal Email</option>
+        <option value="report">Report</option>
+        <option value="article">Article</option>
+        <option value="story">Narrative Writing</option>
+        <option value="paragraph">Paragraph</option>
+      </select>
+    </label>
+
+    <label>
+      Student Level
+      <select id="writingLevelSelect">
+        <option value="beginner">Beginner</option>
+        <option value="intermediate" selected>Intermediate</option>
+        <option value="advanced">Advanced</option>
+        <option value="tawjihi">Tawjihi / Exam Style</option>
+      </select>
+    </label>
+
+    <label>
+      Focus Skill
+      <select id="writingGoalSelect">
+        <option value="grammar">Grammar Accuracy</option>
+        <option value="connectors">Connectors</option>
+        <option value="paragraph">Paragraph Organization</option>
+        <option value="vocabulary">Vocabulary Upgrade</option>
+        <option value="cohesion">Cohesion & Clarity</option>
+        <option value="fullEssay">Full Essay Structure</option>
+      </select>
+    </label>
+
+    <label>
+      Topic
+      <input id="writingTopicInput" type="text" placeholder="Technology in education / Online learning / Study habits..." />
+    </label>
+  </div>
+
+  <div class="writing-mission-actions">
+    <button onclick="generateWritingMission()">Generate Writing Mission 🚀</button>
+    <button class="gold" onclick="loadWritingTemplate()">Load Template</button>
+    <button class="secondary" onclick="resetWritingMission()">Reset Mission</button>
+  </div>
+
+  <div id="writingMissionOutput" class="writing-mission-output">
+    Choose a writing type and generate your mission.
+  </div>
+</div>
+    <!-- MAIN GRID -->
+    <div class="writing-main-grid">
+
+      <!-- SMART WRITING EDITOR -->
+      <div class="writing-panel writing-editor-panel" id="writingEditorPanel">
+        <div class="writing-panel-header">
+          <div>
+            <span class="writing-section-number">01</span>
+            <h2>Smart Writing Editor</h2>
+            <p>Write your answer and receive structured feedback step by step.</p>
+          </div>
+          <span class="writing-ai-chip">AI-ready</span>
+        </div>
+
+        <div class="writing-toolbar">
+          <button>B</button>
+          <button>I</button>
+          <button>U</button>
+          <button>Grammar</button>
+          <button>Connectors</button>
+          <button>Style</button>
+        </div>
+
+        <textarea id="studentWritingInput" class="writing-editor-textarea" placeholder="Start writing your sentence, paragraph, essay, email, report, or story here...">Although technology have changed the way we learn, many students still struggle to stay focused. Moreover, there are too many distractions which make concentration harder.</textarea>
+
+        <div class="writing-feedback-preview">
+          <h3>Live Feedback Preview</h3>
+          <p>
+            <span class="writing-error">have</span> → <strong>has</strong>
+            <small>Subject “technology” is singular.</small>
+          </p>
+          <p>
+            <span class="writing-good">Moreover</span>
+            <small>Good connector, but check if it adds a new idea clearly.</small>
+          </p>
+          <p>
+            <span class="writing-warning">which make</span> → <strong>which makes</strong>
+            <small>Verb agreement issue.</small>
+          </p>
+        </div>
+
+        <div class="writing-editor-actions">
+          <button onclick="analyzeWritingLocally()">Analyze Writing</button>
+          <button class="gold" onclick="loadWritingPrompt()">New Prompt</button>
+          <button class="secondary" onclick="clearWritingEditor()">Clear</button>
+        </div>
+      </div>
+
+      <!-- SCORE PANEL -->
+      <div class="writing-panel writing-score-panel">
+        <div class="writing-panel-header">
+          <div>
+            <span class="writing-section-number">02</span>
+            <h2>Writing Score</h2>
+            <p>Local preview now. AI scoring later.</p>
+          </div>
+        </div>
+
+        <div class="writing-score-circle">
+          <strong id="writingScoreValue">84</strong>
+          <span>Good Work</span>
+        </div>
+
+        <div class="writing-skill-bars">
+          <div>
+            <span>Grammar</span>
+            <i><b style="width:82%"></b></i>
+            <strong>82</strong>
+          </div>
+          <div>
+            <span>Vocabulary</span>
+            <i><b style="width:76%"></b></i>
+            <strong>76</strong>
+          </div>
+          <div>
+            <span>Connectors</span>
+            <i><b style="width:68%"></b></i>
+            <strong>68</strong>
+          </div>
+          <div>
+            <span>Cohesion</span>
+            <i><b style="width:80%"></b></i>
+            <strong>80</strong>
+          </div>
+          <div>
+            <span>Clarity</span>
+            <i><b style="width:86%"></b></i>
+            <strong>86</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WRITING BUILDING SYSTEM -->
+    <div class="writing-panel">
+      <div class="writing-panel-header">
+        <div>
+          <span class="writing-section-number">03</span>
+          <h2>Writing Building System</h2>
+          <p>Students move from sentence building to full essay writing.</p>
+        </div>
+      </div>
+
+      <div class="writing-path">
+        <div class="writing-path-card">
+          <span>1</span>
+          <h3>Sentence</h3>
+          <p>Subject + verb + object + correct tense.</p>
+          <small>Mastery 92%</small>
+        </div>
+
+        <div class="writing-path-arrow">→</div>
+
+        <div class="writing-path-card">
+          <span>2</span>
+          <h3>Connected Sentences</h3>
+          <p>Use connectors to link ideas clearly.</p>
+          <small>Mastery 78%</small>
+        </div>
+
+        <div class="writing-path-arrow">→</div>
+
+        <div class="writing-path-card">
+          <span>3</span>
+          <h3>Paragraph</h3>
+          <p>Topic sentence, support, example, conclusion.</p>
+          <small>Mastery 65%</small>
+        </div>
+
+        <div class="writing-path-arrow">→</div>
+
+        <div class="writing-path-card gold">
+          <span>4</span>
+          <h3>Essay</h3>
+          <p>Introduction, body paragraphs, conclusion.</p>
+          <small>Mastery 48%</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECTOR TRAINER + AI COACH -->
+    <div class="writing-two-columns">
+
+      <div class="writing-panel">
+        <div class="writing-panel-header">
+          <div>
+            <span class="writing-section-number">04</span>
+            <h2>Connector Trainer</h2>
+            <p>Train students to connect ideas naturally.</p>
+          </div>
+        </div>
+
+        <div class="connector-tabs">
+          <button onclick="showConnectorCategory('contrast')">Contrast</button>
+          <button onclick="showConnectorCategory('addition')">Addition</button>
+          <button onclick="showConnectorCategory('cause')">Cause & Effect</button>
+          <button onclick="showConnectorCategory('sequence')">Sequence</button>
+          <button onclick="showConnectorCategory('conclusion')">Conclusion</button>
+        </div>
+
+        <div id="connectorTrainerBox" class="connector-trainer-box">
+          <h3>Contrast Connectors</h3>
+          <p>Use connectors like <strong>however</strong>, <strong>although</strong>, <strong>even though</strong>, and <strong>whereas</strong> to show contrast.</p>
+
+          <div class="connector-example">
+            <span>She studied hard,</span>
+            <button>but</button>
+            <span>she did not pass the exam.</span>
+          </div>
+
+          <div class="connector-ai-tip">
+            AI Tip: Use “although” at the beginning when the surprising idea comes first.
+          </div>
+        </div>
+      </div>
+
+      <div class="writing-panel">
+        <div class="writing-panel-header">
+          <div>
+            <span class="writing-section-number">05</span>
+            <h2>AI Writing Coach</h2>
+            <p>Supportive, academic, and personalized feedback.</p>
+          </div>
+        </div>
+
+        <div class="ai-coach-box">
+          <div class="ai-coach-avatar">🤖</div>
+          <div class="ai-message">
+            <strong>AI Coach</strong>
+            <p>Your ideas are clear. Next, improve your connectors and sentence variety.</p>
+          </div>
+          <div class="student-message">
+            <strong>You</strong>
+            <p>How can I improve my paragraph?</p>
+          </div>
+          <div class="ai-message">
+            <strong>AI Coach</strong>
+            <p>Start with a topic sentence, add one example, then finish with a concluding sentence.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- WRITING TYPES -->
+    <div class="writing-panel">
+      <div class="writing-panel-header">
+        <div>
+          <span class="writing-section-number">06</span>
+          <h2>Writing Types</h2>
+          <p>Train for school, exams, and real academic writing.</p>
+        </div>
+      </div>
+
+      <div class="writing-types-grid">
+        <div class="writing-type-card">
+          <span>🧠</span>
+          <h3>Opinion Essay</h3>
+          <p>Intermediate • 40–60 min</p>
+          <small>AI Support</small>
+        </div>
+        <div class="writing-type-card">
+          <span>⚖️</span>
+          <h3>For & Against Essay</h3>
+          <p>Advanced • 60–80 min</p>
+          <small>AI Support</small>
+        </div>
+        <div class="writing-type-card">
+          <span>✉️</span>
+          <h3>Formal Email</h3>
+          <p>Beginner • 20–30 min</p>
+          <small>AI Support</small>
+        </div>
+        <div class="writing-type-card">
+          <span>📊</span>
+          <h3>Report</h3>
+          <p>Intermediate • 45–60 min</p>
+          <small>AI Support</small>
+        </div>
+        <div class="writing-type-card">
+          <span>📰</span>
+          <h3>Article</h3>
+          <p>Advanced • 60–90 min</p>
+          <small>AI Support</small>
+        </div>
+        <div class="writing-type-card">
+          <span>📖</span>
+          <h3>Narrative Writing</h3>
+          <p>All Levels • 30–50 min</p>
+          <small>AI Support</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS + GAMIFICATION + TEACHER MODE -->
+    <div class="writing-three-columns">
+
+      <div class="writing-panel">
+        <div class="writing-panel-header">
+          <div>
+            <span class="writing-section-number">07</span>
+            <h2>Writing Analytics</h2>
+          </div>
+        </div>
+        <div class="writing-analytics-list">
+          <p><strong>Common Mistake:</strong> Verb agreement</p>
+          <p><strong>Connector Weakness:</strong> Cause & Effect</p>
+          <p><strong>Sentence Variety:</strong> 72%</p>
+          <p><strong>Vocabulary Richness:</strong> 68%</p>
+        </div>
+      </div>
+
+      <div class="writing-panel">
+        <div class="writing-panel-header">
+          <div>
+            <span class="writing-section-number">08</span>
+            <h2>Gamification</h2>
+          </div>
+        </div>
+        <div class="writing-gamification">
+          <div>
+            <strong>Level 12</strong>
+            <span>Pro Writer</span>
+          </div>
+          <div>
+            <strong>24 Days</strong>
+            <span>Writing Streak</span>
+          </div>
+          <div>
+            <strong>+150 XP</strong>
+            <span>Daily Mission</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="writing-panel">
+        <div class="writing-panel-header">
+          <div>
+            <span class="writing-section-number">09</span>
+            <h2>Teacher Mode</h2>
+          </div>
+        </div>
+        <div class="teacher-writing-preview">
+          <p><strong>Class Average:</strong> 78%</p>
+          <p><strong>Top Weakness:</strong> Connectors</p>
+          <p><strong>AI Feedback:</strong> Students need more sentence variety and stronger paragraph organization.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="writing-brand-footer">
+      <strong>JAK Academy</strong>
+      <span>by Jalal Abu Khadra</span>
+    </div>
+
+  </div>
+</section>
 <section id="planner" class="page">
   <div id="plannerSystemContext"></div>
   <div class="card planner-modern">

@@ -6657,6 +6657,393 @@ function renderPlannerSystemContext() {
     </div>
   `;
 }
+function scrollToWritingEditor() {
+  const editorPanel = document.getElementById("writingEditorPanel");
+  if (editorPanel) {
+    editorPanel.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
+}
+
+function showWritingMode(mode) {
+  const input = document.getElementById("studentWritingInput");
+  const coachBox = document.querySelector(".ai-coach-box");
+
+  if (mode === "practice" && input) {
+    input.value =
+      "Write a short paragraph about how students can improve their study habits. Use at least two connectors.";
+    scrollToWritingEditor();
+  }
+
+  if (mode === "coach" && coachBox) {
+    coachBox.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+
+  console.log("Writing mode:", mode);
+}
+
+function analyzeWritingLocally() {
+  const input = document.getElementById("studentWritingInput");
+  const scoreValue = document.getElementById("writingScoreValue");
+
+  if (!input) return;
+
+  const text = input.value.trim();
+
+  if (!text) {
+    alert("Please write something first.");
+    return;
+  }
+
+  const words = text.split(/\s+/).filter(Boolean);
+  const wordCount = words.length;
+
+  let score = 60;
+
+  if (wordCount >= 40) score += 10;
+  if (wordCount >= 80) score += 10;
+
+  const connectors = [
+    "however",
+    "although",
+    "because",
+    "therefore",
+    "moreover",
+    "first",
+    "second",
+    "finally",
+    "in conclusion",
+    "for example"
+  ];
+
+  const lowerText = text.toLowerCase();
+  const usedConnectors = connectors.filter(connector =>
+    lowerText.includes(connector)
+  );
+
+  score += Math.min(usedConnectors.length * 4, 16);
+
+  if (/[.!?]$/.test(text)) score += 4;
+
+  score = Math.min(score, 100);
+
+  if (scoreValue) {
+    scoreValue.textContent = score;
+  }
+
+  const feedbackBox = document.querySelector(".writing-feedback-preview");
+
+  if (feedbackBox) {
+    feedbackBox.innerHTML = `
+      <h3>Local Writing Feedback</h3>
+
+      <p>
+        <strong>Words:</strong> ${safeText(wordCount)}
+        <small>Your writing length is ${
+          wordCount < 40
+            ? "still short. Try adding more supporting details."
+            : "good for a first draft."
+        }</small>
+      </p>
+
+      <p>
+        <strong>Connectors used:</strong> ${safeText(usedConnectors.length)}
+        <small>${
+          usedConnectors.length
+            ? "Good. You used: " + safeText(usedConnectors.join(", "))
+            : "Try using connectors such as however, because, moreover, or for example."
+        }</small>
+      </p>
+
+      <p>
+        <span class="writing-good">AI-ready preview</span>
+        <small>This is a local preview. Later, real AI feedback will check grammar, vocabulary, cohesion, and task achievement.</small>
+      </p>
+    `;
+  }
+
+  alert("Writing analyzed locally. Score: " + score + "%");
+}
+
+function loadWritingPrompt() {
+  const input = document.getElementById("studentWritingInput");
+  if (!input) return;
+
+  const prompts = [
+    "Write an opinion paragraph about whether students should use technology in learning.",
+    "Write a for-and-against paragraph about online education.",
+    "Write a formal email to your teacher asking for advice before an exam.",
+    "Write a short report about the most common study problems students face.",
+    "Write a story that begins with: I opened the door and saw something strange."
+  ];
+
+  const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+
+  input.value = randomPrompt + "\n\n";
+  scrollToWritingEditor();
+
+  console.log("Writing prompt loaded:", randomPrompt);
+}
+
+function clearWritingEditor() {
+  const input = document.getElementById("studentWritingInput");
+  if (!input) return;
+
+  const confirmClear = confirm("Clear the writing editor?");
+  if (!confirmClear) return;
+
+  input.value = "";
+  input.focus();
+}
+
+function showConnectorCategory(category) {
+  const box = document.getElementById("connectorTrainerBox");
+  if (!box) return;
+
+  const connectorData = {
+    contrast: {
+      title: "Contrast Connectors",
+      connectors: ["however", "although", "even though", "whereas", "but"],
+      example: "Although she studied hard, she did not pass the exam.",
+      tip: "Use contrast connectors when two ideas are different or surprising."
+    },
+    addition: {
+      title: "Addition Connectors",
+      connectors: ["moreover", "also", "in addition", "furthermore", "besides"],
+      example: "Students should revise daily. Moreover, they should practise exam questions.",
+      tip: "Use addition connectors to add another supporting idea."
+    },
+    cause: {
+      title: "Cause & Effect Connectors",
+      connectors: ["because", "therefore", "as a result", "so", "consequently"],
+      example: "Many students sleep late. Therefore, they feel tired in class.",
+      tip: "Use cause and effect connectors to explain reasons and results."
+    },
+    sequence: {
+      title: "Sequence Connectors",
+      connectors: ["first", "next", "then", "after that", "finally"],
+      example: "First, read the question carefully. Then, plan your answer.",
+      tip: "Use sequence connectors to organize steps or events."
+    },
+    conclusion: {
+      title: "Conclusion Connectors",
+      connectors: ["in conclusion", "to sum up", "overall", "in short"],
+      example: "In conclusion, good habits help students improve their results.",
+      tip: "Use conclusion connectors to finish your paragraph or essay clearly."
+    }
+  };
+
+  const data = connectorData[category] || connectorData.contrast;
+
+  box.innerHTML = `
+    <h3>${safeText(data.title)}</h3>
+    <p>${safeText(data.tip)}</p>
+
+    <div class="connector-chip-row">
+      ${data.connectors.map(connector => `<span>${safeText(connector)}</span>`).join("")}
+    </div>
+
+    <div class="connector-example">
+      <span>${safeText(data.example)}</span>
+    </div>
+
+    <div class="connector-ai-tip">
+      AI Tip: ${safeText(data.tip)}
+    </div>
+  `;
+}
+function getWritingTypeLabel(type) {
+  const labels = {
+    opinion: "Opinion Essay",
+    forAgainst: "For & Against Essay",
+    formalEmail: "Formal Email",
+    report: "Report",
+    article: "Article",
+    story: "Narrative Writing",
+    paragraph: "Paragraph"
+  };
+
+  return labels[type] || "Writing Task";
+}
+
+function getWritingGoalLabel(goal) {
+  const labels = {
+    grammar: "Grammar Accuracy",
+    connectors: "Connectors",
+    paragraph: "Paragraph Organization",
+    vocabulary: "Vocabulary Upgrade",
+    cohesion: "Cohesion & Clarity",
+    fullEssay: "Full Essay Structure"
+  };
+
+  return labels[goal] || "Writing Skill";
+}
+
+function getWritingChecklist(type, goal) {
+  const base = [
+    "Clear main idea",
+    "Correct sentence structure",
+    "At least two supporting details",
+    "Appropriate punctuation"
+  ];
+
+  const byType = {
+    opinion: [
+      "State your opinion clearly",
+      "Give reasons for your opinion",
+      "Use examples",
+      "End with a clear conclusion"
+    ],
+    forAgainst: [
+      "Present arguments for",
+      "Present arguments against",
+      "Use contrast connectors",
+      "Give a balanced conclusion"
+    ],
+    formalEmail: [
+      "Use a formal greeting",
+      "State the purpose clearly",
+      "Use polite language",
+      "End with a formal closing"
+    ],
+    report: [
+      "Use headings or clear sections",
+      "Describe findings clearly",
+      "Give recommendations",
+      "Use objective language"
+    ],
+    article: [
+      "Use an engaging title",
+      "Open with an interesting introduction",
+      "Use examples",
+      "End with a strong final idea"
+    ],
+    story: [
+      "Set the scene",
+      "Introduce a problem",
+      "Use sequence words",
+      "End the story clearly"
+    ],
+    paragraph: [
+      "Topic sentence",
+      "Supporting sentence",
+      "Example sentence",
+      "Concluding sentence"
+    ]
+  };
+
+  const byGoal = {
+    grammar: ["Check subject-verb agreement", "Check tense consistency"],
+    connectors: ["Use at least three connectors", "Use connectors with correct meaning"],
+    paragraph: ["Use topic sentence + support + example + conclusion"],
+    vocabulary: ["Replace basic words with stronger vocabulary"],
+    cohesion: ["Make ideas flow logically"],
+    fullEssay: ["Introduction, body paragraphs, conclusion"]
+  };
+
+  return [
+    ...(byType[type] || base),
+    ...(byGoal[goal] || [])
+  ];
+}
+
+function generateWritingMission() {
+  const type = document.getElementById("writingTypeSelect")?.value || "paragraph";
+  const level = document.getElementById("writingLevelSelect")?.value || "intermediate";
+  const goal = document.getElementById("writingGoalSelect")?.value || "paragraph";
+  const topic =
+    document.getElementById("writingTopicInput")?.value.trim() ||
+    "technology in education";
+
+  const output = document.getElementById("writingMissionOutput");
+  const input = document.getElementById("studentWritingInput");
+
+  const typeLabel = getWritingTypeLabel(type);
+  const goalLabel = getWritingGoalLabel(goal);
+
+  const missionText =
+    `Write a ${level} ${typeLabel.toLowerCase()} about "${topic}". Focus especially on ${goalLabel.toLowerCase()}.`;
+
+  const checklist = getWritingChecklist(type, goal);
+
+  if (output) {
+    output.innerHTML = `
+      <div class="writing-mission-card">
+        <span class="writing-ai-chip">Generated Mission</span>
+        <h3>${safeText(typeLabel)} Mission</h3>
+        <p>${safeText(missionText)}</p>
+
+        <div class="writing-checklist">
+          ${checklist.map(item => `
+            <label>
+              <input type="checkbox">
+              <span>${safeText(item)}</span>
+            </label>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if (input) {
+    input.value = `${missionText}\n\nWrite your answer here:\n\n`;
+    if (typeof scrollToWritingEditor === "function") {
+      scrollToWritingEditor();
+    }
+  }
+
+  console.log("Writing mission generated:", {
+    type,
+    level,
+    goal,
+    topic
+  });
+}
+
+function loadWritingTemplate() {
+  const type = document.getElementById("writingTypeSelect")?.value || "paragraph";
+  const input = document.getElementById("studentWritingInput");
+  if (!input) return;
+
+  const templates = {
+    opinion:
+      "In my opinion, __________________________.\n\nOne reason is that __________________________.\nFor example, __________________________.\nMoreover, __________________________.\n\nIn conclusion, I believe that __________________________.",
+    forAgainst:
+      "Some people believe that __________________________.\nOn the one hand, __________________________.\nFor example, __________________________.\n\nOn the other hand, __________________________.\nHowever, __________________________.\n\nIn conclusion, __________________________.",
+    formalEmail:
+      "Dear Sir/Madam,\n\nI am writing to __________________________.\n\nFirst of all, __________________________.\nIn addition, __________________________.\n\nI would be grateful if __________________________.\n\nYours faithfully,\n__________________________",
+    report:
+      "Report on __________________________\n\nIntroduction:\nThe aim of this report is to __________________________.\n\nFindings:\nFirst, __________________________.\nSecond, __________________________.\n\nRecommendations:\nI recommend that __________________________.",
+    article:
+      "Title: __________________________\n\nHave you ever __________________________?\n\nNowadays, __________________________.\nOne important point is that __________________________.\nAnother point is __________________________.\n\nTo sum up, __________________________.",
+    story:
+      "I will never forget the day when __________________________.\n\nAt first, __________________________.\nThen, __________________________.\nSuddenly, __________________________.\n\nIn the end, __________________________.",
+    paragraph:
+      "Topic sentence: __________________________.\n\nSupporting detail: __________________________.\nFor example, __________________________.\n\nConcluding sentence: __________________________."
+  };
+
+  input.value = templates[type] || templates.paragraph;
+
+  if (typeof scrollToWritingEditor === "function") {
+    scrollToWritingEditor();
+  }
+}
+
+function resetWritingMission() {
+  const output = document.getElementById("writingMissionOutput");
+  const topic = document.getElementById("writingTopicInput");
+
+  if (topic) topic.value = "";
+
+  if (output) {
+    output.innerHTML = "Choose a writing type and generate your mission.";
+  }
+}
 window.uploadTeacherResource = uploadTeacherResource;
 window.loadTeacherResources = loadTeacherResources;
 window.loadStudentResources = loadStudentResources;
