@@ -7713,3 +7713,166 @@ textarea{min-height:95px;resize:vertical}
     flex-direction: column;
   }
 }
+/* =====================================================
+   Writing Progress Dashboard Upgrade
+===================================================== */
+
+.writing-progress-dashboard {
+  margin-top: 18px;
+  padding: 22px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.18), transparent 30%),
+    rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.38);
+}
+
+.writing-progress-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.writing-progress-header h3 {
+  margin: 6px 0;
+  font-size: 1.45rem;
+  color: #f8fafc;
+}
+
+.writing-progress-header p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.writing-level-badge {
+  min-width: 130px;
+  text-align: center;
+  padding: 12px 16px;
+  border-radius: 999px;
+  font-weight: 800;
+  color: #ecfeff;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.85), rgba(124, 58, 237, 0.85));
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 12px 30px rgba(14, 165, 233, 0.22);
+}
+
+.writing-progress-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.writing-progress-card {
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.14);
+  color: #e5e7eb;
+}
+
+.writing-progress-card span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  margin-bottom: 7px;
+}
+
+.writing-progress-card strong {
+  display: block;
+  color: #ffffff;
+  font-size: 1.35rem;
+}
+
+.writing-progress-card small {
+  display: block;
+  margin-top: 6px;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+
+.writing-skill-progress-bars {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.writing-skill-bar-row {
+  display: grid;
+  grid-template-columns: 135px 1fr 48px;
+  gap: 12px;
+  align-items: center;
+  color: #e5e7eb;
+}
+
+.writing-skill-bar-label {
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.writing-skill-bar-track {
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(148, 163, 184, 0.18);
+  border: 1px solid rgba(226, 232, 240, 0.12);
+}
+
+.writing-skill-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #8b5cf6);
+}
+
+.writing-skill-bar-value {
+  text-align: right;
+  font-weight: 800;
+  color: #bae6fd;
+}
+
+.writing-progress-advice {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: rgba(14, 165, 233, 0.12);
+  border: 1px solid rgba(125, 211, 252, 0.24);
+  color: #e0f2fe;
+  line-height: 1.7;
+}
+
+.writing-progress-empty {
+  grid-column: 1 / -1;
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px dashed rgba(148, 163, 184, 0.35);
+  color: #cbd5e1;
+}
+
+.writing-progress-empty strong,
+.writing-progress-empty span {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .writing-progress-header {
+    flex-direction: column;
+  }
+
+  .writing-progress-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-skill-bar-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .writing-skill-bar-value {
+    text-align: left;
+  }
+}

@@ -7124,28 +7124,60 @@ function saveWritingAttempt(attemptData) {
 }
 
 function renderWritingProgressSummary() {
-  const attempts = getWritingAttempts();
-
   const summaryBox = document.getElementById("writingProgressSummary");
+  const levelBadge = document.getElementById("writingLevelBadge");
+  const barsBox = document.getElementById("writingSkillProgressBars");
+  const adviceBox = document.getElementById("writingProgressAdvice");
+
   if (!summaryBox) return;
 
-  if (!attempts.length) {
+  const attempts = typeof getWritingAttempts === "function" ? getWritingAttempts() : [];
+
+  if (!attempts || attempts.length === 0) {
     summaryBox.innerHTML = `
       <div class="writing-progress-empty">
         <strong>No writing history yet.</strong>
         <span>Analyze your writing to start tracking progress.</span>
       </div>
     `;
+
+    if (levelBadge) levelBadge.textContent = "Level: —";
+    if (barsBox) barsBox.innerHTML = "";
+    if (adviceBox) adviceBox.innerHTML = "";
     return;
   }
 
+  const scores = attempts
+    .map(a => Number(a.score || 0))
+    .filter(score => !Number.isNaN(score));
+
   const totalAttempts = attempts.length;
+  const latestAttempt = attempts[0];
+  const latestScore = Number(latestAttempt.score || 0);
+  const averageScore = scores.length
+    ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+    : 0;
 
-  const averageScore = Math.round(
-    attempts.reduce((sum, item) => sum + (Number(item.score) || 0), 0) / totalAttempts
-  );
+  const bestAttempt = attempts.reduce((best, current) => {
+    return Number(current.score || 0) > Number(best.score || 0) ? current : best;
+  }, attempts[0]);
 
-  const latest = attempts[0];
+  const weakestAttempt = attempts.reduce((weakest, current) => {
+    return Number(current.score || 0) < Number(weakest.score || 0) ? current : weakest;
+  }, attempts[0]);
+
+  const writingLevel =
+    averageScore >= 90 ? "Advanced" :
+    averageScore >= 75 ? "Strong" :
+    averageScore >= 60 ? "Developing" :
+    averageScore >= 40 ? "Basic" :
+    "Starter";
+
+  if (levelBadge) {
+    levelBadge.textContent = "Level: " + writingLevel;
+  }
+
+  const skillKeys = ["grammar", "vocabulary", "connectors", "organization", "clarity"];
 
   const skillTotals = {
     grammar: 0,
@@ -7155,60 +7187,104 @@ function renderWritingProgressSummary() {
     clarity: 0
   };
 
-  attempts.forEach(item => {
-    skillTotals.grammar += Number(item.skillScores?.grammar) || 0;
-    skillTotals.vocabulary += Number(item.skillScores?.vocabulary) || 0;
-    skillTotals.connectors += Number(item.skillScores?.connectors) || 0;
-    skillTotals.organization += Number(item.skillScores?.organization) || 0;
-    skillTotals.clarity += Number(item.skillScores?.clarity) || 0;
+  let skillCount = 0;
+
+  attempts.forEach(attempt => {
+    const skills = attempt.skillScores || attempt.skills || null;
+
+    if (skills) {
+      skillKeys.forEach(key => {
+        skillTotals[key] += Number(skills[key] || 0);
+      });
+      skillCount++;
+    }
   });
 
-  const skillAverages = Object.fromEntries(
-    Object.entries(skillTotals).map(([skill, total]) => [
-      skill,
-      Math.round(total / totalAttempts)
-    ])
-  );
+  const skillAverages = {};
 
-  const weakestSkill = Object.entries(skillAverages)
-    .sort((a, b) => a[1] - b[1])[0];
+  skillKeys.forEach(key => {
+    skillAverages[key] = skillCount
+      ? Math.round(skillTotals[key] / skillCount)
+      : averageScore;
+  });
+
+  const weakestSkill = skillKeys.reduce((weakest, key) => {
+    return skillAverages[key] < skillAverages[weakest] ? key : weakest;
+  }, skillKeys[0]);
+
+  const strongestSkill = skillKeys.reduce((strongest, key) => {
+    return skillAverages[key] > skillAverages[strongest] ? key : strongest;
+  }, skillKeys[0]);
+
+  const formatSkill = (skill) => {
+    return skill.charAt(0).toUpperCase() + skill.slice(1);
+  };
+
+  const formatDate = (value) => {
+    if (!value) return "Recent";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Recent";
+    return date.toLocaleDateString();
+  };
+
+  const improvementMessage =
+    totalAttempts < 2
+      ? "Analyze more writing samples to unlock improvement tracking."
+      : latestScore >= averageScore
+        ? "Your latest writing is at or above your average. Keep building consistency."
+        : "Your latest writing is below your average. Review your weakest skill before the next attempt.";
 
   summaryBox.innerHTML = `
-    <div class="writing-progress-grid">
-      <div class="writing-progress-card">
-        <span>Total Attempts</span>
-        <strong>${safeText(totalAttempts)}</strong>
-      </div>
-
-      <div class="writing-progress-card">
-        <span>Average Score</span>
-        <strong>${safeText(averageScore)}%</strong>
-      </div>
-
-      <div class="writing-progress-card">
-        <span>Latest Score</span>
-        <strong>${safeText(latest.score)}%</strong>
-      </div>
-
-      <div class="writing-progress-card">
-        <span>Weakest Skill</span>
-        <strong>${safeText(weakestSkill[0])} ${safeText(weakestSkill[1])}%</strong>
-      </div>
+    <div class="writing-progress-card">
+      <span>Total Attempts</span>
+      <strong>${totalAttempts}</strong>
+      <small>Saved writing analyses</small>
     </div>
 
-    <div class="writing-history-list">
-      <h4>Recent Writing Attempts</h4>
-      ${attempts.slice(0, 5).map(item => `
-        <div class="writing-history-item">
-          <div>
-            <strong>${safeText(item.typeLabel || item.writingType || "Writing Task")}</strong>
-            <span>${safeText(item.topic || "No topic")} • ${safeText(item.learnerMode || "school")}</span>
-          </div>
-          <b>${safeText(item.score)}%</b>
-        </div>
-      `).join("")}
+    <div class="writing-progress-card">
+      <span>Average Score</span>
+      <strong>${averageScore}%</strong>
+      <small>Overall writing performance</small>
+    </div>
+
+    <div class="writing-progress-card">
+      <span>Best Attempt</span>
+      <strong>${Number(bestAttempt.score || 0)}%</strong>
+      <small>${formatDate(bestAttempt.date || bestAttempt.createdAt || bestAttempt.savedAt)}</small>
+    </div>
+
+    <div class="writing-progress-card">
+      <span>Focus Area</span>
+      <strong>${formatSkill(weakestSkill)}</strong>
+      <small>Strongest: ${formatSkill(strongestSkill)}</small>
     </div>
   `;
+
+  if (barsBox) {
+    barsBox.innerHTML = skillKeys.map(key => {
+      const value = Math.max(0, Math.min(100, skillAverages[key] || 0));
+
+      return `
+        <div class="writing-skill-bar-row">
+          <div class="writing-skill-bar-label">${formatSkill(key)}</div>
+          <div class="writing-skill-bar-track">
+            <div class="writing-skill-bar-fill" style="width:${value}%"></div>
+          </div>
+          <div class="writing-skill-bar-value">${value}%</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  if (adviceBox) {
+    adviceBox.innerHTML = `
+      <strong>Smart Advice:</strong>
+      Focus next on <b>${formatSkill(weakestSkill)}</b>.
+      ${improvementMessage}
+      Best score: <b>${Number(bestAttempt.score || 0)}%</b>.
+      Lowest score: <b>${Number(weakestAttempt.score || 0)}%</b>.
+    `;
+  }
 }
 function analyzeSentenceQuality(text) {
   const rawSentences = (text || "")

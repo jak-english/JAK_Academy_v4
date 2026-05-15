@@ -1972,13 +1972,28 @@
 <div class="writing-panel writing-progress-panel">
   <div class="writing-panel-header">
     <div>
-      <span class="writing-section-number">08</span>
-      <h2>Writing Progress Tracker</h2>
+     <span class="writing-section-number">08</span>
+<h2>Writing Progress Dashboard</h2>
+<p>
+  Track writing attempts, scores, skill growth, repeated weaknesses, and improvement over time.
+</p>
+</div>
+<span class="writing-ai-chip">Progress Memory</span>
+</div>
+
+<div class="writing-progress-dashboard">
+  <div class="writing-progress-header">
+    <div>
+      <span class="section-kicker">Writing Growth</span>
+      <h3>📈 Writing Progress Dashboard</h3>
       <p>
-        Track writing attempts, scores, skill growth, and repeated weaknesses over time.
+        Track your writing level, strongest skills, weakest areas, best attempt, and recent improvement.
       </p>
     </div>
-    <span class="writing-ai-chip">Progress Memory</span>
+
+    <div class="writing-level-badge" id="writingLevelBadge">
+      Level: —
+    </div>
   </div>
 
   <div id="writingProgressSummary" class="writing-progress-summary">
@@ -1987,6 +2002,10 @@
       <span>Analyze your writing to start tracking progress.</span>
     </div>
   </div>
+
+  <div id="writingSkillProgressBars" class="writing-skill-progress-bars"></div>
+
+  <div id="writingProgressAdvice" class="writing-progress-advice"></div>
 </div>
 <!-- WRITING PROGRESS SUMMARY -->
 <div class="writing-panel writing-progress-panel">
