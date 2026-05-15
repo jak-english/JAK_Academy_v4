@@ -7487,3 +7487,229 @@ textarea{min-height:95px;resize:vertical}
     grid-template-columns: 1fr;
   }
 }
+/* =====================================================
+   Writing Academy - Progress Tracker
+   ===================================================== */
+
+.writing-progress-panel {
+  margin-top: 24px;
+  border-left: 6px solid rgba(245, 158, 11, 0.85);
+}
+
+.writing-progress-summary {
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(5, 8, 22, 0.58);
+  border: 1px solid rgba(167, 139, 250, 0.14);
+}
+
+.writing-progress-empty strong,
+.writing-progress-empty span {
+  display: block;
+}
+
+.writing-progress-empty strong {
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.writing-progress-empty span {
+  color: #94a3b8;
+}
+
+.writing-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.writing-progress-card {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.writing-progress-card span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.writing-progress-card strong {
+  color: #ffffff;
+  font-size: 1.35rem;
+}
+
+.writing-history-list {
+  margin-top: 14px;
+}
+
+.writing-history-list h4 {
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.writing-history-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  margin: 10px 0;
+  background: rgba(2, 6, 23, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.writing-history-item strong,
+.writing-history-item span {
+  display: block;
+}
+
+.writing-history-item strong {
+  color: #ffffff;
+}
+
+.writing-history-item span {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.writing-history-item b {
+  color: #fde68a;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 900px) {
+  .writing-progress-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .writing-progress-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-history-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+/* =====================================================
+   Writing Academy - Progress Tracker
+   ===================================================== */
+
+.writing-progress-panel {
+  margin-top: 24px;
+  border-left: 6px solid rgba(245, 158, 11, 0.85);
+}
+
+.writing-progress-summary {
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(5, 8, 22, 0.58);
+  border: 1px solid rgba(167, 139, 250, 0.14);
+}
+
+.writing-progress-empty strong,
+.writing-progress-empty span {
+  display: block;
+}
+
+.writing-progress-empty strong {
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.writing-progress-empty span {
+  color: #94a3b8;
+}
+
+.writing-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.writing-progress-card {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.writing-progress-card span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.writing-progress-card strong {
+  color: #ffffff;
+  font-size: 1.35rem;
+}
+
+.writing-history-list {
+  margin-top: 14px;
+}
+
+.writing-history-list h4 {
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.writing-history-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  margin: 10px 0;
+  background: rgba(2, 6, 23, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.writing-history-item strong,
+.writing-history-item span {
+  display: block;
+}
+
+.writing-history-item strong {
+  color: #ffffff;
+}
+
+.writing-history-item span {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.writing-history-item b {
+  color: #fde68a;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 900px) {
+  .writing-progress-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .writing-progress-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-history-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

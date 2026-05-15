@@ -6937,7 +6937,52 @@ function analyzeWritingLocally() {
 if (typeof updateWritingSkillMap === "function") {
   updateWritingSkillMap(skillScores);
 }
-
+if (typeof saveWritingAttempt === "function") {
+  saveWritingAttempt({
+    text,
+    score,
+    level,
+    wordCount,
+    sentenceCount,
+    paragraphCount,
+    averageSentenceLength,
+    connectorsCount: usedConnectors.length,
+    grammarWarningsCount: grammarWarnings.length,
+    repeatedWordsCount: repeatedWords.length,
+    topic: document.getElementById("writingTopicInput")?.value.trim() || "Untitled Topic",
+    writingType: document.getElementById("writingTypeSelect")?.value || "paragraph",
+    typeLabel:
+      typeof getWritingTypeLabel === "function"
+        ? getWritingTypeLabel(document.getElementById("writingTypeSelect")?.value || "paragraph")
+        : "Writing Task",
+    learnerMode: document.getElementById("writingLearnerModeSelect")?.value || "school",
+    focusSkill: document.getElementById("writingGoalSelect")?.value || "paragraph",
+    skillScores
+  });
+}
+if (typeof saveWritingAttempt === "function") {
+  saveWritingAttempt({
+    text,
+    score,
+    level,
+    wordCount,
+    sentenceCount,
+    paragraphCount,
+    averageSentenceLength,
+    connectorsCount: usedConnectors.length,
+    grammarWarningsCount: grammarWarnings.length,
+    repeatedWordsCount: repeatedWords.length,
+    topic: document.getElementById("writingTopicInput")?.value.trim() || "Untitled Topic",
+    writingType: document.getElementById("writingTypeSelect")?.value || "paragraph",
+    typeLabel:
+      typeof getWritingTypeLabel === "function"
+        ? getWritingTypeLabel(document.getElementById("writingTypeSelect")?.value || "paragraph")
+        : "Writing Task",
+    learnerMode: document.getElementById("writingLearnerModeSelect")?.value || "school",
+    focusSkill: document.getElementById("writingGoalSelect")?.value || "paragraph",
+    skillScores
+  });
+}
   if (feedbackBox) {
     feedbackBox.innerHTML = `
       <h3>Advanced Writing Report</h3>
@@ -7044,6 +7089,126 @@ if (typeof renderSentenceQualityReport === "function") {
   renderSentenceQualityReport(text);
 }
   alert("Advanced writing report generated. Score: " + score + "%");
+}
+function getWritingAttempts() {
+  try {
+    return JSON.parse(localStorage.getItem("jakWritingAttemptsV1")) || [];
+  } catch (error) {
+    console.warn("Could not read writing attempts:", error);
+    return [];
+  }
+}
+
+function saveWritingAttempt(attemptData) {
+  const attempts = getWritingAttempts();
+
+  const attempt = {
+    id: "writing-" + Date.now(),
+    createdAt: new Date().toISOString(),
+    ...attemptData
+  };
+
+  attempts.unshift(attempt);
+
+  const limitedAttempts = attempts.slice(0, 50);
+
+  localStorage.setItem("jakWritingAttemptsV1", JSON.stringify(limitedAttempts));
+
+  console.log("Writing attempt saved:", attempt);
+
+  if (typeof renderWritingProgressSummary === "function") {
+    renderWritingProgressSummary();
+  }
+
+  return attempt;
+}
+
+function renderWritingProgressSummary() {
+  const attempts = getWritingAttempts();
+
+  const summaryBox = document.getElementById("writingProgressSummary");
+  if (!summaryBox) return;
+
+  if (!attempts.length) {
+    summaryBox.innerHTML = `
+      <div class="writing-progress-empty">
+        <strong>No writing history yet.</strong>
+        <span>Analyze your writing to start tracking progress.</span>
+      </div>
+    `;
+    return;
+  }
+
+  const totalAttempts = attempts.length;
+
+  const averageScore = Math.round(
+    attempts.reduce((sum, item) => sum + (Number(item.score) || 0), 0) / totalAttempts
+  );
+
+  const latest = attempts[0];
+
+  const skillTotals = {
+    grammar: 0,
+    vocabulary: 0,
+    connectors: 0,
+    organization: 0,
+    clarity: 0
+  };
+
+  attempts.forEach(item => {
+    skillTotals.grammar += Number(item.skillScores?.grammar) || 0;
+    skillTotals.vocabulary += Number(item.skillScores?.vocabulary) || 0;
+    skillTotals.connectors += Number(item.skillScores?.connectors) || 0;
+    skillTotals.organization += Number(item.skillScores?.organization) || 0;
+    skillTotals.clarity += Number(item.skillScores?.clarity) || 0;
+  });
+
+  const skillAverages = Object.fromEntries(
+    Object.entries(skillTotals).map(([skill, total]) => [
+      skill,
+      Math.round(total / totalAttempts)
+    ])
+  );
+
+  const weakestSkill = Object.entries(skillAverages)
+    .sort((a, b) => a[1] - b[1])[0];
+
+  summaryBox.innerHTML = `
+    <div class="writing-progress-grid">
+      <div class="writing-progress-card">
+        <span>Total Attempts</span>
+        <strong>${safeText(totalAttempts)}</strong>
+      </div>
+
+      <div class="writing-progress-card">
+        <span>Average Score</span>
+        <strong>${safeText(averageScore)}%</strong>
+      </div>
+
+      <div class="writing-progress-card">
+        <span>Latest Score</span>
+        <strong>${safeText(latest.score)}%</strong>
+      </div>
+
+      <div class="writing-progress-card">
+        <span>Weakest Skill</span>
+        <strong>${safeText(weakestSkill[0])} ${safeText(weakestSkill[1])}%</strong>
+      </div>
+    </div>
+
+    <div class="writing-history-list">
+      <h4>Recent Writing Attempts</h4>
+      ${attempts.slice(0, 5).map(item => `
+        <div class="writing-history-item">
+          <div>
+            <strong>${safeText(item.typeLabel || item.writingType || "Writing Task")}</strong>
+            <span>${safeText(item.topic || "No topic")} • ${safeText(item.learnerMode || "school")}</span>
+          </div>
+          <b>${safeText(item.score)}%</b>
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
 function analyzeSentenceQuality(text) {
   const rawSentences = (text || "")
