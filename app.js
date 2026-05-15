@@ -7403,42 +7403,961 @@ const missionText =
 
 function loadWritingTemplate() {
   const type = document.getElementById("writingTypeSelect")?.value || "paragraph";
+  const level = document.getElementById("writingLevelSelect")?.value || "intermediate";
+  const learnerMode =
+    document.getElementById("writingLearnerModeSelect")?.value || "school";
+  const goal = document.getElementById("writingGoalSelect")?.value || "paragraph";
+  const topic =
+    document.getElementById("writingTopicInput")?.value.trim() ||
+    "technology in education";
+
   const input = document.getElementById("studentWritingInput");
-  if (!input) return;
 
-  const templates = {
-    opinion:
-      "In my opinion, __________________________.\n\nOne reason is that __________________________.\nFor example, __________________________.\nMoreover, __________________________.\n\nIn conclusion, I believe that __________________________.",
-    forAgainst:
-      "Some people believe that __________________________.\nOn the one hand, __________________________.\nFor example, __________________________.\n\nOn the other hand, __________________________.\nHowever, __________________________.\n\nIn conclusion, __________________________.",
-    formalEmail:
-      "Dear Sir/Madam,\n\nI am writing to __________________________.\n\nFirst of all, __________________________.\nIn addition, __________________________.\n\nI would be grateful if __________________________.\n\nYours faithfully,\n__________________________",
-    report:
-      "Report on __________________________\n\nIntroduction:\nThe aim of this report is to __________________________.\n\nFindings:\nFirst, __________________________.\nSecond, __________________________.\n\nRecommendations:\nI recommend that __________________________.",
-    article:
-      "Title: __________________________\n\nHave you ever __________________________?\n\nNowadays, __________________________.\nOne important point is that __________________________.\nAnother point is __________________________.\n\nTo sum up, __________________________.",
-    story:
-      "I will never forget the day when __________________________.\n\nAt first, __________________________.\nThen, __________________________.\nSuddenly, __________________________.\n\nIn the end, __________________________.",
-    paragraph:
-      "Topic sentence: __________________________.\n\nSupporting detail: __________________________.\nFor example, __________________________.\n\nConcluding sentence: __________________________."
-  };
+  if (!input) {
+    alert("Writing editor was not found.");
+    return;
+  }
 
-  input.value = templates[type] || templates.paragraph;
+  const typeLabel =
+    typeof getWritingTypeLabel === "function"
+      ? getWritingTypeLabel(type)
+      : "Writing Task";
+
+  const goalLabel =
+    typeof getWritingGoalLabel === "function"
+      ? getWritingGoalLabel(goal)
+      : "Writing Skill";
+
+  const blueprint =
+    typeof buildAdaptiveWritingBlueprint === "function"
+      ? buildAdaptiveWritingBlueprint({
+          type,
+          typeLabel,
+          level,
+          learnerMode,
+          goal,
+          goalLabel,
+          topic
+        })
+      : `Smart Writing Blueprint
+
+Writing Type: ${typeLabel}
+Level: ${level}
+Learner Mode: ${learnerMode}
+Topic: ${topic}
+Focus Skill: ${goalLabel}
+
+Write your answer here:
+`;
+
+  input.value = blueprint;
 
   if (typeof scrollToWritingEditor === "function") {
     scrollToWritingEditor();
   }
+
+  console.log("Smart Adaptive Writing Blueprint loaded:", {
+    type,
+    level,
+    learnerMode,
+    goal,
+    topic
+  });
+}
+function buildAdaptiveWritingBlueprint(config) {
+  const { type, typeLabel, level, learnerMode, goalLabel, topic } = config;
+
+  const modeNames = {
+    young: "Young Learner Studio 🌱",
+    school: "School Writing Studio 🎒",
+    tawjihi: "Exam Writing Studio 🎯",
+    academic: "Academic Writing Studio 🎓",
+    adult: "Professional Writing Studio 💼",
+    teacher: "Teacher Design Studio 👨‍🏫"
+  };
+
+  const audienceMap = {
+    young: "Young learner / beginner writer",
+    school: "School student",
+    tawjihi: "Examiner / Tawjihi-style reader",
+    academic: "Academic reader / university instructor",
+    adult: "Professional reader / workplace audience",
+    teacher: "Teacher preparing a classroom writing task"
+  };
+
+  const toneMap = {
+    young: "simple, friendly, clear",
+    school: "clear, organized, student-appropriate",
+    tawjihi: "formal, exam-ready, direct",
+    academic: "formal, logical, evidence-based",
+    adult: "polite, concise, professional",
+    teacher: "instructional, practical, measurable"
+  };
+
+  const purposeMap = {
+    opinion: "persuade the reader with a clear opinion",
+    forAgainst: "present two sides of an issue fairly",
+    formalEmail: "communicate politely and clearly",
+    report: "present information, findings, and recommendations",
+    article: "inform and engage the reader",
+    story: "narrate events in an organized and interesting way",
+    paragraph: "develop one clear main idea"
+  };
+
+  const connectorPath = getConnectorPathForBlueprint(type, learnerMode);
+  const vocabularyBank = getVocabularyBankForBlueprint(topic, learnerMode);
+  const mistakeWarnings = getMistakeWarningsForBlueprint(topic, learnerMode);
+  const draftBlocks = getDraftBlocksForBlueprint(type, learnerMode, topic);
+  const modelOpening = getModelOpeningForBlueprint(type, learnerMode, topic);
+  const successRubric = getSuccessRubricForBlueprint(learnerMode, type);
+  const aiReadyPrompt = getAiReadyPromptForBlueprint(config);
+
+  return `SMART ADAPTIVE WRITING BLUEPRINT
+${modeNames[learnerMode] || modeNames.school}
+
+━━━━━━━━━━━━━━━━━━
+1) WRITING IDENTITY
+━━━━━━━━━━━━━━━━━━
+Writing Type: ${typeLabel}
+Level: ${level}
+Topic: ${topic}
+Focus Skill: ${goalLabel}
+Purpose: ${purposeMap[type] || "write clearly and effectively"}
+Audience: ${audienceMap[learnerMode] || audienceMap.school}
+Tone: ${toneMap[learnerMode] || toneMap.school}
+
+━━━━━━━━━━━━━━━━━━
+2) BEFORE YOU WRITE
+━━━━━━━━━━━━━━━━━━
+Main idea:
+I want to say that ________________________________.
+
+Reader should understand:
+________________________________.
+
+My strongest reason / message:
+________________________________.
+
+━━━━━━━━━━━━━━━━━━
+3) CONNECTOR PATH
+━━━━━━━━━━━━━━━━━━
+Use this path to make your writing flow naturally:
+${connectorPath.map((connector, index) => `${index + 1}. ${connector}`).join("\n")}
+
+━━━━━━━━━━━━━━━━━━
+4) VOCABULARY UPGRADE BANK
+━━━━━━━━━━━━━━━━━━
+Basic → Stronger → Advanced
+${vocabularyBank.map(row => `• ${row.basic} → ${row.stronger} → ${row.advanced}`).join("\n")}
+
+━━━━━━━━━━━━━━━━━━
+5) MISTAKES TO AVOID
+━━━━━━━━━━━━━━━━━━
+${mistakeWarnings.map(item => `❌ ${item.wrong}\n✅ ${item.correct}\nTip: ${item.tip}`).join("\n\n")}
+
+━━━━━━━━━━━━━━━━━━
+6) GUIDED DRAFT BLOCKS
+━━━━━━━━━━━━━━━━━━
+${draftBlocks.map((block, index) => `
+BLOCK ${index + 1}: ${block.title}
+Goal: ${block.goal}
+Sentence starter: ${block.starter}
+Your sentence:
+________________________________.
+Upgrade tip: ${block.tip}
+`).join("\n")}
+
+━━━━━━━━━━━━━━━━━━
+7) MODEL OPENING
+━━━━━━━━━━━━━━━━━━
+${modelOpening}
+
+━━━━━━━━━━━━━━━━━━
+8) SUCCESS RUBRIC
+━━━━━━━━━━━━━━━━━━
+${successRubric.map(item => `☐ ${item}`).join("\n")}
+
+━━━━━━━━━━━━━━━━━━
+9) FINAL WRITING SPACE
+━━━━━━━━━━━━━━━━━━
+Now write your final version here:
+
+
+
+
+━━━━━━━━━━━━━━━━━━
+10) AI-READY FEEDBACK REQUEST
+━━━━━━━━━━━━━━━━━━
+${aiReadyPrompt}
+`;
 }
 
-function resetWritingMission() {
-  const output = document.getElementById("writingMissionOutput");
-  const topic = document.getElementById("writingTopicInput");
 
-  if (topic) topic.value = "";
-
-  if (output) {
-    output.innerHTML = "Choose a writing type and generate your mission.";
+function getConnectorPathForBlueprint(type, learnerMode) {
+  if (learnerMode === "young") {
+    return ["First", "and", "because", "then", "finally"];
   }
+
+  if (type === "forAgainst") {
+    return [
+      "On the one hand",
+      "In addition",
+      "On the other hand",
+      "However",
+      "To sum up"
+    ];
+  }
+
+  if (type === "formalEmail") {
+    return [
+      "I am writing to",
+      "Regarding",
+      "In addition",
+      "I would appreciate it if",
+      "Thank you for"
+    ];
+  }
+
+  if (type === "story") {
+    return [
+      "At first",
+      "Then",
+      "Suddenly",
+      "After that",
+      "In the end"
+    ];
+  }
+
+  if (learnerMode === "academic") {
+    return [
+      "To begin with",
+      "Furthermore",
+      "For instance",
+      "Consequently",
+      "Overall"
+    ];
+  }
+
+  if (learnerMode === "tawjihi") {
+    return [
+      "First of all",
+      "Moreover",
+      "For example",
+      "As a result",
+      "In conclusion"
+    ];
+  }
+
+  return [
+    "First",
+    "Moreover",
+    "For example",
+    "However",
+    "Therefore",
+    "In conclusion"
+  ];
+}
+
+
+function getVocabularyBankForBlueprint(topic, learnerMode) {
+  if (learnerMode === "young") {
+    return [
+      { basic: "good", stronger: "nice", advanced: "helpful" },
+      { basic: "bad", stronger: "not good", advanced: "harmful" },
+      { basic: "like", stronger: "enjoy", advanced: "prefer" },
+      { basic: "big", stronger: "large", advanced: "important" }
+    ];
+  }
+
+  if (learnerMode === "academic") {
+    return [
+      { basic: "good", stronger: "useful", advanced: "beneficial" },
+      { basic: "important", stronger: "significant", advanced: "essential" },
+      { basic: "show", stronger: "demonstrate", advanced: "indicate" },
+      { basic: "problem", stronger: "issue", advanced: "challenge" },
+      { basic: "help", stronger: "support", advanced: "facilitate" }
+    ];
+  }
+
+  if (learnerMode === "adult") {
+    return [
+      { basic: "ask", stronger: "request", advanced: "inquire about" },
+      { basic: "tell", stronger: "inform", advanced: "notify" },
+      { basic: "need", stronger: "require", advanced: "would appreciate" },
+      { basic: "help", stronger: "support", advanced: "assistance" }
+    ];
+  }
+
+  return [
+    { basic: "good", stronger: "useful", advanced: "beneficial" },
+    { basic: "bad", stronger: "negative", advanced: "harmful" },
+    { basic: "very important", stronger: "important", advanced: "essential" },
+    { basic: "a lot of", stronger: "many", advanced: "numerous" },
+    { basic: "things", stronger: "points", advanced: "factors" },
+    { basic: "get better", stronger: "improve", advanced: "make progress" }
+  ];
+}
+
+
+function getMistakeWarningsForBlueprint(topic, learnerMode) {
+  if (learnerMode === "young") {
+    return [
+      {
+        wrong: "i like my school",
+        correct: "I like my school.",
+        tip: "Start with a capital letter and end with a full stop."
+      },
+      {
+        wrong: "My school big.",
+        correct: "My school is big.",
+        tip: "Use a verb in every complete sentence."
+      }
+    ];
+  }
+
+  return [
+    {
+      wrong: "Technology have changed education.",
+      correct: "Technology has changed education.",
+      tip: "Singular subjects need singular verbs."
+    },
+    {
+      wrong: "Students is learning online.",
+      correct: "Students are learning online.",
+      tip: "Plural subjects need plural verbs."
+    },
+    {
+      wrong: "Online learning is good because good for students.",
+      correct: "Online learning is beneficial because it gives students flexibility.",
+      tip: "Avoid repeating weak words. Use stronger vocabulary."
+    },
+    {
+      wrong: "I think online learning useful.",
+      correct: "I think online learning is useful.",
+      tip: "Use a complete sentence with a verb."
+    }
+  ];
+}
+
+
+function getDraftBlocksForBlueprint(type, learnerMode, topic) {
+  if (type === "formalEmail") {
+    return [
+      {
+        title: "Purpose",
+        goal: "Say why you are writing.",
+        starter: `I am writing to ask for information about ${topic}.`,
+        tip: "Be polite and direct."
+      },
+      {
+        title: "Details",
+        goal: "Give the specific information you need.",
+        starter: "I would like to know more about ____________________.",
+        tip: "Use clear and practical details."
+      },
+      {
+        title: "Polite Request",
+        goal: "Ask politely for a reply or support.",
+        starter: "I would appreciate it if you could ____________________.",
+        tip: "Use polite expressions."
+      },
+      {
+        title: "Closing",
+        goal: "End the email professionally.",
+        starter: "Thank you for your time and support.",
+        tip: "Keep the ending short and respectful."
+      }
+    ];
+  }
+
+  if (type === "story") {
+    return [
+      {
+        title: "Opening Scene",
+        goal: "Tell when and where the story happened.",
+        starter: "One day, ____________________.",
+        tip: "Set the scene clearly."
+      },
+      {
+        title: "Problem",
+        goal: "Introduce something unexpected.",
+        starter: "Suddenly, ____________________.",
+        tip: "Make the reader interested."
+      },
+      {
+        title: "Events",
+        goal: "Explain what happened next.",
+        starter: "After that, ____________________.",
+        tip: "Use sequence words."
+      },
+      {
+        title: "Ending",
+        goal: "Finish the story clearly.",
+        starter: "In the end, ____________________.",
+        tip: "Show what changed or what was learned."
+      }
+    ];
+  }
+
+  if (type === "forAgainst") {
+    return [
+      {
+        title: "Introduction",
+        goal: "Introduce the topic and show there are two sides.",
+        starter: `Many people have different opinions about ${topic}.`,
+        tip: "Do not give your final opinion too early unless required."
+      },
+      {
+        title: "Arguments For",
+        goal: "Explain the advantages.",
+        starter: "On the one hand, ____________________.",
+        tip: "Support your point with an example."
+      },
+      {
+        title: "Arguments Against",
+        goal: "Explain the disadvantages.",
+        starter: "On the other hand, ____________________.",
+        tip: "Use contrast connectors."
+      },
+      {
+        title: "Balanced Conclusion",
+        goal: "Summarize both sides and give a balanced view.",
+        starter: "To sum up, ____________________.",
+        tip: "Make the conclusion clear and fair."
+      }
+    ];
+  }
+
+  return [
+    {
+      title: "Hook / Opening",
+      goal: "Introduce the topic naturally.",
+      starter:
+        learnerMode === "academic"
+          ? `The issue of ${topic} has become increasingly significant because ____________________.`
+          : `Nowadays, ${topic} is an important topic because ____________________.`,
+      tip: "Make the first sentence clear and connected to the topic."
+    },
+    {
+      title: "Main Idea",
+      goal: "State your opinion or controlling idea.",
+      starter: "I believe that ____________________.",
+      tip: "Do not be vague. Say exactly what you think."
+    },
+    {
+      title: "Reason",
+      goal: "Give a strong reason.",
+      starter: "One major reason is that ____________________.",
+      tip: "A reason should explain why your idea is true."
+    },
+    {
+      title: "Example",
+      goal: "Support your reason with an example.",
+      starter: "For example, ____________________.",
+      tip: "Examples make your writing more convincing."
+    },
+    {
+      title: "Explanation",
+      goal: "Explain why the example matters.",
+      starter: "This shows that ____________________.",
+      tip: "Do not just give an example; explain it."
+    },
+    {
+      title: "Conclusion",
+      goal: "Finish with a clear final idea.",
+      starter: "In conclusion, ____________________.",
+      tip: "Restate the main idea using different words."
+    }
+  ];
+}
+
+
+function getModelOpeningForBlueprint(type, learnerMode, topic) {
+  if (learnerMode === "young") {
+    return `I want to write about ${topic}. I think it is interesting because it is part of my life.`;
+  }
+
+  if (type === "formalEmail") {
+    return `Dear Sir/Madam,
+
+I am writing to ask for information about ${topic}. I would appreciate it if you could send me more details about this matter.`;
+  }
+
+  if (learnerMode === "academic") {
+    return `The issue of ${topic} has become increasingly significant in modern education. This essay argues that it can have a powerful impact when it is used in a thoughtful and organized way.`;
+  }
+
+  if (learnerMode === "tawjihi") {
+    return `Nowadays, ${topic} has become an important issue in students' lives. In my opinion, it can be very useful if it is used wisely and responsibly.`;
+  }
+
+  return `Nowadays, ${topic} is an important topic for many students. I believe that it can be useful because it helps learners develop better skills and habits.`;
+}
+
+
+function getSuccessRubricForBlueprint(learnerMode, type) {
+  if (learnerMode === "young") {
+    return [
+      "Capital letters are used correctly.",
+      "Full stops are used correctly.",
+      "Sentences are simple and complete.",
+      "The idea is easy to understand."
+    ];
+  }
+
+  if (learnerMode === "tawjihi") {
+    return [
+      "The task is answered directly.",
+      "The writing has clear paragraphs.",
+      "There are examples and supporting details.",
+      "Connectors are used accurately.",
+      "Grammar and spelling are checked."
+    ];
+  }
+
+  if (learnerMode === "academic") {
+    return [
+      "The thesis or main argument is clear.",
+      "Ideas are logically developed.",
+      "Academic vocabulary is used appropriately.",
+      "Evidence or examples support the argument.",
+      "Cohesion is clear throughout the text."
+    ];
+  }
+
+  if (learnerMode === "adult") {
+    return [
+      "The purpose is clear.",
+      "The tone is polite and professional.",
+      "The message is concise.",
+      "The request or information is complete.",
+      "The closing is appropriate."
+    ];
+  }
+
+  return [
+    "The main idea is clear.",
+    "The writing includes supporting details.",
+    "At least two connectors are used.",
+    "There is an example.",
+    "There is a clear ending."
+  ];
+}
+
+
+function getAiReadyPromptForBlueprint(config) {
+  return `When AI feedback is connected, analyze this writing using:
+- Learner mode: ${config.learnerMode}
+- Writing type: ${config.typeLabel}
+- Level: ${config.level}
+- Focus skill: ${config.goalLabel}
+- Topic: ${config.topic}
+
+Give feedback on:
+1. Grammar
+2. Vocabulary
+3. Connectors
+4. Organization
+5. Clarity
+6. Task achievement
+7. Improved version
+8. Next practice mission`;
+}
+
+function buildSmartWritingTemplate(config) {
+  const { type, typeLabel, level, learnerMode, goalLabel, topic } = config;
+
+  const modeHeader = {
+    young: "Young Learner Mode 🌱",
+    school: "School Student Mode 🎒",
+    tawjihi: "Exam Writing Mode 🎯",
+    academic: "Academic Writing Mode 🎓",
+    adult: "Professional Writing Mode 💼",
+    teacher: "Teacher Practice Mode 👨‍🏫"
+  };
+
+  const modeInstruction = {
+    young:
+      "Use short, clear sentences. Focus on capital letters, full stops, and simple ideas.",
+    school:
+      "Write clearly with a topic sentence, supporting details, examples, and connectors.",
+    tawjihi:
+      "Write in an exam-ready style with clear organization, formal language, examples, and strong connectors.",
+    academic:
+      "Use a thesis-style main idea, logical argument, formal vocabulary, and strong cohesion.",
+    adult:
+      "Use practical, polite, professional language suitable for real-life communication.",
+    teacher:
+      "Design this as a teaching model with instructions, model language, and feedback criteria."
+  };
+
+  const connectorBank = {
+    young: ["and", "but", "because", "then", "finally"],
+    school: ["first", "moreover", "for example", "however", "therefore", "in conclusion"],
+    tawjihi: ["in addition", "for instance", "on the other hand", "as a result", "to sum up"],
+    academic: ["furthermore", "nevertheless", "consequently", "for instance", "overall"],
+    adult: ["regarding", "in addition", "therefore", "I would appreciate", "please let me know"],
+    teacher: ["learning objective", "model answer", "success criteria", "feedback focus"]
+  };
+
+  const successCriteria = {
+    young: [
+      "I used capital letters.",
+      "I used full stops.",
+      "I wrote simple complete sentences.",
+      "My ideas are clear."
+    ],
+    school: [
+      "I wrote a clear topic sentence.",
+      "I added supporting details.",
+      "I used at least two connectors.",
+      "I ended with a concluding sentence."
+    ],
+    tawjihi: [
+      "I answered the task directly.",
+      "I organized ideas into clear paragraphs.",
+      "I used formal language and strong connectors.",
+      "I gave examples and avoided repetition."
+    ],
+    academic: [
+      "I used a clear thesis or controlling idea.",
+      "I developed ideas logically.",
+      "I used formal academic vocabulary.",
+      "My writing is cohesive and well-supported."
+    ],
+    adult: [
+      "My tone is polite and professional.",
+      "My purpose is clear.",
+      "My sentences are concise.",
+      "My request or message is practical and complete."
+    ],
+    teacher: [
+      "The task has a clear learning objective.",
+      "The model is student-friendly.",
+      "The feedback criteria are clear.",
+      "The practice is measurable."
+    ]
+  };
+
+  const connectors = connectorBank[learnerMode] || connectorBank.school;
+  const criteria = successCriteria[learnerMode] || successCriteria.school;
+
+  const templatesByType = {
+    paragraph: createParagraphScaffold(topic, learnerMode),
+    opinion: createOpinionScaffold(topic, learnerMode),
+    forAgainst: createForAgainstScaffold(topic, learnerMode),
+    formalEmail: createEmailScaffold(topic, learnerMode),
+    report: createReportScaffold(topic, learnerMode),
+    article: createArticleScaffold(topic, learnerMode),
+    story: createStoryScaffold(topic, learnerMode)
+  };
+
+  const body =
+    templatesByType[type] ||
+    createParagraphScaffold(topic, learnerMode);
+
+  return `SMART WRITING SCAFFOLD
+${modeHeader[learnerMode] || modeHeader.school}
+Writing Type: ${typeLabel}
+Level: ${level}
+Topic: ${topic}
+Focus Skill: ${goalLabel}
+
+Writing Goal:
+${modeInstruction[learnerMode] || modeInstruction.school}
+
+Useful Connectors:
+${connectors.map(connector => "• " + connector).join("\n")}
+
+Success Criteria:
+${criteria.map(item => "☐ " + item).join("\n")}
+
+Guided Draft:
+${body}
+
+Self-Check Before Submitting:
+☐ Did I answer the topic?
+☐ Did I organize my ideas clearly?
+☐ Did I use suitable connectors?
+☐ Did I check grammar and punctuation?
+☐ Can I improve one word or sentence?
+
+Now write your final version below:
+`;
+}
+
+
+function createParagraphScaffold(topic, learnerMode) {
+  if (learnerMode === "young") {
+    return `I want to write about ${topic}.
+
+Sentence 1: ${topic} is important to me.
+Sentence 2: I like it because ____________________.
+Sentence 3: For example, ____________________.
+Sentence 4: Finally, ____________________.`;
+  }
+
+  if (learnerMode === "academic") {
+    return `Topic sentence:
+${topic} is a significant issue because it affects how people think, learn, and communicate.
+
+Supporting idea:
+One important aspect is ____________________.
+
+Evidence / example:
+For instance, ____________________.
+
+Explanation:
+This shows that ____________________.
+
+Concluding sentence:
+Therefore, ${topic} should be understood as ____________________.`;
+  }
+
+  return `Topic sentence:
+${topic} is an important topic because ____________________.
+
+Supporting detail:
+One reason is that ____________________.
+
+Example:
+For example, ____________________.
+
+Explanation:
+This means that ____________________.
+
+Concluding sentence:
+In conclusion, ____________________.`;
+}
+
+
+function createOpinionScaffold(topic, learnerMode) {
+  if (learnerMode === "young") {
+    return `My opinion:
+I think ${topic} is ____________________.
+
+Reason:
+I think this because ____________________.
+
+Example:
+For example, ____________________.
+
+Ending:
+Finally, I believe ____________________.`;
+  }
+
+  if (learnerMode === "tawjihi") {
+    return `Introduction:
+Nowadays, ${topic} has become an important issue in society. Some people have different views about it, but I strongly believe that ____________________.
+
+Body Paragraph 1:
+The first reason is that ____________________.
+For example, ____________________.
+Moreover, ____________________.
+
+Body Paragraph 2:
+Another important reason is that ____________________.
+This can be seen when ____________________.
+As a result, ____________________.
+
+Conclusion:
+In conclusion, I believe that ____________________ because ____________________.`;
+  }
+
+  if (learnerMode === "academic") {
+    return `Introduction:
+The issue of ${topic} has attracted increasing attention because ____________________.
+This essay argues that ____________________.
+
+Argument 1:
+A major reason for this position is ____________________.
+For instance, ____________________.
+This suggests that ____________________.
+
+Argument 2:
+Furthermore, ____________________.
+This point is important because ____________________.
+
+Conclusion:
+Overall, the evidence suggests that ____________________.`;
+  }
+
+  return `Introduction:
+In my opinion, ${topic} is ____________________.
+
+Reason 1:
+One reason is that ____________________.
+For example, ____________________.
+
+Reason 2:
+Moreover, ____________________.
+This is important because ____________________.
+
+Conclusion:
+In conclusion, I believe that ____________________.`;
+}
+
+
+function createForAgainstScaffold(topic, learnerMode) {
+  if (learnerMode === "young") {
+    return `Good side:
+One good thing about ${topic} is ____________________.
+
+Not good side:
+One problem is ____________________.
+
+My idea:
+I think ____________________.`;
+  }
+
+  return `Introduction:
+Many people have different opinions about ${topic}.
+
+Arguments for:
+On the one hand, ____________________.
+For example, ____________________.
+In addition, ____________________.
+
+Arguments against:
+On the other hand, ____________________.
+However, ____________________.
+Another disadvantage is ____________________.
+
+Balanced conclusion:
+To sum up, ${topic} has both advantages and disadvantages. In my view, ____________________.`;
+}
+
+
+function createEmailScaffold(topic, learnerMode) {
+  if (learnerMode === "adult") {
+    return `Subject: Request Regarding ${topic}
+
+Dear Sir/Madam,
+
+I hope this message finds you well.
+
+I am writing to ask for information about ${topic}. I would appreciate it if you could provide details about ____________________.
+
+In addition, I would like to know ____________________.
+
+Thank you for your time and support. I look forward to hearing from you.
+
+Kind regards,
+____________________`;
+  }
+
+  if (learnerMode === "young") {
+    return `Hi ____________________,
+
+I want to tell you about ${topic}.
+
+First, ____________________.
+Then, ____________________.
+Finally, ____________________.
+
+Best wishes,
+____________________`;
+  }
+
+  return `Dear Sir/Madam,
+
+I am writing to ____________________ regarding ${topic}.
+
+First of all, ____________________.
+In addition, ____________________.
+I would be grateful if ____________________.
+
+Thank you for your time.
+
+Yours faithfully,
+____________________`;
+}
+
+
+function createReportScaffold(topic, learnerMode) {
+  return `Report Title: ${topic}
+
+Introduction:
+The aim of this report is to describe ____________________.
+
+Findings:
+1. The first finding is that ____________________.
+2. Another important finding is ____________________.
+3. Many students/people also ____________________.
+
+Recommendations:
+I recommend that ____________________.
+It would also be useful to ____________________.
+
+Conclusion:
+Overall, ____________________.`;
+}
+
+
+function createArticleScaffold(topic, learnerMode) {
+  if (learnerMode === "young") {
+    return `Title: ${topic}
+
+Do you like ${topic}?
+
+I think it is ____________________.
+First, ____________________.
+Also, ____________________.
+Finally, ____________________.
+
+What do you think?`;
+  }
+
+  return `Title: ____________________
+
+Opening:
+Have you ever thought about ${topic}?
+
+Main idea:
+Nowadays, ____________________.
+
+Point 1:
+One important point is that ____________________.
+For example, ____________________.
+
+Point 2:
+Another point is ____________________.
+Moreover, ____________________.
+
+Ending:
+To sum up, ____________________.`;
+}
+
+
+function createStoryScaffold(topic, learnerMode) {
+  if (learnerMode === "young") {
+    return `Title: My Story
+
+One day, ____________________.
+Then, ____________________.
+Suddenly, ____________________.
+I felt ____________________.
+In the end, ____________________.`;
+  }
+
+  return `Opening:
+I will never forget the day when ____________________.
+
+Setting:
+It happened in ____________________.
+The weather was ____________________.
+
+Problem:
+Suddenly, ____________________.
+
+Events:
+At first, ____________________.
+Then, ____________________.
+After that, ____________________.
+
+Ending:
+In the end, ____________________.
+This experience taught me that ____________________.`;
 }
 
 window.uploadTeacherResource = uploadTeacherResource;
