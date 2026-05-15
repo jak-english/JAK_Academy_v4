@@ -7289,7 +7289,13 @@ function renderWritingProgressSummary() {
 if (typeof renderWritingAchievements === "function") {
   renderWritingAchievements();
 }
+
+if (typeof renderWritingAttemptsTimeline === "function") {
+  renderWritingAttemptsTimeline();
 }
+}
+
+
 function renderWritingAchievements() {
   const streakBadge = document.getElementById("writingStreakBadge");
   const badgesBox = document.getElementById("writingAchievementBadges");
@@ -7432,6 +7438,118 @@ function renderWritingAchievements() {
     <strong>Unlocked badges:</strong> ${unlockedCount}/${achievements.length}
     • <strong>Last writing day:</strong> ${uniqueDates[0] || "—"}
   `;
+}
+function renderWritingAttemptsTimeline() {
+  const timelineBox = document.getElementById("writingAttemptsTimeline");
+  if (!timelineBox) return;
+
+  const attempts = typeof getWritingAttempts === "function" ? getWritingAttempts() : [];
+
+  if (!attempts || attempts.length === 0) {
+    timelineBox.innerHTML = `
+      <div class="writing-progress-empty">
+        <strong>No attempts yet.</strong>
+        <span>Your recent writing attempts will appear here after analysis.</span>
+      </div>
+    `;
+    return;
+  }
+
+  const formatDate = (value) => {
+    if (!value) return "Recent";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Recent";
+
+    return date.toLocaleDateString() + " • " + date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  };
+
+  const formatSkill = (skill) => {
+    return skill.charAt(0).toUpperCase() + skill.slice(1);
+  };
+
+  const getLevel = (score) => {
+    const value = Number(score || 0);
+
+    if (value >= 90) return "Advanced";
+    if (value >= 75) return "Strong";
+    if (value >= 60) return "Developing";
+    if (value >= 40) return "Basic";
+    return "Starter";
+  };
+
+  const getSkillInfo = (attempt) => {
+    const skills = attempt.skillScores || attempt.skills || null;
+
+    if (!skills) {
+      return {
+        weakest: "clarity",
+        strongest: "organization"
+      };
+    }
+
+    const skillKeys = ["grammar", "vocabulary", "connectors", "organization", "clarity"];
+
+    const weakest = skillKeys.reduce((weakestKey, key) => {
+      return Number(skills[key] || 0) < Number(skills[weakestKey] || 0)
+        ? key
+        : weakestKey;
+    }, skillKeys[0]);
+
+    const strongest = skillKeys.reduce((strongestKey, key) => {
+      return Number(skills[key] || 0) > Number(skills[strongestKey] || 0)
+        ? key
+        : strongestKey;
+    }, skillKeys[0]);
+
+    return {
+      weakest,
+      strongest
+    };
+  };
+
+  const recentAttempts = attempts.slice(0, 6);
+
+  timelineBox.innerHTML = recentAttempts.map((attempt, index) => {
+    const score = Number(attempt.score || 0);
+    const level = getLevel(score);
+    const skillInfo = getSkillInfo(attempt);
+
+    const message =
+      score >= 90
+        ? "Excellent attempt. Focus on refining style and sentence variety."
+        : score >= 75
+          ? "Strong attempt. Keep improving your weakest skill step by step."
+          : score >= 60
+            ? "Good progress. Review your mistakes and rewrite one improved paragraph."
+            : "Start small. Write shorter sentences and focus on clarity first.";
+
+    return `
+      <div class="writing-attempt-card">
+        <div class="writing-attempt-top">
+          <div>
+            <div class="writing-attempt-title">Attempt ${index + 1} • ${level}</div>
+            <span class="writing-attempt-date">
+              ${formatDate(attempt.date || attempt.createdAt || attempt.savedAt)}
+            </span>
+          </div>
+
+          <div class="writing-attempt-score">${score}%</div>
+        </div>
+
+        <div class="writing-attempt-meta">
+          <span class="writing-attempt-pill">Strongest: ${formatSkill(skillInfo.strongest)}</span>
+          <span class="writing-attempt-pill warning">Focus: ${formatSkill(skillInfo.weakest)}</span>
+        </div>
+
+        <div class="writing-attempt-message">
+          ${message}
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 function analyzeSentenceQuality(text) {
   const rawSentences = (text || "")
