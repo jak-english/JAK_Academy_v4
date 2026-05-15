@@ -7037,7 +7037,289 @@ if (typeof updateWritingSkillMap === "function") {
   if (typeof renderDynamicWritingIntelligence === "function") {
   renderDynamicWritingIntelligence(text);
 }
+if (typeof renderGenreAwareWritingCheck === "function") {
+  renderGenreAwareWritingCheck(text);
+}
   alert("Advanced writing report generated. Score: " + score + "%");
+}
+function checkWritingGenre(text, type) {
+  const lowerText = (text || "").toLowerCase();
+
+  const checks = {
+    opinion: [
+      {
+        label: "Clear opinion",
+        passed:
+          lowerText.includes("in my opinion") ||
+          lowerText.includes("i believe") ||
+          lowerText.includes("i think") ||
+          lowerText.includes("from my point of view"),
+        advice: "State your opinion clearly using phrases like: In my opinion, I believe, or I think."
+      },
+      {
+        label: "Reasons",
+        passed:
+          lowerText.includes("because") ||
+          lowerText.includes("reason") ||
+          lowerText.includes("one reason"),
+        advice: "Add at least one reason to support your opinion."
+      },
+      {
+        label: "Example",
+        passed:
+          lowerText.includes("for example") ||
+          lowerText.includes("for instance") ||
+          lowerText.includes("such as"),
+        advice: "Add an example to make your opinion stronger."
+      },
+      {
+        label: "Conclusion",
+        passed:
+          lowerText.includes("in conclusion") ||
+          lowerText.includes("to sum up") ||
+          lowerText.includes("overall"),
+        advice: "End your opinion writing with a clear conclusion."
+      }
+    ],
+
+    forAgainst: [
+      {
+        label: "Arguments for",
+        passed:
+          lowerText.includes("on the one hand") ||
+          lowerText.includes("advantage") ||
+          lowerText.includes("benefit"),
+        advice: "Add arguments for the topic using phrases like: On the one hand, one advantage is..."
+      },
+      {
+        label: "Arguments against",
+        passed:
+          lowerText.includes("on the other hand") ||
+          lowerText.includes("however") ||
+          lowerText.includes("disadvantage"),
+        advice: "Add arguments against the topic using contrast language."
+      },
+      {
+        label: "Balanced conclusion",
+        passed:
+          lowerText.includes("to sum up") ||
+          lowerText.includes("in conclusion") ||
+          lowerText.includes("overall"),
+        advice: "Finish with a balanced conclusion."
+      }
+    ],
+
+    formalEmail: [
+      {
+        label: "Greeting",
+        passed:
+          lowerText.includes("dear") ||
+          lowerText.includes("dear sir") ||
+          lowerText.includes("dear madam"),
+        advice: "Start your email with a formal greeting such as: Dear Sir/Madam."
+      },
+      {
+        label: "Purpose",
+        passed:
+          lowerText.includes("i am writing") ||
+          lowerText.includes("i would like") ||
+          lowerText.includes("regarding"),
+        advice: "State the purpose of the email clearly."
+      },
+      {
+        label: "Polite request",
+        passed:
+          lowerText.includes("i would appreciate") ||
+          lowerText.includes("could you") ||
+          lowerText.includes("would you") ||
+          lowerText.includes("please"),
+        advice: "Use polite request language."
+      },
+      {
+        label: "Closing",
+        passed:
+          lowerText.includes("yours faithfully") ||
+          lowerText.includes("yours sincerely") ||
+          lowerText.includes("kind regards") ||
+          lowerText.includes("best regards"),
+        advice: "End your email with a suitable formal closing."
+      }
+    ],
+
+    report: [
+      {
+        label: "Report title / purpose",
+        passed:
+          lowerText.includes("report") ||
+          lowerText.includes("the aim of this report") ||
+          lowerText.includes("this report aims"),
+        advice: "Start the report with a clear title or purpose."
+      },
+      {
+        label: "Findings",
+        passed:
+          lowerText.includes("findings") ||
+          lowerText.includes("first") ||
+          lowerText.includes("second"),
+        advice: "Add findings or clear points."
+      },
+      {
+        label: "Recommendations",
+        passed:
+          lowerText.includes("recommend") ||
+          lowerText.includes("recommendation") ||
+          lowerText.includes("should"),
+        advice: "Add recommendations at the end of the report."
+      }
+    ],
+
+    article: [
+      {
+        label: "Engaging opening",
+        passed:
+          lowerText.includes("have you ever") ||
+          lowerText.includes("nowadays") ||
+          lowerText.includes("?"),
+        advice: "Start your article with an engaging opening or question."
+      },
+      {
+        label: "Main points",
+        passed:
+          lowerText.includes("first") ||
+          lowerText.includes("one important") ||
+          lowerText.includes("another"),
+        advice: "Add clear main points."
+      },
+      {
+        label: "Final message",
+        passed:
+          lowerText.includes("to sum up") ||
+          lowerText.includes("in conclusion") ||
+          lowerText.includes("finally"),
+        advice: "End with a strong final message."
+      }
+    ],
+
+    story: [
+      {
+        label: "Setting",
+        passed:
+          lowerText.includes("one day") ||
+          lowerText.includes("it happened") ||
+          lowerText.includes("when") ||
+          lowerText.includes("where"),
+        advice: "Set the scene by saying when and where the story happened."
+      },
+      {
+        label: "Sequence of events",
+        passed:
+          lowerText.includes("then") ||
+          lowerText.includes("after that") ||
+          lowerText.includes("suddenly") ||
+          lowerText.includes("in the end"),
+        advice: "Use sequence words to organize events."
+      },
+      {
+        label: "Problem or surprise",
+        passed:
+          lowerText.includes("suddenly") ||
+          lowerText.includes("problem") ||
+          lowerText.includes("surprised") ||
+          lowerText.includes("afraid"),
+        advice: "Add a problem, surprise, or turning point."
+      },
+      {
+        label: "Ending",
+        passed:
+          lowerText.includes("in the end") ||
+          lowerText.includes("finally") ||
+          lowerText.includes("this taught me"),
+        advice: "Finish the story clearly."
+      }
+    ],
+
+    paragraph: [
+      {
+        label: "Main idea",
+        passed:
+          lowerText.length > 30,
+        advice: "Start with a clear main idea."
+      },
+      {
+        label: "Supporting detail",
+        passed:
+          lowerText.includes("because") ||
+          lowerText.includes("one reason") ||
+          lowerText.includes("also"),
+        advice: "Add a supporting detail."
+      },
+      {
+        label: "Example",
+        passed:
+          lowerText.includes("for example") ||
+          lowerText.includes("for instance"),
+        advice: "Add an example."
+      },
+      {
+        label: "Conclusion",
+        passed:
+          lowerText.includes("in conclusion") ||
+          lowerText.includes("therefore") ||
+          lowerText.includes("finally"),
+        advice: "End with a concluding sentence."
+      }
+    ]
+  };
+
+  return checks[type] || checks.paragraph;
+}
+
+
+function renderGenreAwareWritingCheck(text) {
+  const feedbackBox = document.querySelector(".writing-feedback-preview");
+  if (!feedbackBox) return;
+
+  const selectedType =
+    document.getElementById("writingTypeSelect")?.value || "paragraph";
+
+  const typeLabel =
+    typeof getWritingTypeLabel === "function"
+      ? getWritingTypeLabel(selectedType)
+      : selectedType;
+
+  const genreChecks = checkWritingGenre(text, selectedType);
+  const passedCount = genreChecks.filter(check => check.passed).length;
+  const totalCount = genreChecks.length;
+  const genreScore = Math.round((passedCount / totalCount) * 100);
+
+  const html = `
+    <div class="writing-report-section">
+      <h4>Genre-Aware Writing Check</h4>
+
+      <p>
+        <span class="writing-good">Selected Genre</span>
+        <small>${safeText(typeLabel)} — ${safeText(genreScore)}% genre match</small>
+      </p>
+
+      ${genreChecks.map(check => `
+        <p>
+          <span class="${check.passed ? "writing-good" : "writing-warning"}">
+            ${check.passed ? "✓" : "!"} ${safeText(check.label)}
+          </span>
+          <small>${safeText(check.passed ? "Detected in your writing." : check.advice)}</small>
+        </p>
+      `).join("")}
+    </div>
+  `;
+
+  feedbackBox.insertAdjacentHTML("beforeend", html);
+
+  console.log("Genre-aware writing check rendered:", {
+    selectedType,
+    genreScore,
+    passedCount,
+    totalCount
+  });
 }
 function detectWritingTopic(text) {
   const lowerText = (text || "").toLowerCase();
