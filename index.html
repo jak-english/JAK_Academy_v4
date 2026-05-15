@@ -1860,7 +1860,81 @@
         </div>
       </div>
     </div>
+<!-- WRITING SKILL MAP -->
+<div class="writing-panel writing-skill-map-panel">
+  <div class="writing-panel-header">
+    <div>
+      <span class="writing-section-number">07</span>
+      <h2>Writing Skill Map</h2>
+      <p>
+        The system detects the student's writing strengths and weaknesses,
+        then recommends the next lesson and practice mission.
+      </p>
+    </div>
+    <span class="writing-ai-chip">Personalized Learning</span>
+  </div>
 
+  <div class="writing-skill-map-layout">
+
+    <div class="writing-skill-map-card">
+      <h3>Skill Profile</h3>
+
+      <div class="writing-skill-row">
+        <span>Grammar</span>
+        <i><b id="skillGrammarBar" style="width: 70%"></b></i>
+        <strong id="skillGrammarValue">70%</strong>
+      </div>
+
+      <div class="writing-skill-row">
+        <span>Vocabulary</span>
+        <i><b id="skillVocabularyBar" style="width: 70%"></b></i>
+        <strong id="skillVocabularyValue">70%</strong>
+      </div>
+
+      <div class="writing-skill-row">
+        <span>Connectors</span>
+        <i><b id="skillConnectorsBar" style="width: 70%"></b></i>
+        <strong id="skillConnectorsValue">70%</strong>
+      </div>
+
+      <div class="writing-skill-row">
+        <span>Organization</span>
+        <i><b id="skillOrganizationBar" style="width: 70%"></b></i>
+        <strong id="skillOrganizationValue">70%</strong>
+      </div>
+
+      <div class="writing-skill-row">
+        <span>Clarity</span>
+        <i><b id="skillClarityBar" style="width: 70%"></b></i>
+        <strong id="skillClarityValue">70%</strong>
+      </div>
+    </div>
+
+    <div class="writing-recommendation-card">
+      <h3>Next Learning Recommendation</h3>
+
+      <div class="writing-recommendation-highlight">
+        <span>Weakest Skill</span>
+        <strong id="writingWeakestSkill">Analyze your writing first</strong>
+      </div>
+
+      <div class="writing-recommendation-highlight">
+        <span>Recommended Lesson</span>
+        <strong id="writingRecommendedLesson">Waiting for analysis</strong>
+      </div>
+
+      <div class="writing-next-mission-box">
+        <span>Next Mission</span>
+        <p id="writingNextMission">
+          Write your paragraph, click Analyze Writing, and your next mission will appear here.
+        </p>
+      </div>
+
+      <button type="button" onclick="loadRecommendedWritingMission()">Load Recommended Mission 🚀</button>
+    </div>
+
+  </div>
+</div>
     <!-- ANALYTICS + GAMIFICATION + TEACHER MODE -->
     <div class="writing-three-columns">
 

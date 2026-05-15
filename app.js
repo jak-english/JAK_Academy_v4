@@ -6922,6 +6922,17 @@ function analyzeWritingLocally() {
   if (scoreValue) {
     scoreValue.textContent = score;
   }
+  const skillScores = {
+  grammar: Math.max(40, Math.min(100, 90 - grammarWarnings.length * 12)),
+  vocabulary: Math.max(40, Math.min(100, 88 - vocabularySuggestions.length * 10 - repeatedWords.length * 4)),
+  connectors: Math.max(40, Math.min(100, usedConnectors.length * 18)),
+  organization: Math.max(40, Math.min(100, 55 + (hasExample ? 15 : 0) + (hasConclusion ? 15 : 0) + (paragraphCount > 1 ? 10 : 0))),
+  clarity: Math.max(40, Math.min(100, averageSentenceLength >= 8 && averageSentenceLength <= 24 ? 85 : 62))
+};
+
+if (typeof updateWritingSkillMap === "function") {
+  updateWritingSkillMap(skillScores);
+}
 
   if (feedbackBox) {
     feedbackBox.innerHTML = `
@@ -7021,6 +7032,121 @@ function analyzeWritingLocally() {
   }
 
   alert("Advanced writing report generated. Score: " + score + "%");
+}
+function updateWritingSkillMap(skillScores) {
+  const defaultScores = {
+    grammar: 70,
+    vocabulary: 70,
+    connectors: 70,
+    organization: 70,
+    clarity: 70
+  };
+
+  const scores = {
+    ...defaultScores,
+    ...(skillScores || {})
+  };
+
+  const skillConfig = {
+    grammar: {
+      label: "Grammar",
+      valueId: "skillGrammarValue",
+      barId: "skillGrammarBar",
+      lesson: "Subject-Verb Agreement and Tense Accuracy",
+      mission: "Write 5 sentences using correct subject-verb agreement. Include singular and plural subjects."
+    },
+    vocabulary: {
+      label: "Vocabulary",
+      valueId: "skillVocabularyValue",
+      barId: "skillVocabularyBar",
+      lesson: "Upgrade Basic Vocabulary into Academic Vocabulary",
+      mission: "Rewrite 5 simple sentences using stronger vocabulary instead of words like good, bad, things, and very important."
+    },
+    connectors: {
+      label: "Connectors",
+      valueId: "skillConnectorsValue",
+      barId: "skillConnectorsBar",
+      lesson: "Cause, Result, Contrast, and Example Connectors",
+      mission: "Write a paragraph using at least 4 connectors: because, however, moreover, and for example."
+    },
+    organization: {
+      label: "Organization",
+      valueId: "skillOrganizationValue",
+      barId: "skillOrganizationBar",
+      lesson: "Paragraph Structure: Topic Sentence, Support, Example, Conclusion",
+      mission: "Write one paragraph with a topic sentence, two supporting details, one example, and one concluding sentence."
+    },
+    clarity: {
+      label: "Clarity",
+      valueId: "skillClarityValue",
+      barId: "skillClarityBar",
+      lesson: "Clear Sentence Writing and Sentence Variety",
+      mission: "Rewrite 5 long or unclear sentences into clear academic sentences."
+    }
+  };
+
+  Object.entries(skillConfig).forEach(([key, config]) => {
+    const value = Math.max(0, Math.min(scores[key], 100));
+
+    const valueEl = document.getElementById(config.valueId);
+    const barEl = document.getElementById(config.barId);
+
+    if (valueEl) valueEl.textContent = value + "%";
+    if (barEl) barEl.style.width = value + "%";
+  });
+
+  const weakestKey = Object.keys(skillConfig).sort((a, b) => {
+    return scores[a] - scores[b];
+  })[0];
+
+  const strongestKey = Object.keys(skillConfig).sort((a, b) => {
+    return scores[b] - scores[a];
+  })[0];
+
+  const weakest = skillConfig[weakestKey];
+  const strongest = skillConfig[strongestKey];
+
+  const weakestEl = document.getElementById("writingWeakestSkill");
+  const lessonEl = document.getElementById("writingRecommendedLesson");
+  const missionEl = document.getElementById("writingNextMission");
+
+  if (weakestEl) {
+    weakestEl.textContent = weakest.label + " (" + scores[weakestKey] + "%)";
+  }
+
+  if (lessonEl) {
+    lessonEl.textContent = weakest.lesson;
+  }
+
+  if (missionEl) {
+    missionEl.textContent =
+      weakest.mission + " Strongest skill: " + strongest.label + ".";
+  }
+
+  localStorage.setItem("jakWritingRecommendedMission", weakest.mission);
+
+  console.log("Writing Skill Map updated:", {
+    scores,
+    weakest: weakest.label,
+    strongest: strongest.label
+  });
+}
+
+function loadRecommendedWritingMission() {
+  const input = document.getElementById("studentWritingInput");
+  const mission =
+    localStorage.getItem("jakWritingRecommendedMission") ||
+    "Write a short paragraph using clear sentences, strong vocabulary, connectors, and a conclusion.";
+
+  if (!input) return;
+
+  input.value = mission + "\n\nWrite your answer here:\n\n";
+
+  if (typeof scrollToWritingEditor === "function") {
+    scrollToWritingEditor();
+  }
+
+  console.log("Recommended writing mission loaded:", mission);
 }
 function loadWritingPrompt() {
   const input = document.getElementById("studentWritingInput");
