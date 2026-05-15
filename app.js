@@ -7040,7 +7040,228 @@ if (typeof updateWritingSkillMap === "function") {
 if (typeof renderGenreAwareWritingCheck === "function") {
   renderGenreAwareWritingCheck(text);
 }
+if (typeof renderSentenceQualityReport === "function") {
+  renderSentenceQualityReport(text);
+}
   alert("Advanced writing report generated. Score: " + score + "%");
+}
+function analyzeSentenceQuality(text) {
+  const rawSentences = (text || "")
+    .split(/[.!?]+/)
+    .map(sentence => sentence.trim())
+    .filter(Boolean);
+
+  const sentences = rawSentences.map(sentence => {
+    const words = sentence
+      .replace(/[^\w\s'-]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean);
+
+    return {
+      text: sentence,
+      wordCount: words.length,
+      firstWord: words[0] ? words[0].toLowerCase() : "",
+      hasLikelyVerb: /\b(am|is|are|was|were|be|been|being|have|has|had|do|does|did|can|could|will|would|shall|should|may|might|must|go|goes|went|make|makes|made|use|uses|used|learn|learns|learned|study|studies|studied|help|helps|helped|think|thinks|thought|believe|believes|believed|write|writes|wrote|read|reads|read|play|plays|played|work|works|worked|need|needs|needed|get|gets|got)\b/i.test(sentence)
+    };
+  });
+
+  const totalSentences = sentences.length;
+  const totalWords = sentences.reduce((sum, sentence) => sum + sentence.wordCount, 0);
+  const averageLength = totalSentences ? Math.round(totalWords / totalSentences) : 0;
+
+  const veryShortSentences = sentences.filter(sentence => sentence.wordCount > 0 && sentence.wordCount < 5);
+  const longSentences = sentences.filter(sentence => sentence.wordCount > 28);
+  const noVerbSentences = sentences.filter(sentence => !sentence.hasLikelyVerb && sentence.wordCount >= 3);
+
+  const openingFrequency = {};
+  sentences.forEach(sentence => {
+    if (!sentence.firstWord) return;
+    openingFrequency[sentence.firstWord] = (openingFrequency[sentence.firstWord] || 0) + 1;
+  });
+
+  const repeatedOpenings = Object.entries(openingFrequency)
+    .filter(([, count]) => count >= 2)
+    .sort((a, b) => b[1] - a[1]);
+
+  const sentenceLengths = sentences.map(sentence => sentence.wordCount);
+  const uniqueLengths = new Set(sentenceLengths).size;
+
+  const hasVariety =
+    totalSentences <= 2
+      ? false
+      : uniqueLengths >= Math.min(3, totalSentences);
+
+  let clarityScore = 100;
+
+  if (totalSentences < 3) clarityScore -= 15;
+  if (veryShortSentences.length) clarityScore -= Math.min(veryShortSentences.length * 8, 20);
+  if (longSentences.length) clarityScore -= Math.min(longSentences.length * 10, 25);
+  if (noVerbSentences.length) clarityScore -= Math.min(noVerbSentences.length * 12, 30);
+  if (repeatedOpenings.length) clarityScore -= Math.min(repeatedOpenings.length * 8, 20);
+  if (!hasVariety && totalSentences >= 3) clarityScore -= 12;
+  if (averageLength > 24) clarityScore -= 8;
+  if (averageLength > 0 && averageLength < 7) clarityScore -= 8;
+
+  clarityScore = Math.max(0, Math.min(100, clarityScore));
+
+  const advice = [];
+
+  if (totalSentences < 3) {
+    advice.push("Add more complete sentences to develop your idea.");
+  }
+
+  if (veryShortSentences.length) {
+    advice.push("Some sentences are very short. Try adding details or reasons.");
+  }
+
+  if (longSentences.length) {
+    advice.push("Some sentences are too long. Split them into shorter, clearer sentences.");
+  }
+
+  if (noVerbSentences.length) {
+    advice.push("Some sentences may be incomplete. Check that each sentence has a clear verb.");
+  }
+
+  if (repeatedOpenings.length) {
+    advice.push("Several sentences start with the same word. Try changing sentence openings.");
+  }
+
+  if (!hasVariety && totalSentences >= 3) {
+    advice.push("Try mixing short, medium, and longer sentences for better sentence variety.");
+  }
+
+  if (!advice.length) {
+    advice.push("Your sentence clarity looks good for a local rule-based check.");
+  }
+
+  return {
+    totalSentences,
+    averageLength,
+    clarityScore,
+    veryShortSentences,
+    longSentences,
+    noVerbSentences,
+    repeatedOpenings,
+    hasVariety,
+    advice
+  };
+}
+
+
+function renderSentenceQualityReport(text) {
+  const feedbackBox = document.querySelector(".writing-feedback-preview");
+  if (!feedbackBox) return;
+
+  const quality = analyzeSentenceQuality(text);
+
+  const html = `
+    <div class="writing-report-section">
+      <h4>Sentence Quality & Clarity</h4>
+
+      <p>
+        <span class="writing-good">Clarity Score</span>
+        <small>${safeText(quality.clarityScore)}%</small>
+      </p>
+
+      <p>
+        <span class="writing-good">Average Sentence Length</span>
+        <small>${safeText(quality.averageLength)} words per sentence</small>
+      </p>
+
+      <p>
+        <span class="${quality.hasVariety ? "writing-good" : "writing-warning"}">
+          ${quality.hasVariety ? "✓" : "!"} Sentence Variety
+        </span>
+        <small>
+          ${
+            quality.hasVariety
+              ? "Your sentence lengths show some variety."
+              : "Try mixing short, medium, and longer sentences."
+          }
+        </small>
+      </p>
+
+      ${
+        quality.veryShortSentences.length
+          ? `
+            <p>
+              <span class="writing-warning">Very Short Sentences</span>
+              <small>${safeText(quality.veryShortSentences.length)} sentence(s) may need more detail.</small>
+            </p>
+          `
+          : `
+            <p>
+              <span class="writing-good">Short Sentence Check</span>
+              <small>No very short sentence problem detected.</small>
+            </p>
+          `
+      }
+
+      ${
+        quality.longSentences.length
+          ? `
+            <p>
+              <span class="writing-warning">Long Sentences</span>
+              <small>${safeText(quality.longSentences.length)} sentence(s) may be too long. Consider splitting them.</small>
+            </p>
+          `
+          : `
+            <p>
+              <span class="writing-good">Long Sentence Check</span>
+              <small>No very long sentence problem detected.</small>
+            </p>
+          `
+      }
+
+      ${
+        quality.noVerbSentences.length
+          ? `
+            <p>
+              <span class="writing-warning">Possible Incomplete Sentences</span>
+              <small>${safeText(quality.noVerbSentences.length)} sentence(s) may be missing a clear verb.</small>
+            </p>
+          `
+          : `
+            <p>
+              <span class="writing-good">Complete Sentence Check</span>
+              <small>No obvious missing-verb sentence detected locally.</small>
+            </p>
+          `
+      }
+
+      ${
+        quality.repeatedOpenings.length
+          ? `
+            <p>
+              <span class="writing-warning">Repeated Sentence Openings</span>
+              <small>
+                ${quality.repeatedOpenings
+                  .map(([word, count]) => `${safeText(word)} (${safeText(count)} times)`)
+                  .join(", ")}
+              </small>
+            </p>
+          `
+          : `
+            <p>
+              <span class="writing-good">Sentence Openings</span>
+              <small>No strong repeated opening pattern detected.</small>
+            </p>
+          `
+      }
+
+      <h4>Clarity Advice</h4>
+      ${quality.advice.map(item => `
+        <p>
+          <span class="writing-good">Tip</span>
+          <small>${safeText(item)}</small>
+        </p>
+      `).join("")}
+    </div>
+  `;
+
+  feedbackBox.insertAdjacentHTML("beforeend", html);
+
+  console.log("Sentence Quality report rendered:", quality);
 }
 function checkWritingGenre(text, type) {
   const lowerText = (text || "").toLowerCase();
