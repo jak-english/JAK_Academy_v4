@@ -7277,14 +7277,161 @@ function renderWritingProgressSummary() {
   }
 
   if (adviceBox) {
-    adviceBox.innerHTML = `
-      <strong>Smart Advice:</strong>
-      Focus next on <b>${formatSkill(weakestSkill)}</b>.
-      ${improvementMessage}
-      Best score: <b>${Number(bestAttempt.score || 0)}%</b>.
-      Lowest score: <b>${Number(weakestAttempt.score || 0)}%</b>.
+  adviceBox.innerHTML = `
+    <strong>Smart Advice:</strong>
+    Focus next on <b>${formatSkill(weakestSkill)}</b>.
+    ${improvementMessage}
+    Best score: <b>${Number(bestAttempt.score || 0)}%</b>.
+    Lowest score: <b>${Number(weakestAttempt.score || 0)}%</b>.
+  `;
+}
+
+if (typeof renderWritingAchievements === "function") {
+  renderWritingAchievements();
+}
+}
+function renderWritingAchievements() {
+  const streakBadge = document.getElementById("writingStreakBadge");
+  const badgesBox = document.getElementById("writingAchievementBadges");
+  const motivationBox = document.getElementById("writingMotivationMessage");
+
+  if (!streakBadge || !badgesBox || !motivationBox) return;
+
+  const attempts = typeof getWritingAttempts === "function" ? getWritingAttempts() : [];
+
+  if (!attempts || attempts.length === 0) {
+    streakBadge.textContent = "🔥 Streak: 0 days";
+    badgesBox.innerHTML = `
+      <span class="writing-achievement-badge locked">🔒 First Writing Attempt</span>
+      <span class="writing-achievement-badge locked">🔒 5 Writing Attempts</span>
+      <span class="writing-achievement-badge locked">🔒 Strong Vocabulary</span>
+      <span class="writing-achievement-badge locked">🔒 Connector Builder</span>
+      <span class="writing-achievement-badge locked">🔒 Advanced Writer</span>
     `;
+    motivationBox.textContent = "Analyze your writing to start your achievement journey.";
+    return;
   }
+
+  const normalizeDate = (value) => {
+    const date = value ? new Date(value) : new Date();
+    if (Number.isNaN(date.getTime())) return null;
+
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+      .toISOString()
+      .slice(0, 10);
+  };
+
+  const uniqueDates = [...new Set(
+    attempts
+      .map(attempt => normalizeDate(attempt.date || attempt.createdAt || attempt.savedAt))
+      .filter(Boolean)
+  )].sort((a, b) => new Date(b) - new Date(a));
+
+  let streak = 0;
+
+  if (uniqueDates.length > 0) {
+    let cursor = new Date(uniqueDates[0] + "T00:00:00");
+
+    for (const dateString of uniqueDates) {
+      const current = new Date(dateString + "T00:00:00");
+
+      if (current.toISOString().slice(0, 10) === cursor.toISOString().slice(0, 10)) {
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+  }
+
+  streakBadge.textContent = `🔥 Streak: ${streak} day${streak === 1 ? "" : "s"}`;
+
+  const scores = attempts.map(a => Number(a.score || 0)).filter(score => !Number.isNaN(score));
+  const averageScore = scores.length
+    ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+    : 0;
+
+  const bestScore = scores.length ? Math.max(...scores) : 0;
+
+  const skillKeys = ["grammar", "vocabulary", "connectors", "organization", "clarity"];
+
+  const getAverageSkill = (skill) => {
+    const values = attempts
+      .map(attempt => {
+        const skills = attempt.skillScores || attempt.skills || {};
+        return Number(skills[skill] || 0);
+      })
+      .filter(value => value > 0);
+
+    return values.length
+      ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)
+      : averageScore;
+  };
+
+  const skillAverages = {};
+  skillKeys.forEach(skill => {
+    skillAverages[skill] = getAverageSkill(skill);
+  });
+
+  const achievements = [
+    {
+      title: "First Writing Attempt",
+      icon: "✍️",
+      unlocked: attempts.length >= 1
+    },
+    {
+      title: "5 Writing Attempts",
+      icon: "🧠",
+      unlocked: attempts.length >= 5
+    },
+    {
+      title: "Strong Vocabulary",
+      icon: "📚",
+      unlocked: skillAverages.vocabulary >= 80
+    },
+    {
+      title: "Connector Builder",
+      icon: "🔗",
+      unlocked: skillAverages.connectors >= 70
+    },
+    {
+      title: "Advanced Writer",
+      icon: "🚀",
+      unlocked: averageScore >= 90 || bestScore >= 90
+    }
+  ];
+
+  badgesBox.innerHTML = achievements.map(achievement => {
+    const statusClass = achievement.unlocked ? "unlocked" : "locked";
+    const lockIcon = achievement.unlocked ? achievement.icon : "🔒";
+
+    return `
+      <span class="writing-achievement-badge ${statusClass}">
+        ${lockIcon} ${achievement.title}
+      </span>
+    `;
+  }).join("");
+
+  const unlockedCount = achievements.filter(a => a.unlocked).length;
+
+  let motivationMessage = "";
+
+  if (averageScore >= 90) {
+    motivationMessage = "Excellent progress. Your writing is becoming advanced. Keep polishing organization and style.";
+  } else if (averageScore >= 75) {
+    motivationMessage = "Great work. You are building strong writing habits. Try to improve your weakest skill next.";
+  } else if (averageScore >= 60) {
+    motivationMessage = "Good start. Keep writing regularly and focus on grammar, connectors, and clarity.";
+  } else {
+    motivationMessage = "Do not worry. Improvement starts with small attempts. Write short paragraphs and analyze them often.";
+  }
+
+  motivationBox.innerHTML = `
+    ${motivationMessage}
+    <br>
+    <strong>Unlocked badges:</strong> ${unlockedCount}/${achievements.length}
+    • <strong>Last writing day:</strong> ${uniqueDates[0] || "—"}
+  `;
 }
 function analyzeSentenceQuality(text) {
   const rawSentences = (text || "")

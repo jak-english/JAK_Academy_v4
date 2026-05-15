@@ -7876,3 +7876,99 @@ textarea{min-height:95px;resize:vertical}
     text-align: left;
   }
 }
+/* =====================================================
+   Writing Streak & Achievement System
+===================================================== */
+
+.writing-achievements-panel {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.16), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(34, 197, 94, 0.14), transparent 30%),
+    rgba(2, 6, 23, 0.58);
+  border: 1px solid rgba(250, 204, 21, 0.18);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.35);
+}
+
+.writing-achievements-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.writing-achievements-head h3 {
+  margin: 6px 0;
+  color: #fefce8;
+  font-size: 1.35rem;
+}
+
+.writing-achievements-head p {
+  margin: 0;
+  color: #dbeafe;
+  line-height: 1.6;
+}
+
+.writing-streak-badge {
+  min-width: 155px;
+  text-align: center;
+  padding: 12px 16px;
+  border-radius: 999px;
+  color: #451a03;
+  font-weight: 900;
+  background: linear-gradient(135deg, #fde68a, #f97316);
+  box-shadow: 0 12px 28px rgba(249, 115, 22, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+}
+
+.writing-achievement-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.writing-achievement-badge {
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: #e5e7eb;
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(226, 232, 240, 0.16);
+}
+
+.writing-achievement-badge.unlocked {
+  color: #052e16;
+  background: linear-gradient(135deg, #bbf7d0, #22c55e);
+  box-shadow: 0 10px 24px rgba(34, 197, 94, 0.22);
+}
+
+.writing-achievement-badge.locked {
+  opacity: 0.65;
+  filter: grayscale(0.35);
+}
+
+.writing-motivation-message {
+  margin-top: 16px;
+  padding: 15px 17px;
+  border-radius: 20px;
+  color: #fef9c3;
+  background: rgba(250, 204, 21, 0.10);
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  line-height: 1.7;
+  font-weight: 650;
+}
+
+@media (max-width: 900px) {
+  .writing-achievements-head {
+    flex-direction: column;
+  }
+
+  .writing-streak-badge {
+    width: 100%;
+  }
+}
