@@ -7034,8 +7034,229 @@ if (typeof updateWritingSkillMap === "function") {
       </p>
     `;
   }
-
+  if (typeof renderDynamicWritingIntelligence === "function") {
+  renderDynamicWritingIntelligence(text);
+}
   alert("Advanced writing report generated. Score: " + score + "%");
+}
+function detectWritingTopic(text) {
+  const lowerText = (text || "").toLowerCase();
+
+  const topicKeywords = {
+    education: [
+      "school", "student", "students", "teacher", "teachers", "class",
+      "lesson", "lessons", "exam", "exams", "study", "studying",
+      "homework", "education", "learn", "learning", "university"
+    ],
+    technology: [
+      "technology", "internet", "online", "computer", "phone", "phones",
+      "mobile", "app", "apps", "ai", "robot", "robots", "digital",
+      "website", "social media", "device", "devices"
+    ],
+    environment: [
+      "environment", "pollution", "climate", "recycling", "waste",
+      "plastic", "water", "air", "trees", "nature", "planet",
+      "global warming", "green", "clean"
+    ],
+    health: [
+      "health", "healthy", "exercise", "sport", "sports", "food",
+      "diet", "sleep", "stress", "doctor", "medicine", "mental",
+      "body", "fitness"
+    ],
+    work: [
+      "work", "job", "career", "company", "business", "employee",
+      "manager", "interview", "skills", "professional", "office",
+      "salary", "training"
+    ],
+    social_media: [
+      "facebook", "instagram", "tiktok", "youtube", "snapchat",
+      "social media", "followers", "posts", "comments", "likes",
+      "online friends", "influencer"
+    ],
+    travel: [
+      "travel", "tourism", "tourist", "trip", "journey", "hotel",
+      "airport", "country", "city", "visit", "holiday", "vacation"
+    ],
+    family: [
+      "family", "parents", "mother", "father", "brother", "sister",
+      "home", "children", "child", "friends", "friendship"
+    ]
+  };
+
+  const scores = {};
+
+  Object.entries(topicKeywords).forEach(([topic, keywords]) => {
+    scores[topic] = keywords.reduce((total, keyword) => {
+      return lowerText.includes(keyword) ? total + 1 : total;
+    }, 0);
+  });
+
+  const sortedTopics = Object.entries(scores)
+    .sort((a, b) => b[1] - a[1])
+    .filter(([, score]) => score > 0);
+
+  if (!sortedTopics.length) {
+    return {
+      topic: "general",
+      label: "General Writing",
+      confidence: 0,
+      scores
+    };
+  }
+
+  const topTopic = sortedTopics[0][0];
+  const topScore = sortedTopics[0][1];
+
+  const labels = {
+    education: "Education",
+    technology: "Technology",
+    environment: "Environment",
+    health: "Health",
+    work: "Work / Career",
+    social_media: "Social Media",
+    travel: "Travel / Tourism",
+    family: "Family / Relationships",
+    general: "General Writing"
+  };
+
+  return {
+    topic: topTopic,
+    label: labels[topTopic] || "General Writing",
+    confidence: topScore,
+    scores
+  };
+}
+
+
+function getDynamicVocabularySuggestions(text, detectedTopic) {
+  const lowerText = (text || "").toLowerCase();
+
+  const generalSuggestions = [
+    { weak: "good", better: "useful / effective / beneficial" },
+    { weak: "bad", better: "harmful / negative / serious" },
+    { weak: "very important", better: "essential / significant / crucial" },
+    { weak: "a lot of", better: "many / numerous / a wide range of" },
+    { weak: "things", better: "factors / aspects / points" },
+    { weak: "help", better: "support / improve / contribute to" },
+    { weak: "make better", better: "improve / develop / enhance" },
+    { weak: "big", better: "major / significant / considerable" }
+  ];
+
+  const topicSuggestions = {
+    education: [
+      { weak: "students", better: "learners / pupils / school students" },
+      { weak: "study", better: "learn / revise / acquire knowledge" },
+      { weak: "school things", better: "educational resources / learning materials" },
+      { weak: "good for students", better: "beneficial for learners" },
+      { weak: "teacher helps", better: "the teacher supports / guides learners" }
+    ],
+    technology: [
+      { weak: "phones", better: "digital devices / mobile devices" },
+      { weak: "internet", better: "online resources / digital platforms" },
+      { weak: "use technology", better: "integrate technology / use digital tools" },
+      { weak: "apps", better: "educational applications / digital tools" },
+      { weak: "ai", better: "artificial intelligence / AI-powered tools" }
+    ],
+    environment: [
+      { weak: "trash", better: "waste / litter" },
+      { weak: "dirty air", better: "air pollution" },
+      { weak: "help the environment", better: "protect the environment" },
+      { weak: "bad for nature", better: "harmful to the environment" },
+      { weak: "clean the earth", better: "preserve the planet" }
+    ],
+    health: [
+      { weak: "do sport", better: "exercise regularly / practise physical activity" },
+      { weak: "good food", better: "healthy food / balanced diet" },
+      { weak: "feel bad", better: "feel stressed / feel exhausted" },
+      { weak: "sleep good", better: "sleep well / get enough sleep" },
+      { weak: "body strong", better: "physical fitness / a healthy body" }
+    ],
+    work: [
+      { weak: "job", better: "career / position / profession" },
+      { weak: "work skills", better: "professional skills / workplace skills" },
+      { weak: "boss", better: "manager / employer" },
+      { weak: "ask for job", better: "apply for a position" },
+      { weak: "good worker", better: "reliable employee / professional worker" }
+    ],
+    social_media: [
+      { weak: "use social media", better: "spend time on social media platforms" },
+      { weak: "bad comments", better: "negative comments / online criticism" },
+      { weak: "many followers", better: "a large online audience" },
+      { weak: "internet people", better: "online users / digital audience" },
+      { weak: "posting things", better: "sharing content online" }
+    ],
+    travel: [
+      { weak: "go to places", better: "visit destinations / travel to different places" },
+      { weak: "nice place", better: "attractive destination / beautiful location" },
+      { weak: "people who travel", better: "tourists / travelers" },
+      { weak: "trip", better: "journey / travel experience" },
+      { weak: "learn about countries", better: "explore different cultures" }
+    ],
+    family: [
+      { weak: "family is good", better: "family support is valuable" },
+      { weak: "friends help", better: "friends support and encourage each other" },
+      { weak: "home life", better: "family life / home environment" },
+      { weak: "nice friend", better: "supportive friend / loyal friend" },
+      { weak: "talk with family", better: "communicate with family members" }
+    ],
+    general: []
+  };
+
+  const selectedTopicSuggestions = topicSuggestions[detectedTopic] || [];
+
+  const allSuggestions = [
+    ...selectedTopicSuggestions,
+    ...generalSuggestions
+  ];
+
+  const matchedSuggestions = allSuggestions.filter(item =>
+    lowerText.includes(item.weak)
+  );
+
+  return matchedSuggestions.slice(0, 8);
+}
+
+
+function renderDynamicWritingIntelligence(text) {
+  const feedbackBox = document.querySelector(".writing-feedback-preview");
+  if (!feedbackBox) return;
+
+  const detected = detectWritingTopic(text);
+  const suggestions = getDynamicVocabularySuggestions(text, detected.topic);
+
+  const intelligenceHtml = `
+    <div class="writing-report-section">
+      <h4>Dynamic Writing Intelligence</h4>
+
+      <p>
+        <span class="writing-good">Detected Topic</span>
+        <small>${safeText(detected.label)} ${
+          detected.confidence
+            ? "(confidence: " + safeText(detected.confidence) + ")"
+            : "(low confidence)"
+        }</small>
+      </p>
+
+      <h4>Topic Vocabulary Suggestions</h4>
+      ${
+        suggestions.length
+          ? suggestions.map(item => `
+              <p>
+                <span class="writing-warning">${safeText(item.weak)}</span>
+                <small>Try: ${safeText(item.better)}</small>
+              </p>
+            `).join("")
+          : `<p>
+              <span class="writing-good">No obvious topic vocabulary weakness detected.</span>
+              <small>The system will give deeper vocabulary feedback when AI correction is connected.</small>
+            </p>`
+      }
+    </div>
+  `;
+
+  feedbackBox.insertAdjacentHTML("beforeend", intelligenceHtml);
+
+  console.log("Dynamic Writing Intelligence rendered:", detected);
 }
 function updateWritingSkillMap(skillScores) {
   const defaultScores = {
