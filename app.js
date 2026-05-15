@@ -6919,9 +6919,13 @@ function analyzeWritingLocally() {
     improvedDraft += ".";
   }
 
+
   if (scoreValue) {
     scoreValue.textContent = score;
   }
+  if (typeof updateWritingCommandCenter === "function") {
+  updateWritingCommandCenter();
+ }
   const skillScores = {
   grammar: Math.max(40, Math.min(100, 90 - grammarWarnings.length * 12)),
   vocabulary: Math.max(40, Math.min(100, 88 - vocabularySuggestions.length * 10 - repeatedWords.length * 4)),
@@ -7391,7 +7395,9 @@ const missionText =
       scrollToWritingEditor();
     }
   }
-
+if (typeof updateWritingCommandCenter === "function") {
+  updateWritingCommandCenter();
+}
   console.log("Writing mission generated:", {
   type,
   level,
@@ -7399,6 +7405,7 @@ const missionText =
   goal,
   topic
 });
+
 }
 
 function loadWritingTemplate() {
@@ -7455,7 +7462,9 @@ Write your answer here:
   if (typeof scrollToWritingEditor === "function") {
     scrollToWritingEditor();
   }
-
+if (typeof updateWritingCommandCenter === "function") {
+  updateWritingCommandCenter();
+}
   console.log("Smart Adaptive Writing Blueprint loaded:", {
     type,
     level,
@@ -7464,6 +7473,56 @@ Write your answer here:
     topic
   });
 }
+function updateWritingCommandCenter() {
+  const learnerMode = document.getElementById("writingLearnerModeSelect")?.value || "school";
+  const writingType = document.getElementById("writingTypeSelect")?.value || "paragraph";
+  const focusSkill = document.getElementById("writingGoalSelect")?.value || "paragraph";
+  const score = document.getElementById("writingScoreValue")?.textContent || "--";
+
+  const learnerModeLabels = {
+    young: "Young Learner",
+    school: "School Student",
+    tawjihi: "Tawjihi / Exam",
+    academic: "Academic",
+    adult: "Professional",
+    teacher: "Teacher Practice"
+  };
+
+  const typeLabel =
+    typeof getWritingTypeLabel === "function"
+      ? getWritingTypeLabel(writingType)
+      : writingType;
+
+  const focusLabel =
+    typeof getWritingGoalLabel === "function"
+      ? getWritingGoalLabel(focusSkill)
+      : focusSkill;
+
+  const learnerEl = document.getElementById("commandLearnerMode");
+  const typeEl = document.getElementById("commandWritingType");
+  const focusEl = document.getElementById("commandFocusSkill");
+  const scoreEl = document.getElementById("commandWritingScore");
+  const nextEl = document.getElementById("commandNextStep");
+
+  if (learnerEl) learnerEl.textContent = learnerModeLabels[learnerMode] || learnerMode;
+  if (typeEl) typeEl.textContent = typeLabel;
+  if (focusEl) focusEl.textContent = focusLabel;
+  if (scoreEl) scoreEl.textContent = score === "--" ? "--" : score + "%";
+
+  if (nextEl) {
+    const recommendedMission =
+      localStorage.getItem("jakWritingRecommendedMission") ||
+      "Generate Mission";
+
+    nextEl.textContent =
+      recommendedMission.length > 28
+        ? recommendedMission.slice(0, 28) + "..."
+        : recommendedMission;
+  }
+
+  console.log("Writing Command Center updated.");
+}
+
 function buildAdaptiveWritingBlueprint(config) {
   const { type, typeLabel, level, learnerMode, goalLabel, topic } = config;
 
