@@ -1489,6 +1489,124 @@
     Choose a writing type and generate your mission.
   </div>
 </div>
+<!-- SMART WRITING WORKSPACE -->
+<div class="writing-panel writing-workspace-panel">
+  <div class="writing-panel-header">
+    <div>
+      <span class="writing-section-number">01</span>
+      <h2>Smart Writing Workspace</h2>
+      <p>
+        Build your writing step by step. Start with ideas, add support, use connectors,
+        then send your paragraph to the smart editor.
+      </p>
+    </div>
+    <span class="writing-ai-chip">Interactive Builder</span>
+  </div>
+
+  <div class="writing-workspace-layout">
+
+    <!-- LEFT: WRITING STEPS -->
+    <div class="writing-steps-box">
+      <h3>Writing Steps</h3>
+      <p>Choose the part you want to build.</p>
+
+      <div class="writing-step-buttons">
+        <button type="button" onclick="loadWritingStep('mainIdea')">Main Idea</button>
+        <button type="button" onclick="loadWritingStep('support')">Supporting Detail</button>
+        <button type="button" onclick="loadWritingStep('example')">Example</button>
+        <button type="button" onclick="loadWritingStep('connector')">Connector</button>
+        <button type="button" onclick="loadWritingStep('conclusion')">Conclusion</button>
+      </div>
+
+      <div id="writingStepGuide" class="writing-step-guide">
+        <strong>Start with the Main Idea.</strong>
+        <span>
+          A strong paragraph begins with a clear topic sentence that tells the reader what the paragraph is about.
+        </span>
+      </div>
+    </div>
+
+    <!-- CENTER: BUILDER FORM -->
+    <div class="writing-builder-box">
+      <h3>Paragraph Builder</h3>
+      <p>Fill in the parts below, then build your paragraph.</p>
+
+      <label>
+        Main Idea / Topic Sentence
+        <input id="builderMainIdea" type="text" placeholder="Example: Technology helps students learn more effectively." />
+      </label>
+
+      <label>
+        Supporting Detail
+        <input id="builderSupport" type="text" placeholder="Example: It gives them access to videos, exercises, and online resources." />
+      </label>
+
+      <label>
+        Example
+        <input id="builderExample" type="text" placeholder="Example: For example, students can watch lessons again when they do not understand." />
+      </label>
+
+      <label>
+        Connector
+        <select id="builderConnector">
+          <option value="Moreover">Moreover</option>
+          <option value="In addition">In addition</option>
+          <option value="However">However</option>
+          <option value="For example">For example</option>
+          <option value="Therefore">Therefore</option>
+          <option value="As a result">As a result</option>
+          <option value="In conclusion">In conclusion</option>
+        </select>
+      </label>
+
+      <label>
+        Concluding Sentence
+        <input id="builderConclusion" type="text" placeholder="Example: Therefore, technology can be a powerful tool for education." />
+      </label>
+
+      <div class="writing-builder-actions">
+        <button type="button" onclick="buildSmartParagraph()">Build My Paragraph ✨</button>
+        <button type="button" class="gold" onclick="sendWorkspaceToEditor()">Send to Editor</button>
+        <button type="button" class="secondary" onclick="clearWritingWorkspace()">Clear Workspace</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: LIVE PREVIEW -->
+    <div class="writing-preview-box">
+      <h3>Live Paragraph Preview</h3>
+      <p>Your paragraph will appear here before going to the editor.</p>
+
+      <div id="smartParagraphPreview" class="smart-paragraph-preview">
+        Build your paragraph to see a preview.
+      </div>
+
+      <div class="writing-workspace-checklist">
+        <h4>Smart Checklist</h4>
+        <label>
+          <input type="checkbox" id="checkMainIdea">
+          <span>Main idea is clear</span>
+        </label>
+        <label>
+          <input type="checkbox" id="checkSupport">
+          <span>Supporting detail is included</span>
+        </label>
+        <label>
+          <input type="checkbox" id="checkExample">
+          <span>Example is included</span>
+        </label>
+        <label>
+          <input type="checkbox" id="checkConnector">
+          <span>Connector is used</span>
+        </label>
+        <label>
+          <input type="checkbox" id="checkConclusion">
+          <span>Conclusion is included</span>
+        </label>
+      </div>
+    </div>
+
+  </div>
+</div>
     <!-- MAIN GRID -->
     <div class="writing-main-grid">
 

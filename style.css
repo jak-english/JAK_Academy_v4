@@ -6789,3 +6789,133 @@ textarea{min-height:95px;resize:vertical}
   font-weight: 800;
   background: linear-gradient(135deg, #99f6e4, #ddd6fe);
 }
+/* =====================================================
+   Writing Academy - Smart Writing Workspace
+   ===================================================== */
+
+.writing-workspace-panel {
+  margin-top: 24px;
+  border-left: 6px solid rgba(34, 211, 238, 0.8);
+}
+
+.writing-workspace-layout {
+  display: grid;
+  grid-template-columns: 0.8fr 1.25fr 0.95fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.writing-steps-box,
+.writing-builder-box,
+.writing-preview-box {
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(5, 8, 22, 0.58);
+  border: 1px solid rgba(167, 139, 250, 0.14);
+}
+
+.writing-steps-box h3,
+.writing-builder-box h3,
+.writing-preview-box h3 {
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.writing-steps-box p,
+.writing-builder-box p,
+.writing-preview-box p {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.writing-step-buttons {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.writing-step-buttons button {
+  width: 100%;
+  text-align: left;
+}
+
+.writing-step-guide {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(34, 211, 238, 0.10);
+  border: 1px solid rgba(34, 211, 238, 0.16);
+}
+
+.writing-step-guide strong {
+  color: #ffffff;
+}
+
+.writing-step-guide span,
+.writing-step-guide small {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.writing-builder-box label {
+  display: block;
+  margin: 12px 0;
+  color: #cbd5e1;
+  font-weight: 800;
+}
+
+.writing-builder-box input,
+.writing-builder-box select {
+  margin-top: 8px;
+}
+
+.writing-builder-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.smart-paragraph-preview {
+  min-height: 170px;
+  padding: 16px;
+  border-radius: 18px;
+  color: #e5e7eb;
+  line-height: 1.8;
+  background: rgba(15, 23, 42, 0.78);
+  border-left: 4px solid #99f6e4;
+}
+
+.writing-workspace-checklist {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.writing-workspace-checklist h4 {
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.writing-workspace-checklist label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+  color: #e5e7eb;
+}
+
+.writing-workspace-checklist input {
+  width: auto;
+  margin: 0;
+  accent-color: #8b5cf6;
+}
+
+@media (max-width: 1100px) {
+  .writing-workspace-layout {
+    grid-template-columns: 1fr;
+  }
+}

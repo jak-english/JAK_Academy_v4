@@ -6703,9 +6703,6 @@ function analyzeWritingLocally() {
 
   const lowerText = text.toLowerCase();
 
-  // =========================
-  // 1. Basic counts
-  // =========================
   const words = text
     .replace(/[^\w\s'-]/g, " ")
     .split(/\s+/)
@@ -6730,9 +6727,6 @@ function analyzeWritingLocally() {
   const averageSentenceLength =
     sentenceCount ? Math.round(wordCount / sentenceCount) : 0;
 
-  // =========================
-  // 2. Connector analysis
-  // =========================
   const connectorGroups = {
     Addition: ["moreover", "also", "in addition", "furthermore", "besides"],
     Contrast: ["however", "although", "even though", "but", "whereas", "on the other hand"],
@@ -6753,9 +6747,6 @@ function analyzeWritingLocally() {
     });
   });
 
-  // =========================
-  // 3. Repetition detection
-  // =========================
   const ignoredWords = [
     "the", "a", "an", "and", "or", "but", "to", "of", "in", "on", "at",
     "is", "are", "was", "were", "be", "been", "being", "it", "this",
@@ -6777,9 +6768,6 @@ function analyzeWritingLocally() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6);
 
-  // =========================
-  // 4. Local grammar warnings
-  // =========================
   const grammarWarnings = [];
 
   const grammarPatterns = [
@@ -6831,9 +6819,6 @@ function analyzeWritingLocally() {
     }
   });
 
-  // =========================
-  // 5. Organization checks
-  // =========================
   const hasConclusion =
     lowerText.includes("in conclusion") ||
     lowerText.includes("to sum up") ||
@@ -6874,9 +6859,6 @@ function analyzeWritingLocally() {
     organizationWarnings.push("End your writing with proper punctuation.");
   }
 
-  // =========================
-  // 6. Vocabulary suggestions
-  // =========================
   const vocabularySuggestions = [
     { weak: "good", better: "effective / beneficial / valuable" },
     { weak: "bad", better: "harmful / negative / serious" },
@@ -6886,9 +6868,6 @@ function analyzeWritingLocally() {
     { weak: "get better", better: "improve / develop / make progress" }
   ].filter(item => lowerText.includes(item.weak));
 
-  // =========================
-  // 7. Score calculation
-  // =========================
   let score = 50;
 
   if (wordCount >= 40) score += 8;
@@ -6926,9 +6905,6 @@ function analyzeWritingLocally() {
             ? "Practice writing strong concluding sentences."
             : "Move to a longer paragraph or essay task.";
 
-  // =========================
-  // 8. Improved draft preview
-  // =========================
   let improvedDraft = text
     .replace(/\btechnology have\b/gi, "technology has")
     .replace(/\bstudents is\b/gi, "students are")
@@ -6943,143 +6919,109 @@ function analyzeWritingLocally() {
     improvedDraft += ".";
   }
 
-  // =========================
-  // 9. Update score circle
-  // =========================
   if (scoreValue) {
     scoreValue.textContent = score;
   }
 
-  // =========================
-  // 10. Render report
-  // =========================
   if (feedbackBox) {
     feedbackBox.innerHTML = `
       <h3>Advanced Writing Report</h3>
 
-      <div class="writing-report-grid">
-        <div class="writing-report-card">
-          <span>Score</span>
-          <strong>${safeText(score)}%</strong>
-          <small>${safeText(level)}</small>
-        </div>
+      <p>
+        <strong>Score:</strong> ${safeText(score)}%
+        <small>${safeText(level)}</small>
+      </p>
 
-        <div class="writing-report-card">
-          <span>Words</span>
-          <strong>${safeText(wordCount)}</strong>
-          <small>${wordCount < 40 ? "Add more details" : "Good length"}</small>
-        </div>
+      <p>
+        <strong>Words:</strong> ${safeText(wordCount)}
+        <small>${wordCount < 40 ? "Add more details." : "Good length for a first draft."}</small>
+      </p>
 
-        <div class="writing-report-card">
-          <span>Sentences</span>
-          <strong>${safeText(sentenceCount)}</strong>
-          <small>Average: ${safeText(averageSentenceLength)} words</small>
-        </div>
+      <p>
+        <strong>Sentences:</strong> ${safeText(sentenceCount)}
+        <small>Average sentence length: ${safeText(averageSentenceLength)} words.</small>
+      </p>
 
-        <div class="writing-report-card">
-          <span>Paragraphs</span>
-          <strong>${safeText(paragraphCount)}</strong>
-          <small>${paragraphCount > 1 ? "Multi-paragraph writing" : "Single paragraph"}</small>
-        </div>
+      <p>
+        <strong>Paragraphs:</strong> ${safeText(paragraphCount)}
+        <small>${paragraphCount > 1 ? "Multi-paragraph writing." : "Single paragraph."}</small>
+      </p>
 
-        <div class="writing-report-card">
-          <span>Connectors</span>
-          <strong>${safeText(usedConnectors.length)}</strong>
-          <small>${usedConnectors.length ? "Used in your writing" : "Needs connectors"}</small>
-        </div>
-      </div>
-
-      <div class="writing-report-section">
-        <h4>Connectors Found</h4>
-        ${
+      <p>
+        <strong>Connectors:</strong> ${safeText(usedConnectors.length)}
+        <small>${
           usedConnectors.length
-            ? `<div class="writing-report-chips">
-                ${usedConnectors.map(item => `
-                  <span>${safeText(item.connector)} <small>${safeText(item.category)}</small></span>
-                `).join("")}
-              </div>`
-            : `<p>No clear connectors found. Try using: however, because, moreover, for example, in conclusion.</p>`
-        }
-      </div>
+            ? "Used: " + safeText(usedConnectors.map(item => item.connector).join(", "))
+            : "Try using connectors such as however, because, moreover, and for example."
+        }</small>
+      </p>
 
-      <div class="writing-report-section">
-        <h4>Grammar Warnings</h4>
-        ${
-          grammarWarnings.length
-            ? grammarWarnings.map(item => `
-                <p>
-                  <span class="writing-error">${safeText(item.issue)}</span>
-                  <small>${safeText(item.suggestion)}</small>
-                </p>
-              `).join("")
-            : `<p><span class="writing-good">No major local grammar warning found.</span></p>`
-        }
-      </div>
+      <h3>Grammar Warnings</h3>
+      ${
+        grammarWarnings.length
+          ? grammarWarnings.map(item => `
+              <p>
+                <span class="writing-error">${safeText(item.issue)}</span>
+                <small>${safeText(item.suggestion)}</small>
+              </p>
+            `).join("")
+          : `<p><span class="writing-good">No major local grammar warning found.</span></p>`
+      }
 
-      <div class="writing-report-section">
-        <h4>Organization Check</h4>
-        ${
-          organizationWarnings.length
-            ? organizationWarnings.map(warning => `
-                <p>
-                  <span class="writing-warning">Suggestion</span>
-                  <small>${safeText(warning)}</small>
-                </p>
-              `).join("")
-            : `<p><span class="writing-good">Your organization looks clear for a first draft.</span></p>`
-        }
-      </div>
+      <h3>Organization Check</h3>
+      ${
+        organizationWarnings.length
+          ? organizationWarnings.map(warning => `
+              <p>
+                <span class="writing-warning">Suggestion</span>
+                <small>${safeText(warning)}</small>
+              </p>
+            `).join("")
+          : `<p><span class="writing-good">Your organization looks clear for a first draft.</span></p>`
+      }
 
-      <div class="writing-report-section">
-        <h4>Vocabulary Suggestions</h4>
-        ${
-          vocabularySuggestions.length
-            ? vocabularySuggestions.map(item => `
-                <p>
-                  <span class="writing-warning">${safeText(item.weak)}</span>
-                  <small>Try: ${safeText(item.better)}</small>
-                </p>
-              `).join("")
-            : `<p><span class="writing-good">No basic weak vocabulary detected locally.</span></p>`
-        }
-      </div>
+      <h3>Vocabulary Suggestions</h3>
+      ${
+        vocabularySuggestions.length
+          ? vocabularySuggestions.map(item => `
+              <p>
+                <span class="writing-warning">${safeText(item.weak)}</span>
+                <small>Try: ${safeText(item.better)}</small>
+              </p>
+            `).join("")
+          : `<p><span class="writing-good">No basic weak vocabulary detected locally.</span></p>`
+      }
 
-      <div class="writing-report-section">
-        <h4>Repeated Words</h4>
-        ${
-          repeatedWords.length
-            ? `<div class="writing-report-chips">
-                ${repeatedWords.map(([word, count]) => `
-                  <span>${safeText(word)} <small>${safeText(count)} times</small></span>
-                `).join("")}
-              </div>`
-            : `<p>No strong repetition detected.</p>`
-        }
-      </div>
+      <h3>Repeated Words</h3>
+      ${
+        repeatedWords.length
+          ? repeatedWords.map(([word, count]) => `
+              <p>
+                <span class="writing-warning">${safeText(word)}</span>
+                <small>Repeated ${safeText(count)} times.</small>
+              </p>
+            `).join("")
+          : `<p>No strong repetition detected.</p>`
+      }
 
-      <div class="writing-report-section">
-        <h4>Improved Draft Preview</h4>
-        <div class="writing-improved-draft">${safeText(improvedDraft)}</div>
-      </div>
+      <h3>Improved Draft Preview</h3>
+      <p>${safeText(improvedDraft)}</p>
 
-      <div class="writing-report-section">
-        <h4>Suggested Next Exercise</h4>
-        <p>
-          <span class="writing-good">Next Step</span>
-          <small>${safeText(nextExercise)}</small>
-        </p>
-      </div>
+      <h3>Suggested Next Exercise</h3>
+      <p>
+        <span class="writing-good">Next Step</span>
+        <small>${safeText(nextExercise)}</small>
+      </p>
 
       <p>
         <span class="writing-good">AI-ready preview</span>
-        <small>This is still a local rule-based analyzer. Later, real AI will provide deeper grammar, style, task achievement, and personalized feedback.</small>
+        <small>This is a local rule-based analyzer. Later, real AI will provide deeper grammar, style, task achievement, and personalized feedback.</small>
       </p>
     `;
   }
 
   alert("Advanced writing report generated. Score: " + score + "%");
 }
-
 function loadWritingPrompt() {
   const input = document.getElementById("studentWritingInput");
   if (!input) return;
@@ -7354,7 +7296,160 @@ function resetWritingMission() {
     output.innerHTML = "Choose a writing type and generate your mission.";
   }
 }
+
 window.uploadTeacherResource = uploadTeacherResource;
+function loadWritingStep(step) {
+  const guide = document.getElementById("writingStepGuide");
+  if (!guide) return;
+
+  const steps = {
+    mainIdea: {
+      title: "Main Idea / Topic Sentence",
+      text: "Write one clear sentence that tells the reader what your paragraph is about.",
+      example: "Technology helps students learn more effectively."
+    },
+    support: {
+      title: "Supporting Detail",
+      text: "Add a detail that explains or supports your main idea.",
+      example: "It gives students access to videos, exercises, and online resources."
+    },
+    example: {
+      title: "Example",
+      text: "Give a real example to make your idea stronger and clearer.",
+      example: "For example, students can watch lessons again when they do not understand."
+    },
+    connector: {
+      title: "Connector",
+      text: "Use a linking word to connect ideas naturally.",
+      example: "Moreover, however, therefore, for example, in conclusion."
+    },
+    conclusion: {
+      title: "Concluding Sentence",
+      text: "Finish the paragraph with a sentence that summarizes the main idea.",
+      example: "Therefore, technology can be a powerful tool for education."
+    }
+  };
+
+  const data = steps[step] || steps.mainIdea;
+
+  guide.innerHTML = `
+    <strong>${safeText(data.title)}</strong>
+    <span>${safeText(data.text)}</span>
+    <small>Example: ${safeText(data.example)}</small>
+  `;
+}
+
+function buildSmartParagraph() {
+  const mainIdea = document.getElementById("builderMainIdea")?.value.trim() || "";
+  const support = document.getElementById("builderSupport")?.value.trim() || "";
+  const example = document.getElementById("builderExample")?.value.trim() || "";
+  const connector = document.getElementById("builderConnector")?.value || "Moreover";
+  const conclusion = document.getElementById("builderConclusion")?.value.trim() || "";
+
+  const preview = document.getElementById("smartParagraphPreview");
+
+  const parts = [];
+
+  if (mainIdea) {
+    parts.push(mainIdea);
+  }
+
+  if (support) {
+    parts.push(`${connector}, ${support}`);
+  }
+
+  if (example) {
+    parts.push(example);
+  }
+
+  if (conclusion) {
+    parts.push(conclusion);
+  }
+
+  const paragraph = parts.join(" ");
+
+  if (preview) {
+    preview.textContent = paragraph || "Build your paragraph to see a preview.";
+  }
+
+  const checkMainIdea = document.getElementById("checkMainIdea");
+  const checkSupport = document.getElementById("checkSupport");
+  const checkExample = document.getElementById("checkExample");
+  const checkConnector = document.getElementById("checkConnector");
+  const checkConclusion = document.getElementById("checkConclusion");
+
+  if (checkMainIdea) checkMainIdea.checked = !!mainIdea;
+  if (checkSupport) checkSupport.checked = !!support;
+  if (checkExample) checkExample.checked = !!example;
+  if (checkConnector) checkConnector.checked = !!support && !!connector;
+  if (checkConclusion) checkConclusion.checked = !!conclusion;
+
+  if (!paragraph) {
+    alert("Please write at least one part of the paragraph first.");
+    return;
+  }
+
+  console.log("Smart paragraph built:", paragraph);
+}
+
+function sendWorkspaceToEditor() {
+  const preview = document.getElementById("smartParagraphPreview");
+  const input = document.getElementById("studentWritingInput");
+
+  if (!preview || !input) return;
+
+  const paragraph = preview.textContent.trim();
+
+  if (!paragraph || paragraph === "Build your paragraph to see a preview.") {
+    alert("Build your paragraph first.");
+    return;
+  }
+
+  input.value = paragraph;
+
+  if (typeof scrollToWritingEditor === "function") {
+    scrollToWritingEditor();
+  }
+
+  console.log("Smart paragraph sent to editor.");
+}
+
+function clearWritingWorkspace() {
+  const ids = [
+    "builderMainIdea",
+    "builderSupport",
+    "builderExample",
+    "builderConclusion"
+  ];
+
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+
+  const connector = document.getElementById("builderConnector");
+  if (connector) connector.value = "Moreover";
+
+  const preview = document.getElementById("smartParagraphPreview");
+  if (preview) {
+    preview.textContent = "Build your paragraph to see a preview.";
+  }
+
+  [
+    "checkMainIdea",
+    "checkSupport",
+    "checkExample",
+    "checkConnector",
+    "checkConclusion"
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = false;
+  });
+
+  loadWritingStep("mainIdea");
+
+  console.log("Writing workspace cleared.");
+}
 window.loadTeacherResources = loadTeacherResources;
 window.loadStudentResources = loadStudentResources;
 window.clearStudentResourceFilters = clearStudentResourceFilters;
