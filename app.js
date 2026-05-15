@@ -7331,9 +7331,10 @@ function getWritingChecklist(type, goal) {
 }
 
 function generateWritingMission() {
-  const type = document.getElementById("writingTypeSelect")?.value || "paragraph";
-  const level = document.getElementById("writingLevelSelect")?.value || "intermediate";
-  const goal = document.getElementById("writingGoalSelect")?.value || "paragraph";
+ const type = document.getElementById("writingTypeSelect")?.value || "paragraph";
+const level = document.getElementById("writingLevelSelect")?.value || "intermediate";
+const learnerMode =document.getElementById("writingLearnerModeSelect")?.value || "school";
+const goal = document.getElementById("writingGoalSelect")?.value || "paragraph";
   const topic =
     document.getElementById("writingTopicInput")?.value.trim() ||
     "technology in education";
@@ -7344,8 +7345,24 @@ function generateWritingMission() {
   const typeLabel = getWritingTypeLabel(type);
   const goalLabel = getWritingGoalLabel(goal);
 
-  const missionText =
-    `Write a ${level} ${typeLabel.toLowerCase()} about "${topic}". Focus especially on ${goalLabel.toLowerCase()}.`;
+ const modeInstructions = {
+  young:
+    `Write a simple and friendly task about "${topic}". Use short sentences, clear words, capital letters, and full stops.`,
+  school:
+    `Write a ${level} ${typeLabel.toLowerCase()} about "${topic}". Focus especially on ${goalLabel.toLowerCase()}.`,
+  tawjihi:
+    `Write an exam-style ${typeLabel.toLowerCase()} about "${topic}". Use clear organization, strong connectors, examples, and formal language.`,
+  academic:
+    `Write an academic ${typeLabel.toLowerCase()} about "${topic}". Use a clear thesis, logical argument, formal vocabulary, cohesion, and developed support.`,
+  adult:
+    `Write a professional ${typeLabel.toLowerCase()} about "${topic}". Use polite, practical, clear, and workplace-appropriate language.`,
+  teacher:
+    `Create a teacher-style writing practice task about "${topic}". Focus on teaching ${goalLabel.toLowerCase()} with a clear model and student-friendly instructions.`
+};
+
+const missionText =
+  modeInstructions[learnerMode] ||
+  modeInstructions.school;
 
   const checklist = getWritingChecklist(type, goal);
 
@@ -7376,11 +7393,12 @@ function generateWritingMission() {
   }
 
   console.log("Writing mission generated:", {
-    type,
-    level,
-    goal,
-    topic
-  });
+  type,
+  level,
+  learnerMode,
+  goal,
+  topic
+});
 }
 
 function loadWritingTemplate() {
