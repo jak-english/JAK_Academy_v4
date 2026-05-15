@@ -6690,6 +6690,7 @@ function showWritingMode(mode) {
 function analyzeWritingLocally() {
   const input = document.getElementById("studentWritingInput");
   const scoreValue = document.getElementById("writingScoreValue");
+  const feedbackBox = document.querySelector(".writing-feedback-preview");
 
   if (!input) return;
 
@@ -6700,74 +6701,383 @@ function analyzeWritingLocally() {
     return;
   }
 
-  const words = text.split(/\s+/).filter(Boolean);
+  const lowerText = text.toLowerCase();
+
+  // =========================
+  // 1. Basic counts
+  // =========================
+  const words = text
+    .replace(/[^\w\s'-]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+
   const wordCount = words.length;
 
-  let score = 60;
+  const sentences = text
+    .split(/[.!?]+/)
+    .map(sentence => sentence.trim())
+    .filter(Boolean);
 
-  if (wordCount >= 40) score += 10;
-  if (wordCount >= 80) score += 10;
+  const sentenceCount = sentences.length;
 
-  const connectors = [
-    "however",
-    "although",
-    "because",
-    "therefore",
-    "moreover",
-    "first",
-    "second",
-    "finally",
-    "in conclusion",
-    "for example"
+  const paragraphs = text
+    .split(/\n+/)
+    .map(paragraph => paragraph.trim())
+    .filter(Boolean);
+
+  const paragraphCount = paragraphs.length;
+
+  const averageSentenceLength =
+    sentenceCount ? Math.round(wordCount / sentenceCount) : 0;
+
+  // =========================
+  // 2. Connector analysis
+  // =========================
+  const connectorGroups = {
+    Addition: ["moreover", "also", "in addition", "furthermore", "besides"],
+    Contrast: ["however", "although", "even though", "but", "whereas", "on the other hand"],
+    Reason: ["because", "since", "as"],
+    Result: ["therefore", "so", "as a result", "consequently"],
+    Example: ["for example", "for instance", "such as"],
+    Sequence: ["first", "second", "then", "after that", "finally"],
+    Conclusion: ["in conclusion", "to sum up", "overall", "in short"]
+  };
+
+  const usedConnectors = [];
+
+  Object.entries(connectorGroups).forEach(([category, list]) => {
+    list.forEach(connector => {
+      if (lowerText.includes(connector)) {
+        usedConnectors.push({ connector, category });
+      }
+    });
+  });
+
+  // =========================
+  // 3. Repetition detection
+  // =========================
+  const ignoredWords = [
+    "the", "a", "an", "and", "or", "but", "to", "of", "in", "on", "at",
+    "is", "are", "was", "were", "be", "been", "being", "it", "this",
+    "that", "these", "those", "i", "you", "he", "she", "we", "they",
+    "with", "for", "from", "as", "by", "not", "can", "will", "would",
+    "have", "has", "had", "do", "does", "did"
   ];
 
-  const lowerText = text.toLowerCase();
-  const usedConnectors = connectors.filter(connector =>
-    lowerText.includes(connector)
-  );
+  const wordFrequency = {};
 
-  score += Math.min(usedConnectors.length * 4, 16);
+  words.forEach(word => {
+    const clean = word.toLowerCase();
+    if (clean.length < 4 || ignoredWords.includes(clean)) return;
+    wordFrequency[clean] = (wordFrequency[clean] || 0) + 1;
+  });
 
-  if (/[.!?]$/.test(text)) score += 4;
+  const repeatedWords = Object.entries(wordFrequency)
+    .filter(([, count]) => count >= 3)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
 
-  score = Math.min(score, 100);
+  // =========================
+  // 4. Local grammar warnings
+  // =========================
+  const grammarWarnings = [];
 
+  const grammarPatterns = [
+    {
+      pattern: /\btechnology have\b/i,
+      issue: "Subject-verb agreement",
+      suggestion: "Use “technology has” because technology is singular."
+    },
+    {
+      pattern: /\bstudents is\b/i,
+      issue: "Subject-verb agreement",
+      suggestion: "Use “students are” because students is plural."
+    },
+    {
+      pattern: /\bpeople is\b/i,
+      issue: "Subject-verb agreement",
+      suggestion: "Use “people are”."
+    },
+    {
+      pattern: /\bthere is many\b/i,
+      issue: "There is / There are",
+      suggestion: "Use “there are many”."
+    },
+    {
+      pattern: /\bmore better\b/i,
+      issue: "Double comparative",
+      suggestion: "Use “better”, not “more better”."
+    },
+    {
+      pattern: /\bcan to\b/i,
+      issue: "Modal verb form",
+      suggestion: "Use “can + base verb”, not “can to”."
+    },
+    {
+      pattern: /\bmust to\b/i,
+      issue: "Modal verb form",
+      suggestion: "Use “must + base verb”, not “must to”."
+    },
+    {
+      pattern: /\bshould to\b/i,
+      issue: "Modal verb form",
+      suggestion: "Use “should + base verb”, not “should to”."
+    }
+  ];
+
+  grammarPatterns.forEach(item => {
+    if (item.pattern.test(text)) {
+      grammarWarnings.push(item);
+    }
+  });
+
+  // =========================
+  // 5. Organization checks
+  // =========================
+  const hasConclusion =
+    lowerText.includes("in conclusion") ||
+    lowerText.includes("to sum up") ||
+    lowerText.includes("overall") ||
+    lowerText.includes("in short");
+
+  const hasExample =
+    lowerText.includes("for example") ||
+    lowerText.includes("for instance") ||
+    lowerText.includes("such as");
+
+  const hasOpinionPhrase =
+    lowerText.includes("in my opinion") ||
+    lowerText.includes("i believe") ||
+    lowerText.includes("i think");
+
+  const hasClearEnding = /[.!?]$/.test(text);
+
+  const organizationWarnings = [];
+
+  if (wordCount < 40) {
+    organizationWarnings.push("Your writing is still short. Add more supporting details.");
+  }
+
+  if (sentenceCount < 3) {
+    organizationWarnings.push("Try writing at least three complete sentences.");
+  }
+
+  if (!hasExample) {
+    organizationWarnings.push("Add an example using “for example” or “for instance”.");
+  }
+
+  if (!hasConclusion && wordCount >= 60) {
+    organizationWarnings.push("Add a clear concluding sentence.");
+  }
+
+  if (!hasClearEnding) {
+    organizationWarnings.push("End your writing with proper punctuation.");
+  }
+
+  // =========================
+  // 6. Vocabulary suggestions
+  // =========================
+  const vocabularySuggestions = [
+    { weak: "good", better: "effective / beneficial / valuable" },
+    { weak: "bad", better: "harmful / negative / serious" },
+    { weak: "very important", better: "essential / crucial / significant" },
+    { weak: "a lot of", better: "many / numerous / a great number of" },
+    { weak: "things", better: "factors / aspects / points" },
+    { weak: "get better", better: "improve / develop / make progress" }
+  ].filter(item => lowerText.includes(item.weak));
+
+  // =========================
+  // 7. Score calculation
+  // =========================
+  let score = 50;
+
+  if (wordCount >= 40) score += 8;
+  if (wordCount >= 80) score += 8;
+  if (sentenceCount >= 3) score += 7;
+  if (usedConnectors.length >= 2) score += 8;
+  if (usedConnectors.length >= 4) score += 6;
+  if (hasExample) score += 6;
+  if (hasConclusion) score += 6;
+  if (hasOpinionPhrase) score += 4;
+  if (hasClearEnding) score += 5;
+  if (averageSentenceLength >= 8 && averageSentenceLength <= 24) score += 5;
+  if (grammarWarnings.length === 0) score += 6;
+
+  score -= Math.min(grammarWarnings.length * 5, 15);
+  score -= Math.min(repeatedWords.length * 2, 8);
+
+  score = Math.max(0, Math.min(score, 100));
+
+  const level =
+    score >= 90 ? "Excellent" :
+    score >= 80 ? "Very Good" :
+    score >= 70 ? "Good" :
+    score >= 60 ? "Developing" :
+    "Needs Support";
+
+  const nextExercise =
+    grammarWarnings.length
+      ? "Practice subject-verb agreement and modal verb structures."
+      : usedConnectors.length < 2
+        ? "Practice using connectors such as however, because, moreover, and for example."
+        : !hasExample
+          ? "Write a paragraph that includes one clear example."
+          : !hasConclusion
+            ? "Practice writing strong concluding sentences."
+            : "Move to a longer paragraph or essay task.";
+
+  // =========================
+  // 8. Improved draft preview
+  // =========================
+  let improvedDraft = text
+    .replace(/\btechnology have\b/gi, "technology has")
+    .replace(/\bstudents is\b/gi, "students are")
+    .replace(/\bpeople is\b/gi, "people are")
+    .replace(/\bthere is many\b/gi, "there are many")
+    .replace(/\bmore better\b/gi, "better")
+    .replace(/\bcan to\b/gi, "can")
+    .replace(/\bmust to\b/gi, "must")
+    .replace(/\bshould to\b/gi, "should");
+
+  if (!/[.!?]$/.test(improvedDraft)) {
+    improvedDraft += ".";
+  }
+
+  // =========================
+  // 9. Update score circle
+  // =========================
   if (scoreValue) {
     scoreValue.textContent = score;
   }
 
-  const feedbackBox = document.querySelector(".writing-feedback-preview");
-
+  // =========================
+  // 10. Render report
+  // =========================
   if (feedbackBox) {
     feedbackBox.innerHTML = `
-      <h3>Local Writing Feedback</h3>
+      <h3>Advanced Writing Report</h3>
 
-      <p>
-        <strong>Words:</strong> ${safeText(wordCount)}
-        <small>Your writing length is ${
-          wordCount < 40
-            ? "still short. Try adding more supporting details."
-            : "good for a first draft."
-        }</small>
-      </p>
+      <div class="writing-report-grid">
+        <div class="writing-report-card">
+          <span>Score</span>
+          <strong>${safeText(score)}%</strong>
+          <small>${safeText(level)}</small>
+        </div>
 
-      <p>
-        <strong>Connectors used:</strong> ${safeText(usedConnectors.length)}
-        <small>${
+        <div class="writing-report-card">
+          <span>Words</span>
+          <strong>${safeText(wordCount)}</strong>
+          <small>${wordCount < 40 ? "Add more details" : "Good length"}</small>
+        </div>
+
+        <div class="writing-report-card">
+          <span>Sentences</span>
+          <strong>${safeText(sentenceCount)}</strong>
+          <small>Average: ${safeText(averageSentenceLength)} words</small>
+        </div>
+
+        <div class="writing-report-card">
+          <span>Paragraphs</span>
+          <strong>${safeText(paragraphCount)}</strong>
+          <small>${paragraphCount > 1 ? "Multi-paragraph writing" : "Single paragraph"}</small>
+        </div>
+
+        <div class="writing-report-card">
+          <span>Connectors</span>
+          <strong>${safeText(usedConnectors.length)}</strong>
+          <small>${usedConnectors.length ? "Used in your writing" : "Needs connectors"}</small>
+        </div>
+      </div>
+
+      <div class="writing-report-section">
+        <h4>Connectors Found</h4>
+        ${
           usedConnectors.length
-            ? "Good. You used: " + safeText(usedConnectors.join(", "))
-            : "Try using connectors such as however, because, moreover, or for example."
-        }</small>
-      </p>
+            ? `<div class="writing-report-chips">
+                ${usedConnectors.map(item => `
+                  <span>${safeText(item.connector)} <small>${safeText(item.category)}</small></span>
+                `).join("")}
+              </div>`
+            : `<p>No clear connectors found. Try using: however, because, moreover, for example, in conclusion.</p>`
+        }
+      </div>
+
+      <div class="writing-report-section">
+        <h4>Grammar Warnings</h4>
+        ${
+          grammarWarnings.length
+            ? grammarWarnings.map(item => `
+                <p>
+                  <span class="writing-error">${safeText(item.issue)}</span>
+                  <small>${safeText(item.suggestion)}</small>
+                </p>
+              `).join("")
+            : `<p><span class="writing-good">No major local grammar warning found.</span></p>`
+        }
+      </div>
+
+      <div class="writing-report-section">
+        <h4>Organization Check</h4>
+        ${
+          organizationWarnings.length
+            ? organizationWarnings.map(warning => `
+                <p>
+                  <span class="writing-warning">Suggestion</span>
+                  <small>${safeText(warning)}</small>
+                </p>
+              `).join("")
+            : `<p><span class="writing-good">Your organization looks clear for a first draft.</span></p>`
+        }
+      </div>
+
+      <div class="writing-report-section">
+        <h4>Vocabulary Suggestions</h4>
+        ${
+          vocabularySuggestions.length
+            ? vocabularySuggestions.map(item => `
+                <p>
+                  <span class="writing-warning">${safeText(item.weak)}</span>
+                  <small>Try: ${safeText(item.better)}</small>
+                </p>
+              `).join("")
+            : `<p><span class="writing-good">No basic weak vocabulary detected locally.</span></p>`
+        }
+      </div>
+
+      <div class="writing-report-section">
+        <h4>Repeated Words</h4>
+        ${
+          repeatedWords.length
+            ? `<div class="writing-report-chips">
+                ${repeatedWords.map(([word, count]) => `
+                  <span>${safeText(word)} <small>${safeText(count)} times</small></span>
+                `).join("")}
+              </div>`
+            : `<p>No strong repetition detected.</p>`
+        }
+      </div>
+
+      <div class="writing-report-section">
+        <h4>Improved Draft Preview</h4>
+        <div class="writing-improved-draft">${safeText(improvedDraft)}</div>
+      </div>
+
+      <div class="writing-report-section">
+        <h4>Suggested Next Exercise</h4>
+        <p>
+          <span class="writing-good">Next Step</span>
+          <small>${safeText(nextExercise)}</small>
+        </p>
+      </div>
 
       <p>
         <span class="writing-good">AI-ready preview</span>
-        <small>This is a local preview. Later, real AI feedback will check grammar, vocabulary, cohesion, and task achievement.</small>
+        <small>This is still a local rule-based analyzer. Later, real AI will provide deeper grammar, style, task achievement, and personalized feedback.</small>
       </p>
     `;
   }
 
-  alert("Writing analyzed locally. Score: " + score + "%");
+  alert("Advanced writing report generated. Score: " + score + "%");
 }
 
 function loadWritingPrompt() {
