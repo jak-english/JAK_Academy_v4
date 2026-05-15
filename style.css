@@ -7352,3 +7352,138 @@ textarea{min-height:95px;resize:vertical}
     min-height: auto !important;
   }
 }
+/* =====================================================
+   Writing Academy - Lessons Hub
+   ===================================================== */
+
+.writing-lessons-hub-panel {
+  margin-top: 24px;
+  border-left: 6px solid rgba(34, 211, 238, 0.85);
+}
+
+.writing-lessons-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.writing-lessons-menu {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(5, 8, 22, 0.58);
+  border: 1px solid rgba(167, 139, 250, 0.14);
+}
+
+.writing-lessons-menu button {
+  width: 100%;
+  text-align: left;
+  border-radius: 16px;
+}
+
+.writing-lesson-viewer {
+  min-height: 320px;
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.10), transparent 35%),
+    rgba(5, 8, 22, 0.58);
+  border: 1px solid rgba(167, 139, 250, 0.14);
+}
+
+.writing-lesson-viewer h3 {
+  margin: 14px 0 10px;
+  color: #ffffff;
+  font-size: 1.6rem;
+}
+
+.writing-lesson-viewer p {
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+.writing-lesson-placeholder {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.writing-lesson-placeholder strong,
+.writing-lesson-placeholder span {
+  display: block;
+}
+
+.writing-lesson-placeholder strong {
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.writing-lesson-placeholder span {
+  color: #94a3b8;
+}
+
+.writing-lesson-section {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.writing-lesson-section h4 {
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.writing-lesson-example {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.writing-lesson-example:last-child {
+  border-bottom: 0;
+}
+
+.writing-lesson-example strong {
+  color: #99f6e4;
+}
+
+.writing-lesson-example span {
+  color: #e5e7eb;
+}
+
+.writing-lesson-starter {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  white-space: pre-wrap;
+  color: #e5e7eb;
+  line-height: 1.75;
+  background: rgba(2, 6, 23, 0.72);
+  border-left: 4px solid #99f6e4;
+}
+
+.writing-lesson-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+@media (max-width: 900px) {
+  .writing-lessons-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-lesson-example {
+    grid-template-columns: 1fr;
+  }
+}

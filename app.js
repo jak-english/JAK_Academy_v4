@@ -8726,6 +8726,166 @@ function clearWritingWorkspace() {
 
   console.log("Writing workspace cleared.");
 }
+function loadWritingLesson(skill) {
+  const viewer = document.getElementById("writingLessonViewer");
+  if (!viewer) return;
+
+  const lessons = {
+    connectors: {
+      title: "Connector Coach 🔗",
+      badge: "Flow & Cohesion",
+      explain:
+        "Connectors help your ideas move smoothly from one sentence to another. Strong writing does not only contain correct sentences; it also shows relationships between ideas.",
+      examples: [
+        ["Addition", "Moreover, students can review lessons at any time."],
+        ["Contrast", "However, online learning can be distracting."],
+        ["Reason", "Students use technology because it gives them quick access to information."],
+        ["Result", "As a result, learning becomes more flexible."],
+        ["Example", "For example, learners can watch educational videos."]
+      ],
+      practice:
+        "Write 5 sentences about your topic. Use: moreover, however, because, as a result, and for example.",
+      starter:
+        "Moreover, ____________________.\nHowever, ____________________.\nBecause ____________________, ____________________.\nAs a result, ____________________.\nFor example, ____________________."
+    },
+
+    vocabulary: {
+      title: "Vocabulary Upgrade Lab 💎",
+      badge: "Word Power",
+      explain:
+        "Strong vocabulary makes writing clearer, more mature, and more academic. The goal is not to use difficult words randomly, but to choose accurate words.",
+      examples: [
+        ["good", "beneficial / useful / effective"],
+        ["bad", "harmful / negative / serious"],
+        ["very important", "essential / significant / crucial"],
+        ["a lot of", "many / numerous / a great number of"],
+        ["things", "factors / aspects / points"]
+      ],
+      practice:
+        "Rewrite 5 simple sentences using stronger vocabulary.",
+      starter:
+        "This idea is good. → This idea is ____________________.\nThere are a lot of problems. → There are ____________________ problems.\nThis is very important. → This is ____________________."
+    },
+
+    organization: {
+      title: "Paragraph Organization Lab 🧱",
+      badge: "Structure",
+      explain:
+        "A strong paragraph is not a group of random sentences. It has a clear topic sentence, supporting details, examples, explanation, and a concluding sentence.",
+      examples: [
+        ["Topic sentence", "Online learning can help students study more effectively."],
+        ["Supporting detail", "It gives students access to lessons and resources at any time."],
+        ["Example", "For example, students can watch recorded lessons again."],
+        ["Explanation", "This helps them understand difficult ideas more clearly."],
+        ["Conclusion", "Therefore, online learning can support students when it is used properly."]
+      ],
+      practice:
+        "Write one organized paragraph using: topic sentence, support, example, explanation, and conclusion.",
+      starter:
+        "Topic sentence: ____________________.\nSupporting detail: ____________________.\nFor example, ____________________.\nThis means that ____________________.\nIn conclusion, ____________________."
+    },
+
+    grammar: {
+      title: "Grammar Accuracy Clinic ✅",
+      badge: "Accuracy",
+      explain:
+        "Grammar accuracy helps the reader trust your writing. Start by checking subject-verb agreement, tense consistency, modal verbs, and complete sentences.",
+      examples: [
+        ["Wrong", "Technology have changed education."],
+        ["Correct", "Technology has changed education."],
+        ["Wrong", "Students is learning online."],
+        ["Correct", "Students are learning online."],
+        ["Wrong", "Students can to improve."],
+        ["Correct", "Students can improve."]
+      ],
+      practice:
+        "Correct the sentences, then write 5 new sentences with correct subject-verb agreement.",
+      starter:
+        "Technology has ____________________.\nStudents are ____________________.\nPeople can ____________________.\nThere are many ____________________.\nLearning becomes ____________________."
+    },
+
+    clarity: {
+      title: "Clarity & Sentence Variety Lab ✨",
+      badge: "Style",
+      explain:
+        "Clear writing is easy to understand. Sentence variety makes your writing more interesting by mixing short, medium, and complex sentences.",
+      examples: [
+        ["Simple", "Online learning is useful."],
+        ["Developed", "Online learning is useful because students can study at their own pace."],
+        ["Complex", "Although online learning is useful, students need discipline to avoid distractions."],
+        ["Improved clarity", "This method helps students review lessons, practise skills, and manage their time."]
+      ],
+      practice:
+        "Rewrite 4 simple sentences into stronger sentences using because, although, and which.",
+      starter:
+        "Online learning is useful because ____________________.\nAlthough ____________________, ____________________.\nStudents need ____________________ which ____________________."
+    }
+  };
+
+  const lesson = lessons[skill] || lessons.connectors;
+
+  localStorage.setItem("jakCurrentWritingLesson", skill);
+  localStorage.setItem("jakCurrentWritingLessonStarter", lesson.starter);
+
+  viewer.innerHTML = `
+    <span class="writing-ai-chip">${safeText(lesson.badge)}</span>
+    <h3>${safeText(lesson.title)}</h3>
+    <p>${safeText(lesson.explain)}</p>
+
+    <div class="writing-lesson-section">
+      <h4>Examples</h4>
+      ${lesson.examples.map(example => `
+        <div class="writing-lesson-example">
+          <strong>${safeText(example[0])}</strong>
+          <span>${safeText(example[1])}</span>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="writing-lesson-section">
+      <h4>Micro Practice</h4>
+      <p>${safeText(lesson.practice)}</p>
+      <div class="writing-lesson-starter">${safeText(lesson.starter)}</div>
+    </div>
+
+    <div class="writing-lesson-actions">
+      <button type="button" onclick="sendCurrentWritingLessonPracticeToEditor()">
+        Send Practice to Editor ✍️
+      </button>
+
+      <button type="button" class="gold" onclick="loadRecommendedWritingMission()">
+        Load Recommended Mission 🚀
+      </button>
+    </div>
+  `;
+
+  console.log("Writing lesson loaded:", skill);
+}
+
+function sendWritingLessonPracticeToEditor(text) {
+  const input = document.getElementById("studentWritingInput");
+  if (!input) return;
+
+  input.value = text;
+
+  if (typeof scrollToWritingEditor === "function") {
+    scrollToWritingEditor();
+  }
+
+  console.log("Writing lesson practice sent to editor.");
+}
+function sendCurrentWritingLessonPracticeToEditor() {
+  const starter = localStorage.getItem("jakCurrentWritingLessonStarter") || "";
+
+  if (!starter) {
+    alert("Please load a writing lesson first.");
+    return;
+  }
+
+  if (typeof sendWritingLessonPracticeToEditor === "function") {
+    sendWritingLessonPracticeToEditor(starter);
+  }
+}
 window.loadTeacherResources = loadTeacherResources;
 window.loadStudentResources = loadStudentResources;
 window.clearStudentResourceFilters = clearStudentResourceFilters;
