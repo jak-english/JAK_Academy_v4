@@ -7293,8 +7293,134 @@ if (typeof renderWritingAchievements === "function") {
 if (typeof renderWritingAttemptsTimeline === "function") {
   renderWritingAttemptsTimeline();
 }
-}
 
+if (typeof updateWritingSmartCoachPanel === "function") {
+  updateWritingSmartCoachPanel();
+}
+}
+function updateWritingSmartCoachPanel() {
+  const focusBox = document.getElementById("coachCurrentFocus");
+  const levelBox = document.getElementById("coachWritingLevel");
+  const actionBox = document.getElementById("coachNextAction");
+
+  const learnerModeSelect = document.getElementById("writingLearnerModeSelect");
+  const writingGoalSelect = document.getElementById("writingGoalSelect");
+  const writingTypeSelect = document.getElementById("writingTypeSelect");
+
+  const attempts = typeof getWritingAttempts === "function" ? getWritingAttempts() : [];
+
+  const formatText = (value) => {
+    if (!value) return "Waiting";
+    return String(value)
+      .replace(/([A-Z])/g, " $1")
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, letter => letter.toUpperCase())
+      .trim();
+  };
+
+  const getWritingLevelFromAverage = () => {
+    if (!attempts || attempts.length === 0) return "Waiting";
+
+    const scores = attempts
+      .map(attempt => Number(attempt.score || 0))
+      .filter(score => !Number.isNaN(score));
+
+    const average = scores.length
+      ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+      : 0;
+
+    if (average >= 90) return "Advanced";
+    if (average >= 75) return "Strong";
+    if (average >= 60) return "Developing";
+    if (average >= 40) return "Basic";
+    return "Starter";
+  };
+
+  const getWeakestSkill = () => {
+    if (!attempts || attempts.length === 0) {
+      return writingGoalSelect ? writingGoalSelect.value : "organization";
+    }
+
+    const skillKeys = ["grammar", "vocabulary", "connectors", "organization", "clarity"];
+
+    const totals = {
+      grammar: 0,
+      vocabulary: 0,
+      connectors: 0,
+      organization: 0,
+      clarity: 0
+    };
+
+    let count = 0;
+
+    attempts.forEach(attempt => {
+      const skills = attempt.skillScores || attempt.skills || null;
+
+      if (skills) {
+        skillKeys.forEach(key => {
+          totals[key] += Number(skills[key] || 0);
+        });
+        count++;
+      }
+    });
+
+    if (!count) {
+      return writingGoalSelect ? writingGoalSelect.value : "organization";
+    }
+
+    const averages = {};
+    skillKeys.forEach(key => {
+      averages[key] = Math.round(totals[key] / count);
+    });
+
+    return skillKeys.reduce((weakest, key) => {
+      return averages[key] < averages[weakest] ? key : weakest;
+    }, skillKeys[0]);
+  };
+
+  const learnerMode = learnerModeSelect ? learnerModeSelect.value : "school";
+  const writingType = writingTypeSelect ? writingTypeSelect.value : "paragraph";
+  const focusSkill = getWeakestSkill();
+  const writingLevel = getWritingLevelFromAverage();
+
+  let nextAction = "Generate Mission";
+
+  if (attempts.length === 0) {
+    nextAction = "Write First Attempt";
+  } else if (focusSkill === "grammar") {
+    nextAction = "Review Grammar Clinic";
+  } else if (focusSkill === "vocabulary") {
+    nextAction = "Open Vocabulary Lab";
+  } else if (focusSkill === "connectors") {
+    nextAction = "Practice Connectors";
+  } else if (focusSkill === "organization") {
+    nextAction = "Build Paragraph Plan";
+  } else if (focusSkill === "clarity") {
+    nextAction = "Rewrite for Clarity";
+  }
+
+  if (focusBox) {
+    focusBox.textContent = formatText(focusSkill);
+  }
+
+  if (levelBox) {
+    levelBox.textContent = writingLevel;
+  }
+
+  if (actionBox) {
+    actionBox.textContent = nextAction;
+  }
+
+  const commandLearnerMode = document.getElementById("commandLearnerMode");
+  const commandWritingType = document.getElementById("commandWritingType");
+  const commandFocusSkill = document.getElementById("commandFocusSkill");
+  const commandNextStep = document.getElementById("commandNextStep");
+
+  if (commandLearnerMode) commandLearnerMode.textContent = formatText(learnerMode);
+  if (commandWritingType) commandWritingType.textContent = formatText(writingType);
+  if (commandFocusSkill) commandFocusSkill.textContent = formatText(focusSkill);
+  if (commandNextStep) commandNextStep.textContent = nextAction;
+}
 
 function renderWritingAchievements() {
   const streakBadge = document.getElementById("writingStreakBadge");
@@ -10116,6 +10242,21 @@ function sendCurrentWritingLessonPracticeToEditor() {
     sendWritingLessonPracticeToEditor(starter);
   }
 }
+document.addEventListener("change", (event) => {
+  if (
+    event.target &&
+    (
+      event.target.id === "writingLearnerModeSelect" ||
+      event.target.id === "writingGoalSelect" ||
+      event.target.id === "writingTypeSelect"
+    )
+  ) {
+    if (typeof updateWritingSmartCoachPanel === "function") {
+      updateWritingSmartCoachPanel();
+    }
+  }
+});
+
 window.loadTeacherResources = loadTeacherResources;
 window.loadStudentResources = loadStudentResources;
 window.clearStudentResourceFilters = clearStudentResourceFilters;
@@ -10135,3 +10276,83 @@ window.setCurrentStudySystem = setCurrentStudySystem;
 window.getPlannerTasksByCurrentSystem = getPlannerTasksByCurrentSystem;
 window.renderPlannerSystemContext = renderPlannerSystemContext;
 window.updatePlannerTaskStatus = updatePlannerTaskStatus;
+
+function showWritingV2Tab(tabName) {
+  const screens = document.querySelectorAll("#writingAcademy [data-writing-v2-screen]");
+  const tabs = document.querySelectorAll("#writingAcademy [data-writing-v2-tab]");
+
+  screens.forEach(screen => {
+    screen.classList.remove("active");
+  });
+
+  tabs.forEach(tab => {
+    tab.classList.remove("active");
+  });
+
+  const activeScreen = document.querySelector(`#writingAcademy [data-writing-v2-screen="${tabName}"]`);
+  const activeTab = document.querySelector(`#writingAcademy [data-writing-v2-tab="${tabName}"]`);
+
+  if (activeScreen) {
+    activeScreen.classList.add("active");
+  }
+
+  if (activeTab) {
+    activeTab.classList.add("active");
+  }
+
+  if (typeof updateWritingSmartCoachPanel === "function") {
+    updateWritingSmartCoachPanel();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("writingAcademy")) {
+    showWritingV2Tab("overview");
+  }
+});
+
+window.showWritingV2Tab = showWritingV2Tab;
+
+function showWritingV3Screen(screenName) {
+  const screens = document.querySelectorAll("#writingAcademy [data-writing-v3-view]");
+  const tabs = document.querySelectorAll("#writingAcademy [data-writing-v3-screen]");
+
+  screens.forEach(screen => {
+    screen.classList.remove("active");
+  });
+
+  tabs.forEach(tab => {
+    tab.classList.remove("active");
+  });
+
+  const activeScreen = document.querySelector(`#writingAcademy [data-writing-v3-view="${screenName}"]`);
+  const activeTab = document.querySelector(`#writingAcademy [data-writing-v3-screen="${screenName}"]`);
+
+  if (activeScreen) {
+    activeScreen.classList.add("active");
+  }
+
+  if (activeTab) {
+    activeTab.classList.add("active");
+  }
+
+  if (typeof updateWritingSmartCoachPanel === "function") {
+    updateWritingSmartCoachPanel();
+  }
+
+  if (typeof renderWritingProgressSummary === "function") {
+    renderWritingProgressSummary();
+  }
+
+  if (typeof updateWritingV3AnalyticsFromAttempts === "function") {
+    updateWritingV3AnalyticsFromAttempts();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("writingAcademy")) {
+    showWritingV3Screen("mission");
+  }
+});
+
+window.showWritingV3Screen = showWritingV3Screen;

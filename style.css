@@ -8354,3 +8354,2514 @@ textarea{min-height:95px;resize:vertical}
     flex: 0 0 auto;
   }
 }
+/* =====================================================
+   Writing Academy Visual Cleanup Patch
+   Fix overflow, crowded cards, nested boxes, mobile layout
+===================================================== */
+
+/* Main container safety */
+#writingAcademy,
+#writingAcademy * {
+  box-sizing: border-box;
+}
+
+#writingAcademy {
+  overflow-x: hidden;
+}
+
+.writing-academy-shell {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 22px;
+}
+
+/* Make the main responsive layout calmer */
+.writing-academy-responsive-layout {
+  grid-template-columns: 190px minmax(0, 1fr) 260px;
+  gap: 18px;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Prevent all children from forcing page overflow */
+.writing-main-workspace,
+.writing-main-grid,
+.writing-two-columns,
+.writing-three-columns,
+.writing-workspace-layout,
+.writing-lessons-layout,
+.writing-skill-map-layout,
+.writing-mission-grid,
+.writing-types-grid,
+.writing-command-stats,
+.writing-hero-stats {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Cleaner panel look: less 1990s nested card feeling */
+#writingAcademy .writing-panel {
+  width: 100%;
+  max-width: 100%;
+  padding: 20px;
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.76));
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.26);
+}
+
+/* Better section spacing */
+.writing-main-workspace {
+  gap: 18px;
+}
+
+/* Stop headers from pushing cards out */
+.writing-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.writing-panel-header h2 {
+  font-size: clamp(1.15rem, 2vw, 1.6rem);
+  line-height: 1.25;
+  margin: 6px 0;
+}
+
+.writing-panel-header p {
+  max-width: 720px;
+  line-height: 1.6;
+}
+
+/* Command dashboard cleanup */
+.writing-command-dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+  gap: 16px;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.writing-command-left,
+.writing-command-stats,
+.writing-command-stat {
+  min-width: 0;
+}
+
+.writing-command-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.writing-command-stat {
+  padding: 13px;
+  border-radius: 18px;
+}
+
+.writing-command-stat strong {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+
+/* Hero cleanup */
+.writing-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(240px, 0.7fr);
+  gap: 18px;
+  overflow: hidden;
+}
+
+.writing-hero-content,
+.writing-hologram {
+  min-width: 0;
+}
+
+.writing-hero h1 {
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  line-height: 1.08;
+}
+
+.writing-hero p {
+  max-width: 780px;
+  line-height: 1.65;
+}
+
+.writing-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.writing-hero-actions button {
+  flex: 1 1 160px;
+}
+
+.writing-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+/* Sidebar should not eat too much space */
+.writing-left-sidebar {
+  padding: 12px;
+  gap: 8px;
+}
+
+.writing-left-sidebar button {
+  padding: 10px 11px;
+  font-size: 0.88rem;
+  line-height: 1.25;
+}
+
+/* Right coach becomes cleaner */
+.writing-right-coach {
+  min-width: 0;
+}
+
+.writing-coach-card {
+  padding: 14px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.writing-coach-card strong,
+.writing-coach-card small,
+.writing-coach-card p {
+  overflow-wrap: anywhere;
+}
+
+/* Main grids: stop too many columns from squeezing */
+.writing-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+
+.writing-two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.writing-three-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* Workspace internal layout fix */
+.writing-workspace-layout {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.85fr) minmax(0, 1.35fr) minmax(220px, 0.9fr);
+  gap: 16px;
+}
+
+.writing-steps-box,
+.writing-builder-box,
+.writing-preview-box {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 22px;
+}
+
+.writing-step-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.writing-step-buttons button,
+.writing-builder-actions button,
+.writing-editor-actions button,
+.writing-mission-actions button,
+.connector-tabs button {
+  white-space: normal;
+  line-height: 1.25;
+}
+
+/* Inputs/textareas/selects never leave the card */
+#writingAcademy input,
+#writingAcademy select,
+#writingAcademy textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.writing-editor-textarea {
+  min-height: 220px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+/* Mission grid responsive inside card */
+.writing-mission-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.writing-mission-grid label:last-child {
+  grid-column: 1 / -1;
+}
+
+/* Buttons should wrap nicely */
+.writing-mission-actions,
+.writing-builder-actions,
+.writing-editor-actions,
+.connector-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.writing-mission-actions button,
+.writing-builder-actions button,
+.writing-editor-actions button,
+.connector-tabs button {
+  flex: 1 1 150px;
+}
+
+/* Lessons and skill map */
+.writing-lessons-layout,
+.writing-skill-map-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+  gap: 16px;
+}
+
+.writing-lessons-menu {
+  display: grid;
+  gap: 9px;
+}
+
+.writing-lessons-menu button {
+  white-space: normal;
+  line-height: 1.3;
+}
+
+/* Progress dashboard avoid nested visual chaos */
+.writing-progress-dashboard,
+.writing-achievements-panel,
+.writing-attempts-timeline {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 22px;
+}
+
+.writing-progress-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.writing-progress-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.writing-progress-card strong,
+.writing-progress-card small {
+  overflow-wrap: anywhere;
+}
+
+.writing-skill-bar-row {
+  grid-template-columns: 120px minmax(0, 1fr) 48px;
+}
+
+.writing-achievements-head,
+.writing-attempt-top,
+.writing-progress-header {
+  flex-wrap: wrap;
+}
+
+/* Writing path fix */
+.writing-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+.writing-path-arrow {
+  display: none;
+}
+
+.writing-path-card {
+  min-width: 0;
+}
+
+/* Cards inside writing types */
+.writing-types-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.writing-type-card {
+  min-width: 0;
+}
+
+/* Tablet layout */
+@media (max-width: 1180px) {
+  .writing-academy-shell {
+    padding: 18px;
+  }
+
+  .writing-academy-responsive-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-command-dashboard,
+  .writing-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-command-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .writing-left-sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .writing-sidebar-brand {
+    min-width: 150px;
+  }
+
+  .writing-left-sidebar button {
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .writing-right-coach {
+    position: static;
+  }
+
+  .writing-coach-sticky {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .writing-coach-card.main {
+    grid-column: 1 / -1;
+  }
+
+  .writing-workspace-layout,
+  .writing-lessons-layout,
+  .writing-skill-map-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-two-columns,
+  .writing-three-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-progress-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .writing-types-grid,
+  .writing-path {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile layout */
+@media (max-width: 680px) {
+  .writing-academy-shell {
+    padding: 12px;
+  }
+
+  #writingAcademy .writing-panel {
+    padding: 15px;
+    border-radius: 20px;
+  }
+
+  .writing-command-dashboard,
+  .writing-hero {
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  .writing-command-stats,
+  .writing-hero-stats,
+  .writing-mission-grid,
+  .writing-progress-summary,
+  .writing-types-grid,
+  .writing-path,
+  .writing-coach-sticky {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-panel-header {
+    gap: 8px;
+  }
+
+  .writing-ai-chip {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .writing-left-sidebar {
+    margin: 0 -6px 8px;
+    border-radius: 18px;
+  }
+
+  .writing-sidebar-brand {
+    min-width: 130px;
+  }
+
+  .writing-left-sidebar button {
+    min-width: 108px;
+    font-size: 0.8rem;
+    padding: 9px 10px;
+  }
+
+  .writing-hero-actions,
+  .writing-mission-actions,
+  .writing-builder-actions,
+  .writing-editor-actions,
+  .connector-tabs {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .writing-toolbar {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+  }
+
+  .writing-toolbar button {
+    flex: 0 0 auto;
+  }
+
+  .writing-skill-bar-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .writing-skill-bar-value {
+    text-align: left;
+  }
+
+  .writing-attempt-top {
+    flex-direction: column;
+  }
+
+  .writing-attempt-score {
+    width: fit-content;
+  }
+}
+/* =====================================================
+   Writing Academy Spacecraft UI Patch
+   Remove harsh yellow / make icons futuristic
+===================================================== */
+
+/* General futuristic glow variables */
+:root {
+  --space-bg-1: rgba(8, 15, 30, 0.92);
+  --space-bg-2: rgba(18, 28, 52, 0.88);
+  --space-line: rgba(125, 211, 252, 0.18);
+  --space-cyan: #67e8f9;
+  --space-cyan-soft: #a5f3fc;
+  --space-blue: #60a5fa;
+  --space-purple: #a78bfa;
+  --space-text: #e2e8f0;
+  --space-muted: #94a3b8;
+  --space-glow: 0 0 18px rgba(103, 232, 249, 0.18);
+}
+
+/* Chips */
+.writing-ai-chip,
+.section-kicker,
+.writing-badge {
+  color: var(--space-cyan-soft) !important;
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.14), rgba(139, 92, 246, 0.14)) !important;
+  border: 1px solid rgba(103, 232, 249, 0.22) !important;
+  box-shadow: 0 8px 20px rgba(34, 211, 238, 0.12) !important;
+  text-shadow: 0 0 8px rgba(103, 232, 249, 0.14);
+}
+
+/* Sidebar brand icon */
+.writing-sidebar-brand span {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 35%),
+    linear-gradient(135deg, rgba(34, 211, 238, 0.95), rgba(99, 102, 241, 0.92), rgba(139, 92, 246, 0.9)) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow:
+    0 0 18px rgba(34, 211, 238, 0.22),
+    0 0 32px rgba(139, 92, 246, 0.12);
+}
+
+/* Active sidebar tab */
+.writing-left-sidebar button.active-writing-tab {
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.22), rgba(99, 102, 241, 0.18), rgba(139, 92, 246, 0.22)) !important;
+  border-color: rgba(103, 232, 249, 0.34) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 0 0 1px rgba(125, 211, 252, 0.08),
+    0 12px 30px rgba(34, 211, 238, 0.12) !important;
+}
+
+/* Normal sidebar buttons */
+.writing-left-sidebar button {
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.82)) !important;
+  color: var(--space-text) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+.writing-left-sidebar button:hover {
+  background: linear-gradient(145deg, rgba(17, 28, 52, 0.96), rgba(42, 54, 88, 0.88)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(34, 211, 238, 0.10) !important;
+}
+
+/* Coach icon */
+.writing-coach-icon {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 36%),
+    linear-gradient(135deg, rgba(34, 211, 238, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.92)) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow:
+    0 0 18px rgba(34, 211, 238, 0.18),
+    0 0 32px rgba(59, 130, 246, 0.12);
+}
+
+/* Remove harsh yellow from gold coach card */
+.writing-coach-card.gold {
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.12), transparent 36%),
+    radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.14), transparent 36%),
+    linear-gradient(145deg, rgba(10, 18, 34, 0.94), rgba(24, 34, 60, 0.88)) !important;
+  border-color: rgba(103, 232, 249, 0.18) !important;
+  color: var(--space-text) !important;
+  box-shadow: 0 14px 34px rgba(2, 6, 23, 0.28), var(--space-glow);
+}
+
+/* Streak badge بدل الأصفر */
+.writing-streak-badge,
+.writing-level-badge,
+.writing-attempt-score {
+  color: #ecfeff !important;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 35%),
+    linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.88)) !important;
+  border: 1px solid rgba(255,255,255,0.16) !important;
+  box-shadow:
+    0 0 18px rgba(34, 211, 238, 0.18),
+    0 12px 28px rgba(34, 211, 238, 0.14) !important;
+}
+
+/* Achievement badges */
+.writing-achievement-badge {
+  color: var(--space-text) !important;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.86), rgba(30, 41, 59, 0.82)) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+.writing-achievement-badge.unlocked {
+  color: #ecfeff !important;
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.24), rgba(99, 102, 241, 0.18), rgba(139, 92, 246, 0.2)) !important;
+  border-color: rgba(103, 232, 249, 0.24) !important;
+  box-shadow: 0 10px 24px rgba(34, 211, 238, 0.10) !important;
+}
+
+.writing-achievement-badge.locked {
+  color: #94a3b8 !important;
+  background: rgba(15, 23, 42, 0.55) !important;
+}
+
+/* Type cards icons */
+.writing-type-card span,
+.writing-path-card span,
+.writing-command-stat strong,
+.writing-hero-stats strong {
+  text-shadow: 0 0 10px rgba(103, 232, 249, 0.12);
+}
+
+/* Writing type cards: more futuristic */
+.writing-type-card,
+.writing-path-card,
+.writing-progress-card,
+.writing-command-stat {
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.78)) !important;
+  border: 1px solid rgba(125, 211, 252, 0.10) !important;
+  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.18) !important;
+}
+
+/* Buttons with class gold: remove yellow look */
+button.gold,
+.writing-builder-actions .gold,
+.writing-editor-actions .gold,
+.writing-mission-actions .gold,
+.writing-hero-actions .gold {
+  color: #ecfeff !important;
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.88)) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  box-shadow:
+    0 0 18px rgba(34, 211, 238, 0.14),
+    0 12px 28px rgba(34, 211, 238, 0.12) !important;
+}
+
+button.gold:hover,
+.writing-builder-actions .gold:hover,
+.writing-editor-actions .gold:hover,
+.writing-mission-actions .gold:hover,
+.writing-hero-actions .gold:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+/* Optional futuristic panel borders */
+.writing-panel,
+.writing-command-dashboard,
+.writing-hero,
+.writing-progress-dashboard,
+.writing-attempts-timeline,
+.writing-achievements-panel,
+.writing-left-sidebar,
+.writing-right-coach {
+  position: relative;
+}
+
+.writing-panel::after,
+.writing-command-dashboard::after,
+.writing-hero::after,
+.writing-left-sidebar::after,
+.writing-right-coach::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: inset 0 0 20px rgba(103, 232, 249, 0.03);
+}
+
+/* Better text clarity */
+.writing-panel h2,
+.writing-panel h3,
+.writing-command-dashboard h2,
+.writing-hero h1,
+.writing-hero h3 {
+  color: #f8fafc !important;
+}
+
+.writing-panel p,
+.writing-command-dashboard p,
+.writing-hero p,
+.writing-coach-card p,
+.writing-coach-card small {
+  color: #cbd5e1 !important;
+}
+
+/* =====================================================
+   Writing Academy V2 - Clean Space Command UI
+   Final visual reset for the new tabbed structure
+===================================================== */
+
+#writingAcademy,
+#writingAcademy * {
+  box-sizing: border-box;
+}
+
+#writingAcademy {
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at 10% 5%, rgba(34, 211, 238, 0.16), transparent 28%),
+    radial-gradient(circle at 90% 10%, rgba(139, 92, 246, 0.18), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.08), transparent 35%),
+    linear-gradient(135deg, #020617, #0f172a 45%, #111827);
+}
+
+.writing-v2-shell {
+  width: min(1500px, 100%);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header */
+.writing-v2-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.35fr);
+  gap: 18px;
+  align-items: stretch;
+  padding: 22px;
+  border-radius: 32px;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.88), rgba(30, 41, 59, 0.62));
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  box-shadow:
+    0 24px 70px rgba(2, 6, 23, 0.42),
+    inset 0 0 24px rgba(103, 232, 249, 0.035);
+  backdrop-filter: blur(18px);
+}
+
+.writing-v2-kicker,
+.writing-v2-chip {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  gap: 8px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  color: #a5f3fc;
+  background: rgba(34, 211, 238, 0.10);
+  border: 1px solid rgba(103, 232, 249, 0.20);
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+}
+
+.writing-v2-title-area h1 {
+  margin: 12px 0 8px;
+  font-size: clamp(2rem, 4vw, 4.1rem);
+  line-height: 0.98;
+  color: #f8fafc;
+  letter-spacing: -0.05em;
+}
+
+.writing-v2-title-area p {
+  margin: 0;
+  max-width: 720px;
+  color: #cbd5e1;
+  line-height: 1.7;
+  font-size: 1.02rem;
+}
+
+.writing-v2-status-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.writing-v2-status-card {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.10), transparent 40%),
+    rgba(15, 23, 42, 0.68);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.writing-v2-status-card span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.76rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.writing-v2-status-card strong {
+  display: block;
+  color: #f8fafc;
+  font-size: 0.96rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+/* Tabs */
+.writing-v2-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+  padding: 10px;
+  overflow-x: auto;
+  border-radius: 999px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.82), rgba(15, 23, 42, 0.72));
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.30);
+  backdrop-filter: blur(16px);
+  scrollbar-width: thin;
+}
+
+.writing-v2-tabs button {
+  flex: 0 0 auto;
+  min-width: 128px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #cbd5e1;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.22s ease;
+  white-space: nowrap;
+}
+
+.writing-v2-tabs button:hover {
+  color: #ffffff;
+  background: rgba(148, 163, 184, 0.10);
+}
+
+.writing-v2-tabs button.active {
+  color: #ecfeff;
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.88));
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 0 18px rgba(34, 211, 238, 0.16),
+    0 12px 30px rgba(34, 211, 238, 0.12);
+}
+
+/* Body + screens */
+.writing-v2-body {
+  min-width: 0;
+}
+
+.writing-v2-screen {
+  display: none;
+}
+
+.writing-v2-screen.active {
+  display: block;
+  animation: writingV2Fade 0.28s ease;
+}
+
+@keyframes writingV2Fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.writing-v2-screen-head {
+  margin-bottom: 16px;
+  padding: 18px 20px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 32%),
+    rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.writing-v2-screen-head span {
+  color: #67e8f9;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.writing-v2-screen-head h2 {
+  margin: 7px 0;
+  color: #f8fafc;
+  font-size: clamp(1.45rem, 2.5vw, 2.1rem);
+}
+
+.writing-v2-screen-head p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.65;
+}
+
+/* Cards */
+.writing-v2-card {
+  min-width: 0;
+  padding: 20px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(139, 92, 246, 0.10), transparent 32%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.90), rgba(30, 41, 59, 0.68));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow:
+    0 20px 55px rgba(2, 6, 23, 0.32),
+    inset 0 0 18px rgba(255, 255, 255, 0.025);
+  overflow: hidden;
+}
+
+.writing-v2-card.large {
+  min-width: 0;
+}
+
+.writing-v2-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.writing-v2-card-head h3 {
+  margin: 6px 0;
+  color: #f8fafc;
+  font-size: 1.22rem;
+  line-height: 1.25;
+}
+
+.writing-v2-card-head p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.writing-v2-number {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  color: #ecfeff;
+  background: rgba(34, 211, 238, 0.14);
+  border: 1px solid rgba(103, 232, 249, 0.20);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+/* Layout grids */
+.writing-v2-overview-grid,
+.writing-v2-editor-grid,
+.writing-v2-progress-grid,
+.writing-v2-skillmap-grid,
+.writing-v2-lessons-grid,
+.writing-v2-builder-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.writing-v2-overview-grid {
+  grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.75fr);
+}
+
+.writing-v2-overview-grid .large {
+  grid-column: span 1;
+}
+
+.writing-v2-builder-grid {
+  grid-template-columns: minmax(230px, 0.8fr) minmax(0, 1.4fr) minmax(260px, 0.85fr);
+  margin-bottom: 18px;
+}
+
+.writing-v2-editor-grid {
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.65fr);
+}
+
+.writing-v2-editor-grid #writingCoachPanel {
+  grid-column: 1 / -1;
+}
+
+.writing-v2-lessons-grid,
+.writing-v2-skillmap-grid {
+  grid-template-columns: minmax(260px, 0.75fr) minmax(0, 1.25fr);
+}
+
+.writing-v2-progress-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Forms */
+.writing-v2-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.writing-v2-form-grid.one {
+  grid-template-columns: 1fr;
+}
+
+.writing-v2-form-grid .wide {
+  grid-column: 1 / -1;
+}
+
+.writing-v2-form-grid label,
+.writing-v2-card label {
+  display: grid;
+  gap: 7px;
+  color: #cbd5e1;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+#writingAcademy input,
+#writingAcademy select,
+#writingAcademy textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  background: rgba(2, 6, 23, 0.52);
+  color: #f8fafc;
+  border-radius: 16px;
+  padding: 12px 13px;
+  outline: none;
+}
+
+#writingAcademy input:focus,
+#writingAcademy select:focus,
+#writingAcademy textarea:focus {
+  border-color: rgba(103, 232, 249, 0.50);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.10);
+}
+
+.writing-v2-textarea {
+  min-height: 340px;
+  resize: vertical;
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+/* Actions */
+.writing-v2-actions,
+.writing-v2-pill-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.writing-v2-actions button,
+.writing-v2-pill-actions button,
+.writing-v2-step-buttons button,
+.writing-v2-lesson-menu button,
+.writing-v2-toolbar button {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.88));
+  color: #ecfeff;
+  border-radius: 16px;
+  padding: 11px 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.22s ease;
+  box-shadow: 0 10px 24px rgba(34, 211, 238, 0.10);
+}
+
+.writing-v2-actions button:hover,
+.writing-v2-pill-actions button:hover,
+.writing-v2-step-buttons button:hover,
+.writing-v2-lesson-menu button:hover,
+.writing-v2-toolbar button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.07);
+}
+
+.writing-v2-actions .v2-secondary {
+  background:
+    linear-gradient(135deg, rgba(99, 102, 241, 0.90), rgba(139, 92, 246, 0.88));
+}
+
+.writing-v2-actions .v2-ghost {
+  background: rgba(148, 163, 184, 0.10);
+  color: #cbd5e1;
+  box-shadow: none;
+}
+
+.writing-v2-step-buttons,
+.writing-v2-lesson-menu {
+  display: grid;
+  gap: 10px;
+}
+
+/* Outputs */
+.writing-v2-output,
+.writing-v2-empty,
+.writing-v2-preview-box {
+  margin-top: 14px;
+  padding: 15px;
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.42);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  line-height: 1.65;
+}
+
+.writing-v2-empty strong,
+.writing-v2-empty span,
+.writing-v2-output strong,
+.writing-v2-output span {
+  display: block;
+}
+
+/* Coach */
+.writing-v2-card.coach {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.16), transparent 35%),
+    linear-gradient(145deg, rgba(8, 13, 28, 0.96), rgba(24, 34, 60, 0.78));
+}
+
+.writing-v2-coach-orb {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  font-size: 1.8rem;
+  margin-bottom: 14px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.20), transparent 36%),
+    linear-gradient(135deg, rgba(34, 211, 238, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.92));
+  box-shadow:
+    0 0 22px rgba(34, 211, 238, 0.22),
+    0 18px 38px rgba(2, 6, 23, 0.30);
+}
+
+.writing-v2-mini-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.writing-v2-mini-list div,
+.writing-v2-recommendation-grid div {
+  padding: 13px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.62);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.writing-v2-mini-list span,
+.writing-v2-recommendation-grid span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.writing-v2-mini-list strong,
+.writing-v2-recommendation-grid strong {
+  color: #f8fafc;
+}
+
+/* Path */
+.writing-v2-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.writing-v2-path div {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.58);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.writing-v2-path strong {
+  display: block;
+  color: #f8fafc;
+  margin-bottom: 4px;
+}
+
+.writing-v2-path span {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+/* Toolbar */
+.writing-v2-toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.writing-v2-toolbar button {
+  padding: 9px 12px;
+  border-radius: 13px;
+  background: rgba(148, 163, 184, 0.10);
+  box-shadow: none;
+}
+
+/* Score + skills */
+.writing-v2-score-orb {
+  width: 160px;
+  height: 160px;
+  margin: 10px auto 18px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(34, 211, 238, 0.24), rgba(59, 130, 246, 0.12) 48%, rgba(2, 6, 23, 0.76) 70%);
+  border: 1px solid rgba(103, 232, 249, 0.22);
+  box-shadow: 0 0 32px rgba(34, 211, 238, 0.12);
+}
+
+.writing-v2-score-orb strong {
+  display: block;
+  color: #ecfeff;
+  font-size: 2.7rem;
+  line-height: 1;
+}
+
+.writing-v2-score-orb span {
+  display: block;
+  color: #a5f3fc;
+  font-weight: 800;
+}
+
+.writing-v2-skill-bars {
+  display: grid;
+  gap: 12px;
+}
+
+.writing-v2-skill-bars div {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 42px;
+  gap: 10px;
+  align-items: center;
+}
+
+.writing-v2-skill-bars span {
+  color: #cbd5e1;
+  font-weight: 800;
+  font-size: 0.86rem;
+}
+
+.writing-v2-skill-bars i {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(148, 163, 184, 0.16);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.writing-v2-skill-bars b {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #60a5fa, #a78bfa);
+}
+
+.writing-v2-skill-bars strong {
+  color: #a5f3fc;
+  text-align: right;
+}
+
+/* Feedback */
+.writing-v2-feedback-preview {
+  display: grid;
+  gap: 8px;
+  color: #cbd5e1;
+}
+
+.writing-v2-feedback-preview p {
+  margin: 0;
+}
+
+.writing-v2-feedback-preview small {
+  color: #94a3b8;
+}
+
+/* Checklist */
+.writing-v2-checklist {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.writing-v2-checklist label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+/* Progress compatibility polish */
+#writingAcademy .writing-progress-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+#writingAcademy .writing-progress-card,
+#writingAcademy .writing-progress-empty {
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.38);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+#writingAcademy .writing-skill-progress-bars,
+#writingAcademy .writing-achievement-badges,
+#writingAcademy .writing-attempts-timeline-list {
+  margin-top: 16px;
+}
+
+#writingAcademy .writing-level-badge,
+#writingAcademy .writing-streak-badge,
+#writingAcademy .writing-attempt-score {
+  color: #ecfeff !important;
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.88)) !important;
+  border: 1px solid rgba(255,255,255,0.16) !important;
+}
+
+#writingAcademy .writing-motivation-message,
+#writingAcademy .writing-progress-advice {
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(103, 232, 249, 0.16);
+  color: #dffbff;
+}
+
+/* Footer */
+.writing-v2-footer {
+  margin-top: 20px;
+  padding: 18px;
+  border-radius: 24px;
+  text-align: center;
+  background: rgba(15, 23, 42, 0.60);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.writing-v2-footer strong {
+  display: block;
+  color: #f8fafc;
+}
+
+.writing-v2-footer span {
+  color: #94a3b8;
+}
+
+/* Tablet */
+@media (max-width: 1180px) {
+  .writing-v2-header,
+  .writing-v2-overview-grid,
+  .writing-v2-builder-grid,
+  .writing-v2-editor-grid,
+  .writing-v2-lessons-grid,
+  .writing-v2-skillmap-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-v2-status-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .writing-v2-progress-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #writingAcademy .writing-progress-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 680px) {
+  .writing-v2-shell {
+    padding: 12px;
+  }
+
+  .writing-v2-header {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .writing-v2-title-area h1 {
+    font-size: 2rem;
+  }
+
+  .writing-v2-status-grid,
+  .writing-v2-form-grid,
+  .writing-v2-path,
+  #writingAcademy .writing-progress-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-v2-tabs {
+    margin: 12px 0;
+    border-radius: 20px;
+  }
+
+  .writing-v2-tabs button {
+    min-width: 112px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+  }
+
+  .writing-v2-card {
+    padding: 15px;
+    border-radius: 22px;
+  }
+
+  .writing-v2-card-head {
+    flex-direction: column;
+  }
+
+  .writing-v2-actions,
+  .writing-v2-pill-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .writing-v2-toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .writing-v2-toolbar button {
+    flex: 0 0 auto;
+  }
+
+  .writing-v2-textarea {
+    min-height: 260px;
+  }
+
+  .writing-v2-skill-bars div {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .writing-v2-skill-bars strong {
+    text-align: left;
+  }
+}
+/* =====================================================
+   Writing Academy V2 Text Fit & Card Readability Fix
+===================================================== */
+
+#writingAcademy .writing-v2-status-card,
+#writingAcademy .writing-v2-card,
+#writingAcademy .writing-v2-mini-list div,
+#writingAcademy .writing-v2-recommendation-grid div,
+#writingAcademy .writing-progress-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+#writingAcademy .writing-v2-status-card strong,
+#writingAcademy .writing-v2-status-card span,
+#writingAcademy .writing-v2-card h3,
+#writingAcademy .writing-v2-card p,
+#writingAcademy .writing-v2-card strong,
+#writingAcademy .writing-v2-card span,
+#writingAcademy .writing-v2-screen-head h2,
+#writingAcademy .writing-v2-screen-head p,
+#writingAcademy .writing-progress-card strong,
+#writingAcademy .writing-progress-card small {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  hyphens: none !important;
+  white-space: normal;
+}
+
+#writingAcademy .writing-v2-status-card strong {
+  font-size: clamp(0.78rem, 0.95vw, 0.96rem);
+  line-height: 1.35;
+}
+
+#writingAcademy .writing-v2-status-card span {
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+#writingAcademy .writing-v2-status-grid {
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+}
+
+#writingAcademy .writing-v2-card-head {
+  align-items: flex-start;
+}
+
+#writingAcademy .writing-v2-card-head > div {
+  min-width: 0;
+}
+
+#writingAcademy .writing-v2-card-head h3 {
+  line-height: 1.3;
+}
+
+#writingAcademy .writing-v2-chip,
+#writingAcademy .writing-v2-kicker {
+  white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+  #writingAcademy .writing-v2-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  #writingAcademy .writing-v2-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #writingAcademy .writing-v2-chip,
+  #writingAcademy .writing-v2-kicker {
+    white-space: normal;
+  }
+}
+/* =====================================================
+   Writing Academy V3 - Clean Premium Command Lab
+   Purpose: replace V2 visual clutter with clean modular UI
+===================================================== */
+
+#writingAcademy,
+#writingAcademy * {
+  box-sizing: border-box;
+}
+
+#writingAcademy {
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at 8% 5%, rgba(34, 211, 238, 0.14), transparent 28%),
+    radial-gradient(circle at 92% 8%, rgba(139, 92, 246, 0.16), transparent 30%),
+    linear-gradient(135deg, #020617 0%, #0f172a 48%, #111827 100%);
+}
+
+/* Hide old V2 screens/classes if any old CSS still exists */
+#writingAcademy .writing-v2-shell,
+#writingAcademy .writing-v2-screen,
+#writingAcademy .writing-v2-tabs,
+#writingAcademy .writing-v2-header {
+  all: unset;
+}
+
+/* Shell */
+.writing-v3-shell {
+  width: min(1480px, 100%);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Top Header */
+.writing-v3-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.35fr);
+  gap: 18px;
+  align-items: stretch;
+  padding: 24px;
+  border-radius: 32px;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.64));
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  box-shadow:
+    0 24px 70px rgba(2, 6, 23, 0.42),
+    inset 0 0 24px rgba(103, 232, 249, 0.03);
+  backdrop-filter: blur(18px);
+}
+
+.writing-v3-kicker,
+.writing-v3-chip {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  gap: 8px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  color: #a5f3fc;
+  background: rgba(34, 211, 238, 0.10);
+  border: 1px solid rgba(103, 232, 249, 0.20);
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+  white-space: normal;
+}
+
+.writing-v3-hero-main h1 {
+  margin: 12px 0 8px;
+  font-size: clamp(2.1rem, 4vw, 4.2rem);
+  line-height: 0.98;
+  color: #f8fafc;
+  letter-spacing: -0.05em;
+}
+
+.writing-v3-hero-main p {
+  margin: 0;
+  max-width: 760px;
+  color: #cbd5e1;
+  line-height: 1.7;
+  font-size: 1.02rem;
+}
+
+.writing-v3-live-status {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.writing-v3-live-status div {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.10), transparent 40%),
+    rgba(15, 23, 42, 0.68);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.writing-v3-live-status span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.73rem;
+  font-weight: 850;
+  margin-bottom: 8px;
+  white-space: nowrap;
+}
+
+.writing-v3-live-status strong {
+  display: block;
+  color: #f8fafc;
+  font-size: clamp(0.78rem, 0.95vw, 0.96rem);
+  line-height: 1.35;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+/* Tabs */
+.writing-v3-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+  padding: 10px;
+  overflow-x: auto;
+  border-radius: 999px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.86), rgba(15, 23, 42, 0.76));
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.30);
+  backdrop-filter: blur(16px);
+  scrollbar-width: thin;
+}
+
+.writing-v3-tabs button {
+  flex: 0 0 auto;
+  min-width: 142px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #cbd5e1;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.22s ease;
+  white-space: nowrap;
+}
+
+.writing-v3-tabs button:hover {
+  color: #ffffff;
+  background: rgba(148, 163, 184, 0.10);
+}
+
+.writing-v3-tabs button.active {
+  color: #ecfeff;
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.88));
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 0 18px rgba(34, 211, 238, 0.16),
+    0 12px 30px rgba(34, 211, 238, 0.12);
+}
+
+/* Body + Screens */
+.writing-v3-body {
+  min-width: 0;
+}
+
+.writing-v3-screen {
+  display: none;
+}
+
+.writing-v3-screen.active {
+  display: block;
+  animation: writingV3Fade 0.28s ease;
+}
+
+@keyframes writingV3Fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.writing-v3-screen-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding: 18px 20px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 32%),
+    rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.writing-v3-screen-head > span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  color: #ecfeff;
+  background: rgba(34, 211, 238, 0.13);
+  border: 1px solid rgba(103, 232, 249, 0.20);
+  font-weight: 950;
+}
+
+.writing-v3-screen-head h2 {
+  margin: 0 0 6px;
+  color: #f8fafc;
+  font-size: clamp(1.45rem, 2.5vw, 2.1rem);
+  line-height: 1.2;
+}
+
+.writing-v3-screen-head p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.65;
+}
+
+/* Panels */
+.writing-v3-panel {
+  min-width: 0;
+  width: 100%;
+  padding: 20px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(139, 92, 246, 0.10), transparent 32%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.90), rgba(30, 41, 59, 0.68));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow:
+    0 20px 55px rgba(2, 6, 23, 0.30),
+    inset 0 0 18px rgba(255, 255, 255, 0.025);
+  overflow: hidden;
+}
+
+.writing-v3-panel.primary {
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.10), transparent 36%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.10), transparent 34%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.70));
+}
+
+.writing-v3-panel.compact {
+  align-self: start;
+}
+
+.writing-v3-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.writing-v3-panel-head > div {
+  min-width: 0;
+}
+
+.writing-v3-panel-head h3,
+.writing-v3-panel h3 {
+  margin: 7px 0 6px;
+  color: #f8fafc;
+  font-size: 1.22rem;
+  line-height: 1.3;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.writing-v3-panel-head p,
+.writing-v3-panel p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.65;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+/* Grids */
+.writing-v3-grid,
+.writing-v3-lab-layout,
+.writing-v3-lessons-layout,
+.writing-v3-analytics-grid,
+.writing-v3-coach-layout,
+.writing-v3-path-grid {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.writing-v3-grid.mission-grid {
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.7fr);
+  margin-bottom: 18px;
+}
+
+.writing-v3-lab-layout {
+  grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.45fr);
+  margin-bottom: 18px;
+}
+
+.writing-v3-lessons-layout,
+.writing-v3-coach-layout {
+  grid-template-columns: minmax(260px, 0.75fr) minmax(0, 1.25fr);
+}
+
+.writing-v3-analytics-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 18px 0;
+}
+
+.writing-v3-path-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 18px;
+}
+
+/* Forms */
+.writing-v3-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.writing-v3-form-grid.one {
+  grid-template-columns: 1fr;
+}
+
+.writing-v3-form-grid .wide {
+  grid-column: 1 / -1;
+}
+
+#writingAcademy label {
+  display: grid;
+  gap: 7px;
+  color: #cbd5e1;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+#writingAcademy input,
+#writingAcademy select,
+#writingAcademy textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  background: rgba(2, 6, 23, 0.52);
+  color: #f8fafc;
+  border-radius: 16px;
+  padding: 12px 13px;
+  outline: none;
+  font: inherit;
+}
+
+#writingAcademy input:focus,
+#writingAcademy select:focus,
+#writingAcademy textarea:focus {
+  border-color: rgba(103, 232, 249, 0.50);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.10);
+}
+
+/* Editor */
+.writing-v3-editor {
+  min-height: 360px;
+  resize: vertical;
+  line-height: 1.75;
+  font-size: 1rem;
+}
+
+.editor-panel {
+  min-height: 100%;
+}
+
+.writing-v3-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.writing-v3-editor-toolbar button {
+  padding: 9px 12px;
+  border-radius: 13px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(148, 163, 184, 0.10);
+  color: #cbd5e1;
+  font-weight: 850;
+}
+
+/* Buttons */
+.writing-v3-actions,
+.writing-v3-step-row,
+.writing-v3-lesson-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.writing-v3-actions button,
+.writing-v3-step-row button,
+.writing-v3-lesson-buttons button {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.88));
+  color: #ecfeff;
+  border-radius: 16px;
+  padding: 11px 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.22s ease;
+  box-shadow: 0 10px 24px rgba(34, 211, 238, 0.10);
+}
+
+.writing-v3-actions button:hover,
+.writing-v3-step-row button:hover,
+.writing-v3-lesson-buttons button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.07);
+}
+
+.writing-v3-actions .secondary {
+  background:
+    linear-gradient(135deg, rgba(99, 102, 241, 0.90), rgba(139, 92, 246, 0.88));
+}
+
+.writing-v3-actions .ghost {
+  background: rgba(148, 163, 184, 0.10);
+  color: #cbd5e1;
+  box-shadow: none;
+}
+
+/* Outputs and Empty States */
+.writing-v3-output,
+.writing-v3-empty,
+.writing-v3-preview,
+.writing-v3-feedback-box {
+  margin-top: 14px;
+  padding: 15px;
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.42);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  line-height: 1.65;
+}
+
+.writing-v3-empty strong,
+.writing-v3-empty span,
+.writing-v3-output strong,
+.writing-v3-output span,
+.writing-v3-feedback-box strong,
+.writing-v3-feedback-box span {
+  display: block;
+}
+
+.writing-v3-feedback-box strong {
+  color: #f8fafc;
+}
+
+/* Coach + metrics */
+.writing-v3-orb {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  font-size: 1.8rem;
+  margin-bottom: 14px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.20), transparent 36%),
+    linear-gradient(135deg, rgba(34, 211, 238, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.92));
+  box-shadow:
+    0 0 22px rgba(34, 211, 238, 0.22),
+    0 18px 38px rgba(2, 6, 23, 0.30);
+}
+
+.writing-v3-metric-list,
+.writing-v3-recommendation-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.writing-v3-metric-list div,
+.writing-v3-recommendation-grid div {
+  padding: 13px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.62);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.writing-v3-metric-list span,
+.writing-v3-recommendation-grid span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.writing-v3-metric-list strong,
+.writing-v3-recommendation-grid strong {
+  color: #f8fafc;
+  line-height: 1.35;
+}
+
+/* Score panel */
+.writing-v3-score-orb {
+  width: 132px;
+  height: 132px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background:
+    radial-gradient(circle, rgba(34, 211, 238, 0.24), rgba(59, 130, 246, 0.12) 48%, rgba(2, 6, 23, 0.76) 70%);
+  border: 1px solid rgba(103, 232, 249, 0.22);
+  box-shadow: 0 0 32px rgba(34, 211, 238, 0.12);
+}
+
+.writing-v3-score-orb strong {
+  display: block;
+  color: #ecfeff;
+  font-size: 2.35rem;
+  line-height: 1;
+}
+
+.writing-v3-score-orb span {
+  display: block;
+  color: #a5f3fc;
+  font-weight: 800;
+}
+
+/* Skill bars */
+.writing-v3-skill-bars,
+#writingAcademy .writing-skill-progress-bars {
+  display: grid;
+  gap: 12px;
+}
+
+.writing-v3-skill-bars div,
+#writingAcademy .writing-skill-bar-row {
+  display: grid;
+  grid-template-columns: 125px minmax(0, 1fr) 48px;
+  gap: 10px;
+  align-items: center;
+}
+
+.writing-v3-skill-bars span,
+#writingAcademy .writing-skill-bar-label {
+  color: #cbd5e1;
+  font-weight: 850;
+  font-size: 0.86rem;
+}
+
+.writing-v3-skill-bars i,
+#writingAcademy .writing-skill-bar-track {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(148, 163, 184, 0.16);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.writing-v3-skill-bars b,
+#writingAcademy .writing-skill-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #60a5fa, #a78bfa);
+}
+
+.writing-v3-skill-bars strong,
+#writingAcademy .writing-skill-bar-value {
+  color: #a5f3fc;
+  text-align: right;
+}
+
+/* Paths */
+.writing-v3-path-card {
+  min-width: 0;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.90), rgba(30, 41, 59, 0.66));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.writing-v3-path-card span {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 30px;
+  border-radius: 999px;
+  color: #ecfeff;
+  background: rgba(34, 211, 238, 0.12);
+  border: 1px solid rgba(103, 232, 249, 0.18);
+  font-weight: 950;
+}
+
+.writing-v3-path-card h3 {
+  margin: 12px 0 8px;
+  color: #f8fafc;
+}
+
+.writing-v3-path-card p {
+  color: #cbd5e1;
+  line-height: 1.65;
+}
+
+/* Checklist */
+.writing-v3-checklist {
+  display: grid;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.writing-v3-checklist label {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+/* Chat */
+.writing-v3-chat-preview {
+  display: grid;
+  gap: 12px;
+}
+
+.writing-v3-chat-preview > div {
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(2, 6, 23, 0.38);
+}
+
+.writing-v3-chat-preview .student {
+  margin-left: auto;
+  max-width: 75%;
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.writing-v3-chat-preview .ai {
+  max-width: 75%;
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.writing-v3-chat-preview strong {
+  color: #f8fafc;
+}
+
+.writing-v3-chat-preview p {
+  margin-top: 6px;
+}
+
+/* Progress compatibility */
+#writingAcademy .writing-progress-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+#writingAcademy .writing-progress-card,
+#writingAcademy .writing-progress-empty {
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.38);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+}
+
+#writingAcademy .writing-progress-card strong {
+  color: #f8fafc;
+  font-size: 1.25rem;
+}
+
+#writingAcademy .writing-progress-card span,
+#writingAcademy .writing-progress-card small {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+#writingAcademy .writing-level-badge,
+#writingAcademy .writing-streak-badge,
+#writingAcademy .writing-attempt-score {
+  color: #ecfeff !important;
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.88)) !important;
+  border: 1px solid rgba(255,255,255,0.16) !important;
+}
+
+#writingAcademy .writing-motivation-message,
+#writingAcademy .writing-progress-advice {
+  margin-top: 14px;
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(103, 232, 249, 0.16);
+  color: #dffbff;
+}
+
+/* Footer */
+.writing-v3-footer {
+  margin-top: 20px;
+  padding: 18px;
+  border-radius: 24px;
+  text-align: center;
+  background: rgba(15, 23, 42, 0.60);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.writing-v3-footer strong {
+  display: block;
+  color: #f8fafc;
+}
+
+.writing-v3-footer span {
+  color: #94a3b8;
+}
+
+/* Tablet */
+@media (max-width: 1180px) {
+  .writing-v3-hero,
+  .writing-v3-grid.mission-grid,
+  .writing-v3-lab-layout,
+  .writing-v3-lessons-layout,
+  .writing-v3-coach-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-v3-live-status {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .writing-v3-analytics-grid,
+  .writing-v3-path-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #writingAcademy .writing-progress-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 680px) {
+  .writing-v3-shell {
+    padding: 12px;
+  }
+
+  .writing-v3-hero {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .writing-v3-hero-main h1 {
+    font-size: 2rem;
+  }
+
+  .writing-v3-live-status,
+  .writing-v3-form-grid,
+  .writing-v3-analytics-grid,
+  .writing-v3-path-grid,
+  #writingAcademy .writing-progress-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-v3-tabs {
+    margin: 12px 0;
+    border-radius: 20px;
+    padding: 8px;
+  }
+
+  .writing-v3-tabs button {
+    min-width: 132px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+  }
+
+  .writing-v3-panel {
+    padding: 15px;
+    border-radius: 22px;
+  }
+
+  .writing-v3-panel-head,
+  .writing-v3-screen-head {
+    flex-direction: column;
+  }
+
+  .writing-v3-actions,
+  .writing-v3-step-row,
+  .writing-v3-lesson-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .writing-v3-editor-toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .writing-v3-editor-toolbar button {
+    flex: 0 0 auto;
+  }
+
+  .writing-v3-editor {
+    min-height: 270px;
+  }
+
+  .writing-v3-score-orb {
+    width: 116px;
+    height: 116px;
+  }
+
+  .writing-v3-skill-bars div,
+  #writingAcademy .writing-skill-bar-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .writing-v3-skill-bars strong,
+  #writingAcademy .writing-skill-bar-value {
+    text-align: left;
+  }
+
+  .writing-v3-chat-preview .ai,
+  .writing-v3-chat-preview .student {
+    max-width: 100%;
+  }
+}
+
+/* =====================================================
+   Writing Academy V3 Sticky Tabs Fix
+   Prevent tabs from jumping over fixed navigation
+===================================================== */
+
+#writingAcademy .writing-v3-tabs {
+  position: relative !important;
+  top: auto !important;
+  z-index: 1 !important;
+}
+
+/* Prevent section from sliding under fixed site nav */
+#writingAcademy {
+  scroll-margin-top: 90px;
+}
+
+/* Keep screen changes calm */
+#writingAcademy .writing-v3-screen.active {
+  animation: writingV3SoftFade 0.18s ease;
+}
+
+@keyframes writingV3SoftFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+/* =====================================================
+   FINAL FIX - Writing Academy header/tabs jumping issue
+   Disable all sticky/fixed behavior inside Writing Academy
+===================================================== */
+
+#writingAcademy .writing-v3-tabs,
+#writingAcademy .writing-v2-tabs,
+#writingAcademy .writing-left-sidebar,
+#writingAcademy .writing-academy-responsive-layout .writing-left-sidebar,
+#writingAcademy .writing-right-coach,
+#writingAcademy .writing-coach-sticky {
+  position: static !important;
+  top: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: 1 !important;
+}
+
+/* Keep the Writing Academy below the main site navigation */
+#writingAcademy {
+  padding-top: 18px !important;
+  scroll-margin-top: 110px !important;
+}
+
+/* Prevent old tab bars from behaving like fixed navigation */
+#writingAcademy .writing-v3-tabs {
+  margin-top: 18px !important;
+  transform: none !important;
+}
+
+/* Stop annoying entrance movement */
+#writingAcademy .writing-v3-screen.active,
+#writingAcademy .writing-v2-screen.active {
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Prevent old sticky mobile sidebar rules from returning */
+@media (max-width: 1180px) {
+  #writingAcademy .writing-left-sidebar,
+  #writingAcademy .writing-v3-tabs,
+  #writingAcademy .writing-v2-tabs {
+    position: static !important;
+    top: auto !important;
+    z-index: 1 !important;
+  }
+}
+
+@media (max-width: 680px) {
+  #writingAcademy .writing-left-sidebar,
+  #writingAcademy .writing-v3-tabs,
+  #writingAcademy .writing-v2-tabs {
+    position: static !important;
+    top: auto !important;
+    z-index: 1 !important;
+  }
+}
+/* =====================================================
+   FIX - Writing V3 Hero must not be sticky
+===================================================== */
+
+#writingAcademy .writing-v3-hero {
+  position: relative !important;
+  top: auto !important;
+  z-index: 1 !important;
+  transform: none !important;
+}

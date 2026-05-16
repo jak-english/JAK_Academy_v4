@@ -1382,266 +1382,244 @@
   </div>
 </section>
 <section id="writingAcademy" class="page">
-  <div class="writing-academy-shell">
+  <div class="writing-v3-shell">
 
-    <!-- WRITING COMMAND CENTER -->
-    <div class="writing-command-dashboard">
-      <div class="writing-command-left">
-        <span class="writing-badge">Future Writing Command Center</span>
-        <h2>AI Writing Control Room</h2>
+    <!-- V3 TOP HEADER -->
+    <header class="writing-v3-hero">
+      <div class="writing-v3-hero-main">
+        <span class="writing-v3-kicker">JAK Academy • Writing Academy V3</span>
+        <h1>Writing Command Lab</h1>
         <p>
-          Plan, write, analyze, improve, and track your writing progress from one intelligent dashboard.
+          A clean AI-powered writing workspace for planning, building, writing, improving,
+          and tracking progress without clutter.
         </p>
       </div>
 
-      <div class="writing-command-stats">
-        <div class="writing-command-stat">
+      <div class="writing-v3-live-status">
+        <div>
           <span>Mode</span>
-          <strong id="commandLearnerMode">School Student</strong>
+          <strong id="commandLearnerMode">Waiting</strong>
         </div>
-
-        <div class="writing-command-stat">
+        <div>
           <span>Writing Type</span>
-          <strong id="commandWritingType">Paragraph</strong>
+          <strong id="commandWritingType">Waiting</strong>
         </div>
-
-        <div class="writing-command-stat">
+        <div>
           <span>Focus</span>
-          <strong id="commandFocusSkill">Organization</strong>
+          <strong id="commandFocusSkill">Waiting</strong>
         </div>
-
-        <div class="writing-command-stat">
+        <div>
           <span>Score</span>
           <strong id="commandWritingScore">--</strong>
         </div>
-
-        <div class="writing-command-stat">
+        <div>
           <span>Next Step</span>
           <strong id="commandNextStep">Generate Mission</strong>
         </div>
       </div>
-    </div>
+    </header>
 
-    <!-- HERO -->
-    <div class="writing-hero">
-      <div class="writing-hero-content">
-        <span class="writing-badge">JAK Academy • AI Writing</span>
-        <h1>AI Writing Learning Engine ✍️</h1>
-        <p>
-          Learn to write like a real writer — sentence by sentence, paragraph by paragraph.
-          Build strong sentences, organized paragraphs, powerful essays, and exam-ready writing.
-        </p>
+    <!-- V3 NAVIGATION -->
+    <nav class="writing-v3-tabs" aria-label="Writing Academy navigation">
+      <button type="button" class="active" data-writing-v3-screen="mission" onclick="showWritingV3Screen('mission')">
+        🚀 Mission Control
+      </button>
+      <button type="button" data-writing-v3-screen="lab" onclick="showWritingV3Screen('lab')">
+        📝 Writing Lab
+      </button>
+      <button type="button" data-writing-v3-screen="paths" onclick="showWritingV3Screen('paths')">
+        🧱 Writing Paths
+      </button>
+      <button type="button" data-writing-v3-screen="lessons" onclick="showWritingV3Screen('lessons')">
+        🎓 Lessons Hub
+      </button>
+      <button type="button" data-writing-v3-screen="analytics" onclick="showWritingV3Screen('analytics')">
+        📊 Analytics Center
+      </button>
+      <button type="button" data-writing-v3-screen="missions" onclick="showWritingV3Screen('missions')">
+        🎯 Writing Missions
+      </button>
+      <button type="button" data-writing-v3-screen="coach" onclick="showWritingV3Screen('coach')">
+        🤖 AI Coach
+      </button>
+    </nav>
 
-        <div class="writing-hero-actions">
-          <button onclick="scrollToWritingEditor()">Start Writing</button>
-          <button class="gold" onclick="showWritingMode('practice')">Practice Writing</button>
-          <button class="secondary" onclick="showWritingMode('coach')">AI Writing Coach</button>
-        </div>
+    <!-- V3 BODY -->
+    <main class="writing-v3-body">
 
-        <div class="writing-hero-stats">
+      <!-- SCREEN 1: MISSION CONTROL -->
+      <section class="writing-v3-screen active" id="writingV3Mission" data-writing-v3-view="mission">
+        <div class="writing-v3-screen-head">
+          <span>01</span>
           <div>
-            <strong>Sentence</strong>
-            <span>Builder</span>
-          </div>
-          <div>
-            <strong>Paragraph</strong>
-            <span>Trainer</span>
-          </div>
-          <div>
-            <strong>Essay</strong>
-            <span>Academy</span>
-          </div>
-          <div>
-            <strong>AI</strong>
-            <span>Feedback Ready</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="writing-hologram">
-        <div class="writing-brain">🧠</div>
-        <h3>AI Writing Coach</h3>
-        <p>Grammar • Vocabulary • Connectors • Clarity • Cohesion</p>
-      </div>
-    </div>
-
-    <!-- NEW RESPONSIVE WRITING LAYOUT -->
-    <div class="writing-academy-responsive-layout">
-
-      <!-- LEFT SIDEBAR -->
-      <aside class="writing-left-sidebar">
-        <div class="writing-sidebar-brand">
-          <span>✍️</span>
-          <strong>Writing Tools</strong>
-        </div>
-
-        <button type="button" onclick="document.getElementById('writingMissionPanel')?.scrollIntoView({behavior:'smooth'});">
-          🚀 Mission
-        </button>
-
-        <button type="button" onclick="document.getElementById('writingWorkspacePanel')?.scrollIntoView({behavior:'smooth'});">
-          🧱 Builder
-        </button>
-
-        <button type="button" onclick="document.getElementById('writingBlueprintPanel')?.scrollIntoView({behavior:'smooth'});">
-          🗺️ Blueprint
-        </button>
-
-        <button type="button" onclick="document.getElementById('writingEditorPanel')?.scrollIntoView({behavior:'smooth'});">
-          📝 Editor
-        </button>
-
-        <button type="button" onclick="document.getElementById('writingConnectorPanel')?.scrollIntoView({behavior:'smooth'});">
-          🔗 Connectors
-        </button>
-
-        <button type="button" onclick="document.getElementById('writingLessonsPanel')?.scrollIntoView({behavior:'smooth'});">
-          🎓 Lessons
-        </button>
-
-        <button type="button" onclick="document.getElementById('writingProgressPanel')?.scrollIntoView({behavior:'smooth'});">
-          📈 Progress
-        </button>
-
-        <button type="button" onclick="document.getElementById('writingSkillMapPanel')?.scrollIntoView({behavior:'smooth'});">
-          🧩 Skill Map
-        </button>
-      </aside>
-
-      <!-- MAIN WORKSPACE -->
-      <main class="writing-main-workspace">
-
-        <!-- WRITING MISSION CONTROL -->
-        <div class="writing-panel writing-mission-control" id="writingMissionPanel">
-          <div class="writing-panel-header">
-            <div>
-              <span class="writing-section-number">00</span>
-              <h2>Writing Mission Control</h2>
-              <p>Choose the writing type, level, and target skill before starting.</p>
-            </div>
-            <span class="writing-ai-chip">Smart Mission</span>
-          </div>
-
-          <div class="writing-mission-grid">
-            <label>
-              Writing Type
-              <select id="writingTypeSelect">
-                <option value="opinion">Opinion Essay</option>
-                <option value="forAgainst">For & Against Essay</option>
-                <option value="formalEmail">Formal Email</option>
-                <option value="report">Report</option>
-                <option value="article">Article</option>
-                <option value="story">Narrative Writing</option>
-                <option value="paragraph">Paragraph</option>
-              </select>
-            </label>
-
-            <label>
-              Student Level
-              <select id="writingLevelSelect">
-                <option value="beginner">Beginner</option>
-                <option value="intermediate" selected>Intermediate</option>
-                <option value="advanced">Advanced</option>
-                <option value="tawjihi">Tawjihi / Exam Style</option>
-              </select>
-            </label>
-
-            <label>
-              Learner Mode
-              <select id="writingLearnerModeSelect">
-                <option value="young">Young Learner / Kids</option>
-                <option value="school" selected>School Student</option>
-                <option value="tawjihi">Tawjihi / Exam Mode</option>
-                <option value="academic">University / Academic</option>
-                <option value="adult">Adult / Professional</option>
-                <option value="teacher">Teacher Practice</option>
-              </select>
-            </label>
-
-            <label>
-              Focus Skill
-              <select id="writingGoalSelect">
-                <option value="grammar">Grammar Accuracy</option>
-                <option value="connectors">Connectors</option>
-                <option value="paragraph">Paragraph Organization</option>
-                <option value="vocabulary">Vocabulary Upgrade</option>
-                <option value="cohesion">Cohesion & Clarity</option>
-                <option value="fullEssay">Full Essay Structure</option>
-              </select>
-            </label>
-
-            <label>
-              Topic
-              <input id="writingTopicInput" type="text" placeholder="Technology in education / Online learning / Study habits..." />
-            </label>
-          </div>
-
-          <div class="writing-mission-actions">
-            <button onclick="generateWritingMission()">Generate Writing Mission 🚀</button>
-            <button class="gold" onclick="loadWritingTemplate()">Load Template</button>
-            <button class="secondary" onclick="resetWritingMission()">Reset Mission</button>
-          </div>
-
-          <div id="writingMissionOutput" class="writing-mission-output">
-            Choose a writing type and generate your mission.
+            <h2>Mission Control</h2>
+            <p>Start with clear choices: type, level, learner mode, focus skill, and topic.</p>
           </div>
         </div>
 
-        <!-- SMART WRITING WORKSPACE -->
-        <div class="writing-panel writing-workspace-panel" id="writingWorkspacePanel">
-          <div class="writing-panel-header">
-            <div>
-              <span class="writing-section-number">01</span>
-              <h2>Smart Writing Workspace</h2>
-              <p>
-                Build your writing step by step. Start with ideas, add support, use connectors,
-                then send your paragraph to the smart editor.
-              </p>
-            </div>
-            <span class="writing-ai-chip">Interactive Builder</span>
-          </div>
+        <div class="writing-v3-grid mission-grid">
 
-          <div class="writing-workspace-layout">
-
-            <!-- LEFT: WRITING STEPS -->
-            <div class="writing-steps-box">
-              <h3>Writing Steps</h3>
-              <p>Choose the part you want to build.</p>
-
-              <div class="writing-step-buttons">
-                <button type="button" onclick="loadWritingStep('mainIdea')">Main Idea</button>
-                <button type="button" onclick="loadWritingStep('support')">Supporting Detail</button>
-                <button type="button" onclick="loadWritingStep('example')">Example</button>
-                <button type="button" onclick="loadWritingStep('connector')">Connector</button>
-                <button type="button" onclick="loadWritingStep('conclusion')">Conclusion</button>
-              </div>
-
-              <div id="writingStepGuide" class="writing-step-guide">
-                <strong>Start with the Main Idea.</strong>
-                <span>
-                  A strong paragraph begins with a clear topic sentence that tells the reader what the paragraph is about.
-                </span>
+          <div class="writing-v3-panel primary" id="writingMissionPanel">
+            <div class="writing-v3-panel-head">
+              <div>
+                <span class="writing-v3-chip">Setup</span>
+                <h3>Writing Mission Setup</h3>
+                <p>Choose the learning path before writing.</p>
               </div>
             </div>
 
-            <!-- CENTER: BUILDER FORM -->
-            <div class="writing-builder-box">
-              <h3>Paragraph Builder</h3>
-              <p>Fill in the parts below, then build your paragraph.</p>
+            <div class="writing-v3-form-grid">
+              <label>
+                Writing Type
+                <select id="writingTypeSelect">
+                  <option value="opinion">Opinion Essay</option>
+                  <option value="forAgainst">For & Against Essay</option>
+                  <option value="formalEmail">Formal Email</option>
+                  <option value="report">Report</option>
+                  <option value="article">Article</option>
+                  <option value="story">Narrative Writing</option>
+                  <option value="paragraph">Paragraph</option>
+                </select>
+              </label>
 
               <label>
+                Student Level
+                <select id="writingLevelSelect">
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate" selected>Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="tawjihi">Tawjihi / Exam Style</option>
+                </select>
+              </label>
+
+              <label>
+                Learner Mode
+                <select id="writingLearnerModeSelect">
+                  <option value="young">Young Learner / Kids</option>
+                  <option value="school" selected>School Student</option>
+                  <option value="tawjihi">Tawjihi / Exam Mode</option>
+                  <option value="academic">University / Academic</option>
+                  <option value="adult">Adult / Professional</option>
+                  <option value="teacher">Teacher Practice</option>
+                </select>
+              </label>
+
+              <label>
+                Focus Skill
+                <select id="writingGoalSelect">
+                  <option value="grammar">Grammar Accuracy</option>
+                  <option value="connectors">Connectors</option>
+                  <option value="paragraph">Paragraph Organization</option>
+                  <option value="vocabulary">Vocabulary Upgrade</option>
+                  <option value="cohesion">Cohesion & Clarity</option>
+                  <option value="fullEssay">Full Essay Structure</option>
+                </select>
+              </label>
+
+              <label class="wide">
+                Topic
+                <input id="writingTopicInput" type="text" placeholder="Technology in education / Online learning / Study habits..." />
+              </label>
+            </div>
+
+            <div class="writing-v3-actions">
+              <button type="button" onclick="generateWritingMission()">Generate Mission 🚀</button>
+              <button type="button" class="secondary" onclick="loadWritingTemplate()">Load Template</button>
+              <button type="button" class="ghost" onclick="resetWritingMission()">Reset</button>
+            </div>
+
+            <div id="writingMissionOutput" class="writing-v3-output">
+              Choose a writing type and generate your mission.
+            </div>
+          </div>
+
+          <aside class="writing-v3-panel compact" id="writingCoachPanel">
+            <div class="writing-v3-orb">🧠</div>
+            <h3>Smart Coach Snapshot</h3>
+            <p>The coach reads your mission, writing focus, and latest analysis to suggest the next step.</p>
+
+            <div class="writing-v3-metric-list">
+              <div>
+                <span>Current Focus</span>
+                <strong id="coachCurrentFocus">Waiting</strong>
+              </div>
+              <div>
+                <span>Writing Level</span>
+                <strong id="coachWritingLevel">Waiting</strong>
+              </div>
+              <div>
+                <span>Next Action</span>
+                <strong id="coachNextAction">Generate Mission</strong>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+
+        <div class="writing-v3-panel" id="writingBlueprintPanel">
+          <div class="writing-v3-panel-head">
+            <div>
+              <span class="writing-v3-chip">Blueprint</span>
+              <h3>Interactive Writing Blueprint</h3>
+              <p>Your smart writing plan appears here after loading a template.</p>
+            </div>
+          </div>
+
+          <div id="writingBlueprintPreview" class="writing-v3-empty">
+            <strong>No blueprint generated yet.</strong>
+            <span>Choose your learner mode, writing type, topic, then click Load Template.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: WRITING LAB -->
+      <section class="writing-v3-screen" id="writingV3Lab" data-writing-v3-view="lab">
+        <div class="writing-v3-screen-head">
+          <span>02</span>
+          <div>
+            <h2>Writing Lab</h2>
+            <p>A focused editor and builder workspace. No distractions, no crowded panels.</p>
+          </div>
+        </div>
+
+        <div class="writing-v3-lab-layout">
+
+          <div class="writing-v3-panel" id="writingWorkspacePanel">
+            <div class="writing-v3-panel-head">
+              <div>
+                <span class="writing-v3-chip">Builder</span>
+                <h3>Paragraph Builder</h3>
+                <p>Build ideas before sending them to the editor.</p>
+              </div>
+            </div>
+
+            <div class="writing-v3-step-row">
+              <button type="button" onclick="loadWritingStep('mainIdea')">Main Idea</button>
+              <button type="button" onclick="loadWritingStep('support')">Support</button>
+              <button type="button" onclick="loadWritingStep('example')">Example</button>
+              <button type="button" onclick="loadWritingStep('connector')">Connector</button>
+              <button type="button" onclick="loadWritingStep('conclusion')">Conclusion</button>
+            </div>
+
+            <div id="writingStepGuide" class="writing-v3-output">
+              <strong>Start with the Main Idea.</strong>
+              <span>A strong paragraph begins with a clear topic sentence.</span>
+            </div>
+
+            <div class="writing-v3-form-grid one">
+              <label>
                 Main Idea / Topic Sentence
-                <input id="builderMainIdea" type="text" placeholder="Example: Technology helps students learn more effectively." />
+                <input id="builderMainIdea" type="text" placeholder="Technology helps students learn more effectively." />
               </label>
 
               <label>
                 Supporting Detail
-                <input id="builderSupport" type="text" placeholder="Example: It gives them access to videos, exercises, and online resources." />
+                <input id="builderSupport" type="text" placeholder="It gives them access to videos, exercises, and online resources." />
               </label>
 
               <label>
                 Example
-                <input id="builderExample" type="text" placeholder="Example: For example, students can watch lessons again when they do not understand." />
+                <input id="builderExample" type="text" placeholder="For example, students can watch lessons again." />
               </label>
 
               <label>
@@ -1659,627 +1637,378 @@
 
               <label>
                 Concluding Sentence
-                <input id="builderConclusion" type="text" placeholder="Example: Therefore, technology can be a powerful tool for education." />
+                <input id="builderConclusion" type="text" placeholder="Therefore, technology can be a powerful tool for education." />
               </label>
-
-              <div class="writing-builder-actions">
-                <button type="button" onclick="buildSmartParagraph()">Build My Paragraph ✨</button>
-                <button type="button" class="gold" onclick="sendWorkspaceToEditor()">Send to Editor</button>
-                <button type="button" class="secondary" onclick="clearWritingWorkspace()">Clear Workspace</button>
-              </div>
             </div>
 
-            <!-- RIGHT: LIVE PREVIEW -->
-            <div class="writing-preview-box">
-              <h3>Live Paragraph Preview</h3>
-              <p>Your paragraph will appear here before going to the editor.</p>
-
-              <div id="smartParagraphPreview" class="smart-paragraph-preview">
-                Build your paragraph to see a preview.
-              </div>
-
-              <div class="writing-workspace-checklist">
-                <h4>Smart Checklist</h4>
-                <label>
-                  <input type="checkbox" id="checkMainIdea">
-                  <span>Main idea is clear</span>
-                </label>
-                <label>
-                  <input type="checkbox" id="checkSupport">
-                  <span>Supporting detail is included</span>
-                </label>
-                <label>
-                  <input type="checkbox" id="checkExample">
-                  <span>Example is included</span>
-                </label>
-                <label>
-                  <input type="checkbox" id="checkConnector">
-                  <span>Connector is used</span>
-                </label>
-                <label>
-                  <input type="checkbox" id="checkConclusion">
-                  <span>Conclusion is included</span>
-                </label>
-              </div>
+            <div class="writing-v3-actions">
+              <button type="button" onclick="buildSmartParagraph()">Build Paragraph ✨</button>
+              <button type="button" class="secondary" onclick="sendWorkspaceToEditor()">Send to Editor</button>
+              <button type="button" class="ghost" onclick="clearWritingWorkspace()">Clear</button>
             </div>
 
+            <div id="smartParagraphPreview" class="writing-v3-preview">
+              Build your paragraph to see a preview.
+            </div>
+
+            <div class="writing-v3-checklist">
+              <label><input type="checkbox" id="checkMainIdea"> Main idea is clear</label>
+              <label><input type="checkbox" id="checkSupport"> Supporting detail is included</label>
+              <label><input type="checkbox" id="checkExample"> Example is included</label>
+              <label><input type="checkbox" id="checkConnector"> Connector is used</label>
+              <label><input type="checkbox" id="checkConclusion"> Conclusion is included</label>
+            </div>
           </div>
+
+          <div class="writing-v3-panel editor-panel" id="writingEditorPanel">
+            <div class="writing-v3-panel-head">
+              <div>
+                <span class="writing-v3-chip">Writing Lab</span>
+                <h3>Focused Writing Editor</h3>
+                <p>Write, analyze, improve. The score below updates only from real analysis.</p>
+              </div>
+            </div>
+
+            <div class="writing-v3-editor-toolbar">
+              <button type="button">B</button>
+              <button type="button">I</button>
+              <button type="button">U</button>
+              <button type="button">Grammar</button>
+              <button type="button">Connectors</button>
+              <button type="button">Style</button>
+            </div>
+
+            <textarea id="studentWritingInput" class="writing-v3-editor" placeholder="Start writing here..."></textarea>
+
+            <div class="writing-v3-actions">
+              <button type="button" onclick="analyzeWritingLocally()">Analyze Writing</button>
+              <button type="button" class="secondary" onclick="loadWritingPrompt()">New Prompt</button>
+              <button type="button" class="ghost" onclick="clearWritingEditor()">Clear</button>
+            </div>
+
+            <div id="writingFeedbackBox" class="writing-v3-feedback-box">
+              <strong>Feedback will appear here after analysis.</strong>
+              <span>Local preview first. AI feedback can be connected later through the secure backend.</span>
+            </div>
+          </div>
+
         </div>
 
-        <!-- MAIN GRID -->
-        <div class="writing-main-grid">
-
-          <!-- INTERACTIVE BLUEPRINT PREVIEW -->
-          <div class="writing-panel writing-blueprint-preview-panel" id="writingBlueprintPanel">
-            <div class="writing-panel-header">
-              <div>
-                <span class="writing-section-number">02</span>
-                <h2>Interactive Writing Blueprint</h2>
-                <p>
-                  Your smart writing plan appears here as clear cards before you start the final draft.
-                </p>
-              </div>
-              <span class="writing-ai-chip">Blueprint Cards</span>
-            </div>
-
-            <div id="writingBlueprintPreview" class="writing-blueprint-preview">
-              <div class="writing-blueprint-empty">
-                <strong>No blueprint generated yet.</strong>
-                <span>
-                  Choose your learner mode, writing type, topic, then click Load Template to generate your smart blueprint.
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- SMART WRITING EDITOR -->
-          <div class="writing-panel writing-editor-panel" id="writingEditorPanel">
-            <div class="writing-panel-header">
-              <div>
-                <span class="writing-section-number">03</span>
-                <h2>Smart Writing Editor</h2>
-                <p>Write your answer and receive structured feedback step by step.</p>
-              </div>
-              <span class="writing-ai-chip">AI-ready</span>
-            </div>
-
-            <div class="writing-toolbar">
-              <button>B</button>
-              <button>I</button>
-              <button>U</button>
-              <button>Grammar</button>
-              <button>Connectors</button>
-              <button>Style</button>
-            </div>
-
-            <textarea id="studentWritingInput" class="writing-editor-textarea" placeholder="Start writing your sentence, paragraph, essay, email, report, or story here...">Although technology have changed the way we learn, many students still struggle to stay focused. Moreover, there are too many distractions which make concentration harder.</textarea>
-
-            <div class="writing-feedback-preview">
-              <h3>Live Feedback Preview</h3>
-              <p>
-                <span class="writing-error">have</span> → <strong>has</strong>
-                <small>Subject “technology” is singular.</small>
-              </p>
-              <p>
-                <span class="writing-good">Moreover</span>
-                <small>Good connector, but check if it adds a new idea clearly.</small>
-              </p>
-              <p>
-                <span class="writing-warning">which make</span> → <strong>which makes</strong>
-                <small>Verb agreement issue.</small>
-              </p>
-            </div>
-
-            <div class="writing-editor-actions">
-              <button onclick="analyzeWritingLocally()">Analyze Writing</button>
-              <button class="gold" onclick="loadWritingPrompt()">New Prompt</button>
-              <button class="secondary" onclick="clearWritingEditor()">Clear</button>
-            </div>
-          </div>
-
-          <!-- SCORE PANEL -->
-          <div class="writing-panel writing-score-panel">
-            <div class="writing-panel-header">
-              <div>
-                <span class="writing-section-number">04</span>
-                <h2>Writing Score</h2>
-                <p>Local preview now. AI scoring later.</p>
-              </div>
-            </div>
-
-            <div class="writing-score-circle">
-              <strong id="writingScoreValue">84</strong>
-              <span>Good Work</span>
-            </div>
-
-            <div class="writing-skill-bars">
-              <div>
-                <span>Grammar</span>
-                <i><b style="width:82%"></b></i>
-                <strong>82</strong>
-              </div>
-              <div>
-                <span>Vocabulary</span>
-                <i><b style="width:76%"></b></i>
-                <strong>76</strong>
-              </div>
-              <div>
-                <span>Connectors</span>
-                <i><b style="width:68%"></b></i>
-                <strong>68</strong>
-              </div>
-              <div>
-                <span>Cohesion</span>
-                <i><b style="width:80%"></b></i>
-                <strong>80</strong>
-              </div>
-              <div>
-                <span>Clarity</span>
-                <i><b style="width:86%"></b></i>
-                <strong>86</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- WRITING BUILDING SYSTEM -->
-        <div class="writing-panel" id="writingBuildingSystemPanel">
-          <div class="writing-panel-header">
+        <div class="writing-v3-panel" id="writingScorePanel">
+          <div class="writing-v3-panel-head">
             <div>
-              <span class="writing-section-number">05</span>
-              <h2>Writing Building System</h2>
-              <p>Students move from sentence building to full essay writing.</p>
+              <span class="writing-v3-chip">Real Analysis Only</span>
+              <h3>Editor Score Panel</h3>
+              <p>If no real analysis exists, values stay empty instead of showing fake numbers.</p>
+            </div>
+
+            <div class="writing-v3-score-orb">
+              <strong id="writingScoreValue">--</strong>
+              <span>Waiting</span>
             </div>
           </div>
 
-          <div class="writing-path">
-            <div class="writing-path-card">
-              <span>1</span>
-              <h3>Sentence</h3>
-              <p>Subject + verb + object + correct tense.</p>
-              <small>Mastery 92%</small>
-            </div>
+          <div class="writing-v3-skill-bars">
+            <div><span>Grammar</span><i><b id="editorGrammarBar" style="width:0%"></b></i><strong id="editorGrammarValue">--</strong></div>
+            <div><span>Vocabulary</span><i><b id="editorVocabularyBar" style="width:0%"></b></i><strong id="editorVocabularyValue">--</strong></div>
+            <div><span>Connectors</span><i><b id="editorConnectorsBar" style="width:0%"></b></i><strong id="editorConnectorsValue">--</strong></div>
+            <div><span>Organization</span><i><b id="editorOrganizationBar" style="width:0%"></b></i><strong id="editorOrganizationValue">--</strong></div>
+            <div><span>Clarity</span><i><b id="editorClarityBar" style="width:0%"></b></i><strong id="editorClarityValue">--</strong></div>
+          </div>
+        </div>
+      </section>
 
-            <div class="writing-path-arrow">→</div>
-
-            <div class="writing-path-card">
-              <span>2</span>
-              <h3>Connected Sentences</h3>
-              <p>Use connectors to link ideas clearly.</p>
-              <small>Mastery 78%</small>
-            </div>
-
-            <div class="writing-path-arrow">→</div>
-
-            <div class="writing-path-card">
-              <span>3</span>
-              <h3>Paragraph</h3>
-              <p>Topic sentence, support, example, conclusion.</p>
-              <small>Mastery 65%</small>
-            </div>
-
-            <div class="writing-path-arrow">→</div>
-
-            <div class="writing-path-card gold">
-              <span>4</span>
-              <h3>Essay</h3>
-              <p>Introduction, body paragraphs, conclusion.</p>
-              <small>Mastery 48%</small>
-            </div>
+      <!-- SCREEN 3: WRITING PATHS -->
+      <section class="writing-v3-screen" id="writingV3Paths" data-writing-v3-view="paths">
+        <div class="writing-v3-screen-head">
+          <span>03</span>
+          <div>
+            <h2>Writing Paths</h2>
+            <p>Clear learning routes from sentence building to academic writing.</p>
           </div>
         </div>
 
-        <!-- CONNECTOR TRAINER + AI COACH -->
-        <div class="writing-two-columns">
-
-          <div class="writing-panel" id="writingConnectorPanel">
-            <div class="writing-panel-header">
-              <div>
-                <span class="writing-section-number">06</span>
-                <h2>Connector Trainer</h2>
-                <p>Train students to connect ideas naturally.</p>
-              </div>
-            </div>
-
-            <div class="connector-tabs">
-              <button onclick="showConnectorCategory('contrast')">Contrast</button>
-              <button onclick="showConnectorCategory('addition')">Addition</button>
-              <button onclick="showConnectorCategory('cause')">Cause & Effect</button>
-              <button onclick="showConnectorCategory('sequence')">Sequence</button>
-              <button onclick="showConnectorCategory('conclusion')">Conclusion</button>
-            </div>
-
-            <div id="connectorTrainerBox" class="connector-trainer-box">
-              <h3>Contrast Connectors</h3>
-              <p>Use connectors like <strong>however</strong>, <strong>although</strong>, <strong>even though</strong>, and <strong>whereas</strong> to show contrast.</p>
-
-              <div class="connector-example">
-                <span>She studied hard,</span>
-                <button>but</button>
-                <span>she did not pass the exam.</span>
-              </div>
-
-              <div class="connector-ai-tip">
-                AI Tip: Use “although” at the beginning when the surprising idea comes first.
-              </div>
-            </div>
+        <div class="writing-v3-path-grid">
+          <div class="writing-v3-path-card">
+            <span>01</span>
+            <h3>Sentence Control</h3>
+            <p>Subject, verb, object, tense, agreement, punctuation.</p>
           </div>
-
-          <div class="writing-panel" id="writingCoachPanel">
-            <div class="writing-panel-header">
-              <div>
-                <span class="writing-section-number">07</span>
-                <h2>AI Writing Coach</h2>
-                <p>Supportive, academic, and personalized feedback.</p>
-              </div>
-            </div>
-
-            <div class="ai-coach-box">
-              <div class="ai-coach-avatar">🤖</div>
-              <div class="ai-message">
-                <strong>AI Coach</strong>
-                <p>Your ideas are clear. Next, improve your connectors and sentence variety.</p>
-              </div>
-              <div class="student-message">
-                <strong>You</strong>
-                <p>How can I improve my paragraph?</p>
-              </div>
-              <div class="ai-message">
-                <strong>AI Coach</strong>
-                <p>Start with a topic sentence, add one example, then finish with a concluding sentence.</p>
-              </div>
-            </div>
+          <div class="writing-v3-path-card">
+            <span>02</span>
+            <h3>Connected Sentences</h3>
+            <p>Use connectors to connect ideas logically and naturally.</p>
           </div>
-
+          <div class="writing-v3-path-card">
+            <span>03</span>
+            <h3>Paragraph Structure</h3>
+            <p>Topic sentence, support, example, explanation, conclusion.</p>
+          </div>
+          <div class="writing-v3-path-card">
+            <span>04</span>
+            <h3>Essay / Exam Writing</h3>
+            <p>Introduction, body paragraphs, conclusion, tone, task response.</p>
+          </div>
         </div>
 
-        <!-- WRITING TYPES -->
-        <div class="writing-panel" id="writingTypesPanel">
-          <div class="writing-panel-header">
+        <div class="writing-v3-panel" id="writingConnectorPanel">
+          <div class="writing-v3-panel-head">
             <div>
-              <span class="writing-section-number">08</span>
-              <h2>Writing Types</h2>
-              <p>Train for school, exams, and real academic writing.</p>
+              <span class="writing-v3-chip">Connector Trainer</span>
+              <h3>Connector Practice</h3>
+              <p>Train students to connect ideas with meaning and control.</p>
             </div>
           </div>
 
-          <div class="writing-types-grid">
-            <div class="writing-type-card">
-              <span>🧠</span>
-              <h3>Opinion Essay</h3>
-              <p>Intermediate • 40–60 min</p>
-              <small>AI Support</small>
-            </div>
-            <div class="writing-type-card">
-              <span>⚖️</span>
-              <h3>For & Against Essay</h3>
-              <p>Advanced • 60–80 min</p>
-              <small>AI Support</small>
-            </div>
-            <div class="writing-type-card">
-              <span>✉️</span>
-              <h3>Formal Email</h3>
-              <p>Beginner • 20–30 min</p>
-              <small>AI Support</small>
-            </div>
-            <div class="writing-type-card">
-              <span>📊</span>
-              <h3>Report</h3>
-              <p>Intermediate • 45–60 min</p>
-              <small>AI Support</small>
-            </div>
-            <div class="writing-type-card">
-              <span>📰</span>
-              <h3>Article</h3>
-              <p>Advanced • 60–90 min</p>
-              <small>AI Support</small>
-            </div>
-            <div class="writing-type-card">
-              <span>📖</span>
-              <h3>Narrative Writing</h3>
-              <p>All Levels • 30–50 min</p>
-              <small>AI Support</small>
-            </div>
+          <div class="writing-v3-step-row">
+            <button type="button" onclick="showConnectorCategory('contrast')">Contrast</button>
+            <button type="button" onclick="showConnectorCategory('addition')">Addition</button>
+            <button type="button" onclick="showConnectorCategory('cause')">Cause & Effect</button>
+            <button type="button" onclick="showConnectorCategory('sequence')">Sequence</button>
+            <button type="button" onclick="showConnectorCategory('conclusion')">Conclusion</button>
+          </div>
+
+          <div id="connectorTrainerBox" class="writing-v3-output">
+            <h3>Contrast Connectors</h3>
+            <p>Use connectors like <strong>however</strong>, <strong>although</strong>, and <strong>whereas</strong> to show contrast.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 4: LESSONS HUB -->
+      <section class="writing-v3-screen" id="writingV3Lessons" data-writing-v3-view="lessons">
+        <div class="writing-v3-screen-head">
+          <span>04</span>
+          <div>
+            <h2>Lessons Hub</h2>
+            <p>Focused writing lessons connected to the student's weakest skill.</p>
           </div>
         </div>
 
-        <!-- WRITING LESSONS HUB -->
-        <div class="writing-panel writing-lessons-hub-panel" id="writingLessonsPanel">
-          <div class="writing-panel-header">
-            <div>
-              <span class="writing-section-number">09</span>
-              <h2>Writing Lessons Hub</h2>
-              <p>
-                Learn the exact skill you need next. Each lesson is connected to your writing analysis,
-                skill map, and next mission.
-              </p>
+        <div class="writing-v3-lessons-layout" id="writingLessonsHub">
+          <aside class="writing-v3-panel compact">
+            <div class="writing-v3-panel-head">
+              <div>
+                <span class="writing-v3-chip">Lessons</span>
+                <h3>Choose a Skill</h3>
+                <p>Open one lesson at a time.</p>
+              </div>
             </div>
-            <span class="writing-ai-chip">Adaptive Lessons</span>
-          </div>
 
-          <div class="writing-lessons-layout">
-
-            <div class="writing-lessons-menu">
+            <div class="writing-v3-lesson-buttons">
               <button type="button" onclick="loadWritingLesson('connectors')">Connector Coach 🔗</button>
               <button type="button" onclick="loadWritingLesson('vocabulary')">Vocabulary Upgrade Lab 💎</button>
               <button type="button" onclick="loadWritingLesson('organization')">Paragraph Organization Lab 🧱</button>
               <button type="button" onclick="loadWritingLesson('grammar')">Grammar Accuracy Clinic ✅</button>
               <button type="button" onclick="loadWritingLesson('clarity')">Clarity & Sentence Variety Lab ✨</button>
             </div>
+          </aside>
 
-            <div id="writingLessonViewer" class="writing-lesson-viewer">
-              <span class="writing-ai-chip">Recommended Learning</span>
-              <h3>Choose a lesson to begin</h3>
-              <p>
-                After analyzing your writing, the system will recommend the best lesson for your weakest skill.
-              </p>
+          <div id="writingLessonViewer" class="writing-v3-panel primary">
+            <span class="writing-v3-chip">Recommended Learning</span>
+            <h3>Choose a lesson to begin</h3>
+            <p>After analyzing writing, the system recommends the best lesson for the weakest skill.</p>
 
-              <div class="writing-lesson-placeholder">
-                <strong>Next step:</strong>
-                <span>Analyze your writing, then open the recommended lesson.</span>
-              </div>
+            <div class="writing-v3-empty">
+              <strong>Waiting for analysis.</strong>
+              <span>Open a lesson manually or analyze writing first.</span>
             </div>
+          </div>
+        </div>
+      </section>
 
+      <!-- SCREEN 5: ANALYTICS CENTER -->
+      <section class="writing-v3-screen" id="writingV3Analytics" data-writing-v3-view="analytics">
+        <div class="writing-v3-screen-head">
+          <span>05</span>
+          <div>
+            <h2>Analytics Center</h2>
+            <p>Only real saved attempts are used. No fake analytics values.</p>
           </div>
         </div>
 
-        <!-- WRITING PROGRESS DASHBOARD -->
-        <div class="writing-panel writing-progress-panel" id="writingProgressPanel">
-          <div class="writing-panel-header">
+        <div class="writing-v3-panel primary" id="writingProgressPanel">
+          <div class="writing-v3-panel-head">
             <div>
-              <span class="writing-section-number">10</span>
-              <h2>Writing Progress Dashboard</h2>
-              <p>
-                Track writing attempts, scores, skill growth, repeated weaknesses, and improvement over time.
-              </p>
+              <span class="writing-v3-chip">Progress</span>
+              <h3>Writing Progress Summary</h3>
+              <p>Based on saved attempts in <code>jakWritingAttemptsV1</code>.</p>
             </div>
-            <span class="writing-ai-chip">Progress Memory</span>
+
+            <div class="writing-level-badge" id="writingLevelBadge">
+              Level: —
+            </div>
           </div>
 
-          <div class="writing-progress-dashboard">
-            <div class="writing-progress-header">
+          <div id="writingProgressSummary" class="writing-progress-summary">
+            <div class="writing-progress-empty">
+              <strong>No writing history yet.</strong>
+              <span>Analyze your writing to start tracking progress.</span>
+            </div>
+          </div>
+
+          <div id="writingSkillProgressBars" class="writing-skill-progress-bars"></div>
+
+          <div id="writingProgressAdvice" class="writing-progress-advice"></div>
+        </div>
+
+        <div class="writing-v3-analytics-grid">
+          <div class="writing-v3-panel">
+            <div class="writing-v3-panel-head">
               <div>
-                <span class="section-kicker">Writing Growth</span>
-                <h3>📈 Writing Progress Dashboard</h3>
-                <p>
-                  Track your writing level, strongest skills, weakest areas, best attempt, and recent improvement.
-                </p>
+                <span class="writing-v3-chip">Achievements</span>
+                <h3>Streak & Badges</h3>
+                <p>Unlocked from actual attempts and scores.</p>
               </div>
 
-              <div class="writing-level-badge" id="writingLevelBadge">
-                Level: —
+              <div class="writing-streak-badge" id="writingStreakBadge">
+                🔥 Streak: 0 days
               </div>
             </div>
 
-            <div id="writingProgressSummary" class="writing-progress-summary">
+            <div id="writingAchievementBadges" class="writing-achievement-badges"></div>
+
+            <div id="writingMotivationMessage" class="writing-motivation-message">
+              Analyze your writing to start your achievement journey.
+            </div>
+          </div>
+
+          <div class="writing-v3-panel">
+            <div class="writing-v3-panel-head">
+              <div>
+                <span class="writing-v3-chip">History</span>
+                <h3>Recent Attempts</h3>
+                <p>Latest saved writing analyses.</p>
+              </div>
+            </div>
+
+            <div id="writingAttemptsTimeline" class="writing-attempts-timeline-list">
               <div class="writing-progress-empty">
-                <strong>No writing history yet.</strong>
-                <span>Analyze your writing to start tracking progress.</span>
-              </div>
-            </div>
-
-            <div id="writingSkillProgressBars" class="writing-skill-progress-bars"></div>
-
-            <div id="writingProgressAdvice" class="writing-progress-advice"></div>
-
-            <div class="writing-achievements-panel">
-              <div class="writing-achievements-head">
-                <div>
-                  <span class="section-kicker">Writing Motivation</span>
-                  <h3>🏆 Streak & Achievements</h3>
-                  <p>Build a writing habit and unlock badges as your writing improves.</p>
-                </div>
-                <div class="writing-streak-badge" id="writingStreakBadge">
-                  🔥 Streak: 0 days
-                </div>
-              </div>
-
-              <div id="writingAchievementBadges" class="writing-achievement-badges"></div>
-
-              <div id="writingMotivationMessage" class="writing-motivation-message">
-                Analyze your writing to start your achievement journey.
-              </div>
-
-              <div class="writing-attempts-timeline">
-                <div class="writing-attempts-timeline-head">
-                  <div>
-                    <span class="section-kicker">Writing History</span>
-                    <h3>🕒 Recent Attempts Timeline</h3>
-                    <p>Review your latest writing attempts and see how your skills change over time.</p>
-                  </div>
-                </div>
-
-                <div id="writingAttemptsTimeline" class="writing-attempts-timeline-list">
-                  <div class="writing-progress-empty">
-                    <strong>No attempts yet.</strong>
-                    <span>Your recent writing attempts will appear here after analysis.</span>
-                  </div>
-                </div>
+                <strong>No attempts yet.</strong>
+                <span>Your recent writing attempts will appear here after analysis.</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- WRITING SKILL MAP -->
-        <div class="writing-panel writing-skill-map-panel" id="writingSkillMapPanel">
-          <div class="writing-panel-header">
+        <div class="writing-v3-panel" id="writingSkillMapPanel">
+          <div class="writing-v3-panel-head">
             <div>
-              <span class="writing-section-number">11</span>
-              <h2>Writing Skill Map</h2>
-              <p>
-                The system detects the student's writing strengths and weaknesses,
-                then recommends the next lesson and practice mission.
-              </p>
+              <span class="writing-v3-chip">Skill Map</span>
+              <h3>Strengths & Weaknesses</h3>
+              <p>Skill bars should update from real analysis.</p>
             </div>
-            <span class="writing-ai-chip">Personalized Learning</span>
           </div>
 
-          <div class="writing-skill-map-layout">
+          <div class="writing-v3-skill-bars">
+            <div><span>Grammar</span><i><b id="skillGrammarBar" style="width:0%"></b></i><strong id="skillGrammarValue">--</strong></div>
+            <div><span>Vocabulary</span><i><b id="skillVocabularyBar" style="width:0%"></b></i><strong id="skillVocabularyValue">--</strong></div>
+            <div><span>Connectors</span><i><b id="skillConnectorsBar" style="width:0%"></b></i><strong id="skillConnectorsValue">--</strong></div>
+            <div><span>Organization</span><i><b id="skillOrganizationBar" style="width:0%"></b></i><strong id="skillOrganizationValue">--</strong></div>
+            <div><span>Clarity</span><i><b id="skillClarityBar" style="width:0%"></b></i><strong id="skillClarityValue">--</strong></div>
+          </div>
+        </div>
+      </section>
 
-            <div class="writing-skill-map-card">
-              <h3>Skill Profile</h3>
-
-              <div class="writing-skill-row">
-                <span>Grammar</span>
-                <i><b id="skillGrammarBar" style="width: 70%"></b></i>
-                <strong id="skillGrammarValue">70%</strong>
-              </div>
-
-              <div class="writing-skill-row">
-                <span>Vocabulary</span>
-                <i><b id="skillVocabularyBar" style="width: 70%"></b></i>
-                <strong id="skillVocabularyValue">70%</strong>
-              </div>
-
-              <div class="writing-skill-row">
-                <span>Connectors</span>
-                <i><b id="skillConnectorsBar" style="width: 70%"></b></i>
-                <strong id="skillConnectorsValue">70%</strong>
-              </div>
-
-              <div class="writing-skill-row">
-                <span>Organization</span>
-                <i><b id="skillOrganizationBar" style="width: 70%"></b></i>
-                <strong id="skillOrganizationValue">70%</strong>
-              </div>
-
-              <div class="writing-skill-row">
-                <span>Clarity</span>
-                <i><b id="skillClarityBar" style="width: 70%"></b></i>
-                <strong id="skillClarityValue">70%</strong>
-              </div>
-            </div>
-
-            <div class="writing-recommendation-card">
-              <h3>Next Learning Recommendation</h3>
-
-              <div class="writing-recommendation-highlight">
-                <span>Weakest Skill</span>
-                <strong id="writingWeakestSkill">Analyze your writing first</strong>
-              </div>
-
-              <div class="writing-recommendation-highlight">
-                <span>Recommended Lesson</span>
-                <strong id="writingRecommendedLesson">Waiting for analysis</strong>
-              </div>
-
-              <div class="writing-next-mission-box">
-                <span>Next Mission</span>
-                <p id="writingNextMission">
-                  Write your paragraph, click Analyze Writing, and your next mission will appear here.
-                </p>
-              </div>
-
-              <button type="button" onclick="loadRecommendedWritingMission()">Load Recommended Mission 🚀</button>
-            </div>
-
+      <!-- SCREEN 6: WRITING MISSIONS -->
+      <section class="writing-v3-screen" id="writingV3Missions" data-writing-v3-view="missions">
+        <div class="writing-v3-screen-head">
+          <span>06</span>
+          <div>
+            <h2>Writing Missions</h2>
+            <p>Personalized next tasks based on the student's current writing weakness.</p>
           </div>
         </div>
 
-        <!-- ANALYTICS + GAMIFICATION + TEACHER MODE -->
-        <div class="writing-three-columns">
-
-          <div class="writing-panel">
-            <div class="writing-panel-header">
-              <div>
-                <span class="writing-section-number">12</span>
-                <h2>Writing Analytics</h2>
-              </div>
-            </div>
-            <div class="writing-analytics-list">
-              <p><strong>Common Mistake:</strong> Verb agreement</p>
-              <p><strong>Connector Weakness:</strong> Cause & Effect</p>
-              <p><strong>Sentence Variety:</strong> 72%</p>
-              <p><strong>Vocabulary Richness:</strong> 68%</p>
+        <div class="writing-v3-panel primary">
+          <div class="writing-v3-panel-head">
+            <div>
+              <span class="writing-v3-chip">Next Mission</span>
+              <h3>Recommended Writing Task</h3>
+              <p>The system should recommend a task after analysis.</p>
             </div>
           </div>
 
-          <div class="writing-panel">
-            <div class="writing-panel-header">
-              <div>
-                <span class="writing-section-number">13</span>
-                <h2>Gamification</h2>
-              </div>
+          <div class="writing-v3-recommendation-grid">
+            <div>
+              <span>Weakest Skill</span>
+              <strong id="writingWeakestSkill">Analyze your writing first</strong>
             </div>
-            <div class="writing-gamification">
-              <div>
-                <strong>Level 12</strong>
-                <span>Pro Writer</span>
-              </div>
-              <div>
-                <strong>24 Days</strong>
-                <span>Writing Streak</span>
-              </div>
-              <div>
-                <strong>+150 XP</strong>
-                <span>Daily Mission</span>
-              </div>
+
+            <div>
+              <span>Recommended Lesson</span>
+              <strong id="writingRecommendedLesson">Waiting for analysis</strong>
             </div>
           </div>
 
-          <div class="writing-panel">
-            <div class="writing-panel-header">
-              <div>
-                <span class="writing-section-number">14</span>
-                <h2>Teacher Mode</h2>
-              </div>
-            </div>
-            <div class="teacher-writing-preview">
-              <p><strong>Class Average:</strong> 78%</p>
-              <p><strong>Top Weakness:</strong> Connectors</p>
-              <p><strong>AI Feedback:</strong> Students need more sentence variety and stronger paragraph organization.</p>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="writing-brand-footer">
-          <strong>JAK Academy</strong>
-          <span>by Jalal Abu Khadra</span>
-        </div>
-
-      </main>
-
-      <!-- RIGHT SMART COACH PANEL -->
-      <aside class="writing-right-coach">
-        <div class="writing-coach-sticky">
-
-          <div class="writing-coach-card main">
-            <span class="writing-coach-icon">🧠</span>
-            <h3>Smart Writing Coach</h3>
-            <p>
-              Your writing tools, progress, lessons, and next mission are now organized in one clear workspace.
+          <div class="writing-v3-output">
+            <span>Next Mission</span>
+            <p id="writingNextMission">
+              Write your paragraph, click Analyze Writing, and your next mission will appear here.
             </p>
           </div>
 
-          <div class="writing-coach-card">
-            <span>Current Focus</span>
-            <strong id="coachCurrentFocus">Organization</strong>
-            <small>Choose your focus from Mission Control.</small>
+          <div class="writing-v3-actions">
+            <button type="button" onclick="loadRecommendedWritingMission()">Load Recommended Mission 🚀</button>
           </div>
-
-          <div class="writing-coach-card">
-            <span>Writing Level</span>
-            <strong id="coachWritingLevel">Waiting</strong>
-            <small>Analyze writing to update your level.</small>
-          </div>
-
-          <div class="writing-coach-card">
-            <span>Next Action</span>
-            <strong id="coachNextAction">Generate Mission</strong>
-            <small>Start with a clear mission, then write and analyze.</small>
-          </div>
-
-          <div class="writing-coach-card gold">
-            <span>Teacher Tip</span>
-            <strong>Build → Write → Analyze → Improve</strong>
-            <small>This keeps the student from feeling lost.</small>
-          </div>
-
         </div>
-      </aside>
+      </section>
 
-    </div>
+      <!-- SCREEN 7: AI COACH -->
+      <section class="writing-v3-screen" id="writingV3Coach" data-writing-v3-view="coach">
+        <div class="writing-v3-screen-head">
+          <span>07</span>
+          <div>
+            <h2>AI Coach</h2>
+            <p>Supportive writing guidance. Keep it educational, practical, and safe.</p>
+          </div>
+        </div>
+
+        <div class="writing-v3-coach-layout">
+          <div class="writing-v3-panel primary">
+            <div class="writing-v3-panel-head">
+              <div>
+                <span class="writing-v3-chip">Coach</span>
+                <h3>Writing Coach Room</h3>
+                <p>Future secure AI feedback will appear here through the backend.</p>
+              </div>
+            </div>
+
+            <div class="writing-v3-chat-preview">
+              <div class="ai">
+                <strong>AI Coach</strong>
+                <p>Start with a clear main idea, then support it with one example.</p>
+              </div>
+
+              <div class="student">
+                <strong>Student</strong>
+                <p>How can I improve my paragraph?</p>
+              </div>
+
+              <div class="ai">
+                <strong>AI Coach</strong>
+                <p>Rewrite one sentence using a connector such as however, therefore, or moreover.</p>
+              </div>
+            </div>
+          </div>
+
+          <aside class="writing-v3-panel compact">
+            <div class="writing-v3-orb">🤖</div>
+            <h3>Coach Rules</h3>
+            <p>
+              Keep feedback practical, academic, age-appropriate, and connected to the student's writing data.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="writing-v3-footer">
+      <strong>JAK Academy</strong>
+      <span>Writing Academy by Jalal Abu Khadra</span>
+    </footer>
+
   </div>
 </section>
 <section id="planner" class="page">
