@@ -6690,7 +6690,10 @@ function showWritingMode(mode) {
 function analyzeWritingLocally() {
   const input = document.getElementById("studentWritingInput");
   const scoreValue = document.getElementById("writingScoreValue");
-  const feedbackBox = document.querySelector(".writing-feedback-preview");
+
+  const feedbackBox =
+    document.getElementById("writingFeedbackBox") ||
+    document.querySelector(".writing-feedback-preview");
 
   if (!input) return;
 
@@ -6703,9 +6706,17 @@ function analyzeWritingLocally() {
 
   const lowerText = text.toLowerCase();
 
+  // =====================================================
+  // 1. Basic Text Analysis
+  // =====================================================
+
   const words = text
     .replace(/[^\w\s'-]/g, " ")
     .split(/\s+/)
+    .filter(Boolean);
+
+  const cleanWords = words
+    .map(word => word.toLowerCase().replace(/[^a-z'-]/g, ""))
     .filter(Boolean);
 
   const wordCount = words.length;
@@ -6727,6 +6738,12 @@ function analyzeWritingLocally() {
   const averageSentenceLength =
     sentenceCount ? Math.round(wordCount / sentenceCount) : 0;
 
+  const hasClearEnding = /[.!?]$/.test(text);
+
+  // =====================================================
+  // 2. Connector Detection
+  // =====================================================
+
   const connectorGroups = {
     Addition: ["moreover", "also", "in addition", "furthermore", "besides"],
     Contrast: ["however", "although", "even though", "but", "whereas", "on the other hand"],
@@ -6747,6 +6764,26 @@ function analyzeWritingLocally() {
     });
   });
 
+  const hasConclusion =
+    lowerText.includes("in conclusion") ||
+    lowerText.includes("to sum up") ||
+    lowerText.includes("overall") ||
+    lowerText.includes("in short");
+
+  const hasExample =
+    lowerText.includes("for example") ||
+    lowerText.includes("for instance") ||
+    lowerText.includes("such as");
+
+  const hasOpinionPhrase =
+    lowerText.includes("in my opinion") ||
+    lowerText.includes("i believe") ||
+    lowerText.includes("i think");
+
+  // =====================================================
+  // 3. Repetition Detection
+  // =====================================================
+
   const ignoredWords = [
     "the", "a", "an", "and", "or", "but", "to", "of", "in", "on", "at",
     "is", "are", "was", "were", "be", "been", "being", "it", "this",
@@ -6757,16 +6794,78 @@ function analyzeWritingLocally() {
 
   const wordFrequency = {};
 
-  words.forEach(word => {
-    const clean = word.toLowerCase();
-    if (clean.length < 4 || ignoredWords.includes(clean)) return;
-    wordFrequency[clean] = (wordFrequency[clean] || 0) + 1;
+  cleanWords.forEach(word => {
+    if (word.length < 4 || ignoredWords.includes(word)) return;
+    wordFrequency[word] = (wordFrequency[word] || 0) + 1;
   });
 
   const repeatedWords = Object.entries(wordFrequency)
     .filter(([, count]) => count >= 3)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6);
+
+  // =====================================================
+  // 4. Gibberish / Low-Quality Text Detection
+  // =====================================================
+
+  const commonEnglishWords = new Set([
+    "the", "be", "to", "of", "and", "a", "in", "that", "have", "i",
+    "it", "for", "not", "on", "with", "he", "as", "you", "do", "at",
+    "this", "but", "his", "by", "from", "they", "we", "say", "her",
+    "she", "or", "an", "will", "my", "one", "all", "would", "there",
+    "their", "what", "so", "up", "out", "if", "about", "who", "get",
+    "which", "go", "me", "when", "make", "can", "like", "time", "no",
+    "just", "him", "know", "take", "people", "into", "year", "your",
+    "good", "some", "could", "them", "see", "other", "than", "then",
+    "now", "look", "only", "come", "its", "over", "think", "also",
+    "back", "after", "use", "two", "how", "our", "work", "first",
+    "well", "way", "even", "new", "want", "because", "any", "these",
+    "give", "day", "most", "us", "is", "are", "was", "were", "has",
+    "had", "students", "student", "technology", "education", "learn",
+    "learning", "school", "teacher", "teachers", "study", "studying",
+    "important", "help", "helps", "improve", "improves", "paragraph",
+    "essay", "write", "writing", "online", "internet", "computer",
+    "children", "parents", "life", "future", "problem", "solution"
+  ]);
+
+  const meaningfulWords = cleanWords.filter(word =>
+    commonEnglishWords.has(word) ||
+    word.length <= 4 ||
+    usedConnectors.some(item => item.connector === word)
+  );
+
+  const suspiciousWords = cleanWords.filter(word => {
+    const lettersOnly = word.replace(/[^a-z]/g, "");
+    if (lettersOnly.length < 5) return false;
+
+    const vowels = (lettersOnly.match(/[aeiou]/g) || []).length;
+    const vowelRatio = vowels / lettersOnly.length;
+
+    const hasNoVowels = vowels === 0;
+    const hasVeryLongRandomShape = lettersOnly.length >= 12 && vowelRatio < 0.28;
+    const hasRepeatedLetters = /(.)\1{3,}/.test(lettersOnly);
+    const hasTooManyConsonantsTogether = /[bcdfghjklmnpqrstvwxyz]{6,}/i.test(lettersOnly);
+
+    return hasNoVowels || hasVeryLongRandomShape || hasRepeatedLetters || hasTooManyConsonantsTogether;
+  });
+
+  const meaningfulRatio = cleanWords.length
+    ? meaningfulWords.length / cleanWords.length
+    : 0;
+
+  const isVeryShort = wordCount < 8;
+  const isTooShort = wordCount < 20;
+
+  const looksLikeGibberish =
+    cleanWords.length > 0 &&
+    (
+      suspiciousWords.length >= Math.ceil(cleanWords.length * 0.45) ||
+      (wordCount <= 10 && meaningfulRatio < 0.35)
+    );
+
+  // =====================================================
+  // 5. Grammar Detection
+  // =====================================================
 
   const grammarWarnings = [];
 
@@ -6819,23 +6918,9 @@ function analyzeWritingLocally() {
     }
   });
 
-  const hasConclusion =
-    lowerText.includes("in conclusion") ||
-    lowerText.includes("to sum up") ||
-    lowerText.includes("overall") ||
-    lowerText.includes("in short");
-
-  const hasExample =
-    lowerText.includes("for example") ||
-    lowerText.includes("for instance") ||
-    lowerText.includes("such as");
-
-  const hasOpinionPhrase =
-    lowerText.includes("in my opinion") ||
-    lowerText.includes("i believe") ||
-    lowerText.includes("i think");
-
-  const hasClearEnding = /[.!?]$/.test(text);
+  // =====================================================
+  // 6. Organization + Vocabulary Checks
+  // =====================================================
 
   const organizationWarnings = [];
 
@@ -6859,6 +6944,10 @@ function analyzeWritingLocally() {
     organizationWarnings.push("End your writing with proper punctuation.");
   }
 
+  if (looksLikeGibberish) {
+    organizationWarnings.unshift("The text does not look like meaningful English writing. Write complete, real sentences.");
+  }
+
   const vocabularySuggestions = [
     { weak: "good", better: "effective / beneficial / valuable" },
     { weak: "bad", better: "harmful / negative / serious" },
@@ -6868,42 +6957,133 @@ function analyzeWritingLocally() {
     { weak: "get better", better: "improve / develop / make progress" }
   ].filter(item => lowerText.includes(item.weak));
 
-  let score = 50;
+  // =====================================================
+  // 7. Score Calculation
+  // =====================================================
 
-  if (wordCount >= 40) score += 8;
-  if (wordCount >= 80) score += 8;
+  let score = 0;
+
+  // Length and effort
+  if (wordCount >= 20) score += 10;
+  if (wordCount >= 40) score += 10;
+  if (wordCount >= 80) score += 10;
+
+  // Sentence control
+  if (sentenceCount >= 2) score += 8;
   if (sentenceCount >= 3) score += 7;
+
+  // Connectors
+  if (usedConnectors.length >= 1) score += 7;
   if (usedConnectors.length >= 2) score += 8;
-  if (usedConnectors.length >= 4) score += 6;
-  if (hasExample) score += 6;
-  if (hasConclusion) score += 6;
-  if (hasOpinionPhrase) score += 4;
+  if (usedConnectors.length >= 4) score += 5;
+
+  // Structure
+  if (hasExample) score += 8;
+  if (hasConclusion) score += 7;
+  if (hasOpinionPhrase) score += 5;
   if (hasClearEnding) score += 5;
-  if (averageSentenceLength >= 8 && averageSentenceLength <= 24) score += 5;
-  if (grammarWarnings.length === 0) score += 6;
 
-  score -= Math.min(grammarWarnings.length * 5, 15);
-  score -= Math.min(repeatedWords.length * 2, 8);
+  // Sentence quality
+  if (averageSentenceLength >= 8 && averageSentenceLength <= 24) score += 8;
 
-  score = Math.max(0, Math.min(score, 100));
+  // Grammar reward only if text is long enough to judge
+  if (wordCount >= 20 && grammarWarnings.length === 0) score += 7;
+
+  // Penalties
+  score -= Math.min(grammarWarnings.length * 6, 18);
+  score -= Math.min(repeatedWords.length * 3, 10);
+
+  // Strong guards
+  if (isVeryShort) score = Math.min(score, 25);
+  if (isTooShort) score = Math.min(score, 45);
+  if (looksLikeGibberish) score = Math.min(score, 20);
+
+  score = Math.max(0, Math.min(Math.round(score), 100));
 
   const level =
+    looksLikeGibberish ? "Invalid / Needs Real Writing" :
+    isVeryShort ? "Too Short" :
     score >= 90 ? "Excellent" :
     score >= 80 ? "Very Good" :
     score >= 70 ? "Good" :
     score >= 60 ? "Developing" :
     "Needs Support";
 
+  // =====================================================
+  // 8. Skill Scores
+  // =====================================================
+
+  let skillScores = {
+    grammar:
+      wordCount < 20
+        ? 25
+        : Math.max(20, Math.min(100, 82 - grammarWarnings.length * 12)),
+
+    vocabulary:
+      wordCount < 20
+        ? 25
+        : Math.max(20, Math.min(100, 78 - vocabularySuggestions.length * 10 - repeatedWords.length * 4)),
+
+    connectors:
+      Math.max(0, Math.min(100, usedConnectors.length * 22)),
+
+    organization:
+      Math.max(
+        10,
+        Math.min(
+          100,
+          35 +
+          (sentenceCount >= 3 ? 15 : 0) +
+          (hasExample ? 15 : 0) +
+          (hasConclusion ? 15 : 0) +
+          (paragraphCount > 1 ? 10 : 0)
+        )
+      ),
+
+    clarity:
+      wordCount < 20
+        ? 25
+        : Math.max(
+            15,
+            Math.min(
+              100,
+              averageSentenceLength >= 8 && averageSentenceLength <= 24 ? 78 : 50
+            )
+          )
+  };
+
+  if (looksLikeGibberish) {
+    skillScores = {
+      grammar: 10,
+      vocabulary: 10,
+      connectors: 0,
+      organization: 10,
+      clarity: 10
+    };
+  }
+
+  // =====================================================
+  // 9. Suggested Next Exercise
+  // =====================================================
+
   const nextExercise =
-    grammarWarnings.length
-      ? "Practice subject-verb agreement and modal verb structures."
-      : usedConnectors.length < 2
-        ? "Practice using connectors such as however, because, moreover, and for example."
-        : !hasExample
-          ? "Write a paragraph that includes one clear example."
-          : !hasConclusion
-            ? "Practice writing strong concluding sentences."
-            : "Move to a longer paragraph or essay task.";
+    looksLikeGibberish
+      ? "Write three real English sentences about the topic. Avoid random letters."
+      : isTooShort
+        ? "Write at least 20 words before asking for a full analysis."
+        : grammarWarnings.length
+          ? "Practice subject-verb agreement and modal verb structures."
+          : usedConnectors.length < 2
+            ? "Practice using connectors such as however, because, moreover, and for example."
+            : !hasExample
+              ? "Write a paragraph that includes one clear example."
+              : !hasConclusion
+                ? "Practice writing strong concluding sentences."
+                : "Move to a longer paragraph or essay task.";
+
+  // =====================================================
+  // 10. Improved Draft Preview
+  // =====================================================
 
   let improvedDraft = text
     .replace(/\btechnology have\b/gi, "technology has")
@@ -6919,73 +7099,29 @@ function analyzeWritingLocally() {
     improvedDraft += ".";
   }
 
+  if (looksLikeGibberish) {
+    improvedDraft = "Please write meaningful English sentences before requesting an improved draft.";
+  }
+
+  // =====================================================
+  // 11. Update UI
+  // =====================================================
 
   if (scoreValue) {
     scoreValue.textContent = score;
   }
-  if (typeof updateWritingCommandCenter === "function") {
-  updateWritingCommandCenter();
- }
-  const skillScores = {
-  grammar: Math.max(40, Math.min(100, 90 - grammarWarnings.length * 12)),
-  vocabulary: Math.max(40, Math.min(100, 88 - vocabularySuggestions.length * 10 - repeatedWords.length * 4)),
-  connectors: Math.max(40, Math.min(100, usedConnectors.length * 18)),
-  organization: Math.max(40, Math.min(100, 55 + (hasExample ? 15 : 0) + (hasConclusion ? 15 : 0) + (paragraphCount > 1 ? 10 : 0))),
-  clarity: Math.max(40, Math.min(100, averageSentenceLength >= 8 && averageSentenceLength <= 24 ? 85 : 62))
-};
 
-if (typeof updateWritingSkillMap === "function") {
-  updateWritingSkillMap(skillScores);
-}
-if (typeof saveWritingAttempt === "function") {
-  saveWritingAttempt({
-    text,
-    score,
-    level,
-    wordCount,
-    sentenceCount,
-    paragraphCount,
-    averageSentenceLength,
-    connectorsCount: usedConnectors.length,
-    grammarWarningsCount: grammarWarnings.length,
-    repeatedWordsCount: repeatedWords.length,
-    topic: document.getElementById("writingTopicInput")?.value.trim() || "Untitled Topic",
-    writingType: document.getElementById("writingTypeSelect")?.value || "paragraph",
-    typeLabel:
-      typeof getWritingTypeLabel === "function"
-        ? getWritingTypeLabel(document.getElementById("writingTypeSelect")?.value || "paragraph")
-        : "Writing Task",
-    learnerMode: document.getElementById("writingLearnerModeSelect")?.value || "school",
-    focusSkill: document.getElementById("writingGoalSelect")?.value || "paragraph",
-    skillScores
-  });
-}
-if (typeof saveWritingAttempt === "function") {
-  saveWritingAttempt({
-    text,
-    score,
-    level,
-    wordCount,
-    sentenceCount,
-    paragraphCount,
-    averageSentenceLength,
-    connectorsCount: usedConnectors.length,
-    grammarWarningsCount: grammarWarnings.length,
-    repeatedWordsCount: repeatedWords.length,
-    topic: document.getElementById("writingTopicInput")?.value.trim() || "Untitled Topic",
-    writingType: document.getElementById("writingTypeSelect")?.value || "paragraph",
-    typeLabel:
-      typeof getWritingTypeLabel === "function"
-        ? getWritingTypeLabel(document.getElementById("writingTypeSelect")?.value || "paragraph")
-        : "Writing Task",
-    learnerMode: document.getElementById("writingLearnerModeSelect")?.value || "school",
-    focusSkill: document.getElementById("writingGoalSelect")?.value || "paragraph",
-    skillScores
-  });
-}
+  if (typeof updateWritingCommandCenter === "function") {
+    updateWritingCommandCenter();
+  }
+
+  if (typeof updateWritingSkillMap === "function") {
+    updateWritingSkillMap(skillScores);
+  }
+
   if (feedbackBox) {
     feedbackBox.innerHTML = `
-      <h3>Advanced Writing Report</h3>
+      <h3>Writing Report</h3>
 
       <p>
         <strong>Score:</strong> ${safeText(score)}%
@@ -7025,7 +7161,11 @@ if (typeof saveWritingAttempt === "function") {
                 <small>${safeText(item.suggestion)}</small>
               </p>
             `).join("")
-          : `<p><span class="writing-good">No major local grammar warning found.</span></p>`
+          : `<p><span class="writing-good">${
+              looksLikeGibberish
+                ? "Grammar cannot be judged accurately because the text is not meaningful."
+                : "No major local grammar warning found."
+            }</span></p>`
       }
 
       <h3>Organization Check</h3>
@@ -7049,7 +7189,11 @@ if (typeof saveWritingAttempt === "function") {
                 <small>Try: ${safeText(item.better)}</small>
               </p>
             `).join("")
-          : `<p><span class="writing-good">No basic weak vocabulary detected locally.</span></p>`
+          : `<p><span class="writing-good">${
+              looksLikeGibberish
+                ? "Vocabulary cannot be judged because the text does not look meaningful."
+                : "No basic weak vocabulary detected locally."
+            }</span></p>`
       }
 
       <h3>Repeated Words</h3>
@@ -7074,24 +7218,76 @@ if (typeof saveWritingAttempt === "function") {
       </p>
 
       <p>
-        <span class="writing-good">AI-ready preview</span>
-        <small>This is a local rule-based analyzer. Later, real AI will provide deeper grammar, style, task achievement, and personalized feedback.</small>
+        <span class="writing-good">Local Preview</span>
+        <small>This is a rule-based local analyzer. Later, real AI can provide deeper grammar, style, task achievement, and personalized feedback.</small>
       </p>
     `;
   }
+
+  // =====================================================
+  // 12. Save Attempt Once
+  // =====================================================
+
+  if (typeof saveWritingAttempt === "function") {
+    saveWritingAttempt({
+      text,
+      score,
+      level,
+      wordCount,
+      sentenceCount,
+      paragraphCount,
+      averageSentenceLength,
+      connectorsCount: usedConnectors.length,
+      grammarWarningsCount: grammarWarnings.length,
+      repeatedWordsCount: repeatedWords.length,
+      topic: document.getElementById("writingTopicInput")?.value.trim() || "Untitled Topic",
+      writingType: document.getElementById("writingTypeSelect")?.value || "paragraph",
+      typeLabel:
+        typeof getWritingTypeLabel === "function"
+          ? getWritingTypeLabel(document.getElementById("writingTypeSelect")?.value || "paragraph")
+          : "Writing Task",
+      learnerMode: document.getElementById("writingLearnerModeSelect")?.value || "school",
+      focusSkill: document.getElementById("writingGoalSelect")?.value || "paragraph",
+      qualityFlags: {
+        isVeryShort,
+        isTooShort,
+        looksLikeGibberish,
+        suspiciousWordsCount: suspiciousWords.length,
+        meaningfulRatio: Number(meaningfulRatio.toFixed(2))
+      },
+      skillScores
+    });
+  }
+
+  // =====================================================
+  // 13. Refresh Connected Writing Systems
+  // =====================================================
+
   if (typeof renderDynamicWritingIntelligence === "function") {
-  renderDynamicWritingIntelligence(text);
-}
-if (typeof renderGenreAwareWritingCheck === "function") {
-  renderGenreAwareWritingCheck(text);
-}
-if (typeof renderSentenceQualityReport === "function") {
-  renderSentenceQualityReport(text);
-}
-if (typeof updateWritingV3AnalyticsFromAttempts === "function") {
-  updateWritingV3AnalyticsFromAttempts();
-}
-  alert("Advanced writing report generated. Score: " + score + "%");
+    renderDynamicWritingIntelligence(text);
+  }
+
+  if (typeof renderGenreAwareWritingCheck === "function") {
+    renderGenreAwareWritingCheck(text);
+  }
+
+  if (typeof renderSentenceQualityReport === "function") {
+    renderSentenceQualityReport(text);
+  }
+
+  if (typeof renderWritingProgressSummary === "function") {
+    renderWritingProgressSummary();
+  }
+
+  if (typeof updateWritingV3AnalyticsFromAttempts === "function") {
+    updateWritingV3AnalyticsFromAttempts();
+  }
+
+  if (typeof updateWritingSmartCoachPanel === "function") {
+    updateWritingSmartCoachPanel();
+  }
+
+  alert("Writing report generated. Score: " + score + "%");
 }
 function getWritingAttempts() {
   try {
