@@ -8101,3 +8101,256 @@ textarea{min-height:95px;resize:vertical}
     width: fit-content;
   }
 }
+/* =====================================================
+   Writing Academy Responsive Command Layout
+===================================================== */
+
+.writing-academy-responsive-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 290px;
+  gap: 20px;
+  align-items: start;
+  margin-top: 22px;
+}
+
+.writing-left-sidebar,
+.writing-right-coach {
+  position: sticky;
+  top: 18px;
+  align-self: start;
+}
+
+.writing-left-sidebar {
+  padding: 16px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 35%),
+    rgba(15, 23, 42, 0.86);
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.28);
+  display: grid;
+  gap: 10px;
+}
+
+.writing-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f8fafc;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.writing-sidebar-brand span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+  box-shadow: 0 10px 24px rgba(34, 211, 238, 0.18);
+}
+
+.writing-left-sidebar button {
+  width: 100%;
+  text-align: left;
+  padding: 11px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  background: rgba(255, 255, 255, 0.07);
+  color: #e5e7eb;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.22s ease;
+}
+
+.writing-left-sidebar button:hover {
+  transform: translateX(4px);
+  background: rgba(34, 211, 238, 0.14);
+  border-color: rgba(125, 211, 252, 0.28);
+  color: #ffffff;
+}
+
+.writing-main-workspace {
+  min-width: 0;
+  display: grid;
+  gap: 20px;
+}
+
+.writing-right-coach {
+  border-radius: 26px;
+}
+
+.writing-coach-sticky {
+  display: grid;
+  gap: 12px;
+}
+
+.writing-coach-card {
+  padding: 16px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(168, 85, 247, 0.14), transparent 35%),
+    rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(226, 232, 240, 0.13);
+  color: #e5e7eb;
+  box-shadow: 0 16px 38px rgba(2, 6, 23, 0.24);
+}
+
+.writing-coach-card.main {
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.13), transparent 35%),
+    rgba(2, 6, 23, 0.88);
+}
+
+.writing-coach-card.gold {
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.18), transparent 36%),
+    rgba(69, 26, 3, 0.52);
+  border-color: rgba(250, 204, 21, 0.20);
+}
+
+.writing-coach-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+  margin-bottom: 10px;
+  font-size: 1.35rem;
+}
+
+.writing-coach-card span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+
+.writing-coach-card strong {
+  display: block;
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.writing-coach-card small,
+.writing-coach-card p {
+  display: block;
+  margin-top: 7px;
+  color: #cbd5e1;
+  line-height: 1.55;
+}
+
+.writing-academy-responsive-layout .writing-panel {
+  scroll-margin-top: 24px;
+}
+
+/* Tablet */
+@media (max-width: 1180px) {
+  .writing-academy-responsive-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-left-sidebar,
+  .writing-right-coach {
+    position: static;
+  }
+
+  .writing-left-sidebar {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 12px;
+    scrollbar-width: thin;
+  }
+
+  .writing-sidebar-brand {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+    min-width: 170px;
+  }
+
+  .writing-left-sidebar button {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 135px;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .writing-left-sidebar button:hover {
+    transform: translateY(-2px);
+  }
+
+  .writing-coach-sticky {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .writing-coach-card.main {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Mobile */
+@media (max-width: 680px) {
+  .writing-academy-shell {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .writing-command-dashboard,
+  .writing-hero,
+  .writing-panel,
+  .writing-progress-dashboard,
+  .writing-achievements-panel,
+  .writing-attempts-timeline {
+    border-radius: 22px;
+  }
+
+  .writing-left-sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-radius: 18px;
+    margin-inline: -4px;
+  }
+
+  .writing-sidebar-brand {
+    min-width: 145px;
+  }
+
+  .writing-left-sidebar button {
+    min-width: 118px;
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+
+  .writing-coach-sticky {
+    grid-template-columns: 1fr;
+  }
+
+  .writing-coach-card {
+    padding: 14px;
+  }
+
+  .writing-hero-actions,
+  .writing-mission-actions,
+  .writing-editor-actions,
+  .writing-builder-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .writing-toolbar {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .writing-toolbar button {
+    flex: 0 0 auto;
+  }
+}
