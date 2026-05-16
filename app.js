@@ -7088,6 +7088,9 @@ if (typeof renderGenreAwareWritingCheck === "function") {
 if (typeof renderSentenceQualityReport === "function") {
   renderSentenceQualityReport(text);
 }
+if (typeof updateWritingV3AnalyticsFromAttempts === "function") {
+  updateWritingV3AnalyticsFromAttempts();
+}
   alert("Advanced writing report generated. Score: " + score + "%");
 }
 function getWritingAttempts() {
@@ -10347,6 +10350,7 @@ function showWritingV3Screen(screenName) {
   if (typeof updateWritingV3AnalyticsFromAttempts === "function") {
     updateWritingV3AnalyticsFromAttempts();
   }
+  
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -10354,5 +10358,118 @@ document.addEventListener("DOMContentLoaded", () => {
     showWritingV3Screen("mission");
   }
 });
+ function updateWritingV3AnalyticsFromAttempts() {
+  const attempts = JSON.parse(localStorage.getItem("jakWritingAttemptsV1") || "[]");
 
+  const scoreBox = document.getElementById("writingScoreValue");
+  const commandScoreBox = document.getElementById("commandWritingScore");
+
+  const editorBars = {
+    grammar: {
+      bar: document.getElementById("editorGrammarBar"),
+      value: document.getElementById("editorGrammarValue")
+    },
+    vocabulary: {
+      bar: document.getElementById("editorVocabularyBar"),
+      value: document.getElementById("editorVocabularyValue")
+    },
+    connectors: {
+      bar: document.getElementById("editorConnectorsBar"),
+      value: document.getElementById("editorConnectorsValue")
+    },
+    organization: {
+      bar: document.getElementById("editorOrganizationBar"),
+      value: document.getElementById("editorOrganizationValue")
+    },
+    clarity: {
+      bar: document.getElementById("editorClarityBar"),
+      value: document.getElementById("editorClarityValue")
+    }
+  };
+
+  const skillMapBars = {
+    grammar: {
+      bar: document.getElementById("skillGrammarBar"),
+      value: document.getElementById("skillGrammarValue")
+    },
+    vocabulary: {
+      bar: document.getElementById("skillVocabularyBar"),
+      value: document.getElementById("skillVocabularyValue")
+    },
+    connectors: {
+      bar: document.getElementById("skillConnectorsBar"),
+      value: document.getElementById("skillConnectorsValue")
+    },
+    organization: {
+      bar: document.getElementById("skillOrganizationBar"),
+      value: document.getElementById("skillOrganizationValue")
+    },
+    clarity: {
+      bar: document.getElementById("skillClarityBar"),
+      value: document.getElementById("skillClarityValue")
+    }
+  };
+
+  const setSkillValue = (target, value) => {
+    const safeValue = Number.isFinite(Number(value))
+      ? Math.max(0, Math.min(100, Math.round(Number(value))))
+      : null;
+
+    if (target.bar) {
+      target.bar.style.width = safeValue === null ? "0%" : `${safeValue}%`;
+    }
+
+    if (target.value) {
+      target.value.textContent = safeValue === null ? "--" : `${safeValue}%`;
+    }
+  };
+
+  const resetValues = () => {
+    if (scoreBox) scoreBox.textContent = "--";
+    if (commandScoreBox) commandScoreBox.textContent = "--";
+
+    Object.values(editorBars).forEach(target => setSkillValue(target, null));
+    Object.values(skillMapBars).forEach(target => setSkillValue(target, null));
+  };
+
+  if (!Array.isArray(attempts) || attempts.length === 0) {
+    resetValues();
+    return;
+  }
+
+  const latestAttempt = attempts[0];
+
+  const score = Number(latestAttempt.score);
+
+  if (scoreBox) {
+    scoreBox.textContent = Number.isFinite(score) ? Math.round(score) : "--";
+  }
+
+  if (commandScoreBox) {
+    commandScoreBox.textContent = Number.isFinite(score) ? `${Math.round(score)}%` : "--";
+  }
+
+  const skills =
+    latestAttempt.skillScores ||
+    latestAttempt.skills ||
+    latestAttempt.skillBreakdown ||
+    {};
+
+  const fallbackScore = Number.isFinite(score) ? score : null;
+
+  const normalizedSkills = {
+    grammar: skills.grammar ?? latestAttempt.grammar ?? fallbackScore,
+    vocabulary: skills.vocabulary ?? latestAttempt.vocabulary ?? fallbackScore,
+    connectors: skills.connectors ?? latestAttempt.connectors ?? fallbackScore,
+    organization: skills.organization ?? latestAttempt.organization ?? skills.paragraph ?? fallbackScore,
+    clarity: skills.clarity ?? latestAttempt.clarity ?? skills.cohesion ?? fallbackScore
+  };
+
+  Object.keys(normalizedSkills).forEach(skill => {
+    setSkillValue(editorBars[skill], normalizedSkills[skill]);
+    setSkillValue(skillMapBars[skill], normalizedSkills[skill]);
+  });
+}
+
+window.updateWritingV3AnalyticsFromAttempts = updateWritingV3AnalyticsFromAttempts;
 window.showWritingV3Screen = showWritingV3Screen;
