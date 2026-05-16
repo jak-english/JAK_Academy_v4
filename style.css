@@ -13823,3 +13823,299 @@ button.gold:hover,
     line-height: 1.35;
   }
 }
+/* =====================================================
+   Games Page - UI Cleanup Patch
+   Safe CSS-only polish: game cards, area, buttons, mobile
+===================================================== */
+
+#games,
+#games * {
+  box-sizing: border-box;
+}
+
+#games {
+  padding: 24px;
+  overflow-x: hidden;
+}
+
+/* Main container */
+#games .games-modern,
+#games .card {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 26px;
+  border-radius: 30px;
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.12), transparent 30%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.74));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.30);
+}
+
+/* Header */
+#games .dashboard-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.38), rgba(15, 23, 42, 0.54));
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  margin-bottom: 20px;
+}
+
+#games h1,
+#games h2,
+#games h3 {
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+#games h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+}
+
+#games p,
+#games span,
+#games small,
+#games label {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+/* Quick actions */
+#games .dashboard-quick-actions,
+#games .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Buttons */
+#games button {
+  min-height: 42px;
+  padding: 10px 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(135deg, #0f766e, #1d4ed8, #6d28d9);
+  color: #ffffff;
+  font-weight: 850;
+  cursor: pointer;
+  transition: 0.22s ease;
+  box-shadow:
+    0 10px 24px rgba(37, 99, 235, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.75);
+}
+
+#games button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06) contrast(1.05);
+}
+
+/* Layout */
+#games .games-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* Cards */
+#games .box,
+#games .game-card,
+#games .game-area-panel {
+  min-width: 0;
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.42), rgba(15, 23, 42, 0.60));
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow:
+    0 16px 40px rgba(2, 6, 23, 0.18),
+    inset 0 0 16px rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+#games .game-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+#games .game-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(103, 232, 249, 0.26);
+  box-shadow:
+    0 18px 45px rgba(2, 6, 23, 0.22),
+    0 0 18px rgba(34, 211, 238, 0.07);
+}
+
+/* Game area should span full width */
+#games .game-area-panel {
+  grid-column: 1 / -1;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.10), transparent 34%),
+    linear-gradient(145deg, rgba(2, 6, 23, 0.44), rgba(15, 23, 42, 0.58));
+}
+
+/* Panel title */
+#games .panel-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+#games .panel-title h2,
+#games .panel-title h3,
+#games .box h2,
+#games .box h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+#games .panel-title p {
+  margin: 0;
+  color: #a7b4c8;
+}
+
+/* Game output */
+#games #gameArea {
+  margin-top: 14px;
+  min-height: 180px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.34);
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  color: #e5e7eb;
+  line-height: 1.7;
+}
+
+/* Inputs created by games */
+#games input,
+#games select,
+#games textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  background: rgba(2, 6, 23, 0.50);
+  color: #f8fafc;
+  padding: 11px 13px;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+#games input:focus,
+#games select:focus,
+#games textarea:focus {
+  border-color: rgba(103, 232, 249, 0.50);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.10);
+}
+
+/* Number/badge contrast */
+#games .panel-title > span,
+#games .panel-number,
+#games .section-number,
+#games [class*="number"],
+#games [class*="badge"] {
+  color: #ecfeff !important;
+  background: rgba(8, 145, 178, 0.22) !important;
+  border: 1px solid rgba(103, 232, 249, 0.28) !important;
+}
+
+/* Prevent ugly breaks */
+#games h1,
+#games h2,
+#games h3,
+#games p,
+#games span,
+#games small,
+#games label,
+#games button {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+/* Allow dynamic game content to wrap */
+#games pre,
+#games code,
+#games textarea,
+#games #gameArea,
+#games #gameArea * {
+  overflow-wrap: anywhere;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  #games {
+    padding: 12px;
+  }
+
+  #games .games-modern,
+  #games .card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  #games .dashboard-header {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  #games .games-layout {
+    grid-template-columns: 1fr;
+  }
+
+  #games .dashboard-quick-actions,
+  #games .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #games button {
+    width: 100%;
+  }
+
+  #games .box,
+  #games .game-card,
+  #games .game-area-panel {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  #games #gameArea {
+    min-height: 150px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 560px) {
+  #games h1 {
+    font-size: 1.7rem;
+  }
+
+  #games h2 {
+    font-size: 1.25rem;
+  }
+
+  #games h3 {
+    font-size: 1.05rem;
+  }
+
+  #games button {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+}
