@@ -11300,3 +11300,159 @@ button.gold:hover,
     min-height: 280px !important;
   }
 }
+/* =====================================================
+   Super Admin Dashboard - Clean UI Patch
+   Safe CSS-only cleanup
+===================================================== */
+
+#superAdminDashboard {
+  padding: 24px;
+  overflow-x: hidden;
+}
+
+#superAdminDashboard .card {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 26px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.12), transparent 30%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.72));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 22px 60px rgba(2, 6, 23, 0.28);
+  color: #e5e7eb;
+}
+
+#superAdminDashboard h1,
+#superAdminDashboard h2,
+#superAdminDashboard h3 {
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+#superAdminDashboard h1 {
+  margin-bottom: 6px;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+}
+
+#superAdminDashboard h2 {
+  margin-top: 18px;
+  margin-bottom: 12px;
+  font-size: 1.35rem;
+}
+
+#superAdminDashboard .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0 22px;
+}
+
+#superAdminDashboard button {
+  min-height: 44px;
+  padding: 11px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.88));
+  color: #ecfeff;
+  font-weight: 850;
+  cursor: pointer;
+  transition: 0.22s ease;
+  box-shadow: 0 10px 24px rgba(34, 211, 238, 0.10);
+}
+
+#superAdminDashboard button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+#superAdminDashboard .grid.two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  margin-top: 18px;
+}
+
+#superAdminDashboard .box,
+#superAdminDashboard .payment-card {
+  min-width: 0;
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.44), rgba(15, 23, 42, 0.58));
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.025);
+}
+
+#superAdminDashboard .box h3,
+#superAdminDashboard .payment-card h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+#superAdminDashboard input,
+#superAdminDashboard select,
+#superAdminDashboard textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  background: rgba(2, 6, 23, 0.50);
+  color: #f8fafc;
+  padding: 11px 13px;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+#superAdminDashboard label {
+  color: #cbd5e1;
+  font-weight: 750;
+}
+
+#superAdminDashboard p,
+#superAdminDashboard span,
+#superAdminDashboard small {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+#superAdminDashboard * {
+  box-sizing: border-box;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+/* Mobile */
+@media (max-width: 800px) {
+  #superAdminDashboard {
+    padding: 12px;
+  }
+
+  #superAdminDashboard .card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  #superAdminDashboard .grid.two {
+    grid-template-columns: 1fr;
+  }
+
+  #superAdminDashboard .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #superAdminDashboard button {
+    width: 100%;
+  }
+
+  #superAdminDashboard .box,
+  #superAdminDashboard .payment-card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+}
