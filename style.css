@@ -11178,3 +11178,125 @@ button.gold:hover,
     text-align: left !important;
   }
 }
+/* =====================================================
+   Writing Academy V3 - Final Spacing Patch 2
+   Focus: softer mobile spacing, better tabs, cleaner lab
+===================================================== */
+
+/* Keep V3 visually calm */
+#writingAcademy .writing-v3-body {
+  margin-top: 4px;
+}
+
+/* Better separation between screens and panels */
+#writingAcademy .writing-v3-screen.active {
+  padding-bottom: 10px;
+}
+
+#writingAcademy .writing-v3-panel + .writing-v3-panel {
+  margin-top: 18px;
+}
+
+/* Tabs: smoother scrolling on tablets/mobile */
+#writingAcademy .writing-v3-tabs {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+#writingAcademy .writing-v3-tabs::-webkit-scrollbar {
+  height: 6px;
+}
+
+#writingAcademy .writing-v3-tabs::-webkit-scrollbar-thumb {
+  background: rgba(103, 232, 249, 0.22);
+  border-radius: 999px;
+}
+
+/* Writing Lab: clearer focus */
+#writingAcademy .writing-v3-editor-toolbar {
+  padding-bottom: 4px;
+}
+
+#writingAcademy .writing-v3-editor::placeholder {
+  color: rgba(203, 213, 225, 0.62);
+}
+
+/* Empty/report boxes: more readable */
+#writingAcademy .writing-v3-output,
+#writingAcademy .writing-v3-empty,
+#writingAcademy .writing-v3-preview,
+#writingAcademy .writing-v3-feedback-box {
+  font-size: 0.94rem;
+}
+
+#writingAcademy .writing-v3-output h3,
+#writingAcademy .writing-v3-feedback-box h3 {
+  color: #f8fafc;
+  margin: 14px 0 8px;
+}
+
+#writingAcademy .writing-v3-output h3:first-child,
+#writingAcademy .writing-v3-feedback-box h3:first-child {
+  margin-top: 0;
+}
+
+#writingAcademy .writing-v3-feedback-box p {
+  margin: 9px 0;
+}
+
+#writingAcademy .writing-v3-feedback-box small {
+  display: block;
+  color: #a7b4c8;
+  line-height: 1.55;
+  margin-top: 4px;
+}
+
+/* Better badge readability */
+#writingAcademy .writing-v3-chip,
+#writingAcademy .writing-v3-kicker {
+  line-height: 1.25;
+}
+
+/* Progress and timeline readability */
+#writingAcademy .writing-attempt-card {
+  border-radius: 18px;
+}
+
+#writingAcademy .writing-attempt-message {
+  color: #b9c6d8;
+}
+
+/* Mobile extra polish */
+@media (max-width: 680px) {
+  #writingAcademy .writing-v3-shell {
+    padding-inline: 9px !important;
+  }
+
+  #writingAcademy .writing-v3-hero {
+    margin-top: 4px;
+  }
+
+  #writingAcademy .writing-v3-tabs {
+    margin: 10px 0 14px !important;
+  }
+
+  #writingAcademy .writing-v3-tabs button {
+    min-width: 118px !important;
+  }
+
+  #writingAcademy .writing-v3-screen-head {
+    margin-bottom: 12px !important;
+  }
+
+  #writingAcademy .writing-v3-panel {
+    margin-bottom: 12px;
+  }
+
+  #writingAcademy .writing-v3-live-status div {
+    min-height: auto;
+  }
+
+  #writingAcademy .writing-v3-editor {
+    min-height: 280px !important;
+  }
+}
