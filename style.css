@@ -12230,3 +12230,403 @@ button.gold:hover,
     line-height: 1.35;
   }
 }
+
+/* =====================================================
+   Student Exams + My Results - UI Cleanup Patch
+   Safe CSS-only polish: exam list, filters, results history
+===================================================== */
+
+#studentExams,
+#myResults,
+#studentExams *,
+#myResults * {
+  box-sizing: border-box;
+}
+
+#studentExams,
+#myResults {
+  padding: 24px;
+  overflow-x: hidden;
+}
+
+/* Main containers */
+#studentExams .exams-page-modern,
+#myResults .results-history-modern,
+#studentExams .card,
+#myResults .card {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 26px;
+  border-radius: 30px;
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.12), transparent 30%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.74));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.30);
+}
+
+/* Headers */
+#studentExams .dashboard-header,
+#myResults .dashboard-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.38), rgba(15, 23, 42, 0.54));
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  margin-bottom: 20px;
+}
+
+#studentExams h1,
+#studentExams h2,
+#studentExams h3,
+#myResults h1,
+#myResults h2,
+#myResults h3 {
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+#studentExams h1,
+#myResults h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+}
+
+#studentExams p,
+#studentExams span,
+#studentExams small,
+#studentExams label,
+#myResults p,
+#myResults span,
+#myResults small,
+#myResults label {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+/* Quick actions */
+#studentExams .dashboard-quick-actions,
+#myResults .dashboard-quick-actions,
+#studentExams .actions,
+#myResults .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Buttons */
+#studentExams button,
+#myResults button {
+  min-height: 42px;
+  padding: 10px 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(135deg, #0891b2, #2563eb, #7c3aed);
+  color: #ffffff;
+  font-weight: 850;
+  cursor: pointer;
+  transition: 0.22s ease;
+  box-shadow:
+    0 10px 24px rgba(37, 99, 235, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.55);
+}
+
+#studentExams button:hover,
+#myResults button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08) contrast(1.04);
+}
+
+/* Teacher selected info */
+#studentExams #selectedTeacherInfo,
+#studentExams .selected-teacher-info {
+  margin-bottom: 18px;
+  padding: 16px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.10), transparent 32%),
+    rgba(2, 6, 23, 0.36);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+#studentExams .selected-teacher-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Exams controls */
+#studentExams .exams-control-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+#studentExams .exam-control-card,
+#studentExams .exams-list-panel,
+#myResults .results-list-panel,
+#studentExams .box,
+#myResults .box {
+  min-width: 0;
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.42), rgba(15, 23, 42, 0.60));
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow:
+    0 16px 40px rgba(2, 6, 23, 0.18),
+    inset 0 0 16px rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+/* Panel titles */
+#studentExams .panel-title,
+#myResults .panel-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+#studentExams .panel-title h2,
+#studentExams .panel-title h3,
+#myResults .panel-title h2,
+#myResults .panel-title h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+#studentExams .panel-title p,
+#myResults .panel-title p {
+  margin: 0;
+  color: #a7b4c8;
+}
+
+/* Forms */
+#studentExams input,
+#studentExams select,
+#studentExams textarea,
+#myResults input,
+#myResults select,
+#myResults textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  background: rgba(2, 6, 23, 0.50);
+  color: #f8fafc;
+  padding: 11px 13px;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+#studentExams input:focus,
+#studentExams select:focus,
+#studentExams textarea:focus,
+#myResults input:focus,
+#myResults select:focus,
+#myResults textarea:focus {
+  border-color: rgba(103, 232, 249, 0.50);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.10);
+}
+
+/* Exam list */
+#studentExams #studentExamList,
+#studentExams .exams-list-panel {
+  max-width: 100%;
+  min-width: 0;
+}
+
+#studentExams #studentExamList {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+#studentExams #studentExamList > *,
+#studentExams .exam-card {
+  min-width: 0;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.34);
+  border: 1px solid rgba(148, 163, 184, 0.13);
+}
+
+/* Results list */
+#myResults #myResultsList {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+#myResults #myResultsList > .box,
+#myResults #myResultsList > div {
+  min-width: 0;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.07), transparent 32%),
+    rgba(2, 6, 23, 0.34);
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  box-shadow: none;
+}
+
+/* Make result text clearer */
+#myResults #myResultsList > .box {
+  color: #e5e7eb;
+  font-weight: 750;
+}
+
+#myResults #myResultsList > .box::before {
+  content: "Result";
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 8px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: #a5f3fc;
+  background: rgba(34, 211, 238, 0.10);
+  border: 1px solid rgba(103, 232, 249, 0.18);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+/* Number/badge contrast */
+#studentExams .panel-title > span,
+#myResults .panel-title > span,
+#studentExams .panel-number,
+#myResults .panel-number,
+#studentExams .section-number,
+#myResults .section-number,
+#studentExams [class*="number"],
+#myResults [class*="number"],
+#studentExams [class*="badge"],
+#myResults [class*="badge"] {
+  color: #ecfeff !important;
+  background: rgba(8, 145, 178, 0.22) !important;
+  border: 1px solid rgba(103, 232, 249, 0.28) !important;
+}
+
+/* Prevent ugly word breaks */
+#studentExams h1,
+#studentExams h2,
+#studentExams h3,
+#studentExams p,
+#studentExams span,
+#studentExams small,
+#studentExams label,
+#studentExams button,
+#myResults h1,
+#myResults h2,
+#myResults h3,
+#myResults p,
+#myResults span,
+#myResults small,
+#myResults label,
+#myResults button {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+/* Allow long dynamic content to wrap safely */
+#studentExams pre,
+#studentExams code,
+#studentExams textarea,
+#studentExams .exam-card,
+#myResults pre,
+#myResults code,
+#myResults textarea,
+#myResults #myResultsList > * {
+  overflow-wrap: anywhere;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  #studentExams,
+  #myResults {
+    padding: 12px;
+  }
+
+  #studentExams .exams-page-modern,
+  #myResults .results-history-modern,
+  #studentExams .card,
+  #myResults .card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  #studentExams .dashboard-header,
+  #myResults .dashboard-header {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  #studentExams .exams-control-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #studentExams .dashboard-quick-actions,
+  #myResults .dashboard-quick-actions,
+  #studentExams .actions,
+  #myResults .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #studentExams button,
+  #myResults button {
+    width: 100%;
+  }
+
+  #studentExams .exam-control-card,
+  #studentExams .exams-list-panel,
+  #myResults .results-list-panel,
+  #studentExams .box,
+  #myResults .box {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  #studentExams .selected-teacher-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 560px) {
+  #studentExams h1,
+  #myResults h1 {
+    font-size: 1.7rem;
+  }
+
+  #studentExams h2,
+  #myResults h2 {
+    font-size: 1.25rem;
+  }
+
+  #studentExams h3,
+  #myResults h3 {
+    font-size: 1.05rem;
+  }
+
+  #studentExams button,
+  #myResults button {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+}
