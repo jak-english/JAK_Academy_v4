@@ -12630,3 +12630,564 @@ button.gold:hover,
     line-height: 1.35;
   }
 }
+
+/* =====================================================
+   Planner + Study System - UI Cleanup Patch
+   Safe CSS-only polish: reduce clutter, improve spacing, mobile
+===================================================== */
+
+#planner,
+#planner *,
+#studySystem,
+#studySystem * {
+  box-sizing: border-box;
+}
+
+#planner,
+#studySystem {
+  padding: 24px;
+  overflow-x: hidden;
+}
+
+/* Main planner container */
+#planner .planner-modern,
+#planner .card,
+#studySystem .card {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 26px;
+  border-radius: 30px;
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.12), transparent 30%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.74));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.30);
+}
+
+/* Header */
+#planner .dashboard-header,
+#studySystem .dashboard-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.38), rgba(15, 23, 42, 0.54));
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  margin-bottom: 20px;
+}
+
+#planner h1,
+#planner h2,
+#planner h3,
+#studySystem h1,
+#studySystem h2,
+#studySystem h3 {
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+#planner h1,
+#studySystem h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+}
+
+#planner p,
+#planner span,
+#planner small,
+#planner label,
+#studySystem p,
+#studySystem span,
+#studySystem small,
+#studySystem label {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+/* Global planner boxes */
+#planner .box,
+#planner .mini-plan,
+#planner .analytics-card-box,
+#planner .study-system-panel,
+#planner .study-analytics-panel,
+#planner .planner-system-context-card,
+#studySystem .box,
+#studySystem .study-system-card {
+  min-width: 0;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.42), rgba(15, 23, 42, 0.60));
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow:
+    0 16px 40px rgba(2, 6, 23, 0.18),
+    inset 0 0 16px rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+/* Auto-switch context */
+#planner #plannerSystemContext {
+  max-width: 1480px;
+  margin: 0 auto 18px;
+}
+
+#planner .planner-system-context-card {
+  padding: 18px !important;
+}
+
+#planner .planner-system-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+}
+
+#planner .planner-system-pill {
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: #ecfeff;
+  background: rgba(8, 145, 178, 0.20);
+  border: 1px solid rgba(103, 232, 249, 0.25);
+  font-weight: 850;
+}
+
+/* System action buttons: many buttons, make them compact */
+#planner .planner-system-actions,
+#planner .dashboard-quick-actions,
+#planner .actions,
+#studySystem .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#planner button,
+#studySystem button {
+  min-height: 40px;
+  padding: 9px 13px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(135deg, #0891b2, #2563eb, #7c3aed);
+  color: #ffffff;
+  font-weight: 820;
+  cursor: pointer;
+  transition: 0.22s ease;
+  box-shadow:
+    0 10px 24px rgba(37, 99, 235, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13);
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.55);
+}
+
+#planner button:hover,
+#studySystem button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08) contrast(1.04);
+}
+
+/* Make task action buttons less huge */
+#planner .mini-plan button,
+#planner #plansList button,
+#planner #todayTasks button,
+#planner .calendar-day button {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 11px;
+  font-size: 0.82rem;
+  box-shadow: none;
+}
+
+/* Delete buttons: visually distinct but not harsh */
+#planner button[onclick*="deletePlanById"] {
+  background: linear-gradient(135deg, #7f1d1d, #b91c1c) !important;
+  border-color: rgba(248, 113, 113, 0.30) !important;
+}
+
+/* Status buttons */
+#planner button[onclick*="'done'"] {
+  background: linear-gradient(135deg, #047857, #059669) !important;
+}
+
+#planner button[onclick*="'in_progress'"] {
+  background: linear-gradient(135deg, #1d4ed8, #7c3aed) !important;
+}
+
+#planner button[onclick*="'not_started'"] {
+  background: linear-gradient(135deg, #334155, #475569) !important;
+}
+
+/* Planner stats */
+#planner #plannerStats,
+#planner .grid.three,
+#planner #studyAnalyticsCards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+#planner #plannerStats .box,
+#planner #studyAnalyticsCards .box,
+#planner .analytics-card-box {
+  padding: 16px;
+}
+
+/* Study system panel */
+#planner .study-system-panel,
+#planner .study-analytics-panel {
+  margin-top: 18px;
+}
+
+#planner .grid.two,
+#studySystem .grid.two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* Forms */
+#planner input,
+#planner select,
+#planner textarea,
+#studySystem input,
+#studySystem select,
+#studySystem textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  background: rgba(2, 6, 23, 0.50);
+  color: #f8fafc;
+  padding: 11px 13px;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+#planner input:focus,
+#planner select:focus,
+#planner textarea:focus,
+#studySystem input:focus,
+#studySystem select:focus,
+#studySystem textarea:focus {
+  border-color: rgba(103, 232, 249, 0.50);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.10);
+}
+
+/* Plans list */
+#planner #plansList {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+#planner .mini-plan {
+  display: grid;
+  gap: 10px;
+}
+
+#planner .mini-plan .actions,
+#planner .mini-plan-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+/* Today tasks */
+#planner #todayTasks {
+  display: grid;
+  gap: 10px;
+}
+
+#planner #todayTasks > * {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Calendar */
+#planner .calendar-grid,
+#planner #calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+#planner .calendar-day {
+  min-width: 0;
+  min-height: 110px;
+  border-radius: 18px;
+  padding: 10px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.36), rgba(15, 23, 42, 0.52));
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  overflow: hidden;
+}
+
+/* Charts */
+#planner .study-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+#planner .analytics-row,
+#planner .analytics-row-top {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Prevent ugly word breaks */
+#planner h1,
+#planner h2,
+#planner h3,
+#planner p,
+#planner span,
+#planner small,
+#planner label,
+#planner button,
+#studySystem h1,
+#studySystem h2,
+#studySystem h3,
+#studySystem p,
+#studySystem span,
+#studySystem small,
+#studySystem label,
+#studySystem button {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+/* Allow dynamic long text to wrap safely */
+#planner pre,
+#planner code,
+#planner textarea,
+#planner .mini-plan,
+#planner .calendar-day,
+#planner .analytics-row,
+#planner #plansList > *,
+#studySystem pre,
+#studySystem code,
+#studySystem textarea {
+  overflow-wrap: anywhere;
+}
+
+/* Mobile */
+@media (max-width: 1000px) {
+  #planner,
+  #studySystem {
+    padding: 12px;
+  }
+
+  #planner .planner-modern,
+  #planner .card,
+  #studySystem .card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  #planner .dashboard-header,
+  #studySystem .dashboard-header,
+  #planner .planner-system-header {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  #planner #plannerStats,
+  #planner .grid.three,
+  #planner #studyAnalyticsCards,
+  #planner .grid.two,
+  #studySystem .grid.two,
+  #planner .study-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #planner .dashboard-quick-actions,
+  #planner .actions,
+  #studySystem .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #planner button,
+  #studySystem button {
+    width: 100%;
+  }
+
+  #planner .planner-system-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #planner .mini-plan .actions,
+  #planner .mini-plan-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #planner .calendar-grid,
+  #planner #calendarGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #planner .calendar-day {
+    min-height: 90px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 560px) {
+  #planner h1,
+  #studySystem h1 {
+    font-size: 1.7rem;
+  }
+
+  #planner h2,
+  #studySystem h2 {
+    font-size: 1.25rem;
+  }
+
+  #planner h3,
+  #studySystem h3 {
+    font-size: 1.05rem;
+  }
+
+  #planner .planner-system-actions {
+    grid-template-columns: 1fr;
+  }
+
+  #planner .calendar-grid,
+  #planner #calendarGrid {
+    grid-template-columns: 1fr;
+  }
+
+  #planner button,
+  #studySystem button {
+    font-size: 0.92rem;
+    line-height: 1.35;
+  }
+}
+
+/* =====================================================
+   Planner + Study System - Button Contrast Patch
+   Fix bright buttons / unclear numbers and icons
+===================================================== */
+
+/* General planner buttons: calmer premium colors */
+#planner button,
+#studySystem button {
+  color: #ffffff !important;
+  background:
+    linear-gradient(135deg, #0f766e, #1d4ed8, #6d28d9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.75) !important;
+  font-weight: 850 !important;
+}
+
+/* Keep icons/numbers inside buttons clear */
+#planner button *,
+#studySystem button * {
+  color: inherit !important;
+  text-shadow: inherit !important;
+}
+
+/* Planner system filter buttons: less flashy */
+#planner .planner-system-actions button {
+  background:
+    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 64, 175, 0.82)) !important;
+  border: 1px solid rgba(125, 211, 252, 0.24) !important;
+  color: #f8fafc !important;
+}
+
+/* Active/current-looking buttons if class exists */
+#planner .planner-system-actions button.active,
+#planner .planner-system-actions button.selected,
+#planner .active-study-system-card,
+#studySystem .active-study-system-card {
+  color: #ecfeff !important;
+  background:
+    linear-gradient(135deg, #0e7490, #2563eb, #7c3aed) !important;
+  border-color: rgba(103, 232, 249, 0.40) !important;
+}
+
+/* Done button: darker green, clearer text */
+#planner button[onclick*="'done'"] {
+  background: linear-gradient(135deg, #065f46, #047857) !important;
+  border-color: rgba(110, 231, 183, 0.36) !important;
+  color: #ecfdf5 !important;
+}
+
+/* In progress button: darker blue/purple */
+#planner button[onclick*="'in_progress'"] {
+  background: linear-gradient(135deg, #1e3a8a, #4338ca) !important;
+  border-color: rgba(147, 197, 253, 0.35) !important;
+  color: #eff6ff !important;
+}
+
+/* Not started button: calm slate */
+#planner button[onclick*="'not_started'"] {
+  background: linear-gradient(135deg, #334155, #1e293b) !important;
+  border-color: rgba(203, 213, 225, 0.26) !important;
+  color: #f8fafc !important;
+}
+
+/* Delete button: readable red, not neon */
+#planner button[onclick*="deletePlanById"] {
+  background: linear-gradient(135deg, #7f1d1d, #991b1b) !important;
+  border-color: rgba(252, 165, 165, 0.35) !important;
+  color: #fff1f2 !important;
+}
+
+/* Small task buttons: clearer size and contrast */
+#planner .mini-plan button,
+#planner #plansList button,
+#planner #todayTasks button,
+#planner .calendar-day button {
+  color: #ffffff !important;
+  font-size: 0.82rem !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.80) !important;
+}
+
+/* Numbers/badges inside planner cards */
+#planner .planner-system-pill,
+#planner .badge,
+#planner [class*="badge"],
+#planner [class*="number"],
+#planner .section-number,
+#studySystem .badge,
+#studySystem [class*="badge"],
+#studySystem [class*="number"],
+#studySystem .section-number {
+  color: #ecfeff !important;
+  background: rgba(8, 145, 178, 0.22) !important;
+  border: 1px solid rgba(103, 232, 249, 0.30) !important;
+  text-shadow: none !important;
+}
+
+/* Analytics cards numbers: make values readable */
+#planner .analytics-card-box strong,
+#planner .analytics-card-box b,
+#planner #plannerStats strong,
+#planner #plannerStats b,
+#planner .box strong,
+#planner .box b {
+  color: #f8fafc !important;
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.55);
+}
+
+/* Softer hover: don't wash out text */
+#planner button:hover,
+#studySystem button:hover {
+  filter: brightness(1.04) contrast(1.06) !important;
+  color: #ffffff !important;
+}
