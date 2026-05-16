@@ -11897,3 +11897,336 @@ button.gold:hover,
     line-height: 1.35;
   }
 }
+
+/* =====================================================
+   Student Dashboard - Final UI Cleanup Patch
+   Safe CSS-only polish: layout, cards, spacing, mobile
+===================================================== */
+
+#studentDashboard,
+#studentDashboard * {
+  box-sizing: border-box;
+}
+
+#studentDashboard {
+  padding: 24px;
+  overflow-x: hidden;
+}
+
+/* Main container */
+#studentDashboard .student-dashboard-modern,
+#studentDashboard .card {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 26px;
+  border-radius: 30px;
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.12), transparent 30%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.74));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.30);
+}
+
+/* Header */
+#studentDashboard .dashboard-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.38), rgba(15, 23, 42, 0.54));
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  margin-bottom: 20px;
+}
+
+#studentDashboard h1,
+#studentDashboard h2,
+#studentDashboard h3 {
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+#studentDashboard h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+}
+
+#studentDashboard p,
+#studentDashboard span,
+#studentDashboard small,
+#studentDashboard label {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+/* Header / quick actions */
+#studentDashboard .dashboard-quick-actions,
+#studentDashboard .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Student main layout */
+#studentDashboard .student-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* Main cards */
+#studentDashboard .box,
+#studentDashboard .student-main-card,
+#studentDashboard .student-tool-card,
+#studentDashboard .student-support-plans-box {
+  min-width: 0;
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.42), rgba(15, 23, 42, 0.60));
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow:
+    0 16px 40px rgba(2, 6, 23, 0.18),
+    inset 0 0 16px rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+/* Card titles */
+#studentDashboard .panel-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+#studentDashboard .panel-title h2,
+#studentDashboard .panel-title h3,
+#studentDashboard .box h2,
+#studentDashboard .box h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+#studentDashboard .panel-title p {
+  margin: 0;
+  color: #a7b4c8;
+}
+
+/* Buttons */
+#studentDashboard button {
+  min-height: 42px;
+  padding: 10px 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(135deg, #0891b2, #2563eb, #7c3aed);
+  color: #ffffff;
+  font-weight: 850;
+  cursor: pointer;
+  transition: 0.22s ease;
+  box-shadow:
+    0 10px 24px rgba(37, 99, 235, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.55);
+}
+
+#studentDashboard button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08) contrast(1.04);
+}
+
+/* Inputs if any appear later */
+#studentDashboard input,
+#studentDashboard select,
+#studentDashboard textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  background: rgba(2, 6, 23, 0.50);
+  color: #f8fafc;
+  padding: 11px 13px;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+#studentDashboard input:focus,
+#studentDashboard select:focus,
+#studentDashboard textarea:focus {
+  border-color: rgba(103, 232, 249, 0.50);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.10);
+}
+
+/* Tools grid */
+#studentDashboard .student-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+#studentDashboard .student-tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#studentDashboard .student-tool-card h3 {
+  margin: 0;
+}
+
+#studentDashboard .student-tool-card p {
+  margin: 0;
+  color: #a7b4c8;
+}
+
+/* Advice / progress cards */
+#studentDashboard #studentAdviceBox,
+#studentDashboard #studentProgressBox {
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.10), transparent 32%),
+    linear-gradient(145deg, rgba(2, 6, 23, 0.42), rgba(15, 23, 42, 0.60));
+}
+
+/* Support plans */
+#studentDashboard .student-support-plans-box {
+  margin-top: 0;
+}
+
+#studentDashboard .student-support-plans-box button {
+  margin-top: 10px;
+}
+
+/* Status/output areas */
+#studentDashboard #studentProgressBox,
+#studentDashboard #studentAdviceBox,
+#studentDashboard .student-support-plans-box,
+#studentDashboard .student-main-card {
+  max-width: 100%;
+}
+
+/* Prevent ugly breaks */
+#studentDashboard h1,
+#studentDashboard h2,
+#studentDashboard h3,
+#studentDashboard p,
+#studentDashboard span,
+#studentDashboard small,
+#studentDashboard label,
+#studentDashboard button {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+/* Allow long dynamic content to wrap safely */
+#studentDashboard pre,
+#studentDashboard code,
+#studentDashboard textarea,
+#studentDashboard .student-result-card,
+#studentDashboard .student-resource-card,
+#studentDashboard .exam-card,
+#studentDashboard .support-plan-card {
+  overflow-wrap: anywhere;
+}
+
+/* Softer card hover */
+#studentDashboard .student-main-card,
+#studentDashboard .student-tool-card {
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+#studentDashboard .student-main-card:hover,
+#studentDashboard .student-tool-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(103, 232, 249, 0.24);
+  box-shadow:
+    0 18px 45px rgba(2, 6, 23, 0.22),
+    0 0 18px rgba(34, 211, 238, 0.06);
+}
+
+/* Number/badge contrast */
+#studentDashboard .panel-title > span,
+#studentDashboard .panel-number,
+#studentDashboard .section-number,
+#studentDashboard [class*="number"],
+#studentDashboard [class*="badge"] {
+  color: #ecfeff !important;
+  background: rgba(8, 145, 178, 0.22) !important;
+  border: 1px solid rgba(103, 232, 249, 0.28) !important;
+}
+
+/* Mobile */
+@media (max-width: 950px) {
+  #studentDashboard {
+    padding: 12px;
+  }
+
+  #studentDashboard .student-dashboard-modern,
+  #studentDashboard .card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  #studentDashboard .dashboard-header {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  #studentDashboard .student-layout {
+    grid-template-columns: 1fr;
+  }
+
+  #studentDashboard .student-tools-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #studentDashboard .dashboard-quick-actions,
+  #studentDashboard .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #studentDashboard button {
+    width: 100%;
+  }
+
+  #studentDashboard .box,
+  #studentDashboard .student-main-card,
+  #studentDashboard .student-tool-card,
+  #studentDashboard .student-support-plans-box {
+    padding: 16px;
+    border-radius: 20px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 560px) {
+  #studentDashboard h1 {
+    font-size: 1.7rem;
+  }
+
+  #studentDashboard h2 {
+    font-size: 1.25rem;
+  }
+
+  #studentDashboard h3 {
+    font-size: 1.05rem;
+  }
+
+  #studentDashboard .student-tools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #studentDashboard button {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+}
