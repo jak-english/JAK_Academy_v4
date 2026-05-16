@@ -10865,3 +10865,316 @@ button.gold:hover,
   z-index: 1 !important;
   transform: none !important;
 } 
+
+/* =====================================================
+   Writing Academy V3 - Final UI Polish Patch 1
+   Focus: spacing, readable cards, cleaner tabs, stable layout
+===================================================== */
+
+/* Safer readable text */
+#writingAcademy {
+  --wak-bg: rgba(15, 23, 42, 0.86);
+  --wak-card: rgba(15, 23, 42, 0.78);
+  --wak-card-strong: rgba(30, 41, 59, 0.72);
+  --wak-border: rgba(148, 163, 184, 0.16);
+  --wak-border-glow: rgba(103, 232, 249, 0.20);
+  --wak-text: #e5e7eb;
+  --wak-muted: #a7b4c8;
+  --wak-heading: #f8fafc;
+  --wak-cyan: #67e8f9;
+  --wak-blue: #60a5fa;
+  --wak-purple: #a78bfa;
+}
+
+/* Give the whole section more breathing room */
+.writing-v3-shell {
+  padding-block: 28px 34px !important;
+}
+
+/* Header less massive, cleaner */
+.writing-v3-hero {
+  gap: 22px !important;
+  padding: 22px !important;
+  border-radius: 28px !important;
+}
+
+.writing-v3-hero-main h1 {
+  max-width: 720px;
+  line-height: 1.02 !important;
+  margin-bottom: 12px !important;
+}
+
+.writing-v3-hero-main p {
+  max-width: 720px;
+  font-size: 1rem !important;
+}
+
+/* Status cards: prevent cramped broken text */
+.writing-v3-live-status {
+  grid-template-columns: repeat(5, minmax(130px, 1fr)) !important;
+  align-content: stretch;
+}
+
+.writing-v3-live-status div {
+  padding: 13px 14px !important;
+  border-radius: 18px !important;
+}
+
+.writing-v3-live-status strong {
+  min-height: 2.5em;
+  display: flex !important;
+  align-items: center;
+}
+
+/* Modern tabs: cleaner, not old button bar */
+.writing-v3-tabs {
+  border-radius: 24px !important;
+  padding: 8px !important;
+  gap: 8px !important;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.74), rgba(15, 23, 42, 0.70)) !important;
+}
+
+.writing-v3-tabs button {
+  min-width: 132px !important;
+  padding: 11px 14px !important;
+  border-radius: 18px !important;
+  font-size: 0.88rem !important;
+  letter-spacing: 0.01em;
+}
+
+.writing-v3-tabs button.active {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 12px 26px rgba(34, 211, 238, 0.12) !important;
+}
+
+/* Screen headings */
+.writing-v3-screen-head {
+  border-radius: 22px !important;
+  padding: 16px 18px !important;
+  margin-bottom: 18px !important;
+}
+
+.writing-v3-screen-head > span {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 14px !important;
+}
+
+.writing-v3-screen-head h2 {
+  letter-spacing: -0.02em;
+}
+
+/* Panels: flatter, cleaner, less nested feeling */
+.writing-v3-panel {
+  padding: 18px !important;
+  border-radius: 24px !important;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.88), rgba(30, 41, 59, 0.62)) !important;
+  border-color: var(--wak-border) !important;
+  box-shadow:
+    0 16px 42px rgba(2, 6, 23, 0.24),
+    inset 0 0 16px rgba(255, 255, 255, 0.02) !important;
+}
+
+.writing-v3-panel.primary {
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.08), transparent 35%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.90), rgba(30, 41, 59, 0.64)) !important;
+}
+
+/* Panel titles and text alignment */
+.writing-v3-panel-head {
+  margin-bottom: 14px !important;
+  gap: 12px !important;
+}
+
+.writing-v3-panel-head h3,
+.writing-v3-panel h3 {
+  font-size: 1.12rem !important;
+  letter-spacing: -0.01em;
+}
+
+.writing-v3-panel-head p,
+.writing-v3-panel p {
+  color: var(--wak-muted) !important;
+  font-size: 0.94rem !important;
+}
+
+/* No ugly word breaking */
+#writingAcademy h1,
+#writingAcademy h2,
+#writingAcademy h3,
+#writingAcademy p,
+#writingAcademy strong,
+#writingAcademy span,
+#writingAcademy small,
+#writingAcademy button,
+#writingAcademy label {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  hyphens: none !important;
+}
+
+/* But long raw values should not overflow */
+#writingAcademy input,
+#writingAcademy textarea,
+#writingAcademy .writing-v3-output,
+#writingAcademy .writing-v3-empty,
+#writingAcademy .writing-v3-feedback-box,
+#writingAcademy .writing-v3-preview {
+  overflow-wrap: anywhere;
+}
+
+/* Inputs: more premium */
+#writingAcademy input,
+#writingAcademy select,
+#writingAcademy textarea {
+  border-radius: 14px !important;
+  padding: 12px 14px !important;
+  background: rgba(2, 6, 23, 0.46) !important;
+}
+
+#writingAcademy textarea {
+  font-size: 1rem !important;
+}
+
+/* Writing Lab editor should feel focused */
+.writing-v3-editor {
+  min-height: 380px !important;
+  border-radius: 20px !important;
+  line-height: 1.8 !important;
+  background:
+    linear-gradient(180deg, rgba(2, 6, 23, 0.58), rgba(15, 23, 42, 0.62)) !important;
+}
+
+/* Buttons: consistent heights */
+.writing-v3-actions button,
+.writing-v3-step-row button,
+.writing-v3-lesson-buttons button {
+  min-height: 44px;
+  border-radius: 14px !important;
+  padding: 10px 14px !important;
+}
+
+/* Output boxes */
+.writing-v3-output,
+.writing-v3-empty,
+.writing-v3-preview,
+.writing-v3-feedback-box {
+  border-radius: 18px !important;
+  background: rgba(2, 6, 23, 0.34) !important;
+  border-color: rgba(148, 163, 184, 0.13) !important;
+}
+
+/* Reduce card-in-card feeling in analytics */
+#writingAcademy .writing-progress-card,
+#writingAcademy .writing-progress-empty,
+.writing-v3-metric-list div,
+.writing-v3-recommendation-grid div {
+  border-radius: 16px !important;
+  background: rgba(2, 6, 23, 0.30) !important;
+  border-color: rgba(148, 163, 184, 0.12) !important;
+}
+
+/* Progress cards more readable */
+#writingAcademy .writing-progress-summary {
+  gap: 10px !important;
+}
+
+#writingAcademy .writing-progress-card {
+  padding: 14px !important;
+}
+
+#writingAcademy .writing-progress-card strong {
+  font-size: 1.18rem !important;
+}
+
+/* Skill bars clean spacing */
+.writing-v3-skill-bars div,
+#writingAcademy .writing-skill-bar-row {
+  grid-template-columns: 130px minmax(0, 1fr) 54px !important;
+}
+
+/* Footer quieter */
+.writing-v3-footer {
+  border-radius: 20px !important;
+  opacity: 0.92;
+}
+
+/* Tablet refinement */
+@media (max-width: 1180px) {
+  .writing-v3-live-status {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .writing-v3-tabs {
+    border-radius: 20px !important;
+  }
+
+  .writing-v3-lab-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Mobile refinement */
+@media (max-width: 680px) {
+  .writing-v3-shell {
+    padding: 10px !important;
+  }
+
+  .writing-v3-hero {
+    padding: 15px !important;
+    border-radius: 22px !important;
+  }
+
+  .writing-v3-hero-main h1 {
+    font-size: 1.9rem !important;
+    letter-spacing: -0.035em;
+  }
+
+  .writing-v3-live-status {
+    grid-template-columns: 1fr !important;
+  }
+
+  .writing-v3-tabs {
+    gap: 7px !important;
+    padding: 7px !important;
+    border-radius: 18px !important;
+  }
+
+  .writing-v3-tabs button {
+    min-width: 126px !important;
+    font-size: 0.8rem !important;
+    padding: 10px 11px !important;
+  }
+
+  .writing-v3-screen-head {
+    padding: 14px !important;
+  }
+
+  .writing-v3-panel {
+    padding: 14px !important;
+    border-radius: 20px !important;
+  }
+
+  .writing-v3-form-grid,
+  .writing-v3-form-grid.one {
+    grid-template-columns: 1fr !important;
+  }
+
+  .writing-v3-editor {
+    min-height: 300px !important;
+  }
+
+  .writing-v3-skill-bars div,
+  #writingAcademy .writing-skill-bar-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .writing-v3-skill-bars strong,
+  #writingAcademy .writing-skill-bar-value {
+    text-align: left !important;
+  }
+}
