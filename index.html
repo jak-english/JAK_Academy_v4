@@ -33,112 +33,199 @@
 </header>
 
 <main>
-<section id="home" class="page active">
-  <div class="modern-hero">
-    <div class="hero-content">
-      <span class="hero-kicker">JAK Academy Platform</span>
+  <section id="home" class="page active">
+  <div class="jak-home-v2">
 
-      <h1>Smart Learning. Better Exams. Real Progress.</h1>
+    <!-- HERO -->
+    <section class="jak-home-hero">
+      <div class="jak-home-hero-content">
+        <span class="jak-home-kicker">JAK Academy • Smart Learning Platform</span>
 
-      <p>
-        A modern educational platform for teachers and students:
-        exams, analytics, planning, AI tools, games, and premium learning features.
-      </p>
+        <h1>
+          Your Smart Learning
+          <span>Command Center</span>
+        </h1>
 
-      <div class="hero-actions">
-        <button onclick="goDashboard()">Start Now</button>
-        <button class="gold" onclick="showPage('studentExams');loadStudentExams()">Open Exams</button>
-        <button class="violet" onclick="showPage('aiCenter')">AI Tools</button>
-        <button class="secondary" onclick="window.location.href='login.html'">Login / Sign in</button>
-      </div>
-    </div>
+        <p>
+          A futuristic educational platform for exams, writing, study planning,
+          AI tools, games, dictionaries, resources, progress tracking, and premium learning.
+        </p>
 
-    <div class="hero-panel">
-      <div class="logo-big">JAK</div>
-      <h2>Learning is Fun ✨</h2>
-      <p>Built for exams, practice, analytics, and smart study planning.</p>
+        <div class="jak-home-actions">
+          <button type="button" class="primary" onclick="goDashboard()">
+            Start Now 🚀
+          </button>
 
-      <div class="hero-mini-stats">
-        <div>
-          <strong>AI</strong>
-          <span>Ready</span>
+          <button type="button" onclick="showPage('studentExams');loadStudentExams()">
+            Open Exams 📝
+          </button>
+
+          <button type="button" onclick="showPage('aiCenter')">
+            AI Tools 🤖
+          </button>
+
+          <button type="button" class="ghost" onclick="window.location.href='login.html'">
+            Login / Sign in
+          </button>
         </div>
-        <div>
-          <strong>24/7</strong>
-          <span>Access</span>
+
+        <div class="jak-home-trust-row">
+          <div>
+            <strong>Writing V3</strong>
+            <span>Premium writing lab</span>
+          </div>
+          <div>
+            <strong>Smart Exams</strong>
+            <span>Practice & analytics</span>
+          </div>
+          <div>
+            <strong>Study Planner</strong>
+            <span>Tasks & systems</span>
+          </div>
         </div>
-        <div>
-          <strong>Pro</strong>
-          <span>Tools</span>
+      </div>
+
+      <aside class="jak-home-command-card">
+        <div class="jak-orbit-ring"></div>
+
+        <div class="jak-home-panel-top">
+          <span>LIVE PLATFORM</span>
+          <strong>JAK Academy OS</strong>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="services-section">
-    <div class="section-title">
-      <span class="badge">Platform Features</span>
-      <h2>Everything students and teachers need in one place</h2>
-      <p>Organized tools designed for teaching, practice, tracking, and improvement.</p>
-    </div>
+        <div class="jak-home-system-grid">
+          <div>
+            <span>Mode</span>
+            <strong>Student / Teacher</strong>
+          </div>
+          <div>
+            <span>Writing</span>
+            <strong>V3 Ready</strong>
+          </div>
+          <div>
+            <span>Planner</span>
+            <strong>Study Systems</strong>
+          </div>
+          <div>
+            <span>Analytics</span>
+            <strong>Progress Tracking</strong>
+          </div>
+        </div>
 
-    <div class="services-grid">
-      <div class="service-card">
-        <div class="service-number">01</div>
-        <div class="service-icon">📝</div>
-        <h3>Interactive Exams</h3>
-        <p>Create, publish, solve, auto-correct, and review exams.</p>
+        <div class="jak-home-progress-panel">
+          <div>
+            <span>Platform Readiness</span>
+            <strong>Premium Learning Experience</strong>
+          </div>
+          <div class="jak-home-progress-bar">
+            <i></i>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- FEATURE STRIP -->
+    <section class="jak-home-feature-strip">
+      <div>
+        <strong>📝 Exams</strong>
+        <span>Build, solve, auto-correct, and review.</span>
+      </div>
+      <div>
+        <strong>✍️ Writing Academy</strong>
+        <span>Plan, write, analyze, improve.</span>
+      </div>
+      <div>
+        <strong>📅 Planner</strong>
+        <span>Tasks, goals, analytics, study systems.</span>
+      </div>
+      <div>
+        <strong>🎮 Games</strong>
+        <span>Practice English interactively.</span>
+      </div>
+    </section>
+
+    <!-- PLATFORM FEATURES -->
+    <section class="jak-home-section">
+      <div class="jak-home-section-title">
+        <span>Platform Features</span>
+        <h2>Everything students and teachers need in one smart workspace.</h2>
+        <p>
+          Designed for practice, progress, organization, teacher control,
+          and a premium learning experience.
+        </p>
       </div>
 
-      <div class="service-card">
-        <div class="service-number">02</div>
-        <div class="service-icon">🧩</div>
-        <h3>Question Manager</h3>
-        <p>Add, edit, delete, and organize MCQ and True/False questions.</p>
+      <div class="jak-home-feature-grid">
+        <article class="jak-feature-card">
+          <span class="num">01</span>
+          <div class="icon">📝</div>
+          <h3>Interactive Exams</h3>
+          <p>Create, publish, solve, auto-correct, and review exams with clear progress.</p>
+        </article>
+
+        <article class="jak-feature-card">
+          <span class="num">02</span>
+          <div class="icon">✍️</div>
+          <h3>Writing Academy V3</h3>
+          <p>A modular writing lab for missions, writing, feedback, analytics, and growth.</p>
+        </article>
+
+        <article class="jak-feature-card">
+          <span class="num">03</span>
+          <div class="icon">📊</div>
+          <h3>Student Analytics</h3>
+          <p>Track scores, attempts, progress, strengths, weaknesses, and study advice.</p>
+        </article>
+
+        <article class="jak-feature-card">
+          <span class="num">04</span>
+          <div class="icon">📅</div>
+          <h3>Study Planner</h3>
+          <p>Plan tasks, follow study systems, track completion, and organize learning.</p>
+        </article>
+
+        <article class="jak-feature-card">
+          <span class="num">05</span>
+          <div class="icon">🤖</div>
+          <h3>AI Center</h3>
+          <p>Prepare question previews and smart learning tools for future secure AI support.</p>
+        </article>
+
+        <article class="jak-feature-card">
+          <span class="num">06</span>
+          <div class="icon">🎮</div>
+          <h3>Learning Games</h3>
+          <p>Practice vocabulary, irregular verbs, and grammar through interactive games.</p>
+        </article>
+
+        <article class="jak-feature-card">
+          <span class="num">07</span>
+          <div class="icon">📚</div>
+          <h3>Resources</h3>
+          <p>Upload, browse, and manage worksheets, PDFs, answer keys, and learning files.</p>
+        </article>
+
+        <article class="jak-feature-card">
+          <span class="num">08</span>
+          <div class="icon">💎</div>
+          <h3>Premium System</h3>
+          <p>Manage premium access, payment instructions, requests, and learning tools.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="jak-home-final-cta">
+      <div>
+        <span>Ready to learn smarter?</span>
+        <h2>Enter your dashboard and continue your learning journey.</h2>
       </div>
 
-      <div class="service-card">
-        <div class="service-number">03</div>
-        <div class="service-icon">📊</div>
-        <h3>Student Analytics</h3>
-        <p>Track scores, averages, best results, and study advice.</p>
-      </div>
+      <button type="button" onclick="goDashboard()">
+        Enter Dashboard 🚀
+      </button>
+    </section>
 
-      <div class="service-card">
-        <div class="service-number">04</div>
-        <div class="service-icon">🏆</div>
-        <h3>Leaderboard</h3>
-        <p>Show best students and strongest results in a clean ranking.</p>
-      </div>
-
-      <div class="service-card">
-        <div class="service-number">05</div>
-        <div class="service-icon">🤖</div>
-        <h3>AI Center</h3>
-        <p>Prepare for AI question generation, writing help, and smart tutoring.</p>
-      </div>
-
-      <div class="service-card">
-        <div class="service-number">06</div>
-        <div class="service-icon">📅</div>
-        <h3>Study Planner</h3>
-        <p>Plan tasks, organize study routines, and follow daily progress.</p>
-      </div>
-
-      <div class="service-card">
-        <div class="service-number">07</div>
-        <div class="service-icon">🎮</div>
-        <h3>Learning Games</h3>
-        <p>Practice vocabulary, irregular verbs, and grammar through games.</p>
-      </div>
-
-      <div class="service-card">
-        <div class="service-number">08</div>
-        <div class="service-icon">💎</div>
-        <h3>Premium System</h3>
-        <p>Manage paid access, requests, plans, and teacher/student tools.</p>
-      </div>
-    </div>
   </div>
 </section>
 <section id="premium" class="page">
@@ -459,7 +546,6 @@
   <div id="savedSupportPlansList"></div>
 </div>
 <div id="teacherResultsList"></div>
-  <div id="teacherResultsList"></div>
       </div>
 
       <!-- Teacher Resources Upload -->

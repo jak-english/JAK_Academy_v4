@@ -14119,3 +14119,1484 @@ button.gold:hover,
     line-height: 1.35;
   }
 }
+
+/* =====================================================
+   JAK Academy Home V2 - Futuristic Premium Landing Page
+===================================================== */
+
+#home,
+#home * {
+  box-sizing: border-box;
+}
+
+#home {
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at 10% 5%, rgba(34, 211, 238, 0.16), transparent 28%),
+    radial-gradient(circle at 90% 8%, rgba(139, 92, 246, 0.18), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.10), transparent 35%),
+    linear-gradient(135deg, #020617, #0f172a 45%, #111827);
+}
+
+.jak-home-v2 {
+  width: min(1480px, 100%);
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+}
+
+/* HERO */
+.jak-home-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+  gap: 22px;
+  align-items: stretch;
+  min-height: 560px;
+}
+
+.jak-home-hero-content,
+.jak-home-command-card,
+.jak-home-feature-strip,
+.jak-home-section,
+.jak-home-final-cta {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.34);
+  backdrop-filter: blur(18px);
+}
+
+.jak-home-hero-content {
+  padding: clamp(24px, 4vw, 46px);
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.16), transparent 34%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.64));
+}
+
+.jak-home-kicker {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: #a5f3fc;
+  background: rgba(34, 211, 238, 0.10);
+  border: 1px solid rgba(103, 232, 249, 0.22);
+  font-weight: 900;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.jak-home-hero h1 {
+  margin: 18px 0 16px;
+  color: #f8fafc;
+  font-size: clamp(2.5rem, 6vw, 6rem);
+  line-height: 0.92;
+  letter-spacing: -0.07em;
+}
+
+.jak-home-hero h1 span {
+  display: block;
+  color: #67e8f9;
+  text-shadow: 0 0 26px rgba(34, 211, 238, 0.20);
+}
+
+.jak-home-hero p {
+  max-width: 780px;
+  color: #cbd5e1;
+  font-size: 1.08rem;
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* Actions */
+.jak-home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.jak-home-actions button,
+.jak-home-final-cta button {
+  min-height: 46px;
+  padding: 12px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background:
+    linear-gradient(135deg, #0f766e, #1d4ed8, #6d28d9);
+  color: #ffffff;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.22s ease;
+  box-shadow:
+    0 12px 28px rgba(37, 99, 235, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.70);
+}
+
+.jak-home-actions button.primary,
+.jak-home-final-cta button {
+  background:
+    linear-gradient(135deg, #06b6d4, #2563eb, #7c3aed);
+}
+
+.jak-home-actions button.ghost {
+  background: rgba(15, 23, 42, 0.70);
+  color: #e5e7eb;
+  box-shadow: none;
+}
+
+.jak-home-actions button:hover,
+.jak-home-final-cta button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06) contrast(1.04);
+}
+
+/* Trust row */
+.jak-home-trust-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.jak-home-trust-row div {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.34);
+  border: 1px solid rgba(148, 163, 184, 0.13);
+}
+
+.jak-home-trust-row strong {
+  display: block;
+  color: #f8fafc;
+  margin-bottom: 4px;
+}
+
+.jak-home-trust-row span {
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+/* Command Card */
+.jak-home-command-card {
+  position: relative;
+  overflow: hidden;
+  padding: 26px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.18), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.16), transparent 34%),
+    linear-gradient(145deg, rgba(8, 13, 28, 0.96), rgba(24, 34, 60, 0.76));
+}
+
+.jak-orbit-ring {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  top: 28px;
+  right: -70px;
+  border-radius: 50%;
+  border: 1px solid rgba(103, 232, 249, 0.20);
+  box-shadow:
+    0 0 40px rgba(34, 211, 238, 0.10),
+    inset 0 0 30px rgba(139, 92, 246, 0.08);
+}
+
+.jak-orbit-ring::before {
+  content: "";
+  position: absolute;
+  inset: 38px;
+  border-radius: 50%;
+  border: 1px dashed rgba(167, 139, 250, 0.22);
+}
+
+.jak-home-panel-top {
+  position: relative;
+  z-index: 2;
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(2, 6, 23, 0.36);
+  border: 1px solid rgba(148, 163, 184, 0.13);
+}
+
+.jak-home-panel-top span {
+  display: block;
+  color: #67e8f9;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.jak-home-panel-top strong {
+  display: block;
+  margin-top: 6px;
+  color: #f8fafc;
+  font-size: 1.4rem;
+}
+
+.jak-home-system-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.jak-home-system-grid div {
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(15, 23, 42, 0.66);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.jak-home-system-grid span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 850;
+  margin-bottom: 6px;
+}
+
+.jak-home-system-grid strong {
+  color: #f8fafc;
+  line-height: 1.35;
+}
+
+.jak-home-progress-panel {
+  position: relative;
+  z-index: 2;
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(2, 6, 23, 0.36);
+  border: 1px solid rgba(148, 163, 184, 0.13);
+}
+
+.jak-home-progress-panel span {
+  display: block;
+  color: #94a3b8;
+  font-weight: 850;
+  margin-bottom: 4px;
+}
+
+.jak-home-progress-panel strong {
+  color: #f8fafc;
+}
+
+.jak-home-progress-bar {
+  height: 12px;
+  margin-top: 14px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.15);
+  overflow: hidden;
+}
+
+.jak-home-progress-bar i {
+  display: block;
+  width: 82%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #60a5fa, #a78bfa);
+}
+
+/* Feature strip */
+.jak-home-feature-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+  padding: 18px;
+  border-radius: 28px;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.78), rgba(30, 41, 59, 0.56));
+}
+
+.jak-home-feature-strip div {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.30);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.jak-home-feature-strip strong {
+  display: block;
+  color: #f8fafc;
+  margin-bottom: 5px;
+}
+
+.jak-home-feature-strip span {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+/* Section */
+.jak-home-section {
+  margin-top: 20px;
+  padding: 26px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.10), transparent 30%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.78), rgba(30, 41, 59, 0.56));
+}
+
+.jak-home-section-title {
+  max-width: 820px;
+  margin-bottom: 18px;
+}
+
+.jak-home-section-title span {
+  color: #67e8f9;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.jak-home-section-title h2 {
+  margin: 8px 0;
+  color: #f8fafc;
+  font-size: clamp(1.7rem, 3vw, 2.8rem);
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.jak-home-section-title p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+.jak-home-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.jak-feature-card {
+  position: relative;
+  min-width: 0;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.40), rgba(15, 23, 42, 0.58));
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  transition: 0.22s ease;
+  overflow: hidden;
+}
+
+.jak-feature-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(103, 232, 249, 0.28);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.22);
+}
+
+.jak-feature-card .num {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #a5f3fc;
+  background: rgba(34, 211, 238, 0.10);
+  border: 1px solid rgba(103, 232, 249, 0.18);
+  font-weight: 900;
+  font-size: 0.75rem;
+}
+
+.jak-feature-card .icon {
+  margin-top: 14px;
+  font-size: 2rem;
+}
+
+.jak-feature-card h3 {
+  margin: 12px 0 8px;
+  color: #f8fafc;
+}
+
+.jak-feature-card p {
+  margin: 0;
+  color: #a7b4c8;
+  line-height: 1.65;
+}
+
+/* Final CTA */
+.jak-home-final-cta {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-top: 20px;
+  padding: 24px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.14), transparent 34%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.84), rgba(30, 41, 59, 0.60));
+}
+
+.jak-home-final-cta span {
+  color: #67e8f9;
+  font-weight: 900;
+}
+
+.jak-home-final-cta h2 {
+  color: #f8fafc;
+  margin: 6px 0 0;
+  font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+}
+
+/* Text safety */
+#home h1,
+#home h2,
+#home h3,
+#home p,
+#home span,
+#home strong,
+#home button {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .jak-home-hero,
+  .jak-home-feature-strip,
+  .jak-home-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .jak-home-command-card {
+    min-height: 440px;
+  }
+}
+
+@media (max-width: 760px) {
+  .jak-home-v2 {
+    padding: 12px;
+  }
+
+  .jak-home-hero,
+  .jak-home-feature-strip,
+  .jak-home-feature-grid,
+  .jak-home-trust-row {
+    grid-template-columns: 1fr;
+  }
+
+  .jak-home-hero-content,
+  .jak-home-command-card,
+  .jak-home-section,
+  .jak-home-final-cta {
+    border-radius: 24px;
+    padding: 18px;
+  }
+
+  .jak-home-hero {
+    min-height: auto;
+  }
+
+  .jak-home-hero h1 {
+    font-size: 2.35rem;
+    letter-spacing: -0.05em;
+  }
+
+  .jak-home-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .jak-home-actions button,
+  .jak-home-final-cta button {
+    width: 100%;
+  }
+
+  .jak-home-system-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jak-orbit-ring {
+    opacity: 0.45;
+  }
+
+  .jak-home-final-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* =====================================================
+   JAK Academy Home V2 - Ultra Premium Visual Polish
+   Cinematic AI / Space Command Interface
+===================================================== */
+
+/* Deeper cinematic home background */
+#home {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(34, 211, 238, 0.22), transparent 28%),
+    radial-gradient(circle at 85% 12%, rgba(168, 85, 247, 0.22), transparent 30%),
+    radial-gradient(circle at 50% 95%, rgba(59, 130, 246, 0.14), transparent 36%),
+    linear-gradient(135deg, #020617 0%, #07111f 42%, #111827 100%) !important;
+}
+
+#home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(125, 211, 252, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 252, 0.035) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 75%);
+}
+
+#home::after {
+  content: "";
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  right: -180px;
+  top: 60px;
+  z-index: -1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(34, 211, 238, 0.16), transparent 60%);
+  filter: blur(10px);
+}
+
+/* Hero becomes more cinematic */
+.jak-home-hero {
+  min-height: 620px;
+  align-items: stretch;
+}
+
+.jak-home-hero-content {
+  position: relative;
+  overflow: hidden;
+  border-radius: 38px !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(34, 211, 238, 0.20), transparent 34%),
+    radial-gradient(circle at 90% 20%, rgba(139, 92, 246, 0.16), transparent 32%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.62)) !important;
+}
+
+.jak-home-hero-content::before {
+  content: "";
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  right: -70px;
+  bottom: -80px;
+  border-radius: 50%;
+  border: 1px solid rgba(103, 232, 249, 0.20);
+  box-shadow:
+    0 0 60px rgba(34, 211, 238, 0.10),
+    inset 0 0 40px rgba(139, 92, 246, 0.10);
+}
+
+.jak-home-kicker {
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(139, 92, 246, 0.14)) !important;
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.10);
+}
+
+/* Title more premium */
+.jak-home-hero h1 {
+  max-width: 900px;
+  text-shadow: 0 18px 55px rgba(2, 6, 23, 0.55);
+}
+
+.jak-home-hero h1 span {
+  background: linear-gradient(90deg, #67e8f9, #60a5fa, #c4b5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
+.jak-home-hero p {
+  color: #d7e1ef !important;
+}
+
+/* Buttons more high-end */
+.jak-home-actions button,
+.jak-home-final-cta button {
+  position: relative;
+  overflow: hidden;
+}
+
+.jak-home-actions button::before,
+.jak-home-final-cta button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: translateX(-120%);
+  transition: 0.45s ease;
+}
+
+.jak-home-actions button:hover::before,
+.jak-home-final-cta button:hover::before {
+  transform: translateX(120%);
+}
+
+.jak-home-actions button.primary,
+.jak-home-final-cta button {
+  background:
+    linear-gradient(135deg, #06b6d4 0%, #2563eb 48%, #8b5cf6 100%) !important;
+  box-shadow:
+    0 16px 34px rgba(37, 99, 235, 0.24),
+    0 0 30px rgba(34, 211, 238, 0.10),
+    inset 0 1px 0 rgba(255,255,255,0.18) !important;
+}
+
+.jak-home-actions button.ghost {
+  border-color: rgba(148, 163, 184, 0.28) !important;
+}
+
+/* Command card becomes “spaceship console” */
+.jak-home-command-card {
+  border-radius: 38px !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.22), transparent 38%),
+    radial-gradient(circle at 100% 90%, rgba(168, 85, 247, 0.20), transparent 38%),
+    linear-gradient(145deg, rgba(3, 7, 18, 0.98), rgba(15, 23, 42, 0.82)) !important;
+  border-color: rgba(103, 232, 249, 0.20) !important;
+}
+
+.jak-home-command-card::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border-radius: 30px;
+  pointer-events: none;
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: inset 0 0 36px rgba(103, 232, 249, 0.045);
+}
+
+.jak-home-panel-top,
+.jak-home-system-grid div,
+.jak-home-progress-panel {
+  background: rgba(2, 6, 23, 0.46) !important;
+  border-color: rgba(148, 163, 184, 0.16) !important;
+}
+
+/* Orbit ring stronger */
+.jak-orbit-ring {
+  width: 340px !important;
+  height: 340px !important;
+  right: -105px !important;
+  top: 18px !important;
+  border-color: rgba(103, 232, 249, 0.28) !important;
+}
+
+/* Trust row premium cards */
+.jak-home-trust-row div,
+.jak-home-feature-strip div,
+.jak-feature-card {
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.46), rgba(15, 23, 42, 0.58)) !important;
+  border-color: rgba(148, 163, 184, 0.15) !important;
+}
+
+.jak-home-trust-row div:hover,
+.jak-home-feature-strip div:hover,
+.jak-feature-card:hover {
+  border-color: rgba(103, 232, 249, 0.30) !important;
+  box-shadow:
+    0 18px 45px rgba(2, 6, 23, 0.26),
+    0 0 24px rgba(34, 211, 238, 0.07) !important;
+}
+
+/* Feature strip looks more like product stats */
+.jak-home-feature-strip {
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.82), rgba(30, 41, 59, 0.58)) !important;
+}
+
+.jak-home-feature-strip strong {
+  font-size: 1.02rem;
+}
+
+/* Feature cards: more “premium product” */
+.jak-feature-card {
+  min-height: 220px;
+}
+
+.jak-feature-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.10), transparent 34%);
+  opacity: 0;
+  transition: 0.22s ease;
+}
+
+.jak-feature-card:hover::before {
+  opacity: 1;
+}
+
+.jak-feature-card .icon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(139, 92, 246, 0.14));
+  border: 1px solid rgba(103, 232, 249, 0.18);
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.07);
+}
+
+.jak-feature-card h3 {
+  position: relative;
+  z-index: 2;
+  font-size: 1.12rem;
+}
+
+.jak-feature-card p {
+  position: relative;
+  z-index: 2;
+}
+
+/* CTA stronger */
+.jak-home-final-cta {
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.20), transparent 36%),
+    radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.16), transparent 36%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.90), rgba(30, 41, 59, 0.64)) !important;
+}
+
+/* Mobile keeps premium look */
+@media (max-width: 760px) {
+  .jak-home-hero h1 {
+    font-size: 2.55rem !important;
+    line-height: 0.98 !important;
+  }
+
+  .jak-home-command-card {
+    min-height: auto;
+  }
+
+  .jak-feature-card {
+    min-height: auto;
+  }
+}
+
+/* =====================================================
+   JAK Academy Home V3 - Cinematic Premium Landing Page
+===================================================== */
+
+#home,
+#home * {
+  box-sizing: border-box;
+}
+
+#home {
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at 12% 6%, rgba(34, 211, 238, 0.22), transparent 30%),
+    radial-gradient(circle at 88% 8%, rgba(168, 85, 247, 0.22), transparent 32%),
+    radial-gradient(circle at 50% 95%, rgba(37, 99, 235, 0.16), transparent 36%),
+    linear-gradient(135deg, #020617 0%, #07111f 42%, #111827 100%);
+  isolation: isolate;
+}
+
+#home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(125, 211, 252, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 211, 252, 0.035) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 78%);
+  z-index: -1;
+}
+
+.jak-home-v3 {
+  width: min(1520px, 100%);
+  margin: 0 auto;
+  padding: 28px 24px 44px;
+}
+
+/* Hero */
+.jak-v3-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(340px, 0.88fr);
+  gap: 22px;
+  align-items: stretch;
+  min-height: 650px;
+}
+
+.jak-v3-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(10px);
+}
+
+.jak-v3-glow-a {
+  width: 420px;
+  height: 420px;
+  left: -140px;
+  top: 20px;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.18), transparent 62%);
+}
+
+.jak-v3-glow-b {
+  width: 480px;
+  height: 480px;
+  right: -170px;
+  bottom: -120px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.18), transparent 64%);
+}
+
+.jak-v3-hero-copy,
+.jak-v3-command,
+.jak-v3-journey,
+.jak-v3-section,
+.jak-v3-split,
+.jak-v3-final {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 26px 76px rgba(2, 6, 23, 0.36);
+  backdrop-filter: blur(18px);
+}
+
+.jak-v3-hero-copy {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(26px, 4vw, 52px);
+  border-radius: 40px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.20), transparent 34%),
+    radial-gradient(circle at 86% 16%, rgba(139, 92, 246, 0.16), transparent 34%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.62));
+}
+
+.jak-v3-hero-copy::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  right: -80px;
+  bottom: -90px;
+  border-radius: 50%;
+  border: 1px solid rgba(103, 232, 249, 0.20);
+  box-shadow:
+    0 0 60px rgba(34, 211, 238, 0.10),
+    inset 0 0 40px rgba(139, 92, 246, 0.10);
+}
+
+.jak-v3-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: #a5f3fc;
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(139, 92, 246, 0.14));
+  border: 1px solid rgba(103, 232, 249, 0.24);
+  font-weight: 900;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.10);
+}
+
+.jak-v3-hero h1 {
+  position: relative;
+  z-index: 2;
+  margin: 20px 0 18px;
+  color: #f8fafc;
+  font-size: clamp(2.8rem, 6.4vw, 6.7rem);
+  line-height: 0.9;
+  letter-spacing: -0.075em;
+  text-shadow: 0 18px 55px rgba(2, 6, 23, 0.55);
+}
+
+.jak-v3-hero h1 span {
+  display: block;
+  background: linear-gradient(90deg, #67e8f9, #60a5fa, #c4b5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.jak-v3-hero p {
+  position: relative;
+  z-index: 2;
+  max-width: 820px;
+  color: #d7e1ef;
+  font-size: 1.08rem;
+  line-height: 1.78;
+  margin: 0;
+}
+
+/* Buttons */
+.jak-v3-hero-actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.jak-v3-hero-actions button,
+.jak-v3-final button {
+  position: relative;
+  overflow: hidden;
+  min-height: 48px;
+  padding: 12px 18px;
+  border-radius: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(135deg, #0f766e, #1d4ed8, #6d28d9);
+  color: #ffffff;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.22s ease;
+  box-shadow:
+    0 14px 32px rgba(37, 99, 235, 0.20),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.72);
+}
+
+.jak-v3-hero-actions button::before,
+.jak-v3-final button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.20), transparent);
+  transform: translateX(-120%);
+  transition: 0.45s ease;
+}
+
+.jak-v3-hero-actions button:hover::before,
+.jak-v3-final button:hover::before {
+  transform: translateX(120%);
+}
+
+.jak-v3-hero-actions button:hover,
+.jak-v3-final button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06) contrast(1.04);
+}
+
+.jak-v3-hero-actions .jak-v3-primary,
+.jak-v3-final button {
+  background: linear-gradient(135deg, #06b6d4, #2563eb, #8b5cf6);
+}
+
+.jak-v3-hero-actions .jak-v3-ghost {
+  background: rgba(15, 23, 42, 0.72);
+  color: #e5e7eb;
+  box-shadow: none;
+}
+
+/* Proof row */
+.jak-v3-proof-row {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.jak-v3-proof-row div {
+  min-width: 0;
+  padding: 14px;
+  border-radius: 20px;
+  background: rgba(2, 6, 23, 0.36);
+  border: 1px solid rgba(148, 163, 184, 0.13);
+}
+
+.jak-v3-proof-row strong {
+  display: block;
+  color: #f8fafc;
+  font-size: 1.08rem;
+  margin-bottom: 4px;
+}
+
+.jak-v3-proof-row span {
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+/* Command card */
+.jak-v3-command {
+  position: relative;
+  overflow: hidden;
+  padding: 26px;
+  border-radius: 40px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.24), transparent 38%),
+    radial-gradient(circle at 100% 90%, rgba(168, 85, 247, 0.22), transparent 38%),
+    linear-gradient(145deg, rgba(3, 7, 18, 0.98), rgba(15, 23, 42, 0.82));
+  border-color: rgba(103, 232, 249, 0.20);
+}
+
+.jak-v3-command::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border-radius: 32px;
+  pointer-events: none;
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: inset 0 0 36px rgba(103, 232, 249, 0.045);
+}
+
+.jak-v3-command-top {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(2, 6, 23, 0.46);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.jak-v3-command-top span {
+  display: block;
+  color: #67e8f9;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.jak-v3-command-top strong {
+  display: block;
+  margin-top: 6px;
+  color: #f8fafc;
+  font-size: 1.2rem;
+}
+
+.jak-v3-command-top i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.55);
+}
+
+/* Orbit */
+.jak-v3-orbit {
+  position: relative;
+  z-index: 2;
+  width: 310px;
+  height: 310px;
+  margin: 28px auto;
+  border-radius: 50%;
+  border: 1px solid rgba(103, 232, 249, 0.26);
+  box-shadow:
+    0 0 70px rgba(34, 211, 238, 0.08),
+    inset 0 0 40px rgba(139, 92, 246, 0.08);
+}
+
+.jak-v3-orbit::before,
+.jak-v3-orbit::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+
+.jak-v3-orbit::before {
+  inset: 38px;
+  border: 1px dashed rgba(196, 181, 253, 0.25);
+}
+
+.jak-v3-orbit::after {
+  width: 16px;
+  height: 16px;
+  top: 42px;
+  right: 60px;
+  background: #67e8f9;
+  box-shadow: 0 0 18px rgba(103, 232, 249, 0.65);
+}
+
+.jak-v3-core {
+  position: absolute;
+  inset: 86px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(34, 211, 238, 0.20), rgba(15, 23, 42, 0.92) 64%);
+  border: 1px solid rgba(103, 232, 249, 0.22);
+}
+
+.jak-v3-core strong {
+  color: #f8fafc;
+  font-size: 2.3rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.jak-v3-core span {
+  color: #a5f3fc;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+/* Command grid */
+.jak-v3-command-grid {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.jak-v3-command-grid div,
+.jak-v3-system-status {
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(2, 6, 23, 0.46);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.jak-v3-command-grid span,
+.jak-v3-system-status span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 850;
+  margin-bottom: 6px;
+}
+
+.jak-v3-command-grid strong,
+.jak-v3-system-status strong {
+  color: #f8fafc;
+}
+
+.jak-v3-system-status {
+  position: relative;
+  z-index: 3;
+  margin-top: 14px;
+}
+
+.jak-v3-status-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.jak-v3-meter {
+  height: 12px;
+  margin: 14px 0 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.15);
+  overflow: hidden;
+}
+
+.jak-v3-meter b {
+  display: block;
+  width: 86%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee, #60a5fa, #a78bfa);
+}
+
+.jak-v3-system-status small {
+  color: #94a3b8;
+}
+
+/* Journey */
+.jak-v3-journey {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 32px;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.82), rgba(30, 41, 59, 0.58));
+}
+
+.jak-v3-journey-card {
+  padding: 18px;
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(2, 6, 23, 0.46), rgba(15, 23, 42, 0.58));
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.jak-v3-journey-card span,
+.jak-v3-module-card > span {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #a5f3fc;
+  background: rgba(34, 211, 238, 0.10);
+  border: 1px solid rgba(103, 232, 249, 0.18);
+  font-weight: 900;
+  font-size: 0.75rem;
+}
+
+.jak-v3-journey-card strong {
+  display: block;
+  margin: 12px 0 6px;
+  color: #f8fafc;
+  font-size: 1.05rem;
+}
+
+.jak-v3-journey-card p {
+  margin: 0;
+  color: #a7b4c8;
+  line-height: 1.62;
+}
+
+/* Modules */
+.jak-v3-section {
+  margin-top: 22px;
+  padding: 26px;
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.10), transparent 30%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.78), rgba(30, 41, 59, 0.56));
+}
+
+.jak-v3-section-head {
+  max-width: 860px;
+  margin-bottom: 20px;
+}
+
+.jak-v3-section-head span {
+  color: #67e8f9;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.jak-v3-section-head h2 {
+  margin: 8px 0;
+  color: #f8fafc;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.jak-v3-section-head p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+.jak-v3-module-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.jak-v3-module-card {
+  position: relative;
+  min-width: 0;
+  min-height: 235px;
+  padding: 18px;
+  border-radius: 26px;
+  background: linear-gradient(145deg, rgba(2, 6, 23, 0.46), rgba(15, 23, 42, 0.58));
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  transition: 0.22s ease;
+  overflow: hidden;
+}
+
+.jak-v3-module-card.major {
+  grid-column: span 2;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.14), transparent 34%),
+    linear-gradient(145deg, rgba(2, 6, 23, 0.50), rgba(15, 23, 42, 0.64));
+}
+
+.jak-v3-module-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(103, 232, 249, 0.30);
+  box-shadow:
+    0 18px 45px rgba(2, 6, 23, 0.26),
+    0 0 24px rgba(34, 211, 238, 0.07);
+}
+
+.jak-v3-module-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  margin: 14px 0;
+  border-radius: 20px;
+  font-size: 2rem;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(139, 92, 246, 0.14));
+  border: 1px solid rgba(103, 232, 249, 0.18);
+}
+
+.jak-v3-module-card h3 {
+  margin: 8px 0;
+  color: #f8fafc;
+}
+
+.jak-v3-module-card p {
+  margin: 0;
+  color: #a7b4c8;
+  line-height: 1.65;
+}
+
+/* Split */
+.jak-v3-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+  padding: 22px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.12), transparent 34%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.82), rgba(30, 41, 59, 0.58));
+}
+
+.jak-v3-split > div {
+  padding: 20px;
+  border-radius: 26px;
+  background: rgba(2, 6, 23, 0.34);
+  border: 1px solid rgba(148, 163, 184, 0.13);
+}
+
+.jak-v3-split h2 {
+  margin: 10px 0;
+  color: #f8fafc;
+  font-size: clamp(1.35rem, 2.2vw, 2.1rem);
+  line-height: 1.12;
+}
+
+.jak-v3-split p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+/* Final */
+.jak-v3-final {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-top: 22px;
+  padding: 24px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top right, rgba(34, 211, 238, 0.20), transparent 36%),
+    radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.16), transparent 36%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.90), rgba(30, 41, 59, 0.64));
+}
+
+.jak-v3-final span {
+  color: #67e8f9;
+  font-weight: 900;
+}
+
+.jak-v3-final h2 {
+  color: #f8fafc;
+  margin: 6px 0 0;
+  font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+}
+
+/* Text safety */
+#home h1,
+#home h2,
+#home h3,
+#home p,
+#home span,
+#home strong,
+#home button,
+#home small {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+/* Responsive */
+@media (max-width: 1120px) {
+  .jak-v3-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .jak-v3-command {
+    min-height: auto;
+  }
+
+  .jak-v3-journey,
+  .jak-v3-module-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .jak-v3-module-card.major {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 760px) {
+  .jak-home-v3 {
+    padding: 12px;
+  }
+
+  .jak-v3-hero {
+    min-height: auto;
+  }
+
+  .jak-v3-hero-copy,
+  .jak-v3-command,
+  .jak-v3-section,
+  .jak-v3-split,
+  .jak-v3-final {
+    border-radius: 24px;
+    padding: 18px;
+  }
+
+  .jak-v3-hero h1 {
+    font-size: 2.75rem;
+    line-height: 0.95;
+    letter-spacing: -0.055em;
+  }
+
+  .jak-v3-hero-actions,
+  .jak-v3-final,
+  .jak-v3-status-line {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .jak-v3-hero-actions button,
+  .jak-v3-final button {
+    width: 100%;
+  }
+
+  .jak-v3-proof-row,
+  .jak-v3-journey,
+  .jak-v3-module-grid,
+  .jak-v3-split,
+  .jak-v3-command-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jak-v3-module-card.major {
+    grid-column: span 1;
+  }
+
+  .jak-v3-orbit {
+    width: 240px;
+    height: 240px;
+  }
+
+  .jak-v3-core {
+    inset: 66px;
+  }
+}
