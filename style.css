@@ -11456,3 +11456,444 @@ button.gold:hover,
     border-radius: 20px;
   }
 }
+
+/* =====================================================
+   Teacher Dashboard - Final UI Cleanup Patch
+   Safe CSS-only polish: layout, panels, spacing, mobile
+===================================================== */
+
+#teacherDashboard,
+#teacherDashboard * {
+  box-sizing: border-box;
+}
+
+#teacherDashboard {
+  padding: 24px;
+  overflow-x: hidden;
+}
+
+/* Main container */
+#teacherDashboard .teacher-dashboard-modern,
+#teacherDashboard .card {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 26px;
+  border-radius: 30px;
+  color: #e5e7eb;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.12), transparent 30%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.74));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.30);
+}
+
+/* Header */
+#teacherDashboard .dashboard-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.38), rgba(15, 23, 42, 0.54));
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  margin-bottom: 20px;
+}
+
+#teacherDashboard h1,
+#teacherDashboard h2,
+#teacherDashboard h3 {
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+#teacherDashboard h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+}
+
+#teacherDashboard p,
+#teacherDashboard span,
+#teacherDashboard small,
+#teacherDashboard label {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+/* Quick actions */
+#teacherDashboard .dashboard-quick-actions,
+#teacherDashboard .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#teacherDashboard button {
+  min-height: 42px;
+  padding: 10px 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(59, 130, 246, 0.92), rgba(139, 92, 246, 0.88));
+  color: #ecfeff;
+  font-weight: 850;
+  cursor: pointer;
+  transition: 0.22s ease;
+  box-shadow: 0 10px 24px rgba(34, 211, 238, 0.10);
+}
+
+#teacherDashboard button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+#teacherDashboard button.secondary,
+#teacherDashboard .secondary {
+  background: rgba(148, 163, 184, 0.12);
+  color: #e5e7eb;
+  box-shadow: none;
+}
+
+/* Main layout */
+#teacherDashboard .teacher-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+
+/* Panels */
+#teacherDashboard .box,
+#teacherDashboard .teacher-panel,
+#teacherDashboard .student-panel,
+#teacherDashboard .teacher-tool-card,
+#teacherDashboard .support-plan-box,
+#teacherDashboard .saved-support-plans-box {
+  min-width: 0;
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.42), rgba(15, 23, 42, 0.60));
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow:
+    0 16px 40px rgba(2, 6, 23, 0.18),
+    inset 0 0 16px rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+/* Panel titles */
+#teacherDashboard .panel-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+#teacherDashboard .panel-title h2,
+#teacherDashboard .panel-title h3,
+#teacherDashboard .box h2,
+#teacherDashboard .box h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+#teacherDashboard .panel-title p {
+  margin: 0;
+  color: #a7b4c8;
+}
+
+/* Forms */
+#teacherDashboard input,
+#teacherDashboard select,
+#teacherDashboard textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  background: rgba(2, 6, 23, 0.50);
+  color: #f8fafc;
+  padding: 11px 13px;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+#teacherDashboard input:focus,
+#teacherDashboard select:focus,
+#teacherDashboard textarea:focus {
+  border-color: rgba(103, 232, 249, 0.50);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.10);
+}
+
+/* Lists and output areas */
+#teacherDashboard #teacherResultsList,
+#teacherDashboard #teacherResourcesList,
+#teacherDashboard #savedSupportPlansList,
+#teacherDashboard #studentSupportPlanContent,
+#teacherDashboard #teacherExamList,
+#teacherDashboard #teacherExamsList,
+#teacherDashboard .results-list,
+#teacherDashboard .resources-list,
+#teacherDashboard .exam-list {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 18px;
+}
+
+/* Exam/resource/result cards inside lists */
+#teacherDashboard #teacherResultsList > *,
+#teacherDashboard #teacherResourcesList > *,
+#teacherDashboard #savedSupportPlansList > *,
+#teacherDashboard #teacherExamList > *,
+#teacherDashboard #teacherExamsList > *,
+#teacherDashboard .results-list > *,
+#teacherDashboard .resources-list > *,
+#teacherDashboard .exam-list > * {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Teacher tools grid */
+#teacherDashboard .teacher-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+#teacherDashboard .teacher-tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#teacherDashboard .teacher-tool-card h3 {
+  margin: 0;
+}
+
+#teacherDashboard .teacher-tool-card p {
+  margin: 0;
+  color: #a7b4c8;
+}
+
+/* Support plan area */
+#teacherDashboard #studentSupportPlanBox,
+#teacherDashboard .support-plan-box {
+  margin-top: 18px;
+}
+
+#teacherDashboard .support-plan-box .actions,
+#teacherDashboard .saved-support-plans-box .actions {
+  margin-top: 14px;
+}
+
+/* Prevent ugly word breaks, but allow long technical content to wrap */
+#teacherDashboard h1,
+#teacherDashboard h2,
+#teacherDashboard h3,
+#teacherDashboard p,
+#teacherDashboard span,
+#teacherDashboard small,
+#teacherDashboard label,
+#teacherDashboard button {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+#teacherDashboard pre,
+#teacherDashboard code,
+#teacherDashboard textarea,
+#teacherDashboard .teacher-results-row,
+#teacherDashboard .teacher-resource-card,
+#teacherDashboard .exam-card {
+  overflow-wrap: anywhere;
+}
+
+/* Tables if present */
+#teacherDashboard table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+#teacherDashboard th,
+#teacherDashboard td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+  text-align: left;
+}
+
+#teacherDashboard th {
+  color: #f8fafc;
+  background: rgba(2, 6, 23, 0.35);
+}
+
+/* Make duplicate result containers less visually chaotic */
+#teacherDashboard #teacherResultsList {
+  margin-top: 12px;
+}
+
+/* Status messages */
+#teacherDashboard #teacherResultsStatus,
+#teacherDashboard .status,
+#teacherDashboard .message {
+  display: block;
+  margin: 10px 0;
+  color: #a5f3fc;
+  font-weight: 750;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  #teacherDashboard {
+    padding: 12px;
+  }
+
+  #teacherDashboard .teacher-dashboard-modern,
+  #teacherDashboard .card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  #teacherDashboard .dashboard-header {
+    grid-template-columns: 1fr;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  #teacherDashboard .dashboard-quick-actions,
+  #teacherDashboard .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #teacherDashboard button {
+    width: 100%;
+  }
+
+  #teacherDashboard .box,
+  #teacherDashboard .teacher-panel,
+  #teacherDashboard .student-panel,
+  #teacherDashboard .teacher-tool-card,
+  #teacherDashboard .support-plan-box,
+  #teacherDashboard .saved-support-plans-box {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  #teacherDashboard .teacher-tools-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 520px) {
+  #teacherDashboard h1 {
+    font-size: 1.7rem;
+  }
+
+  #teacherDashboard h2 {
+    font-size: 1.25rem;
+  }
+
+  #teacherDashboard h3 {
+    font-size: 1.05rem;
+  }
+
+  #teacherDashboard input,
+  #teacherDashboard select,
+  #teacherDashboard textarea {
+    font-size: 0.95rem;
+  }
+}
+/* =====================================================
+   Teacher Dashboard - Button & Number Contrast Patch
+   Fix unclear numbers/icons/text on colored buttons/badges
+===================================================== */
+
+/* Make all teacher buttons more readable */
+#teacherDashboard button {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(2, 6, 23, 0.55);
+  letter-spacing: 0.01em;
+}
+
+/* Reduce overly bright gradients and improve contrast */
+#teacherDashboard button {
+  background:
+    linear-gradient(135deg, #0891b2, #2563eb, #7c3aed) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+}
+
+/* Secondary/neutral buttons */
+#teacherDashboard button.secondary,
+#teacherDashboard .secondary,
+#teacherDashboard .actions button.secondary {
+  background: rgba(15, 23, 42, 0.72) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(148, 163, 184, 0.28) !important;
+}
+
+/* Make panel numbers like 01 / 02 / 03 clearer */
+#teacherDashboard .panel-title > span,
+#teacherDashboard .panel-number,
+#teacherDashboard .section-number,
+#teacherDashboard [class*="number"],
+#teacherDashboard [class*="badge"] {
+  color: #ecfeff !important;
+  background: rgba(8, 145, 178, 0.22) !important;
+  border: 1px solid rgba(103, 232, 249, 0.28) !important;
+  text-shadow: none !important;
+}
+
+/* If numbers are plain text inside headings, improve heading contrast */
+#teacherDashboard .panel-title,
+#teacherDashboard .panel-title * {
+  color: #f8fafc !important;
+}
+
+/* Keep paragraph text softer, not bright white */
+#teacherDashboard .panel-title p,
+#teacherDashboard .box p,
+#teacherDashboard .teacher-panel p,
+#teacherDashboard .student-panel p {
+  color: #b9c6d8 !important;
+}
+
+/* Better button hover without washing out text */
+#teacherDashboard button:hover {
+  filter: brightness(1.08) contrast(1.04);
+  color: #ffffff !important;
+}
+
+/* Small icons/numbers inside buttons */
+#teacherDashboard button span,
+#teacherDashboard button strong,
+#teacherDashboard button small {
+  color: inherit !important;
+  text-shadow: inherit !important;
+}
+
+/* Improve contrast for action groups */
+#teacherDashboard .actions {
+  background: transparent;
+}
+
+#teacherDashboard .actions button {
+  box-shadow:
+    0 10px 24px rgba(37, 99, 235, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+/* Mobile: keep text readable */
+@media (max-width: 900px) {
+  #teacherDashboard button {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+}
