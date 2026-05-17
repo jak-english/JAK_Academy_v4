@@ -15655,3 +15655,228 @@ button.gold:hover,
     min-height: auto;
   }
 }
+
+/* =====================================================
+   JAK Academy - Premium Navigation Polish
+   Safe CSS-only patch: no HTML/JS changes
+===================================================== */
+
+/* Header shell */
+body > header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  padding: 14px 22px;
+  background:
+    linear-gradient(135deg, rgba(2, 6, 23, 0.92), rgba(15, 23, 42, 0.82)),
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 30%);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 14px 40px rgba(2, 6, 23, 0.22);
+}
+
+/* Brand area */
+body > header .brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+body > header .logo-img,
+body > header .logo-fallback {
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  object-fit: cover;
+  box-shadow:
+    0 0 22px rgba(34, 211, 238, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+body > header .logo-fallback {
+  display: none;
+  place-items: center;
+  background:
+    linear-gradient(135deg, #0891b2, #2563eb, #7c3aed);
+  color: #ffffff;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+body > header .brand-title {
+  color: #f8fafc;
+  font-weight: 950;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+body > header .brand-sub {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 750;
+  margin-top: 3px;
+}
+
+/* Navigation container */
+body > header nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Nav buttons */
+body > header nav button {
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.52);
+  color: #dbeafe;
+  font-size: 0.84rem;
+  font-weight: 850;
+  letter-spacing: 0.005em;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+  box-shadow: none;
+  text-shadow: none;
+  white-space: nowrap;
+}
+
+/* Main nav hover */
+body > header nav button:hover {
+  transform: translateY(-1px);
+  color: #ffffff;
+  border-color: rgba(103, 232, 249, 0.32);
+  background:
+    linear-gradient(135deg, rgba(8, 145, 178, 0.26), rgba(37, 99, 235, 0.22));
+  box-shadow:
+    0 10px 24px rgba(37, 99, 235, 0.12),
+    0 0 18px rgba(34, 211, 238, 0.06);
+}
+
+/* Important navigation actions */
+body > header nav button[onclick*="goDashboard"] {
+  background:
+    linear-gradient(135deg, #0891b2, #2563eb, #7c3aed);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.20);
+  box-shadow:
+    0 10px 24px rgba(37, 99, 235, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+/* Login button */
+body > header nav button[onclick*="login.html"] {
+  background: rgba(34, 211, 238, 0.10);
+  color: #a5f3fc;
+  border-color: rgba(103, 232, 249, 0.22);
+}
+
+/* Premium button */
+body > header nav button[onclick*="premium"] {
+  background:
+    linear-gradient(135deg, rgba(120, 53, 15, 0.72), rgba(180, 83, 9, 0.42));
+  color: #fde68a;
+  border-color: rgba(251, 191, 36, 0.26);
+}
+
+/* Logout button */
+body > header nav button.secondary,
+body > header nav button[onclick*="logout"] {
+  background: rgba(127, 29, 29, 0.45);
+  color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.26);
+}
+
+body > header nav button.secondary:hover,
+body > header nav button[onclick*="logout"]:hover {
+  background: rgba(153, 27, 27, 0.72);
+  color: #fff1f2;
+  border-color: rgba(252, 165, 165, 0.38);
+}
+
+/* Keep nav readable on medium screens */
+@media (max-width: 1180px) {
+  body > header {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  body > header .brand {
+    justify-content: center;
+  }
+
+  body > header nav {
+    justify-content: center;
+  }
+}
+
+/* Tablet/mobile nav layout */
+@media (max-width: 760px) {
+  body > header {
+    position: sticky;
+    padding: 12px;
+  }
+
+  body > header .brand {
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  body > header .logo-img,
+  body > header .logo-fallback {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
+  body > header nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+
+  body > header nav button {
+    width: 100%;
+    min-height: 40px;
+    padding: 9px 10px;
+    font-size: 0.82rem;
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+  body > header nav button[onclick*="goDashboard"],
+  body > header nav button[onclick*="login.html"] {
+    grid-column: span 1;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 430px) {
+  body > header nav {
+    grid-template-columns: 1fr;
+  }
+
+  body > header .brand-title {
+    font-size: 1rem;
+  }
+
+  body > header .brand-sub {
+    font-size: 0.72rem;
+  }
+}
