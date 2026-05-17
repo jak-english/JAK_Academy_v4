@@ -10466,7 +10466,7 @@ window.createStudentSupportPlan = createStudentSupportPlan;
 window.closeStudentSupportPlan = closeStudentSupportPlan;
 window.copyStudentSupportPlan = copyStudentSupportPlan;
 window.printStudentSupportPlan = printStudentSupportPlan;
-window.saveStudentSupportPlan = saveStudentSupportPlan;window.saveStudentSupportPlan = saveStudentSupportPlan;
+window.saveStudentSupportPlan = saveStudentSupportPlan;
 window.loadSavedSupportPlans = loadSavedSupportPlans;
 window.loadMySupportPlans = loadMySupportPlans;
 window.addSupportPlanTasksToPlanner = addSupportPlanTasksToPlanner;
@@ -10777,16 +10777,16 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
 
 async function getCurrentNavigationRoleSafe() {
   try {
-    if (!window.supabase?.auth?.getUser) {
+    if (!client?.auth?.getUser) {
       return {
         isLoggedIn: false,
         role: null,
         email: null,
-        error: "Supabase auth is not available"
+        error: "Supabase client auth is not available"
       };
     }
 
-    const { data, error } = await supabase.auth.getUser();
+    const { data, error } = await client.auth.getUser();
 
     if (error) {
       return {
@@ -10809,20 +10809,41 @@ async function getCurrentNavigationRoleSafe() {
     }
 
     let role = null;
+    let profile = null;
+    let profileError = null;
 
-    const { data: profile, error: profileError } = await supabase
+    const byId = await client
       .from("profiles")
-      .select("role,email,full_name,is_premium")
+      .select("id, role, email, full_name, is_premium")
       .eq("id", user.id)
       .maybeSingle();
 
-    if (!profileError && profile?.role) {
-      role = profile.role;
+    if (!byId.error && byId.data) {
+      profile = byId.data;
+      role = profile.role || null;
+    } else {
+      profileError = byId.error;
+    }
+
+    if (!profile && user.email) {
+      const byEmail = await client
+        .from("profiles")
+        .select("id, role, email, full_name, is_premium")
+        .eq("email", user.email)
+        .maybeSingle();
+
+      if (!byEmail.error && byEmail.data) {
+        profile = byEmail.data;
+        role = profile.role || null;
+        profileError = null;
+      } else {
+        profileError = byEmail.error;
+      }
     }
 
     return {
       isLoggedIn: true,
-      role,
+      role: role ? String(role).toLowerCase().trim() : "student",
       email: user.email || profile?.email || null,
       error: profileError?.message || null
     };
@@ -10831,10 +10852,12 @@ async function getCurrentNavigationRoleSafe() {
       isLoggedIn: false,
       role: null,
       email: null,
-      error: err.message
+      error: err?.message || "Navigation role check failed"
     };
   }
 }
+
+window.getCurrentNavigationRoleSafe = getCurrentNavigationRoleSafe;
 
 async function applyRoleBasedNavigation() {
   const nav = document.querySelector("header nav");
