@@ -10669,3 +10669,215 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.updateWritingV3AnalyticsFromAttempts = updateWritingV3AnalyticsFromAttempts;
 window.showWritingV3Screen = showWritingV3Screen;
+
+/* =====================================================
+   Role-Based Navigation Visibility
+   Safe patch: hide/show existing nav buttons without removing them
+===================================================== */
+
+function getNavButtonKey(button) {
+  const text = (button.innerText || "").trim().toLowerCase();
+  const onclick = button.getAttribute("onclick") || "";
+
+  if (onclick.includes("showPage('home')")) return "home";
+  if (onclick.includes("teachersPage")) return "teachers";
+  if (onclick.includes("goDashboard")) return "dashboard";
+  if (onclick.includes("login.html")) return "login";
+  if (onclick.includes("studentExams")) return "exams";
+  if (onclick.includes("openPlanner")) return "planner";
+  if (onclick.includes("studySystem")) return "studySystem";
+  if (onclick.includes("writingAcademy")) return "writing";
+  if (onclick.includes("aiCenter")) return "aiCenter";
+  if (onclick.includes("studentAssistant")) return "assistant";
+  if (onclick.includes("games")) return "games";
+  if (onclick.includes("dictionaries")) return "dictionaries";
+  if (onclick.includes("premium")) return "premium";
+  if (onclick.includes("leaderboard")) return "leaderboard";
+  if (onclick.includes("logout")) return "logout";
+
+  if (text.includes("home")) return "home";
+  if (text.includes("teacher")) return "teachers";
+  if (text.includes("dashboard")) return "dashboard";
+  if (text.includes("login")) return "login";
+  if (text.includes("exam")) return "exams";
+  if (text.includes("planner")) return "planner";
+  if (text.includes("study system")) return "studySystem";
+  if (text.includes("writing")) return "writing";
+  if (text.includes("ai")) return "aiCenter";
+  if (text.includes("assistant")) return "assistant";
+  if (text.includes("game")) return "games";
+  if (text.includes("dictionary")) return "dictionaries";
+  if (text.includes("premium")) return "premium";
+  if (text.includes("leaderboard")) return "leaderboard";
+  if (text.includes("logout")) return "logout";
+
+  return "unknown";
+}
+
+function getVisibleNavKeysByRole(role, isLoggedIn) {
+  const normalizedRole = String(role || "").toLowerCase();
+
+  if (!isLoggedIn) {
+    return ["home", "teachers", "login"];
+  }
+
+  if (normalizedRole.includes("super_admin") || normalizedRole.includes("admin")) {
+    return [
+      "home",
+      "dashboard",
+      "teachers",
+      "exams",
+      "writing",
+      "planner",
+      "aiCenter",
+      "premium",
+      "logout"
+    ];
+  }
+
+  if (normalizedRole.includes("teacher")) {
+    return [
+      "home",
+      "dashboard",
+      "teachers",
+      "exams",
+      "writing",
+      "planner",
+      "aiCenter",
+      "premium",
+      "logout"
+    ];
+  }
+
+  if (normalizedRole.includes("student")) {
+    return [
+      "home",
+      "dashboard",
+      "teachers",
+      "exams",
+      "writing",
+      "planner",
+      "games",
+      "dictionaries",
+      "premium",
+      "logout"
+    ];
+  }
+
+  return [
+    "home",
+    "dashboard",
+    "exams",
+    "writing",
+    "planner",
+    "premium",
+    "logout"
+  ];
+}
+
+async function getCurrentNavigationRoleSafe() {
+  try {
+    if (!window.supabase?.auth?.getUser) {
+      return {
+        isLoggedIn: false,
+        role: null,
+        email: null,
+        error: "Supabase auth is not available"
+      };
+    }
+
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error) {
+      return {
+        isLoggedIn: false,
+        role: null,
+        email: null,
+        error: error.message
+      };
+    }
+
+    const user = data?.user || null;
+
+    if (!user?.id) {
+      return {
+        isLoggedIn: false,
+        role: null,
+        email: null,
+        error: null
+      };
+    }
+
+    let role = null;
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role,email,full_name,is_premium")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!profileError && profile?.role) {
+      role = profile.role;
+    }
+
+    return {
+      isLoggedIn: true,
+      role,
+      email: user.email || profile?.email || null,
+      error: profileError?.message || null
+    };
+  } catch (err) {
+    return {
+      isLoggedIn: false,
+      role: null,
+      email: null,
+      error: err.message
+    };
+  }
+}
+
+async function applyRoleBasedNavigation() {
+  const nav = document.querySelector("header nav");
+
+  if (!nav) {
+    console.warn("Role navigation: header nav not found.");
+    return;
+  }
+
+  const navState = await getCurrentNavigationRoleSafe();
+  const visibleKeys = getVisibleNavKeysByRole(navState.role, navState.isLoggedIn);
+
+  const buttons = Array.from(nav.querySelectorAll("button"));
+
+  buttons.forEach((button) => {
+    const key = getNavButtonKey(button);
+
+    button.dataset.navKey = key;
+
+    const shouldShow = visibleKeys.includes(key);
+
+    button.style.display = shouldShow ? "" : "none";
+    button.setAttribute("aria-hidden", shouldShow ? "false" : "true");
+  });
+
+  console.log("✅ Role-based navigation applied:", {
+    isLoggedIn: navState.isLoggedIn,
+    role: navState.role,
+    email: navState.email,
+    visibleKeys,
+    hiddenCount: buttons.filter((button) => button.style.display === "none").length,
+    visibleCount: buttons.filter((button) => button.style.display !== "none").length,
+    error: navState.error
+  });
+}
+
+window.applyRoleBasedNavigation = applyRoleBasedNavigation;
+
+/* Run safely after page load */
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    if (typeof applyRoleBasedNavigation === "function") {
+      applyRoleBasedNavigation();
+    }
+  }, 400);
+});
