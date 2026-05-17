@@ -10721,16 +10721,22 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
     return ["home", "teachers", "login"];
   }
 
+  // Admin / Super Admin should see all main platform sections
   if (normalizedRole.includes("super_admin") || normalizedRole.includes("admin")) {
     return [
       "home",
       "dashboard",
       "teachers",
       "exams",
-      "writing",
       "planner",
+      "studySystem",
+      "writing",
       "aiCenter",
+      "assistant",
+      "games",
+      "dictionaries",
       "premium",
+      "leaderboard",
       "logout"
     ];
   }
@@ -10741,10 +10747,15 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
       "dashboard",
       "teachers",
       "exams",
-      "writing",
       "planner",
+      "studySystem",
+      "writing",
       "aiCenter",
+      "assistant",
+      "games",
+      "dictionaries",
       "premium",
+      "leaderboard",
       "logout"
     ];
   }
@@ -10755,11 +10766,14 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
       "dashboard",
       "teachers",
       "exams",
-      "writing",
       "planner",
+      "studySystem",
+      "writing",
+      "assistant",
       "games",
       "dictionaries",
       "premium",
+      "leaderboard",
       "logout"
     ];
   }
@@ -10768,8 +10782,8 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
     "home",
     "dashboard",
     "exams",
-    "writing",
     "planner",
+    "writing",
     "premium",
     "logout"
   ];
