@@ -15600,3 +15600,58 @@ button.gold:hover,
     inset: 66px;
   }
 }
+/* =====================================================
+   Home V2 - UX Refinement Patch
+   Stronger first impression without rebuilding structure
+===================================================== */
+
+#home .jak-home-hero h1 {
+  max-width: 900px;
+}
+
+#home .jak-home-hero p {
+  max-width: 760px;
+  font-size: 1.12rem;
+  color: #d8e3f3;
+}
+
+#home .jak-home-actions {
+  margin-top: 28px;
+}
+
+#home .jak-home-actions button.primary {
+  transform: scale(1.03);
+}
+
+#home .jak-home-trust-row div {
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#home .jak-home-feature-strip {
+  margin-top: 24px;
+}
+
+#home .jak-feature-card h3 {
+  font-size: 1.12rem;
+}
+
+#home .jak-feature-card p {
+  color: #b8c4d6;
+}
+
+@media (max-width: 760px) {
+  #home .jak-home-hero p {
+    font-size: 1rem;
+  }
+
+  #home .jak-home-actions button.primary {
+    transform: none;
+  }
+
+  #home .jak-home-trust-row div {
+    min-height: auto;
+  }
+}
