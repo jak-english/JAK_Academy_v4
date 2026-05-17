@@ -10918,3 +10918,57 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 400);
 });
+
+// =========================
+// Safe Local Study Assistant Fallback
+// Prevents Ask button from breaking if no real AI backend is connected yet
+// =========================
+function localAssistant() {
+  const input =
+    document.getElementById("assistantInput") ||
+    document.getElementById("studentAssistantInput") ||
+    document.getElementById("assistantPrompt") ||
+    document.querySelector("#studentAssistant textarea") ||
+    document.querySelector("#studentAssistant input");
+
+  const output =
+    document.getElementById("assistantOutput") ||
+    document.getElementById("studentAssistantOutput") ||
+    document.getElementById("assistantResponse") ||
+    document.querySelector("#studentAssistant .assistant-output") ||
+    document.querySelector("#studentAssistant .result-box") ||
+    document.querySelector("#studentAssistant .box:last-child");
+
+  const question = input?.value?.trim() || "";
+
+  if (!output) {
+    alert("Assistant output box is missing.");
+    return;
+  }
+
+  if (!question) {
+    output.innerHTML = `
+      <div class="box">
+        <h3>Study Assistant 🤖</h3>
+        <p>Please write a question first.</p>
+      </div>
+    `;
+    return;
+  }
+
+  output.innerHTML = `
+    <div class="box">
+      <h3>Study Assistant 🤖</h3>
+      <p><strong>Your question:</strong> ${safeText(question)}</p>
+      <p>This is a local study helper. Full AI responses will be connected later through a secure backend.</p>
+      <ul>
+        <li>Identify the lesson or topic first.</li>
+        <li>Review the rule or example related to your question.</li>
+        <li>If it is grammar, write the sentence and underline the confusing part.</li>
+        <li>If it is studying, turn it into one clear 20-minute task.</li>
+      </ul>
+    </div>
+  `;
+}
+
+window.localAssistant = localAssistant;
