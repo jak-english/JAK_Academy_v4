@@ -48,7 +48,7 @@ function scrollToActivePageBelowHeader() {
 
 window.scrollToActivePageBelowHeader = scrollToActivePageBelowHeader;
 
-function showPage(id) {
+async function showPage(id) {
   document.querySelectorAll(".page").forEach(page => {
     page.classList.remove("active");
     page.style.display = "none";
@@ -64,6 +64,15 @@ function showPage(id) {
   target.classList.add("active");
   target.style.display = "block";
 
+  // Premium gate for AI Center
+  if (id === "aiCenter" && typeof isCurrentUserPremium === "function") {
+    const allowed = await isCurrentUserPremium();
+
+    if (!allowed && typeof renderPremiumLockedMessage === "function") {
+      renderPremiumLockedMessage(target, "AI Center");
+    }
+  }
+
   if (id === "studentExams" && typeof loadStudentExams === "function") {
     loadStudentExams();
   }
@@ -72,13 +81,13 @@ function showPage(id) {
     loadLeaderboard();
   }
 
- if (id === "premium" && typeof renderPaymentInfo === "function") {
-  renderPaymentInfo();
-}
+  if (id === "premium" && typeof renderPaymentInfo === "function") {
+    renderPaymentInfo();
+  }
 
-if (id === "premium" && typeof protectPremiumAdminTools === "function") {
-  protectPremiumAdminTools();
-}
+  if (id === "premium" && typeof protectPremiumAdminTools === "function") {
+    protectPremiumAdminTools();
+  }
 
   setTimeout(() => {
     target.scrollIntoView({
@@ -11471,3 +11480,98 @@ async function rejectPremiumRequest(requestId) {
 }
 
 window.rejectPremiumRequest = rejectPremiumRequest;
+
+// =========================
+// Premium Access Helpers
+// Centralized premium/profile checks
+// =========================
+async function getCurrentProfile() {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user?.id) {
+      return {
+        user: null,
+        profile: null,
+        error: "No logged-in user"
+      };
+    }
+
+    const { data, error } = await client
+      .from("profiles")
+      .select("id,email,role,is_premium,premium_until")
+      .eq("id", user.id)
+      .single();
+
+    if (error) {
+      console.error("getCurrentProfile error:", error);
+      return {
+        user,
+        profile: null,
+        error: error.message
+      };
+    }
+
+    return {
+      user,
+      profile: data,
+      error: null
+    };
+  } catch (err) {
+    console.error("getCurrentProfile unexpected error:", err);
+    return {
+      user: null,
+      profile: null,
+      error: err?.message || "Unexpected profile error"
+    };
+  }
+}
+
+async function isCurrentUserPremium() {
+  const { profile } = await getCurrentProfile();
+
+  if (!profile) return false;
+
+  const role = String(profile.role || "").toLowerCase();
+
+  // Admins and teachers can access premium/admin tools by role.
+  if (role.includes("admin") || role.includes("super_admin") || role.includes("teacher")) {
+    return true;
+  }
+
+  if (!profile.is_premium) return false;
+
+  // If premium_until exists, make sure it is not expired.
+  if (profile.premium_until) {
+    const until = new Date(profile.premium_until);
+    const now = new Date();
+
+    if (!Number.isNaN(until.getTime()) && until < now) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function renderPremiumLockedMessage(target, featureName = "This feature") {
+  if (!target) return;
+
+  target.innerHTML = `
+    <div class="box premium-locked-box">
+      <h2>Premium Feature 🔒</h2>
+      <p><strong>${safeText(featureName)}</strong> is available for Premium users.</p>
+      <p>
+        Please open the Premium page, send payment through CliQ, and submit your request.
+        Activation is manual after admin approval.
+      </p>
+      <button onclick="showPage('premium'); renderPaymentInfo();">
+        View Premium Plans
+      </button>
+    </div>
+  `;
+}
+
+window.getCurrentProfile = getCurrentProfile;
+window.isCurrentUserPremium = isCurrentUserPremium;
+window.renderPremiumLockedMessage = renderPremiumLockedMessage;
