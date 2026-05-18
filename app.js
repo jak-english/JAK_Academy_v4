@@ -32,27 +32,29 @@ function showPage(id) {
     return;
   }
 
- target.classList.add("active");
-target.style.display = "block";
+  target.classList.add("active");
+  target.style.display = "block";
 
-window.scrollTo({
-  top: 0,
-  behavior: "smooth"
-});
+  setTimeout(() => {
+    target.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }, 50);
 
-if (id === "studentExams" && typeof loadStudentExams === "function") {
-  loadStudentExams();
-}
+  if (id === "studentExams" && typeof loadStudentExams === "function") {
+    loadStudentExams();
+  }
 
-if (id === "leaderboard" && typeof loadLeaderboard === "function") {
-  loadLeaderboard();
-}
+  if (id === "leaderboard" && typeof loadLeaderboard === "function") {
+    loadLeaderboard();
+  }
 
-if (id === "premium" && typeof renderPaymentInfo === "function") {
-  renderPaymentInfo();
-}
+  if (id === "premium" && typeof renderPaymentInfo === "function") {
+    renderPaymentInfo();
+  }
 
-console.log("Showing page:", id);
+  console.log("Showing page:", id);
 }
 async function getCurrentUser() {
   const { data } = await client.auth.getUser();
