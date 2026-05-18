@@ -3472,47 +3472,130 @@ function savePremiumRequests(reqs) {
 }
 
 async function submitPremiumRequest() {
-  const user = await getCurrentUser();
-  const role = getRoleFromUser(user);
-  const plan = $("premiumPlan")?.value || "student_monthly";
-  const note = $("premiumNote")?.value.trim() || "";
-  const reqs = getPremiumRequests();
-  reqs.unshift({
-    id: Date.now().toString(),
-    email: user?.email || "guest",
-    role,
-    plan,
-    note,
-    status: "pending",
-    created_at: new Date().toISOString()
-  });
-  savePremiumRequests(reqs);
-  if ($("premiumMsg")) premiumMsg.textContent = "Premium request sent ✅";
-  renderPremiumRequests();
+  try {
+    const user = await getCurrentUser();
+
+    if (!user?.id) {
+      alert("Please log in first.");
+      return;
+    }
+
+    const role = getRoleFromUser(user);
+    const plan = $("premiumPlan")?.value || "student_monthly";
+    const note = $("premiumNote")?.value.trim() || "";
+
+    if ($("premiumMsg")) {
+      premiumMsg.textContent = "Submitting premium request...";
+    }
+
+    const { error } = await client
+      .from("premium_requests")
+      .insert([
+        {
+          user_id: user.id,
+          email: user.email || "",
+          role,
+          plan,
+          note,
+          status: "pending"
+        }
+      ]);
+
+    if (error) {
+      console.error("Premium request insert error:", error);
+      if ($("premiumMsg")) {
+        premiumMsg.textContent = "Failed to submit request: " + error.message;
+      }
+      alert("Failed to submit request: " + error.message);
+      return;
+    }
+
+    if ($("premiumMsg")) {
+      premiumMsg.textContent = "Premium request sent ✅";
+    }
+
+    if ($("premiumNote")) premiumNote.value = "";
+
+    if (typeof renderPremiumRequests === "function") {
+      await renderPremiumRequests();
+    }
+  } catch (err) {
+    console.error("submitPremiumRequest error:", err);
+    if ($("premiumMsg")) {
+      premiumMsg.textContent =
+        "Unexpected error: " + (err?.message || err);
+    }
+    alert("Unexpected error while submitting premium request.");
+  }
 }
 
-function renderPremiumRequests() {
-  if (!$('premiumRequestsList')) return;
-  const reqs = getPremiumRequests();
-  premiumRequestsList.innerHTML = reqs.length ? "" : "No premium requests yet";
-  reqs.forEach((r, i) => {
-    const div = document.createElement("div");
-    div.className = "box";
-    div.innerHTML = `
-      <h3>${safeText(r.email)}</h3>
-      <p><b>Role:</b> ${safeText(r.role)}</p>
-      <p><b>Plan:</b> ${safeText(r.plan)}</p>
-      <p><b>Status:</b> ${safeText(r.status)}</p>
-      <p>${new Date(r.created_at).toLocaleString()}</p>
-      <p>${safeText(r.note)}</p>
-      <div class="actions">
-        <button class="success" onclick="updatePremiumRequest(${i}, 'approved')">Approve</button>
-        <button class="danger" onclick="updatePremiumRequest(${i}, 'rejected')">Reject</button>
-      </div>
-    `;
-    premiumRequestsList.appendChild(div);
-  });
+window.submitPremiumRequest = submitPremiumRequest;
+
+async function renderPremiumRequests() {
+  const list = $("premiumRequestsList");
+  if (!list) return;
+
+  list.innerHTML = "Loading premium requests...";
+
+  try {
+    const navAuth =
+      typeof getCurrentNavigationRoleSafe === "function"
+        ? await getCurrentNavigationRoleSafe()
+        : { isLoggedIn: false, role: null };
+
+    const role = String(navAuth.role || "").toLowerCase();
+    const isAdmin = role.includes("admin") || role.includes("super_admin");
+
+    let query = client
+      .from("premium_requests")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("renderPremiumRequests error:", error);
+      list.innerHTML = `<div class="box">Failed to load premium requests: ${safeText(error.message)}</div>`;
+      return;
+    }
+
+    const requests = data || [];
+
+    list.innerHTML = requests.length ? "" : "No premium requests yet";
+
+    requests.forEach((r) => {
+      const div = document.createElement("div");
+      div.className = "box";
+
+      div.innerHTML = `
+        <h3>${safeText(r.email || "Unknown user")}</h3>
+        <p><b>Role:</b> ${safeText(r.role || "")}</p>
+        <p><b>Plan:</b> ${safeText(r.plan || "")}</p>
+        <p><b>Status:</b> ${safeText(r.status || "")}</p>
+        <p><b>Created:</b> ${r.created_at ? new Date(r.created_at).toLocaleString() : ""}</p>
+        <p><b>Student Note:</b> ${safeText(r.note || "")}</p>
+        <p><b>Admin Note:</b> ${safeText(r.admin_note || "")}</p>
+        ${
+          isAdmin
+            ? `
+          <div class="actions">
+            <button class="success" onclick="approvePremiumRequest('${r.id}', '${r.user_id}')">Approve</button>
+            <button class="danger" onclick="rejectPremiumRequest('${r.id}')">Reject</button>
+          </div>
+        `
+            : ""
+        }
+      `;
+
+      list.appendChild(div);
+    });
+  } catch (err) {
+    console.error("renderPremiumRequests unexpected error:", err);
+    list.innerHTML = `<div class="box">Unexpected error while loading requests.</div>`;
+  }
 }
+
+window.renderPremiumRequests = renderPremiumRequests;
 
 function updatePremiumRequest(index, status) {
   const reqs = getPremiumRequests();
@@ -3522,18 +3605,41 @@ function updatePremiumRequest(index, status) {
   renderPremiumRequests();
 }
 
-function loadAdminOverview() {
+async function loadAdminOverview() {
   loadPaymentSettings();
-  renderPremiumRequests();
+
+  if (typeof renderPremiumRequests === "function") {
+    await renderPremiumRequests();
+  }
+
   if ($("adminOverview")) {
-    const requests = getPremiumRequests();
+    const { data, error } = await client
+      .from("premium_requests")
+      .select("status");
+
+    if (error) {
+      console.error("Admin overview premium requests error:", error);
+      adminOverview.innerHTML = `
+        <div class="box">
+          <h3>Premium Requests</h3>
+          <p>Could not load data</p>
+        </div>
+      `;
+      return;
+    }
+
+    const requests = data || [];
+
     adminOverview.innerHTML = `
       <div class="box"><h3>Premium Requests</h3><p>${requests.length}</p></div>
       <div class="box"><h3>Pending</h3><p>${requests.filter(r => r.status === "pending").length}</p></div>
       <div class="box"><h3>Approved</h3><p>${requests.filter(r => r.status === "approved").length}</p></div>
+      <div class="box"><h3>Rejected</h3><p>${requests.filter(r => r.status === "rejected").length}</p></div>
     `;
   }
 }
+
+window.loadAdminOverview = loadAdminOverview;
 
 
 // =========================
@@ -11188,6 +11294,10 @@ window.setupMobileMenuToggle = setupMobileMenuToggle;
 // Premium Page Role Protection
 // Hide admin-only premium tools from students/visitors
 // =========================
+// =========================
+// Premium Page Role Protection
+// Hide admin-only premium tools from students/visitors
+// =========================
 async function protectPremiumAdminTools() {
   try {
     const navAuth =
@@ -11201,26 +11311,29 @@ async function protectPremiumAdminTools() {
     const premium = document.getElementById("premium");
     if (!premium) return;
 
-    const adminTexts = [
-      "Load Users",
-      "Users Management",
-      "Save Payment Settings",
-      "Refresh Requests",
-      "Premium Requests",
-      "Manage user roles",
-      "payment settings"
-    ];
-
+    // 1) Hide admin-only buttons anywhere inside Premium
     [...premium.querySelectorAll("button")].forEach((btn) => {
       const text = btn.innerText.trim();
       const onclick = btn.getAttribute("onclick") || "";
 
       const isAdminButton =
         text.includes("Load Users") ||
+        text.includes("Make Teacher") ||
+        text.includes("Make Student") ||
+        text.includes("Make Premium") ||
+        text.includes("Remove Profile") ||
+        text.includes("Save Payment") ||
+        text.includes("Refresh Requests") ||
+        text.includes("Approve") ||
+        text.includes("Reject") ||
         onclick.includes("loadUsers") ||
+        onclick.includes("setUserRole") ||
+        onclick.includes("makeUserPremium") ||
+        onclick.includes("removeUserProfile") ||
         onclick.includes("updatePaymentSettings") ||
         onclick.includes("renderPremiumRequests") ||
-        onclick.includes("makeUserPremium");
+        onclick.includes("approvePremiumRequest") ||
+        onclick.includes("rejectPremiumRequest");
 
       if (isAdminButton) {
         btn.style.display = isAdmin ? "" : "none";
@@ -11228,9 +11341,21 @@ async function protectPremiumAdminTools() {
       }
     });
 
-    [...premium.querySelectorAll(".premium-users-panel, .premium-admin-panel, .admin-only, .payment-settings-panel")].forEach((box) => {
-      box.style.display = isAdmin ? "" : "none";
-      box.setAttribute("aria-hidden", isAdmin ? "false" : "true");
+    // 2) Hide full admin panels/tables from non-admin users
+    [
+      ".premium-users-panel",
+      ".premium-admin-panel",
+      ".admin-only",
+      ".payment-settings-panel",
+      "#usersTable",
+      "#premiumRequestsList",
+      "#paymentAdminMsg",
+      "#adminOverview"
+    ].forEach((selector) => {
+      premium.querySelectorAll(selector).forEach((el) => {
+        el.style.display = isAdmin ? "" : "none";
+        el.setAttribute("aria-hidden", isAdmin ? "false" : "true");
+      });
     });
 
     console.log("Premium admin tools protected:", {
@@ -11243,3 +11368,106 @@ async function protectPremiumAdminTools() {
 }
 
 window.protectPremiumAdminTools = protectPremiumAdminTools;
+
+ 
+async function approvePremiumRequest(requestId, userId) {
+  try {
+    const adminUser = await getCurrentUser();
+
+    if (!adminUser?.id) {
+      alert("Please log in first.");
+      return;
+    }
+
+    const adminNote = prompt("Optional admin note:", "") || "";
+
+    const { error: profileError } = await client
+      .from("profiles")
+      .update({ is_premium: true })
+      .eq("id", userId);
+
+    if (profileError) {
+      console.error("Profile premium update error:", profileError);
+      alert("Failed to activate premium: " + profileError.message);
+      return;
+    }
+
+    const { error: requestError } = await client
+      .from("premium_requests")
+      .update({
+        status: "approved",
+        admin_note: adminNote,
+        reviewed_by: adminUser.id,
+        reviewed_at: new Date().toISOString()
+      })
+      .eq("id", requestId);
+
+    if (requestError) {
+      console.error("Premium request approval error:", requestError);
+      alert("Premium activated, but request status update failed: " + requestError.message);
+      return;
+    }
+
+    alert("Premium request approved ✅");
+
+    if (typeof renderPremiumRequests === "function") {
+      await renderPremiumRequests();
+    }
+
+    if (typeof loadUsers === "function") {
+      await loadUsers();
+    }
+  } catch (err) {
+    console.error("approvePremiumRequest unexpected error:", err);
+    alert("Unexpected error while approving premium request.");
+  }
+}
+
+window.approvePremiumRequest = approvePremiumRequest;
+
+ // =========================
+// Reject Premium Request
+// =========================
+async function rejectPremiumRequest(requestId) {
+  try {
+    const adminUser = await getCurrentUser();
+
+    if (!adminUser?.id) {
+      alert("Please log in first.");
+      return;
+    }
+
+    const adminNote = prompt("Reason for rejection (optional):", "") || "";
+
+    const { error } = await client
+      .from("premium_requests")
+      .update({
+        status: "rejected",
+        admin_note: adminNote,
+        reviewed_by: adminUser.id,
+        reviewed_at: new Date().toISOString()
+      })
+      .eq("id", requestId);
+
+    if (error) {
+      console.error("Premium request rejection error:", error);
+      alert("Failed to reject request: " + error.message);
+      return;
+    }
+
+    alert("Premium request rejected.");
+
+    if (typeof renderPremiumRequests === "function") {
+      await renderPremiumRequests();
+    }
+
+    if (typeof loadAdminOverview === "function") {
+      await loadAdminOverview();
+    }
+  } catch (err) {
+    console.error("rejectPremiumRequest unexpected error:", err);
+    alert("Unexpected error while rejecting premium request.");
+  }
+}
+
+window.rejectPremiumRequest = rejectPremiumRequest;
