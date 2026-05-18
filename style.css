@@ -15911,3 +15911,58 @@ body > header nav button[onclick*="logout"]:hover {
     scroll-margin-top: 12px !important;
   }
 }
+/* =========================
+   Mobile Menu Navigation
+========================= */
+.mobile-menu-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  header {
+    position: static !important;
+    top: auto !important;
+    z-index: auto !important;
+  }
+
+  .mobile-menu-toggle {
+    display: block !important;
+    width: 100%;
+    margin: 10px auto;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
+    color: white;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  header nav {
+    display: none !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 8px 0 12px !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  header nav.mobile-nav-open {
+    display: flex !important;
+  }
+
+  header nav button {
+    width: 100% !important;
+    font-size: 13px !important;
+    padding: 10px 12px !important;
+    min-height: 40px !important;
+    border-radius: 12px !important;
+    white-space: normal !important;
+  }
+
+  .page.active {
+    scroll-margin-top: 12px !important;
+  }
+}

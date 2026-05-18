@@ -11025,3 +11025,38 @@ function localAssistant() {
 }
 
 window.localAssistant = localAssistant;
+
+// =========================
+// Mobile Menu Toggle
+// =========================
+function setupMobileMenuToggle() {
+  const toggle = document.getElementById("mobileMenuToggle");
+  const nav = document.querySelector("header nav");
+
+  if (!toggle || !nav) {
+    console.warn("Mobile menu toggle or header nav not found.");
+    return;
+  }
+
+  toggle.onclick = () => {
+    nav.classList.toggle("mobile-nav-open");
+
+    const isOpen = nav.classList.contains("mobile-nav-open");
+    toggle.textContent = isOpen ? "✕ إغلاق القائمة" : "☰ القائمة";
+  };
+
+  nav.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", () => {
+      if (window.innerWidth <= 768) {
+        nav.classList.remove("mobile-nav-open");
+        toggle.textContent = "☰ القائمة";
+      }
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupMobileMenuToggle();
+});
+
+window.setupMobileMenuToggle = setupMobileMenuToggle;
