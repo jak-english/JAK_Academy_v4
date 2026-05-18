@@ -15880,3 +15880,34 @@ body > header nav button[onclick*="logout"]:hover {
     font-size: 0.72rem;
   }
 }
+/* =========================
+   Mobile Header Fix
+   Prevent huge admin navbar from covering pages on mobile
+========================= */
+@media (max-width: 768px) {
+  header {
+    position: static !important;
+    top: auto !important;
+    z-index: auto !important;
+  }
+
+  header nav {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: center !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  header nav button {
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+    min-height: 36px !important;
+    white-space: nowrap !important;
+  }
+
+  .page.active {
+    scroll-margin-top: 12px !important;
+  }
+}

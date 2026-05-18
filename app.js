@@ -18,6 +18,35 @@ let timerInterval = null;
 let remainingSeconds = 0;
 let currentUserRole = "student";
 
+function scrollToActivePageBelowHeader() {
+  setTimeout(() => {
+    const header = document.querySelector("header");
+    const activePage = document.querySelector(".page.active");
+
+    if (!activePage) return;
+
+    const headerHeight = header ? header.offsetHeight : 0;
+
+    const finalTop = Math.max(
+      activePage.offsetTop - headerHeight - 12,
+      0
+    );
+
+    window.scrollTo({
+      top: finalTop,
+      behavior: "smooth"
+    });
+
+    console.log("Scrolled below header:", {
+      activePage: activePage.id,
+      headerHeight,
+      finalTop,
+      scrollY: window.scrollY
+    });
+  }, 350);
+}
+
+window.scrollToActivePageBelowHeader = scrollToActivePageBelowHeader;
 
 function showPage(id) {
   document.querySelectorAll(".page").forEach(page => {
@@ -48,33 +77,15 @@ function showPage(id) {
   }
 
   setTimeout(() => {
-    const header = document.querySelector("header");
-    const headerHeight = header ? header.offsetHeight : 0;
-
-    const pageTop = target.offsetTop;
-    const isMobile = window.innerWidth <= 768;
-
-    const finalTop = isMobile
-      ? Math.max(pageTop - headerHeight - 16, 0)
-      : Math.max(pageTop - 16, 0);
-
-    window.scrollTo({
-      top: finalTop,
-      behavior: "smooth"
+    target.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
     });
-
-    console.log("Mobile scroll check:", {
-      page: id,
-      isMobile,
-      headerHeight,
-      pageTop,
-      finalTop,
-      scrollY: window.scrollY
-    });
-  }, 250);
+  }, 100);
 
   console.log("Showing page:", id);
 }
+   
 async function getCurrentUser() {
   const { data } = await client.auth.getUser();
   return data.user || null;
@@ -108,7 +119,7 @@ const role = (profile?.role || "").toLowerCase().trim();
     console.log("User role:", role);
 
     // 🧠 توجيه حسب الدور
-    if (role.includes("super_admin") || role.includes("admin")) {
+   if (role.includes("super_admin") || role.includes("admin")) {
   showPage("superAdminDashboard");
 } else if (role.includes("teacher")) {
   showPage("teacherDashboard");
@@ -116,6 +127,10 @@ const role = (profile?.role || "").toLowerCase().trim();
   showPage("studentDashboard");
 } else {
   showPage("studentDashboard");
+}
+
+if (typeof scrollToActivePageBelowHeader === "function") {
+  scrollToActivePageBelowHeader();
 }
 
   } catch (err) {
