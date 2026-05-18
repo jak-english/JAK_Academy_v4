@@ -9,10 +9,18 @@
 <body>
 <header>
   <div class="brand">
-  <img src="logo.png" class="logo-img" alt="JAK Logo" onload="this.style.display='block';document.querySelector('.logo-fallback').style.display='none'" onerror="this.style.display='none';document.querySelector('.logo-fallback').style.display='flex'">
+    <img src="logo.png" class="logo-img" alt="JAK Logo" onload="this.style.display='block';document.querySelector('.logo-fallback').style.display='none'" onerror="this.style.display='none';document.querySelector('.logo-fallback').style.display='flex'">
     <div class="logo-fallback">JAK</div>
-    <div><div class="brand-title">JAK Academy</div><div class="brand-sub">Learning is Fun ✨</div></div>
+    <div>
+      <div class="brand-title">JAK Academy</div>
+      <div class="brand-sub">Learning is Fun ✨</div>
+    </div>
   </div>
+
+  <button type="button" id="mobileMenuToggle" class="mobile-menu-toggle">
+    ☰ القائمة
+  </button>
+
   <nav>
   <button onclick="showPage('home')">Home</button>
   <button onclick="showPage('teachersPage')">Teachers</button>
@@ -1183,7 +1191,7 @@
       </div>
 
       <div class="dashboard-quick-actions">
-        <button class="violet" onclick="mockAIQuestions()">Generate Preview</button>
+        <button class="violet" onclick="mockAIQuestions()">Generate Demo Preview</button>
         <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
       </div>
     </div>
@@ -1212,7 +1220,7 @@
         <label>Number of Questions</label>
         <input id="aiCount" type="number" value="5">
 
-        <button class="violet" onclick="mockAIQuestions()">Generate Preview</button>
+        <button class="violet" onclick="mockAIQuestions()">Generate Demo Preview</button>
 
         <p class="msg">
           Safe local preview now. Real OpenAI connection should be added later through Netlify Functions only, not directly in frontend.

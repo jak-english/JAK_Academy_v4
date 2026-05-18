@@ -2684,11 +2684,29 @@ function searchDictionary() {
 function mockAIQuestions() {
   const topic = aiTopic.value || "English";
   const count = Number(aiCount.value || 5);
-  aiPreview.innerHTML = "";
+  const type = aiType.value || "multiple-choice";
+
+  aiPreview.innerHTML = `
+    <div class="box" style="border-left: 5px solid #f59e0b;">
+      <h3>Demo Preview Mode ⚠️</h3>
+      <p>
+        These are sample preview questions only. Real AI question generation will be connected later through a secure backend.
+      </p>
+      <p><strong>Topic:</strong> ${safeText(topic)}</p>
+      <p><strong>Question Type:</strong> ${safeText(type)}</p>
+    </div>
+  `;
+
   for (let i = 1; i <= count; i++) {
-    aiPreview.innerHTML += `<div class="box"><b>${i}.</b> Sample ${aiType.value} question about ${safeText(topic)}.</div>`;
+    aiPreview.innerHTML += `
+      <div class="box">
+        <b>${i}.</b> Demo ${safeText(type)} question about ${safeText(topic)}.
+      </div>
+    `;
   }
 }
+
+window.mockAIQuestions = mockAIQuestions;
 
 function insertMath(t) {
   mathEditor.value += (mathEditor.value ? " " : "") + t;
