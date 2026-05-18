@@ -35,13 +35,6 @@ function showPage(id) {
   target.classList.add("active");
   target.style.display = "block";
 
-  setTimeout(() => {
-    target.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  }, 50);
-
   if (id === "studentExams" && typeof loadStudentExams === "function") {
     loadStudentExams();
   }
@@ -53,6 +46,32 @@ function showPage(id) {
   if (id === "premium" && typeof renderPaymentInfo === "function") {
     renderPaymentInfo();
   }
+
+  setTimeout(() => {
+    const header = document.querySelector("header");
+    const headerHeight = header ? header.offsetHeight : 0;
+
+    const pageTop = target.offsetTop;
+    const isMobile = window.innerWidth <= 768;
+
+    const finalTop = isMobile
+      ? Math.max(pageTop - headerHeight - 16, 0)
+      : Math.max(pageTop - 16, 0);
+
+    window.scrollTo({
+      top: finalTop,
+      behavior: "smooth"
+    });
+
+    console.log("Mobile scroll check:", {
+      page: id,
+      isMobile,
+      headerHeight,
+      pageTop,
+      finalTop,
+      scrollY: window.scrollY
+    });
+  }, 250);
 
   console.log("Showing page:", id);
 }
