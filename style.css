@@ -15966,3 +15966,77 @@ body > header nav button[onclick*="logout"]:hover {
     scroll-margin-top: 12px !important;
   }
 }
+/* =========================
+   Premium Offer Pricing
+========================= */
+.premium-offer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.premium-price-card {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.25);
+}
+
+.premium-plan-label {
+  display: inline-block;
+  font-weight: 800;
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #fde68a;
+}
+
+.old-price {
+  font-size: 18px;
+  color: #cbd5e1;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  opacity: 0.85;
+}
+
+.new-price {
+  font-size: 34px;
+  font-weight: 900;
+  color: #fbbf24;
+  margin: 6px 0;
+}
+
+.premium-price-card p {
+  margin: 4px 0 10px;
+  color: #e5e7eb;
+}
+
+.offer-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  color: #fde68a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .premium-offer-grid {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .premium-offer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .new-price {
+    font-size: 30px;
+  }
+}

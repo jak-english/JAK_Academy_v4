@@ -72,9 +72,13 @@ function showPage(id) {
     loadLeaderboard();
   }
 
-  if (id === "premium" && typeof renderPaymentInfo === "function") {
-    renderPaymentInfo();
-  }
+ if (id === "premium" && typeof renderPaymentInfo === "function") {
+  renderPaymentInfo();
+}
+
+if (id === "premium" && typeof protectPremiumAdminTools === "function") {
+  protectPremiumAdminTools();
+}
 
   setTimeout(() => {
     target.scrollIntoView({
@@ -3380,19 +3384,81 @@ function updatePaymentSettings() {
 function renderPaymentInfo() {
   const target = $("paymentInfo") || $("premiumPaymentInfo");
   if (!target) return;
+
   const s = getPaymentSettings();
+
   if (!s.active) {
-    target.innerHTML = "<p>Payment is currently inactive.</p>";
+    target.innerHTML = `
+      <div class="box payment-card">
+        <h2>CliQ Payment</h2>
+        <p>Payment is currently inactive.</p>
+        <p>Please contact the academy admin for more information.</p>
+      </div>
+    `;
     return;
   }
+
+  // Display/marketing old prices
+  const oldStudentMonthly = Number(s.studentMonthly || 5) + 2;
+  const oldStudentYearly = Number(s.studentYearly || 30) + 10;
+  const oldTeacherMonthly = Number(s.teacherMonthly || 10) + 5;
+  const oldTeacherYearly = Number(s.teacherYearly || 50) + 20;
+
   target.innerHTML = `
     <div class="box payment-card">
       <h2>CliQ Payment</h2>
+
       <p><b>Name:</b> ${safeText(s.cliqName)}</p>
       <p><b>Phone/Alias:</b> ${safeText(s.cliqPhone) || "Not set yet"}</p>
-      <p><b>Student:</b> ${s.studentMonthly} JOD monthly / ${s.studentYearly} JOD yearly</p>
-      <p><b>Teacher:</b> ${s.teacherMonthly} JOD monthly / ${s.teacherYearly} JOD yearly</p>
-      <p>${safeText(s.instructions)}</p>
+
+      <div class="premium-offer-grid">
+        <div class="premium-price-card">
+          <span class="premium-plan-label">Student Monthly</span>
+          <div class="old-price">${oldStudentMonthly} JOD</div>
+          <div class="new-price">${safeText(s.studentMonthly)} JOD</div>
+          <p>per month</p>
+          <span class="offer-badge">Limited Offer</span>
+        </div>
+
+        <div class="premium-price-card">
+          <span class="premium-plan-label">Student Yearly</span>
+          <div class="old-price">${oldStudentYearly} JOD</div>
+          <div class="new-price">${safeText(s.studentYearly)} JOD</div>
+          <p>per year</p>
+          <span class="offer-badge">Best Value</span>
+        </div>
+
+        <div class="premium-price-card">
+          <span class="premium-plan-label">Teacher Monthly</span>
+          <div class="old-price">${oldTeacherMonthly} JOD</div>
+          <div class="new-price">${safeText(s.teacherMonthly)} JOD</div>
+          <p>per month</p>
+          <span class="offer-badge">Teacher Plan</span>
+        </div>
+
+        <div class="premium-price-card">
+          <span class="premium-plan-label">Teacher Yearly</span>
+          <div class="old-price">${oldTeacherYearly} JOD</div>
+          <div class="new-price">${safeText(s.teacherYearly)} JOD</div>
+          <p>per year</p>
+          <span class="offer-badge">Save More</span>
+        </div>
+      </div>
+
+      <div class="box" style="border-left: 5px solid #f59e0b; margin-top: 12px;">
+        <h3>Important Notice ⚠️</h3>
+        <p>
+          Premium activation is manual. After sending the payment through CliQ,
+          submit your premium request. The admin will review the payment and activate
+          the account after approval.
+        </p>
+        <p dir="rtl">
+          التفعيل ليس تلقائيًا. بعد إرسال الدفع عبر CliQ، أرسل طلب التفعيل،
+          وسيقوم الأدمن بمراجعة الطلب وتفعيل الحساب بعد الموافقة.
+        </p>
+      </div>
+
+      <p><b>Instructions:</b> ${safeText(s.instructions)}</p>
     </div>
   `;
 }
@@ -4046,8 +4112,8 @@ const studyMethods = {
 };
 
 function renderStudyMethodExplanation() {
-  const select = document.getElementById("studyMethodSelect");
-  const box = document.getElementById("studyMethodExplanation");
+  const select = getActiveStudySystemElement("studyMethodSelect");
+  const box = getActiveStudySystemElement("studyMethodExplanation");
 
   if (!select || !box) return;
 
@@ -4086,6 +4152,8 @@ function renderStudyMethodExplanation() {
     </div>
   `;
 }
+
+window.renderStudyMethodExplanation = renderStudyMethodExplanation;
 
 function addMinutesToTime(time, minutesToAdd) {
   const [h, m] = String(time || "17:00").split(":").map(Number);
@@ -4200,17 +4268,29 @@ function getStudyTaskStartTime(start, index, sessionMinutes, breakMinutes, metho
 
   return start;
 }
+function getActiveStudySystemElement(id) {
+  const activePage = document.querySelector(".page.active");
+
+  if (activePage) {
+    const scopedElement = activePage.querySelector(`#${CSS.escape(id)}`);
+    if (scopedElement) return scopedElement;
+  }
+
+  return document.getElementById(id);
+}
+
+window.getActiveStudySystemElement = getActiveStudySystemElement;
 
 function generateStudySystemSchedule() {
-  const methodSelect = document.getElementById("studyMethodSelect");
-  const subjectInput = document.getElementById("studySystemSubject");
-  const daysInput = document.getElementById("studySystemDays");
-  const startInput = document.getElementById("studySystemStart");
-  const sessionInput = document.getElementById("studySystemSession");
-  const breakInput = document.getElementById("studySystemBreak");
-  const sessionsInput = document.getElementById("studySystemSessions");
-  const examDateInput = document.getElementById("studySystemExamDate");
-  const output = document.getElementById("studySystemSchedule");
+  const methodSelect = getActiveStudySystemElement("studyMethodSelect");
+const subjectInput = getActiveStudySystemElement("studySystemSubject");
+const daysInput = getActiveStudySystemElement("studySystemDays");
+const startInput = getActiveStudySystemElement("studySystemStart");
+const sessionInput = getActiveStudySystemElement("studySystemSession");
+const breakInput = getActiveStudySystemElement("studySystemBreak");
+const sessionsInput = getActiveStudySystemElement("studySystemSessions");
+const examDateInput = getActiveStudySystemElement("studySystemExamDate");
+const output = getActiveStudySystemElement("studySystemSchedule");
 
   if (!methodSelect || !output) return;
 
@@ -5631,11 +5711,24 @@ async function uploadTeacherResource() {
   }
 
   try {
-    const { data: userData } = await client.auth.getUser();
-    const teacherId = userData?.user?.id || null;
+    const { data: userData, error: userError } = await client.auth.getUser();
+    const user = userData?.user || null;
+    const teacherId = user?.id || null;
 
-    const safeName = cleanFileName(file.name);
-const filePath = `${user.id}/${Date.now()}-${safeName}`;
+    if (userError || !teacherId) {
+      console.error("Resource upload user error:", userError);
+      if (msg) msg.textContent = "Please log in before uploading.";
+      alert("Please log in before uploading.");
+      return;
+    }
+
+    const safeName =
+      typeof cleanFileName === "function"
+        ? cleanFileName(file.name)
+        : file.name.replace(/[^\w.\-]+/g, "_");
+
+    const filePath = `${teacherId}/${Date.now()}-${safeName}`;
+
     if (msg) msg.textContent = "Uploading file...";
 
     const { error: uploadError } = await client.storage
@@ -5686,7 +5779,10 @@ const filePath = `${user.id}/${Date.now()}-${safeName}`;
 
     if (insertError) {
       console.error("Resource insert error:", insertError);
-      if (msg) msg.textContent = "File uploaded, but database save failed: " + insertError.message;
+      if (msg) {
+        msg.textContent =
+          "File uploaded, but database save failed: " + insertError.message;
+      }
       alert("File uploaded, but database save failed: " + insertError.message);
       return;
     }
@@ -5701,13 +5797,24 @@ const filePath = `${user.id}/${Date.now()}-${safeName}`;
     if (fileEl) fileEl.value = "";
     if (premiumEl) premiumEl.checked = false;
 
-    await loadTeacherResources();
+    if (typeof loadTeacherResources === "function") {
+      await loadTeacherResources();
+    }
+
+    if (typeof loadStudentResources === "function") {
+      await loadStudentResources();
+    }
   } catch (err) {
     console.error("Unexpected upload error:", err);
-    if (msg) msg.textContent = "Unexpected error while uploading.";
-    alert("Unexpected error while uploading.");
+    if (msg) {
+      msg.textContent =
+        "Unexpected error while uploading: " + (err?.message || err);
+    }
+    alert("Unexpected error while uploading: " + (err?.message || err));
   }
 }
+
+window.uploadTeacherResource = uploadTeacherResource;
 async function toggleResourcePremium(resourceId, currentStatus) {
   const newStatus = !currentStatus;
 
@@ -11041,7 +11148,6 @@ function localAssistant() {
     </div>
   `;
 }
-
 window.localAssistant = localAssistant;
 
 // =========================
@@ -11078,3 +11184,62 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.setupMobileMenuToggle = setupMobileMenuToggle;
+// =========================
+// Premium Page Role Protection
+// Hide admin-only premium tools from students/visitors
+// =========================
+async function protectPremiumAdminTools() {
+  try {
+    const navAuth =
+      typeof getCurrentNavigationRoleSafe === "function"
+        ? await getCurrentNavigationRoleSafe()
+        : { isLoggedIn: false, role: null };
+
+    const role = String(navAuth.role || "").toLowerCase();
+    const isAdmin = role.includes("admin") || role.includes("super_admin");
+
+    const premium = document.getElementById("premium");
+    if (!premium) return;
+
+    const adminTexts = [
+      "Load Users",
+      "Users Management",
+      "Save Payment Settings",
+      "Refresh Requests",
+      "Premium Requests",
+      "Manage user roles",
+      "payment settings"
+    ];
+
+    [...premium.querySelectorAll("button")].forEach((btn) => {
+      const text = btn.innerText.trim();
+      const onclick = btn.getAttribute("onclick") || "";
+
+      const isAdminButton =
+        text.includes("Load Users") ||
+        onclick.includes("loadUsers") ||
+        onclick.includes("updatePaymentSettings") ||
+        onclick.includes("renderPremiumRequests") ||
+        onclick.includes("makeUserPremium");
+
+      if (isAdminButton) {
+        btn.style.display = isAdmin ? "" : "none";
+        btn.setAttribute("aria-hidden", isAdmin ? "false" : "true");
+      }
+    });
+
+    [...premium.querySelectorAll(".premium-users-panel, .premium-admin-panel, .admin-only, .payment-settings-panel")].forEach((box) => {
+      box.style.display = isAdmin ? "" : "none";
+      box.setAttribute("aria-hidden", isAdmin ? "false" : "true");
+    });
+
+    console.log("Premium admin tools protected:", {
+      role,
+      isAdmin
+    });
+  } catch (err) {
+    console.warn("Premium protection failed:", err);
+  }
+}
+
+window.protectPremiumAdminTools = protectPremiumAdminTools;
