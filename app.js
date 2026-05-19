@@ -66,10 +66,16 @@ async function showPage(id) {
 
   // Premium gate for AI Center
   if (id === "aiCenter" && typeof isCurrentUserPremium === "function") {
+    storePremiumGateOriginalContent("aiCenter");
+
     const allowed = await isCurrentUserPremium();
 
     if (!allowed && typeof renderPremiumLockedMessage === "function") {
       renderPremiumLockedMessage(target, "AI Center");
+    }
+
+    if (allowed && typeof restorePremiumGateOriginalContent === "function") {
+      restorePremiumGateOriginalContent("aiCenter");
     }
   }
 
@@ -11557,6 +11563,8 @@ async function isCurrentUserPremium() {
 function renderPremiumLockedMessage(target, featureName = "This feature") {
   if (!target) return;
 
+  target.classList.add("premium-locked-page");
+
   target.innerHTML = `
     <div class="box premium-locked-box">
       <h2>Premium Feature 🔒</h2>
@@ -11575,3 +11583,162 @@ function renderPremiumLockedMessage(target, featureName = "This feature") {
 window.getCurrentProfile = getCurrentProfile;
 window.isCurrentUserPremium = isCurrentUserPremium;
 window.renderPremiumLockedMessage = renderPremiumLockedMessage;
+
+// =========================
+// Premium Gate Original Content Store
+// Keeps original page content before showing locked message
+// =========================
+function storePremiumGateOriginalContent(pageId) {
+  const page = document.getElementById(pageId);
+  if (!page) return;
+
+  if (!page.dataset.originalHtml && !page.classList.contains("premium-locked-page")) {
+    page.dataset.originalHtml = page.innerHTML;
+  }
+}
+
+function restorePremiumGateOriginalContent(pageId) {
+  const page = document.getElementById(pageId);
+  if (!page) return;
+
+  if (page.dataset.originalHtml) {
+    page.innerHTML = page.dataset.originalHtml;
+    page.classList.remove("premium-locked-page");
+  }
+}
+
+window.storePremiumGateOriginalContent = storePremiumGateOriginalContent;
+window.restorePremiumGateOriginalContent = restorePremiumGateOriginalContent;
+
+// =========================
+// Real AI Question Generator
+// Calls Netlify Function: /.netlify/functions/apps
+// =========================
+async function generateRealAIQuestions() {
+  const topicEl = document.getElementById("aiTopic");
+  const typeEl = document.getElementById("aiType");
+  const countEl = document.getElementById("aiCount");
+  const preview = document.getElementById("aiPreview");
+
+  if (!preview) {
+    alert("AI preview area is missing.");
+    return;
+  }
+
+  const topic = topicEl?.value?.trim() || "English grammar";
+  const questionType = typeEl?.value || "multiple-choice";
+  const count = Math.max(1, Math.min(Number(countEl?.value || 5), 15));
+  const level = "B1";
+
+  if (typeof isCurrentUserPremium === "function") {
+    const allowed = await isCurrentUserPremium();
+
+    if (!allowed) {
+      renderPremiumLockedMessage(preview, "Real AI Question Generator");
+      return;
+    }
+  }
+
+  preview.innerHTML = `
+    <div class="box">
+      <h3>Generating real AI questions...</h3>
+      <p>Please wait while the secure backend creates your questions.</p>
+    </div>
+  `;
+
+  try {
+    const response = await fetch("/.netlify/functions/apps", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        action: "generate_exam",
+        topic,
+        questionType,
+        count,
+        level
+      })
+    });
+
+const rawText = await response.text();
+let result = {};
+
+try {
+  result = rawText ? JSON.parse(rawText) : {};
+} catch (parseError) {
+  console.error("Backend returned non-JSON response:", rawText);
+
+  preview.innerHTML = `
+    <div class="box">
+      <h3>AI Backend Error</h3>
+      <p>The backend did not return valid JSON.</p>
+      <p><strong>Status:</strong> ${response.status}</p>
+      <p>If you are using Live Server, use Netlify Dev or test after Netlify deployment.</p>
+    </div>
+  `;
+  return;
+}
+    if (!response.ok) {
+      console.error("Real AI generation error:", result);
+      preview.innerHTML = `
+        <div class="box">
+          <h3>AI Generation Failed</h3>
+          <p>${safeText(result.error || "Unknown backend error")}</p>
+        </div>
+      `;
+      return;
+    }
+
+    const questions = result.questions || [];
+
+    if (!questions.length) {
+      preview.innerHTML = `
+        <div class="box">
+          <h3>No questions generated</h3>
+          <p>The AI response did not include questions. Try another topic.</p>
+        </div>
+      `;
+      return;
+    }
+
+    preview.innerHTML = `
+      <div class="box" style="border-left: 5px solid #22c55e;">
+        <h3>Real AI Questions Generated ✅</h3>
+        <p><strong>Topic:</strong> ${safeText(topic)}</p>
+        <p><strong>Type:</strong> ${safeText(questionType)}</p>
+        <p><strong>Count:</strong> ${questions.length}</p>
+      </div>
+    `;
+
+    questions.forEach((q, index) => {
+      const options = Array.isArray(q.options) ? q.options : [];
+
+      preview.innerHTML += `
+        <div class="box ai-question-card">
+          <h3>${index + 1}. ${safeText(q.question || "Untitled question")}</h3>
+
+          ${
+            options.length
+              ? `<ol type="A">
+                  ${options.map(opt => `<li>${safeText(opt)}</li>`).join("")}
+                </ol>`
+              : ""
+          }
+
+          <p><strong>Answer:</strong> ${safeText(q.answer || "")}</p>
+          <p><strong>Explanation:</strong> ${safeText(q.explanation || "")}</p>
+        </div>
+      `;
+    });
+  } catch (err) {
+    console.error("generateRealAIQuestions unexpected error:", err);
+    preview.innerHTML = `
+      <div class="box">
+        <h3>Unexpected AI Error</h3>
+        <p>${safeText(err?.message || "Something went wrong.")}</p>
+      </div>
+    `;
+  }
+}
+window.generateRealAIQuestions = generateRealAIQuestions;

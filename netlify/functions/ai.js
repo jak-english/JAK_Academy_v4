@@ -1,8 +1,3 @@
- exports.handler = async function () {
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: "AI disabled temporarily"
-    })
-  };
-};
+const apps = require("./apps.js");
+
+exports.handler = apps.handler;
