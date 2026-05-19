@@ -16251,3 +16251,1034 @@ body > header nav button[onclick*="logout"]:hover {
   transform: translateY(-1px);
   filter: brightness(1.05);
 }
+
+/* =========================
+   Exam Answer Stats
+========================= */
+.exam-answer-stats-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.exam-stat-pill {
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: #f8fafc;
+}
+
+.exam-stat-pill.answered {
+  color: #166534;
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.exam-stat-pill.unanswered {
+  color: #991b1b;
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.exam-stat-pill.progress {
+  color: #1e3a8a;
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+@media (max-width: 768px) {
+  .exam-answer-stats-box {
+    flex-direction: column;
+  }
+
+  .exam-stat-pill {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* =========================
+   Exam Progress Counter
+========================= */
+.exam-progress-card {
+  background: linear-gradient(135deg, #0f172a, #1e3a8a) !important;
+  color: white !important;
+  border-radius: 20px !important;
+  padding: 18px !important;
+  margin: 14px 0 18px !important;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.28) !important;
+  border: 1px solid rgba(147, 197, 253, 0.35) !important;
+}
+
+.exam-progress-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 14px !important;
+  margin-bottom: 14px !important;
+}
+
+.exam-progress-header h3 {
+  margin: 0 !important;
+  color: #ffffff !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+}
+
+.exam-progress-header p {
+  margin: 4px 0 0 !important;
+  color: #dbeafe !important;
+  font-size: 13px !important;
+}
+
+.exam-progress-percent {
+  min-width: 64px !important;
+  height: 64px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #fbbf24 !important;
+  color: #111827 !important;
+  font-weight: 900 !important;
+  font-size: 20px !important;
+  box-shadow: 0 8px 22px rgba(251, 191, 36, 0.35) !important;
+}
+
+.exam-progress-bar {
+  width: 100% !important;
+  height: 16px !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+.exam-progress-fill {
+  height: 100% !important;
+  width: 0%;
+  background: linear-gradient(90deg, #22c55e, #a3e635, #fbbf24) !important;
+  border-radius: 999px !important;
+  transition: width 0.35s ease !important;
+}
+
+.exam-progress-info {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  margin-top: 12px !important;
+  flex-wrap: wrap !important;
+}
+
+.exam-progress-info span {
+  padding: 8px 12px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+.exam-progress-info .answered {
+  background: rgba(34, 197, 94, 0.18) !important;
+  color: #bbf7d0 !important;
+}
+
+.exam-progress-info .unanswered {
+  background: rgba(248, 113, 113, 0.18) !important;
+  color: #fecaca !important;
+}
+
+@media (max-width: 768px) {
+  .exam-progress-header {
+    align-items: flex-start !important;
+  }
+
+  .exam-progress-percent {
+    min-width: 54px !important;
+    height: 54px !important;
+    font-size: 17px !important;
+  }
+
+  .exam-progress-info {
+    flex-direction: column !important;
+  }
+
+  .exam-progress-info span {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+
+/* =========================
+   Clean Exam Progress Bar
+========================= */
+.exam-progress-clean-card {
+  width: 100% !important;
+  background: #0f172a !important;
+  color: white !important;
+  border-radius: 18px !important;
+  padding: 16px !important;
+  margin: 14px 0 !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-sizing: border-box !important;
+}
+
+.exam-progress-clean-top {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 10px !important;
+  gap: 10px !important;
+}
+
+.exam-progress-clean-top span {
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  color: #e0f2fe !important;
+}
+
+.exam-progress-clean-top strong {
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  color: #fbbf24 !important;
+  white-space: nowrap !important;
+}
+
+.exam-progress-clean-bar {
+  width: 100% !important;
+  height: 18px !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.exam-progress-clean-fill {
+  height: 100% !important;
+  width: 0%;
+  background: linear-gradient(90deg, #22c55e, #84cc16, #facc15) !important;
+  border-radius: 999px !important;
+  transition: width 0.35s ease !important;
+}
+
+.exam-progress-clean-stats {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-top: 12px !important;
+}
+
+.exam-progress-clean-stats div {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  padding: 9px 10px !important;
+  text-align: center !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: #f8fafc !important;
+}
+
+.exam-progress-clean-stats strong {
+  color: #fbbf24 !important;
+}
+
+@media (max-width: 768px) {
+  .exam-progress-clean-top strong {
+    font-size: 20px !important;
+  }
+
+  .exam-progress-clean-stats {
+    grid-template-columns: 1fr !important;
+  }
+}
+ 
+/* =========================
+   Futuristic Exam Question Palette
+========================= */
+#questionNav {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin: 16px 0 !important;
+  padding: 14px !important;
+  background: rgba(15, 23, 42, 0.05) !important;
+  border-radius: 18px !important;
+}
+
+.question-pill {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  position: relative !important;
+  cursor: pointer !important;
+  font-weight: 900 !important;
+  border: 2px solid transparent !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  user-select: none !important;
+}
+
+.question-pill:hover {
+  transform: translateY(-2px) !important;
+}
+
+.question-pill-number {
+  font-size: 15px !important;
+  line-height: 1 !important;
+}
+
+.question-pill-icon {
+  position: absolute !important;
+  right: -5px !important;
+  top: -7px !important;
+  font-size: 13px !important;
+  background: white !important;
+  border-radius: 999px !important;
+  padding: 1px 4px !important;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15) !important;
+}
+
+/* unanswered */
+.question-pill.unanswered {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* answered */
+.question-pill.answered {
+  background: #dcfce7 !important;
+  color: #166534 !important;
+  border-color: #86efac !important;
+}
+
+/* review later overrides */
+.question-pill.review {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+  border-color: #fbbf24 !important;
+  box-shadow: 0 8px 22px rgba(251, 191, 36, 0.25) !important;
+}
+
+/* current question */
+.question-pill.active {
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16) !important;
+}
+
+/* current + review */
+.question-pill.active.review {
+  background: linear-gradient(135deg, #fbbf24, #2563eb) !important;
+  color: white !important;
+  border-color: #ffffff !important;
+}
+
+/* Review button active */
+#examSolver button.review-active {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
+  color: #111827 !important;
+  font-weight: 900 !important;
+  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Progress stats 3 columns */
+.exam-progress-three {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+@media (max-width: 768px) {
+  #questionNav {
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+
+  .question-pill {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 12px !important;
+  }
+
+  .exam-progress-three {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* =========================
+   Futuristic Exam Answer Options
+========================= */
+#solverOptions {
+  display: grid !important;
+  gap: 14px !important;
+  margin-top: 18px !important;
+}
+
+#solverOptions .option-card {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  width: 100% !important;
+  padding: 16px 18px !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 2px solid rgba(148, 163, 184, 0.35) !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08) !important;
+  cursor: pointer !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+}
+
+#solverOptions .option-card:hover {
+  transform: translateY(-2px) !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 14px 32px rgba(37, 99, 235, 0.18) !important;
+  background: #f8fbff !important;
+}
+
+#solverOptions .option-card input[type="radio"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  border: 3px solid #94a3b8 !important;
+  background: #ffffff !important;
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  position: relative !important;
+}
+
+#solverOptions .option-card.selected {
+  background: linear-gradient(135deg, #dbeafe, #eff6ff) !important;
+  border-color: #2563eb !important;
+  box-shadow: 0 16px 36px rgba(37, 99, 235, 0.22) !important;
+  transform: translateY(-1px) !important;
+}
+
+#solverOptions .option-card.selected input[type="radio"] {
+  border-color: #2563eb !important;
+  background: radial-gradient(circle, #2563eb 0 45%, #ffffff 48%) !important;
+}
+
+#solverOptions .option-card b {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  border-radius: 12px !important;
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+  font-weight: 900 !important;
+  margin-right: 4px !important;
+}
+
+#solverOptions .option-card.selected b {
+  background: #2563eb !important;
+  color: white !important;
+}
+
+#solverOptions .option-card.selected::after {
+  content: "Selected";
+  position: absolute;
+  right: 14px;
+  top: 10px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #1d4ed8;
+  background: rgba(37, 99, 235, 0.1);
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+@media (max-width: 768px) {
+  #solverOptions .option-card {
+    padding: 14px 12px !important;
+    font-size: 15px !important;
+    border-radius: 16px !important;
+    align-items: flex-start !important;
+  }
+
+  #solverOptions .option-card b {
+    min-width: 32px !important;
+    height: 32px !important;
+  }
+
+  #solverOptions .option-card.selected::after {
+    position: static !important;
+    margin-left: auto !important;
+    align-self: center !important;
+  }
+}
+/* =========================
+   Exam Result V2
+========================= */
+.exam-result-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 22px;
+  border-radius: 24px;
+  margin: 16px 0;
+  color: white;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+}
+
+.exam-result-hero.high {
+  background: linear-gradient(135deg, #14532d, #22c55e);
+}
+
+.exam-result-hero.mid {
+  background: linear-gradient(135deg, #92400e, #fbbf24);
+}
+
+.exam-result-hero.low {
+  background: linear-gradient(135deg, #7f1d1d, #ef4444);
+}
+
+.exam-result-label {
+  margin: 0;
+  opacity: 0.85;
+  font-weight: 800;
+}
+
+.exam-result-hero h2 {
+  font-size: 44px;
+  margin: 6px 0;
+  color: white;
+}
+
+.exam-result-score-circle {
+  min-width: 94px;
+  height: 94px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.exam-result-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.exam-result-stat {
+  border-radius: 18px;
+  padding: 16px;
+  text-align: center;
+  font-weight: 900;
+}
+
+.exam-result-stat span {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.exam-result-stat strong {
+  font-size: 30px;
+}
+
+.exam-result-stat.correct {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.exam-result-stat.wrong {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.exam-result-stat.unanswered {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.result-review-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.result-review-card-head h3 {
+  margin-top: 0;
+}
+
+.review-status-correct,
+.review-status-wrong {
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.review-status-correct {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.review-status-wrong {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.result-answer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.result-answer-grid div {
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.result-answer-grid span,
+.result-explanation-box span {
+  display: block;
+  font-size: 12px;
+  font-weight: 900;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.result-answer-grid strong {
+  color: #0f172a;
+}
+
+.result-explanation-box {
+  background: #eff6ff;
+  border-left: 5px solid #2563eb;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.result-explanation-box p {
+  margin: 0;
+  color: #1e3a8a;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .exam-result-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .exam-result-stats-grid,
+  .result-answer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-review-card-head {
+    flex-direction: column;
+  }
+}
+
+/* =========================
+   Weakness Engine V1
+========================= */
+.weakness-engine-card {
+  border-radius: 24px;
+  padding: 22px;
+  margin: 18px 0;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+}
+
+.weakness-engine-card.strong {
+  border-left: 8px solid #22c55e;
+}
+
+.weakness-engine-card.medium {
+  border-left: 8px solid #fbbf24;
+}
+
+.weakness-engine-card.weak {
+  border-left: 8px solid #ef4444;
+}
+
+.weakness-engine-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.weakness-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.weakness-engine-head h2 {
+  font-size: 30px;
+  margin: 6px 0;
+  color: #0f172a;
+}
+
+.weakness-engine-head p {
+  color: #475569;
+  font-weight: 700;
+  margin: 0;
+}
+
+.weakness-score-circle {
+  min-width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f172a, #2563eb);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 900;
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24);
+}
+
+.weakness-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.weakness-stats-grid div {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px;
+  text-align: center;
+}
+
+.weakness-stats-grid span {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.weakness-stats-grid strong {
+  font-size: 26px;
+  color: #0f172a;
+}
+
+.weakness-focus-box {
+  background: #eff6ff;
+  border-left: 5px solid #2563eb;
+  border-radius: 16px;
+  padding: 14px;
+  margin: 14px 0;
+}
+
+.weakness-focus-box h3 {
+  margin: 0 0 6px;
+  color: #1e3a8a;
+}
+
+.weakness-focus-box p {
+  margin: 0;
+  color: #1e40af;
+  font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .weakness-engine-head {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .weakness-stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+/* =========================
+   Exam Result Review Filters
+========================= */
+.result-review-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+  padding: 12px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.result-review-filters button {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 900;
+  background: #e2e8f0;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.result-review-filters button.active {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
+}
+
+@media (max-width: 768px) {
+  .result-review-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .result-review-filters button {
+    width: 100%;
+    font-size: 13px;
+    padding: 10px 8px;
+  }
+}
+/* =========================
+   Retry Wrong Questions
+========================= */
+.retry-wrong-box {
+  margin: 18px 0;
+}
+
+.retry-wrong-card,
+.retry-success-card {
+  border-radius: 22px;
+  padding: 18px;
+  margin: 16px 0;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+}
+
+.retry-wrong-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  background: linear-gradient(135deg, #111827, #1e3a8a);
+  color: white;
+  border: 1px solid rgba(147, 197, 253, 0.35);
+}
+
+.retry-wrong-card h3 {
+  margin: 0 0 6px;
+  color: #fbbf24;
+}
+
+.retry-wrong-card p {
+  margin: 4px 0;
+  color: #e0f2fe;
+  font-weight: 700;
+}
+
+.retry-wrong-card button {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
+  color: #111827 !important;
+  border: none !important;
+  border-radius: 14px !important;
+  padding: 12px 16px !important;
+  font-weight: 900 !important;
+  white-space: nowrap;
+}
+
+.retry-success-card {
+  background: #dcfce7;
+  color: #166534;
+  border-left: 6px solid #22c55e;
+}
+
+.retry-success-card h3 {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .retry-wrong-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .retry-wrong-card button {
+    width: 100%;
+  }
+}
+  /* =========================
+   Retry Practice Result Report
+========================= */
+.retry-practice-result-note {
+  background: linear-gradient(135deg, #312e81, #1e3a8a);
+  color: white;
+  border-radius: 22px;
+  padding: 18px;
+  margin: 16px 0;
+  box-shadow: 0 14px 34px rgba(30, 58, 138, 0.22);
+  border: 1px solid rgba(191, 219, 254, 0.25);
+}
+
+.retry-practice-result-note h3 {
+  margin: 0 0 8px;
+  color: #fbbf24;
+}
+
+.retry-practice-result-note p {
+  margin: 5px 0;
+  color: #dbeafe;
+  font-weight: 700;
+}
+
+.retry-practice-result-note strong {
+  color: #fde68a;
+}
+/* =========================
+   Smart Retry Practice Report
+========================= */
+.smart-retry-report {
+  background: linear-gradient(135deg, #111827, #312e81) !important;
+}
+
+.retry-report-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.retry-report-grid div {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+}
+
+.retry-report-grid span {
+  display: block;
+  font-size: 12px;
+  color: #bfdbfe;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.retry-report-grid strong {
+  color: #fbbf24;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.retry-report-advice {
+  background: rgba(251, 191, 36, 0.12);
+  border-left: 5px solid #fbbf24;
+  border-radius: 14px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.retry-report-advice strong {
+  color: #fde68a;
+}
+
+.retry-report-advice p {
+  margin: 6px 0 0;
+  color: #e0f2fe;
+  font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .retry-report-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+/* =========================
+   Exam Mastery Badge
+========================= */
+.exam-mastery-badge {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 20px;
+  margin: 14px 0 16px;
+  color: #0f172a;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.exam-mastery-icon {
+  min-width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.exam-mastery-badge h3 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.exam-mastery-badge p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.exam-mastery-badge.mastered {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  color: #14532d;
+  border-left: 7px solid #22c55e;
+}
+
+.exam-mastery-badge.improving {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  color: #1e3a8a;
+  border-left: 7px solid #2563eb;
+}
+
+.exam-mastery-badge.needs-review {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #78350f;
+  border-left: 7px solid #f59e0b;
+}
+
+.exam-mastery-badge.recovery {
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #4c1d95;
+  border-left: 7px solid #7c3aed;
+}
+
+@media (max-width: 768px) {
+  .exam-mastery-badge {
+    flex-direction: column;
+    text-align: center;
+  }
+}

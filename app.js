@@ -63,7 +63,10 @@ async function showPage(id) {
 
   target.classList.add("active");
   target.style.display = "block";
-
+if (id !== "examSolver") {
+  const retryControls = document.getElementById("retryPracticeControls");
+  if (retryControls) retryControls.remove();
+}
   // Premium gate for AI Center
   if (id === "aiCenter" && typeof isCurrentUserPremium === "function") {
     storePremiumGateOriginalContent("aiCenter");
@@ -987,22 +990,30 @@ function renderSolver() {
       <input type="radio" name="answer" ${selected ? "checked" : ""}>
       <b>${o.key}.</b> ${safeText(o.text)}
     `;
+lab.onclick = () => {
+  studentAnswers[q.id] = o.key;
 
-    lab.onclick = () => {
-      studentAnswers[q.id] = o.key;
+  if (typeof saveExamProgress === "function") {
+    saveExamProgress();
+  }
 
-      if (typeof saveExamProgress === "function") {
-        saveExamProgress();
-      }
+  const status = $("examAutoSaveStatus");
+  if (status) {
+    status.dataset.saved = "true";
+    status.textContent = "Saved ✅ " + new Date().toLocaleTimeString();
+  }
 
-      const status = $("examAutoSaveStatus");
-      if (status) {
-        status.dataset.saved = "true";
-        status.textContent = "Saved ✅ " + new Date().toLocaleTimeString();
-      }
+  renderSolver();
 
-      renderSolver();
-    };
+  if (typeof updateExamAnswerStats === "function") {
+    updateExamAnswerStats();
+  }
+
+  if (typeof updateReviewLaterButton === "function") {
+    updateReviewLaterButton();
+  }
+};
+    
 
     solverOptions.appendChild(lab);
   });
@@ -1108,7 +1119,13 @@ function toggleReviewLater() {
   if (typeof renderQuestionNav === "function") {
     renderQuestionNav();
   }
+if (typeof updateExamAnswerStats === "function") {
+  updateExamAnswerStats();
+}
 
+if (typeof updateReviewLaterButton === "function") {
+  updateReviewLaterButton();
+}
   const status = document.getElementById("examAutoSaveStatus");
 
   if (status) {
@@ -1134,20 +1151,13 @@ function getUnansweredNumbers() {
 
 async function submitExam(autoSubmit) {
   if (!autoSubmit) {
-    const unanswered = getUnansweredNumbers();
-
-    if (unanswered.length > 0) {
-      const confirmSubmit = confirm(
-        "You still have unanswered questions: " +
-        unanswered.join(", ") +
-        ".\n\nAre you sure you want to submit anyway?"
-      );
-
-      if (!confirmSubmit) return;
-    } else {
-      if (!confirm("Submit exam now?")) return;
-    }
+  if (typeof confirmExamSubmitSummary === "function") {
+    const confirmSubmit = confirmExamSubmitSummary();
+    if (!confirmSubmit) return;
+  } else {
+    if (!confirm("Submit exam now?")) return;
   }
+}
 
   if (timerInterval) clearInterval(timerInterval);
 
@@ -1175,120 +1185,296 @@ async function submitExam(autoSubmit) {
   const total = solvingQuestions.length;
   const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
 
+ window.lastExamReviewAnswers = answers;
+window.lastSolvedQuestionsSnapshot = Array.isArray(solvingQuestions)
+  ? solvingQuestions.slice()
+  : [];
+
+ const isRetryPractice = !!window.examRetryMode;
+
+if (!isRetryPractice) {
   await saveExamResult(correct, total, percentage, answers);
+} else {
+  console.log("Retry practice mode: result was not saved to Supabase.");
+}
+resultTitle.textContent = isRetryPractice
+  ? "Retry Practice Result"
+  : (currentPreviewExam.title || "Result");
+const wrong = total - correct;
+const unansweredCount = answers.filter(a => !a.student_answer).length;
 
-  resultTitle.textContent = currentPreviewExam.title || "Result";
-  scoreText.textContent = `Your score: ${correct} / ${total} (${percentage}%)`;
-studyAdviceAfterResult.innerHTML = getStudyAdvice(percentage, answers);  resultDetails.innerHTML = "";
+let resultLevel = "Needs Practice";
+let resultEmoji = "🔴";
+let resultClass = "low";
 
+if (percentage >= 85) {
+  resultLevel = "Excellent";
+  resultEmoji = "🟢";
+  resultClass = "high";
+} else if (percentage >= 60) {
+  resultLevel = "Good";
+  resultEmoji = "🟡";
+  resultClass = "mid";
+}
+
+scoreText.innerHTML = `
+  <div class="exam-result-hero ${resultClass}">
+    <div>
+      <p class="exam-result-label">Final Score</p>
+      <h2>${resultEmoji} ${percentage}%</h2>
+      <p>${safeText(resultLevel)}</p>
+    </div>
+
+    <div class="exam-result-score-circle">
+      ${correct}/${total}
+    </div>
+  </div>
+
+  <div class="exam-result-stats-grid">
+    <div class="exam-result-stat correct">
+      <span>Correct</span>
+      <strong>${correct}</strong>
+    </div>
+
+    <div class="exam-result-stat wrong">
+      <span>Wrong</span>
+      <strong>${wrong}</strong>
+    </div>
+
+    <div class="exam-result-stat unanswered">
+      <span>Unanswered</span>
+      <strong>${unansweredCount}</strong>
+    </div>
+  </div>
+`;
+if (isRetryPractice) {
+  const retryCorrect = answers.filter(a => a.is_correct).length;
+  const retryStillWrong = answers.filter(a => !a.is_correct).length;
+  const retryTotal = answers.length;
+  const recoveryRate = retryTotal > 0
+    ? Math.round((retryCorrect / retryTotal) * 100)
+    : 0;
+
+  let retryMessage = "Keep practising the remaining weak questions.";
+
+  if (recoveryRate >= 80) {
+    retryMessage = "Excellent recovery. You corrected most of your previous mistakes.";
+  } else if (recoveryRate >= 50) {
+    retryMessage = "Good recovery. Review the remaining wrong questions once more.";
+  } else {
+    retryMessage = "You still need focused revision before moving on.";
+  }
+
+  scoreText.innerHTML =
+    `
+      <div class="retry-practice-result-note smart-retry-report">
+        <h3>Smart Retry Report 🔁</h3>
+        <p>This was a practice retry for wrong or unanswered questions only.</p>
+        <p>This score was <strong>not saved</strong> as an official exam result.</p>
+
+        <div class="retry-report-grid">
+          <div>
+            <span>Retry Questions</span>
+            <strong>${retryTotal}</strong>
+          </div>
+          <div>
+            <span>Correct Now</span>
+            <strong>${retryCorrect}</strong>
+          </div>
+          <div>
+            <span>Still Wrong</span>
+            <strong>${retryStillWrong}</strong>
+          </div>
+          <div>
+            <span>Recovery Rate</span>
+            <strong>${recoveryRate}%</strong>
+          </div>
+        </div>
+
+        <div class="retry-report-advice">
+          <strong>Recommended Action:</strong>
+          <p>${safeText(retryMessage)}</p>
+        </div>
+      </div>
+    ` + scoreText.innerHTML;
+}
+if (typeof renderExamMasteryBadge === "function") {
+  renderExamMasteryBadge(percentage, isRetryPractice);
+}
+studyAdviceAfterResult.innerHTML = getStudyAdvice(percentage, answers);
+resultDetails.innerHTML = "";
   answers.forEach((a, i) => {
-    const div = document.createElement("div");
-    div.className = "box " + (a.is_correct ? "correct" : "wrong");
+  const div = document.createElement("div");
+  div.className = "box " + (a.is_correct ? "correct" : "wrong");
 
-    div.innerHTML = `
-      <h3>${i + 1}. ${safeText(a.question_text)}</h3>
-      <p><b>Status:</b> ${a.is_correct ? "✅ Correct" : "❌ Wrong"}</p>
-      <p><b>Your answer:</b> ${a.student_answer || "No answer"} - ${safeText(a.student_answer_text || "No answer")}</p>
-      <p><b>Correct answer:</b> ${safeText(a.correct_answer)} - ${safeText(a.correct_answer_text)}</p>
-      <p><b>Explanation:</b> ${safeText(a.explanation) || "-"}</p>
-    `;
+  if (!a.student_answer) {
+    div.dataset.status = "unanswered";
+  } else if (a.is_correct) {
+    div.dataset.status = "correct";
+  } else {
+    div.dataset.status = "wrong";
+  }
+
+     div.innerHTML = `
+  <div class="result-review-card-head">
+    <h3>${i + 1}. ${safeText(a.question_text)}</h3>
+    <span class="${a.is_correct ? "review-status-correct" : "review-status-wrong"}">
+      ${a.is_correct ? "✅ Correct" : "❌ Wrong"}
+    </span>
+  </div>
+
+  <div class="result-answer-grid">
+    <div>
+      <span>Your answer</span>
+      <strong>${a.student_answer || "No answer"} - ${safeText(a.student_answer_text || "No answer")}</strong>
+    </div>
+
+    <div>
+      <span>Correct answer</span>
+      <strong>${safeText(a.correct_answer)} - ${safeText(a.correct_answer_text)}</strong>
+    </div>
+  </div>
+
+  <div class="result-explanation-box">
+    <span>Explanation</span>
+    <p>${safeText(a.explanation) || "-"}</p>
+  </div>
+`;
 
     resultDetails.appendChild(div);
   });
+if (typeof renderResultReviewFilters === "function") {
+  renderResultReviewFilters();
+}
+if (isRetryPractice) {
+  window.examRetryMode = false;
 
+  const retryControls = document.getElementById("retryPracticeControls");
+  if (retryControls) retryControls.remove();
+}
+if (typeof renderRetryWrongQuestionsButton === "function") {
+  renderRetryWrongQuestionsButton();
+}
   showPage("examResult");
 }
 
 function getStudyAdvice(p, answers = []) {
+  const total = answers.length;
+  const correctCount = answers.filter(a => a.is_correct).length;
   const noAnswerCount = answers.filter(a => !a.student_answer).length;
   const wrongCount = answers.filter(a => !a.is_correct && a.student_answer).length;
 
+  let level = "Needs Support";
+  let levelClass = "weak";
+  let levelIcon = "🔴";
+  let mainWeakness = "Accuracy and exam confidence";
+  let recommendedFocus = "Review the missed questions and practise easier examples first.";
+  let taskType = "wrong_answers";
+  let taskTitle = "Mistake Correction";
+  let taskText = "Review your wrong questions, write the mistakes in a mistake notebook, and solve 10 similar questions.";
+  let suggestedTime = "30–45 minutes";
+  let nextStep = "Focus on the exact questions you missed, then repeat the rule with easier examples.";
+
   if (noAnswerCount > 0) {
-    return `
-      <h2>Study Advice</h2>
-      <p>You left ${noAnswerCount} question(s) unanswered. Focus on time management and answering every question before submitting.</p>
-
-      <div class="planner-recommendation-card">
-        <h3>Recommended Planner Task 📅</h3>
-        <p><strong>Task:</strong> Practise timed answering. Solve a short exam and make sure you answer every question before time ends.</p>
-        <p><strong>Study Type:</strong> Timed Answering Practice</p>
-        <p><strong>Suggested Time:</strong> 25–30 minutes</p>
-        <button class="violet" onclick="addRecommendedTaskToPlanner('no_answer')">
-          Add this task to my Planner
-        </button>
-      </div>
-
-      <div class="next-action-card">
-        <h3>Next Step 🎯</h3>
-        <p>Repeat a short quiz and focus on answering all questions, even if you are not 100% sure.</p>
-      </div>
-    `;
-  }
-
-  if (p < 50 || wrongCount > 0) {
-    return `
-      <h2>Study Advice</h2>
-      <p>You need to review your wrong answers carefully and practise similar questions.</p>
-
-      <div class="planner-recommendation-card">
-        <h3>Recommended Planner Task 📅</h3>
-        <p><strong>Task:</strong> Review your wrong questions, write the mistakes in a mistake notebook, and solve 10 similar questions.</p>
-        <p><strong>Study Type:</strong> Mistake Correction</p>
-        <p><strong>Suggested Time:</strong> 30–45 minutes</p>
-        <button class="violet" onclick="addRecommendedTaskToPlanner('wrong_answers')">
-          Add this task to my Planner
-        </button>
-      </div>
-
-      <div class="next-action-card">
-        <h3>Next Step 🎯</h3>
-        <p>Focus on the exact questions you missed, then repeat the rule with easier examples.</p>
-      </div>
-    `;
-  }
-
-  if (p < 80) {
-    return `
-      <h2>Study Advice</h2>
-      <p>Good work. Focus on speed and practise timed questions.</p>
-
-      <div class="planner-recommendation-card">
-        <h3>Recommended Planner Task 📅</h3>
-        <p><strong>Task:</strong> Solve a short timed practice exam and review your answers.</p>
-        <p><strong>Study Type:</strong> Timed Practice</p>
-        <p><strong>Suggested Time:</strong> 30 minutes</p>
-        <button class="violet" onclick="addRecommendedTaskToPlanner('practice')">
-          Add this task to my Planner
-        </button>
-      </div>
-
-      <div class="next-action-card">
-        <h3>Next Step 🎯</h3>
-        <p>Try to improve your speed and avoid careless mistakes.</p>
-      </div>
-    `;
+    mainWeakness = "Time management and incomplete answering";
+    recommendedFocus = "Practise answering every question before the time ends.";
+    taskType = "no_answer";
+    taskTitle = "Timed Answering Practice";
+    taskText = "Practise timed answering. Solve a short exam and make sure you answer every question before time ends.";
+    suggestedTime = "25–30 minutes";
+    nextStep = "Repeat a short quiz and focus on answering all questions, even if you are not 100% sure.";
+  } else if (p >= 85) {
+    level = "Excellent";
+    levelClass = "strong";
+    levelIcon = "🟢";
+    mainWeakness = "No major weakness detected";
+    recommendedFocus = "Move to advanced questions and challenge yourself.";
+    taskType = "advanced";
+    taskTitle = "Advanced Practice";
+    taskText = "Solve advanced questions and challenge yourself with harder examples.";
+    suggestedTime = "20–30 minutes";
+    nextStep = "Create your own exam-style question or explain the rule to another student.";
+  } else if (p >= 60) {
+    level = "Good";
+    levelClass = "medium";
+    levelIcon = "🟡";
+    mainWeakness = wrongCount > 0 ? "Careless mistakes or partial understanding" : "Speed and exam fluency";
+    recommendedFocus = "Improve speed and reduce careless mistakes through timed practice.";
+    taskType = "practice";
+    taskTitle = "Timed Practice";
+    taskText = "Solve a short timed practice exam and review your answers.";
+    suggestedTime = "30 minutes";
+    nextStep = "Try to improve your speed and avoid careless mistakes.";
+  } else {
+    level = "Needs Practice";
+    levelClass = "weak";
+    levelIcon = "🔴";
+    mainWeakness = wrongCount > 0 ? "Wrong answers and weak rule control" : "Low score performance";
+    recommendedFocus = "Start with mistake correction and similar controlled practice.";
+    taskType = "wrong_answers";
+    taskTitle = "Mistake Correction";
+    taskText = "Review your wrong questions, write the mistakes in a mistake notebook, and solve 10 similar questions.";
+    suggestedTime = "30–45 minutes";
+    nextStep = "Focus on the exact questions you missed, then repeat the rule with easier examples.";
   }
 
   return `
-    <h2>Study Advice</h2>
-    <p>Excellent. Move to advanced questions and teach the idea to someone else.</p>
+    <div class="weakness-engine-card ${levelClass}">
+      <div class="weakness-engine-head">
+        <div>
+          <span class="weakness-label">Performance Diagnosis</span>
+          <h2>${levelIcon} ${safeText(level)}</h2>
+          <p>${safeText(recommendedFocus)}</p>
+        </div>
 
-    <div class="planner-recommendation-card">
-      <h3>Recommended Planner Task 📅</h3>
-      <p><strong>Task:</strong> Solve advanced questions and challenge yourself with harder examples.</p>
-      <p><strong>Study Type:</strong> Advanced Practice</p>
-      <p><strong>Suggested Time:</strong> 20–30 minutes</p>
-      <button class="violet" onclick="addRecommendedTaskToPlanner('advanced')">
-        Add this task to my Planner
-      </button>
-    </div>
+        <div class="weakness-score-circle">
+          ${p}%
+        </div>
+      </div>
 
-    <div class="next-action-card">
-      <h3>Next Step 🎯</h3>
-      <p>Create your own exam-style question or explain the rule to another student.</p>
+      <div class="weakness-stats-grid">
+        <div>
+          <span>Total</span>
+          <strong>${total}</strong>
+        </div>
+        <div>
+          <span>Correct</span>
+          <strong>${correctCount}</strong>
+        </div>
+        <div>
+          <span>Wrong</span>
+          <strong>${wrongCount}</strong>
+        </div>
+        <div>
+          <span>Unanswered</span>
+          <strong>${noAnswerCount}</strong>
+        </div>
+      </div>
+
+      <div class="weakness-focus-box">
+        <h3>Main Weakness</h3>
+        <p>${safeText(mainWeakness)}</p>
+      </div>
+
+      <div class="planner-recommendation-card">
+        <h3>Recommended Planner Task 📅</h3>
+        <p><strong>Task:</strong> ${safeText(taskText)}</p>
+        <p><strong>Study Type:</strong> ${safeText(taskTitle)}</p>
+        <p><strong>Suggested Time:</strong> ${safeText(suggestedTime)}</p>
+        <button class="violet" onclick="addRecommendedTaskToPlanner('${taskType}')">
+          Add this task to my Planner
+        </button>
+      </div>
+
+      <div class="next-action-card">
+        <h3>Next Step 🎯</h3>
+        <p>${safeText(nextStep)}</p>
+      </div>
     </div>
   `;
 }
+
+window.getStudyAdvice = getStudyAdvice;
 async function saveExamResult(score, total, percentage, answers) {
   const user = await getCurrentUser();
   if (!user || !currentPreviewExam) return;
@@ -5636,8 +5822,14 @@ if (typeof removeUserProfile === "function") window.removeUserProfile = removeUs
 
 console.log("✅ Final window bindings loaded");
 console.log("✅ APP.JS FINISHED");
+// =========================
+// Exam Answer Progress Stats
+// Shows answered / unanswered count while solving
+// =========================
+ 
 function updateExamAnswerStats() {
   const box = document.getElementById("examAnswerStats");
+
   if (!box) return;
 
   if (!Array.isArray(solvingQuestions) || solvingQuestions.length === 0) {
@@ -5647,27 +5839,37 @@ function updateExamAnswerStats() {
 
   const total = solvingQuestions.length;
 
-  const answered = solvingQuestions.filter(q => {
-    return (
-      studentAnswers &&
-      studentAnswers[q.id] !== undefined &&
-      studentAnswers[q.id] !== null &&
-      studentAnswers[q.id] !== ""
-    );
-  }).length;
+  const unanswered =
+    typeof getUnansweredNumbers === "function"
+      ? getUnansweredNumbers()
+      : solvingQuestions
+          .map((q, index) => studentAnswers?.[q.id] ? null : index + 1)
+          .filter(Boolean);
 
-  const unanswered = total - answered;
-
-  const reviewCount = Object.values(reviewLater || {}).filter(Boolean).length;
+  const unansweredCount = unanswered.length;
+  const answeredCount = total - unansweredCount;
+  const percentage = total > 0 ? Math.round((answeredCount / total) * 100) : 0;
 
   box.innerHTML = `
-    <div class="exam-stats-grid">
-      <span>✅ Answered: <strong>${answered}</strong></span>
-      <span>⚠️ Unanswered: <strong>${unanswered}</strong></span>
-      <span>⭐ Review Later: <strong>${reviewCount}</strong></span>
+    <div class="exam-progress-clean-card">
+      <div class="exam-progress-clean-top">
+        <span>Exam Progress</span>
+        <strong>${percentage}%</strong>
+      </div>
+
+      <div class="exam-progress-clean-bar">
+        <div class="exam-progress-clean-fill" style="width: ${percentage}%;"></div>
+      </div>
+
+      <div class="exam-progress-clean-stats">
+        <div>Answered: <strong>${answeredCount}</strong> / ${total}</div>
+        <div>Unanswered: <strong>${unansweredCount}</strong></div>
+      </div>
     </div>
   `;
 }
+
+window.updateExamAnswerStats = updateExamAnswerStats;
 
 // Auto-update exam stats safely while exam page is open
 setInterval(() => {
@@ -11742,3 +11944,443 @@ try {
   }
 }
 window.generateRealAIQuestions = generateRealAIQuestions;
+
+// =========================
+// Exam Answer Progress Stats
+// Shows answered / unanswered count while solving
+// =========================
+ 
+function updateExamAnswerStats() {
+  const box = document.getElementById("examAnswerStats");
+
+  if (!box) return;
+
+  if (!Array.isArray(solvingQuestions) || solvingQuestions.length === 0) {
+    box.innerHTML = "";
+    return;
+  }
+
+  const total = solvingQuestions.length;
+
+  const unanswered =
+    typeof getUnansweredNumbers === "function"
+      ? getUnansweredNumbers()
+      : solvingQuestions
+          .map((q, index) => studentAnswers?.[q.id] ? null : index + 1)
+          .filter(Boolean);
+
+  const unansweredCount = unanswered.length;
+  const answeredCount = total - unansweredCount;
+  const reviewCount = solvingQuestions.filter(q => reviewLater?.[q.id]).length;
+  const percentage = total > 0 ? Math.round((answeredCount / total) * 100) : 0;
+
+  box.innerHTML = `
+    <div class="exam-progress-clean-card">
+      <div class="exam-progress-clean-top">
+        <span>Exam Progress</span>
+        <strong>${percentage}%</strong>
+      </div>
+
+      <div class="exam-progress-clean-bar">
+        <div class="exam-progress-clean-fill" style="width: ${percentage}%;"></div>
+      </div>
+
+      <div class="exam-progress-clean-stats exam-progress-three">
+        <div>Answered: <strong>${answeredCount}</strong> / ${total}</div>
+        <div>Unanswered: <strong>${unansweredCount}</strong></div>
+        <div>Review Later: <strong>${reviewCount}</strong></div>
+      </div>
+    </div>
+  `;
+
+  if (typeof updateReviewLaterButton === "function") {
+    updateReviewLaterButton();
+  }
+}
+window.updateExamAnswerStats = updateExamAnswerStats;
+
+// Auto-refresh exam answer stats after clicks/changes inside exam solver
+document.addEventListener("click", (event) => {
+  if (event.target.closest("#examSolver")) {
+    setTimeout(() => {
+      if (typeof updateExamAnswerStats === "function") {
+        updateExamAnswerStats();
+      }
+    }, 80);
+  }
+});
+
+document.addEventListener("change", (event) => {
+  if (event.target.closest("#examSolver")) {
+    setTimeout(() => {
+      if (typeof updateExamAnswerStats === "function") {
+        updateExamAnswerStats();
+      }
+    }, 80);
+  }
+});
+// =========================
+// Review Later Button State
+// Updates button text/style based on current question
+// =========================
+function updateReviewLaterButton() {
+  if (!Array.isArray(solvingQuestions) || solvingQuestions.length === 0) return;
+
+  const q = solvingQuestions[currentQuestionIndex];
+  if (!q) return;
+
+  const btn = [...document.querySelectorAll("#examSolver button")].find(button =>
+    button.innerText.includes("Review") ||
+    button.getAttribute("onclick")?.includes("toggleReviewLater")
+  );
+
+  if (!btn) return;
+
+  const isMarked = !!reviewLater?.[q.id];
+
+  btn.innerText = isMarked ? "Marked for Review ✅" : "Mark for Review ⭐";
+  btn.classList.toggle("review-active", isMarked);
+}
+
+window.updateReviewLaterButton = updateReviewLaterButton;
+function getExamSubmitSummary() {
+  const total = Array.isArray(solvingQuestions) ? solvingQuestions.length : 0;
+
+  const unanswered =
+    typeof getUnansweredNumbers === "function"
+      ? getUnansweredNumbers()
+      : [];
+
+  const unansweredCount = unanswered.length;
+  const answeredCount = total - unansweredCount;
+  const reviewCount = Array.isArray(solvingQuestions)
+    ? solvingQuestions.filter(q => reviewLater?.[q.id]).length
+    : 0;
+
+  return {
+    total,
+    answeredCount,
+    unansweredCount,
+    reviewCount,
+    unanswered
+  };
+}
+
+function confirmExamSubmitSummary() {
+  const s = getExamSubmitSummary();
+
+  let message =
+    "Exam Submit Summary\n\n" +
+    "Total questions: " + s.total + "\n" +
+    "Answered: " + s.answeredCount + "\n" +
+    "Unanswered: " + s.unansweredCount + "\n" +
+    "Marked for review: " + s.reviewCount + "\n";
+
+  if (s.unansweredCount > 0) {
+    message += "\nUnanswered questions: " + s.unanswered.join(", ") + "\n";
+  }
+
+  if (s.reviewCount > 0) {
+    message += "\nSome questions are marked for review.\n";
+  }
+
+  message += "\nAre you sure you want to submit the exam?";
+
+  return confirm(message);
+}
+
+window.getExamSubmitSummary = getExamSubmitSummary;
+window.confirmExamSubmitSummary = confirmExamSubmitSummary;
+
+// =========================
+// Exam Result Review Filters
+// Show all / correct / wrong / unanswered answers
+// =========================
+function renderResultReviewFilters() {
+  const resultDetails = document.getElementById("resultDetails");
+  if (!resultDetails) return;
+
+  let filterBox = document.getElementById("resultReviewFilters");
+
+  if (!filterBox) {
+    filterBox = document.createElement("div");
+    filterBox.id = "resultReviewFilters";
+    filterBox.className = "result-review-filters";
+    resultDetails.parentElement.insertBefore(filterBox, resultDetails);
+  }
+
+  filterBox.innerHTML = `
+    <button onclick="filterResultReview('all')" class="active">Show All</button>
+    <button onclick="filterResultReview('correct')">Correct Only</button>
+    <button onclick="filterResultReview('wrong')">Wrong Only</button>
+    <button onclick="filterResultReview('unanswered')">Unanswered Only</button>
+  `;
+}
+
+function filterResultReview(type) {
+  const cards = [...document.querySelectorAll("#resultDetails .box")];
+
+  cards.forEach(card => {
+    const status = card.dataset.status || "unknown";
+    card.style.display = type === "all" || status === type ? "" : "none";
+  });
+
+  [...document.querySelectorAll("#resultReviewFilters button")].forEach(btn => {
+    const onclick = btn.getAttribute("onclick") || "";
+    btn.classList.toggle("active", onclick.includes("'" + type + "'"));
+  });
+}
+
+window.renderResultReviewFilters = renderResultReviewFilters;
+window.filterResultReview = filterResultReview;
+
+// =========================
+// Retry Wrong Questions Mode
+// Practice retry mode after exam result
+// =========================
+window.examRetryMode = false;
+window.lastExamReviewAnswers = [];
+window.lastSolvedQuestionsSnapshot = [];
+function renderRetryWrongQuestionsButton() {
+  const resultDetails = document.getElementById("resultDetails");
+  if (!resultDetails) return;
+
+  let retryBox = document.getElementById("retryWrongQuestionsBox");
+
+  if (!retryBox) {
+    retryBox = document.createElement("div");
+    retryBox.id = "retryWrongQuestionsBox";
+    retryBox.className = "retry-wrong-box";
+    resultDetails.parentElement.insertBefore(retryBox, resultDetails);
+  }
+
+  const answers = window.lastExamReviewAnswers || [];
+  const retryCount = answers.filter(a => !a.is_correct || !a.student_answer).length;
+
+  if (retryCount === 0) {
+    retryBox.innerHTML = `
+      <div class="retry-success-card">
+        <h3>Excellent Work 🟢</h3>
+        <p>You have no wrong or unanswered questions to retry.</p>
+      </div>
+    `;
+    return;
+  }
+
+  retryBox.innerHTML = `
+    <div class="retry-wrong-card">
+      <div>
+        <h3>Retry Wrong Questions 🔁</h3>
+        <p>Practise only the questions you got wrong or left unanswered.</p>
+        <p><strong>${retryCount}</strong> question(s) ready for retry practice.</p>
+      </div>
+
+      <button onclick="startRetryWrongQuestions()">
+        Start Retry Practice
+      </button>
+    </div>
+  `;
+}
+
+function startRetryWrongQuestions() {
+  const answers = window.lastExamReviewAnswers || [];
+  const snapshot = window.lastSolvedQuestionsSnapshot || [];
+
+  const retryIds = new Set(
+    answers
+      .filter(a => !a.is_correct || !a.student_answer)
+      .map(a => a.question_id)
+  );
+
+  const retryQuestions = snapshot.filter(q => retryIds.has(q.id));
+
+  if (!retryQuestions.length) {
+    alert("No wrong or unanswered questions to retry.");
+    return;
+  }
+
+  window.examRetryMode = true;
+
+  solvingQuestions = retryQuestions;
+  currentQuestionIndex = 0;
+  studentAnswers = {};
+  reviewLater = {};
+
+  if (currentPreviewExam) {
+    currentPreviewExam = {
+      ...currentPreviewExam,
+      title: (currentPreviewExam.title || "Exam") + " - Retry Practice"
+    };
+  }
+
+  const title = document.getElementById("solverExamTitle");
+  if (title) {
+    title.textContent = currentPreviewExam?.title || "Retry Practice";
+  }
+
+  const timer = document.getElementById("examTimer");
+  if (timer) {
+    timer.textContent = "Practice Mode";
+  }
+
+  if (typeof renderSolver === "function") {
+  renderSolver();
+}
+
+if (typeof renderRetryPracticeControls === "function") {
+  renderRetryPracticeControls();
+}
+
+  if (typeof updateExamAnswerStats === "function") {
+    updateExamAnswerStats();
+  }
+
+  if (typeof updateReviewLaterButton === "function") {
+    updateReviewLaterButton();
+  }
+
+  showPage("examSolver");
+}
+
+window.renderRetryWrongQuestionsButton = renderRetryWrongQuestionsButton;
+window.startRetryWrongQuestions = startRetryWrongQuestions;
+// =========================
+// Exit Retry Practice Mode
+// Return to original exam result
+// =========================
+function exitRetryPracticeMode() {
+  window.examRetryMode = false;
+
+  if (typeof renderRetryWrongQuestionsButton === "function") {
+    renderRetryWrongQuestionsButton();
+  }
+
+  showPage("examResult");
+}
+
+window.exitRetryPracticeMode = exitRetryPracticeMode;
+// =========================
+// Retry Practice Controls
+// Adds exit/back button while retrying wrong questions
+// =========================
+function renderRetryPracticeControls() {
+  if (!window.examRetryMode) return;
+
+  const solver = document.getElementById("examSolver");
+  if (!solver) return;
+
+  let box = document.getElementById("retryPracticeControls");
+
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "retryPracticeControls";
+    box.className = "retry-practice-controls";
+
+    const title = document.getElementById("solverExamTitle");
+    if (title && title.parentElement) {
+      title.parentElement.insertBefore(box, title.nextSibling);
+    } else {
+      solver.prepend(box);
+    }
+  }
+
+  box.innerHTML = `
+    <div class="retry-practice-banner">
+      <div>
+        <strong>Retry Practice Mode 🔁</strong>
+        <p>You are practising only wrong or unanswered questions. This result will not be saved as an official exam result.</p>
+      </div>
+
+      <button onclick="exitRetryPracticeMode()">
+        Back to Full Result
+      </button>
+    </div>
+  `;
+}
+
+window.renderRetryPracticeControls = renderRetryPracticeControls;
+
+// =========================
+// Exam Mastery Badge
+// Motivational completion status after exam result
+// =========================
+function getExamMasteryBadge(percentage, isRetryPractice = false) {
+  if (isRetryPractice) {
+    if (percentage >= 80) {
+      return {
+        className: "recovery",
+        icon: "🔁🏆",
+        title: "Strong Recovery",
+        message: "Great job! You corrected most of your previous mistakes."
+      };
+    }
+
+    if (percentage >= 50) {
+      return {
+        className: "improving",
+        icon: "🔁🚀",
+        title: "Improving",
+        message: "Good progress. Review the remaining weak questions once more."
+      };
+    }
+
+    return {
+      className: "needs-review",
+      icon: "🔁📘",
+      title: "Needs More Review",
+      message: "The same weak points still need focused revision."
+    };
+  }
+
+  if (percentage >= 85) {
+    return {
+      className: "mastered",
+      icon: "🏆",
+      title: "Mastered",
+      message: "Excellent performance. You are ready for harder exam-style questions."
+    };
+  }
+
+  if (percentage >= 60) {
+    return {
+      className: "improving",
+      icon: "🚀",
+      title: "Improving",
+      message: "Good work. Keep practising to reduce small mistakes."
+    };
+  }
+
+  return {
+    className: "needs-review",
+    icon: "📘",
+    title: "Needs Review",
+    message: "Review the lesson again and retry the wrong questions."
+  };
+}
+
+function renderExamMasteryBadge(percentage, isRetryPractice = false) {
+  const scoreText = document.getElementById("scoreText");
+  if (!scoreText) return;
+
+  const badge = getExamMasteryBadge(percentage, isRetryPractice);
+
+  const oldBadge = document.getElementById("examMasteryBadge");
+  if (oldBadge) oldBadge.remove();
+
+  const badgeBox = document.createElement("div");
+  badgeBox.id = "examMasteryBadge";
+  badgeBox.className = `exam-mastery-badge ${badge.className}`;
+
+  badgeBox.innerHTML = `
+    <div class="exam-mastery-icon">${badge.icon}</div>
+    <div>
+      <h3>${safeText(badge.title)}</h3>
+      <p>${safeText(badge.message)}</p>
+    </div>
+  `;
+
+  scoreText.insertAdjacentElement("afterbegin", badgeBox);
+}
+
+window.getExamMasteryBadge = getExamMasteryBadge;
+window.renderExamMasteryBadge = renderExamMasteryBadge;
