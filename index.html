@@ -3539,47 +3539,308 @@
       <button class="secondary" onclick="showProsodyScreen('practice');startRajazDrillBank()">تدريبات الرجز</button>
     </div>
   </div>
+<div id="prosodyModuleExam" class="prosody-module-screen">
+  <div class="prosody-module-hero-card">
+    <h3>وضع التقويم</h3>
+    <p>
+      هنا سنبني نمط الأسئلة مثل المرجع: قطّع البيت، اذكر التفعيلات والبحر،
+      وحدد العَروض والضرب.
+    </p>
+  </div>
 
-  <div id="prosodyModuleExam" class="prosody-module-screen">
-    <div class="prosody-module-hero-card">
-      <h3>وضع التقويم</h3>
+  <div id="examLearningWindows" class="prosody-learning-windows-system">
+    <div class="prosody-learning-windows-head">
+      <span>تقويم العَروض</span>
+      <h4>من التدريب إلى نمط السؤال الوزاري</h4>
       <p>
-        هنا سنبني نمط الأسئلة مثل المرجع: قطّع البيت، اذكر التفعيلات والبحر،
-        وحدد العَروض والضرب.
+        لا نضع أسئلة نهائية عشوائية. نبدأ بتقويم الأساسيات، ثم التقطيع،
+        ثم البحور، ثم نمط السؤال الكامل كما في المرجع.
       </p>
     </div>
 
-    <div class="prosody-exam-preview-card">
-      <span>نمط السؤال القادم</span>
-      <h4>قطّع البيت الشعري الآتي، واذكر تفعيلاته وبحره.</h4>
-      <p>ثم: حدّد تفعيلتي العَروض والضرب.</p>
+    <div class="prosody-learning-tabs">
+      <button class="prosody-learning-tab active"
+        data-prosody-tab="basics"
+        onclick="openProsodyLearningWindow('examLearningWindows', 'basics')">
+        ١. اختبار الأساسيات
+      </button>
+
+      <button class="prosody-learning-tab"
+        data-prosody-tab="scansion"
+        onclick="openProsodyLearningWindow('examLearningWindows', 'scansion')">
+        ٢. اختبار التقطيع
+      </button>
+
+      <button class="prosody-learning-tab"
+        data-prosody-tab="meters"
+        onclick="openProsodyLearningWindow('examLearningWindows', 'meters')">
+        ٣. اختبار البحور
+      </button>
+
+      <button class="prosody-learning-tab"
+        data-prosody-tab="ministerial"
+        onclick="openProsodyLearningWindow('examLearningWindows', 'ministerial')">
+        ٤. سؤال وزاري
+      </button>
+
+      <button class="prosody-learning-tab"
+        data-prosody-tab="result"
+        onclick="openProsodyLearningWindow('examLearningWindows', 'result')">
+        ٥. نتيجتي
+      </button>
+
+      <button class="prosody-learning-tab"
+        data-prosody-tab="retrain"
+        onclick="openProsodyLearningWindow('examLearningWindows', 'retrain')">
+        ٦. إعادة التدريب
+      </button>
     </div>
 
-    <div class="prosody-module-note">
-      <h4>قيد البناء</h4>
-      <p>لن نضيف أسئلة تقويم نهائية قبل تثبيت الأبيات من المرجع أو مصادر موثوقة.</p>
+    <div class="prosody-learning-stage">
+      <div class="prosody-learning-window active" data-prosody-window="basics">
+        <h4>١. اختبار الأساسيات</h4>
+        <p>
+          يبدأ التقويم من الأساس: هل يميز الطالب بين المتحرك والساكن؟
+          وهل يعرف أثر الشدة والتنوين والمدود في الكتابة العَروضية؟
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="openProsodyModule('foundations')">
+            راجع الأساسيات
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="scansion">
+        <h4>٢. اختبار التقطيع</h4>
+        <p>
+          هنا نقيس قدرة الطالب على وضع الرمز الصحيح تحت الحروف،
+          ثم الانتقال من الكلمة إلى التفعيلة والشطر.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="openProsodyModule('scansion')">
+            راجع التقطيع
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="meters">
+        <h4>٣. اختبار البحور</h4>
+        <p>
+          بعد إتقان التقطيع، يبدأ الطالب بتمييز البحر من خلال التفعيلات
+          وليس من خلال التخمين أو الحفظ السطحي.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="openProsodyModule('meters')">
+            راجع البحور
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="ministerial">
+        <h4>٤. سؤال وزاري</h4>
+        <div class="prosody-exam-preview-card">
+          <span>نمط السؤال القادم</span>
+          <h4>قطّع البيت الشعري الآتي، واذكر تفعيلاته وبحره.</h4>
+          <p>ثم: حدّد تفعيلتي العَروض والضرب.</p>
+        </div>
+
+        <div class="prosody-module-note">
+          <h4>تنبيه مهم</h4>
+          <p>
+            لن نضيف أسئلة تقويم نهائية قبل تثبيت الأبيات من المرجع أو مصادر موثوقة.
+          </p>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="result">
+        <h4>٥. نتيجتي</h4>
+        <p>
+          لاحقًا ستظهر هنا نتيجة الطالب: أخطاء الرمز، أخطاء التفعيلة،
+          أخطاء تحديد البحر، وأخطاء العَروض والضرب.
+        </p>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="retrain">
+        <h4>٦. إعادة التدريب</h4>
+        <p>
+          بعد النتيجة، لا نكتفي بعلامة فقط. النظام سيقترح للطالب القسم الذي يحتاج إلى مراجعته:
+          الأساسيات، التقطيع، أو البحر المحدد.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="openProsodyModule('foundations')">راجع الأساسيات</button>
+          <button class="secondary" onclick="openProsodyModule('scansion')">راجع التقطيع</button>
+          <button class="secondary" onclick="openProsodyModule('meters')">راجع البحور</button>
+        </div>
+      </div>
     </div>
   </div>
+</div>
 
   <div id="prosodyModuleMistakes" class="prosody-module-screen">
-    <div class="prosody-module-hero-card">
-      <h3>أخطائي ومراجعتي</h3>
+  <div class="prosody-module-hero-card">
+    <h3>أخطائي ومراجعتي</h3>
+    <p>
+      هذا القسم يجمع أخطاء الطالب: المتحرك والساكن، الكتابة العَروضية،
+      التفعيلات، اختيار البحر، العَروض والضرب، ثم يقترح تدريبًا علاجيًا.
+    </p>
+  </div>
+
+  <div id="mistakesLearningWindows" class="prosody-learning-windows-system">
+    <div class="prosody-learning-windows-head">
+      <span>مراجعة ذكية</span>
+      <h4>لا نكتفي بالعلامة؛ نحدد الضعف ثم نعالجه</h4>
       <p>
-        هذا القسم سيجمع أخطاء الطالب: عدّ التفعيلات، الحشو والعَروض،
-        الشدة، التنوين، أو اختيار البحر.
+        بعد كل تدريب، يعرف الطالب أين أخطأ: هل المشكلة في الرمز؟ أم الكتابة العَروضية؟
+        أم التفعيلة؟ أم اختيار البحر؟ ثم ينتقل إلى تدريب مناسب.
       </p>
     </div>
 
-    <div class="prosody-module-actions">
-      <button onclick="showProsodyScreen('practice');startRajazDrillBank()">ابدأ تدريبات الرجز مع تحليل الأخطاء</button>
+    <div class="prosody-learning-tabs">
+      <button class="prosody-learning-tab active"
+        data-prosody-tab="movement"
+        onclick="openProsodyLearningWindow('mistakesLearningWindows', 'movement')">
+        ١. الحركة والسكون
+      </button>
+
+      <button class="prosody-learning-tab"
+        data-prosody-tab="writing"
+        onclick="openProsodyLearningWindow('mistakesLearningWindows', 'writing')">
+        ٢. الكتابة العَروضية
+      </button>
+
+      <button class="prosody-learning-tab"
+        data-prosody-tab="tafeela"
+        onclick="openProsodyLearningWindow('mistakesLearningWindows', 'tafeela')">
+        ٣. التفعيلة
+      </button>
+
+      <button class="prosody-learning-tab"
+        data-prosody-tab="meter"
+        onclick="openProsodyLearningWindow('mistakesLearningWindows', 'meter')">
+        ٤. اختيار البحر
+      </button>
+
+      <button class="prosody-learning-tab"
+        data-prosody-tab="plan"
+        onclick="openProsodyLearningWindow('mistakesLearningWindows', 'plan')">
+        ٥. خطة علاج
+      </button>
+
+      <button class="prosody-learning-tab"
+        data-prosody-tab="practice"
+        onclick="openProsodyLearningWindow('mistakesLearningWindows', 'practice')">
+        ٦. تدريب مخصص
+      </button>
     </div>
 
-    <div class="prosody-module-note">
-      <h4>الهدف</h4>
-      <p>بعد كل تدريب، لا نكتفي بالعلامة. نقول للطالب أين ضعفه وماذا يراجع.</p>
+    <div class="prosody-learning-stage">
+      <div class="prosody-learning-window active" data-prosody-window="movement">
+        <h4>١. أخطاء الحركة والسكون</h4>
+        <p>
+          إذا أخطأ الطالب في الرمز <strong>ب</strong> أو <strong>ـ</strong>،
+          فهذا يعني أن الضعف ما زال في الأساس الأول قبل التفعيلات والبحور.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('practice'); startProsodyMovingPractice()">
+            تدرب على المتحرك والساكن
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="writing">
+        <h4>٢. أخطاء الكتابة العَروضية</h4>
+        <p>
+          هنا تظهر أخطاء مثل: كتابة ما لا يُنطق، أو نسيان أثر الشدة والتنوين والمدود.
+          هذه الأخطاء تؤثر مباشرة في التقطيع.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('practice'); startProsodyWritingPractice()">
+            تدرب على الكتابة العَروضية
+          </button>
+
+          <button class="secondary" onclick="showProsodyScreen('learn'); renderProsodyLesson('writingRules')">
+            راجع قواعد الكتابة العَروضية
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="tafeela">
+        <h4>٣. أخطاء التفعيلة</h4>
+        <p>
+          إذا كان الطالب يضع الرموز جيدًا لكنه لا يطابقها مع التفعيلة المناسبة،
+          فالمشكلة هنا في الانتقال من الرمز إلى الوزن.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('practice'); startTafeelaMatchLab()">
+            تدرب على مطابقة التفعيلة
+          </button>
+
+          <button class="secondary" onclick="openProsodyModule('scansion')">
+            راجع قسم التقطيع
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="meter">
+        <h4>٤. أخطاء اختيار البحر</h4>
+        <p>
+          إذا عرف الطالب التفعيلات لكنه اختار البحر خطأ، نعيده إلى مقارنة البحور
+          ونبدأ بالرجز كنموذج أول قبل الانتقال إلى بقية البحور.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="openProsodyModule('meters')">
+            راجع البحور
+          </button>
+
+          <button class="secondary" onclick="if (typeof showRajazDetail === 'function') { openProsodyModule('meters'); showRajazDetail('compare'); }">
+            افتح مقارنة الرجز
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="plan">
+        <h4>٥. خطة علاج</h4>
+        <p>
+          لاحقًا سيبني النظام خطة علاج حسب نوع الخطأ: مراجعة قصيرة، مثال محلول،
+          ثم تدريب مخصص، ثم إعادة اختبار.
+        </p>
+
+        <div class="prosody-module-note">
+          <h4>منطق الخطة</h4>
+          <p>
+            الخطأ في الرمز يعيد الطالب للأساسيات. الخطأ في التفعيلة يعيده للتقطيع.
+            الخطأ في البحر يعيده للبحور والمقارنة.
+          </p>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="practice">
+        <h4>٦. تدريب مخصص</h4>
+        <p>
+          هذا الباب سيكون مركز التدريب العلاجي. نبدأ الآن بتدريبات الرجز لأنها جاهزة نسبيًا،
+          ثم نربط لاحقًا كل خطأ بتدريب مناسب.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('practice'); startRajazDrillBank()">
+            ابدأ تدريبات الرجز مع تحليل الأخطاء
+          </button>
+
+          <button class="secondary" onclick="openProsodyModule('exam')">
+            انتقل إلى التقويم
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-
 </div>
     <div class="prosody-tabs">
       <button class="prosody-tab-btn active" data-screen="learn" onclick="showProsodyScreen('learn')">التعلّم</button>
