@@ -17282,3 +17282,6553 @@ body > header nav button[onclick*="logout"]:hover {
     text-align: center;
   }
 }
+/* =========================
+   Games V2 - Irregular Verbs
+========================= */
+.game-v2-shell {
+  border-radius: 28px;
+  padding: 22px;
+  margin: 18px 0;
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  color: white;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.28);
+  border: 1px solid rgba(147, 197, 253, 0.28);
+}
+
+.game-v2-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.game-v2-badge {
+  display: inline-flex;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.16);
+  color: #fde68a;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.game-v2-header h2 {
+  margin: 10px 0 4px;
+  color: white;
+  font-size: 28px;
+}
+
+.game-v2-header p {
+  margin: 0;
+  color: #dbeafe;
+  font-weight: 700;
+}
+
+.game-v2-level {
+  min-width: 92px;
+  height: 92px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-v2-level span {
+  font-size: 12px;
+  color: #bfdbfe;
+  font-weight: 900;
+}
+
+.game-v2-level strong {
+  font-size: 34px;
+  color: #fbbf24;
+}
+
+.game-v2-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.game-v2-stats div {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 14px;
+  text-align: center;
+}
+
+.game-v2-stats span {
+  display: block;
+  color: #bfdbfe;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 5px;
+}
+
+.game-v2-stats strong {
+  font-size: 22px;
+  color: #fbbf24;
+}
+
+.verb-card-v2 {
+  background: linear-gradient(135deg, #f8fafc, #dbeafe);
+  color: #0f172a;
+  border-radius: 24px;
+  padding: 22px;
+  text-align: center;
+  margin: 18px 0;
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.12);
+}
+
+.verb-card-v2 .verb-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.verb-card-v2 h1 {
+  margin: 8px 0;
+  font-size: 46px;
+  color: #1e3a8a;
+}
+
+.verb-card-v2 p {
+  margin: 0;
+  color: #334155;
+  font-weight: 800;
+}
+
+.game-v2-question {
+  text-align: center;
+  margin: 16px 0;
+}
+
+.game-v2-question h3 {
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.game-v2-question span {
+  color: #fbbf24;
+}
+
+.game-v2-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.game-v2-options button {
+  border: none !important;
+  border-radius: 18px !important;
+  padding: 16px !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  color: #0f172a !important;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18) !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease !important;
+}
+
+.game-v2-options button:hover {
+  transform: translateY(-3px) scale(1.01) !important;
+  background: #fef3c7 !important;
+  box-shadow: 0 18px 34px rgba(251, 191, 36, 0.22) !important;
+}
+
+.game-v2-feedback {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #dbeafe;
+  font-weight: 800;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .game-v2-header {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .game-v2-stats,
+  .game-v2-options {
+    grid-template-columns: 1fr;
+  }
+
+  .verb-card-v2 h1 {
+    font-size: 38px;
+  }
+}
+
+/* =========================
+   Games V2 - Verb Quest
+========================= */
+.verb-quest-shell {
+  border-radius: 30px;
+  padding: 24px;
+  margin: 18px 0;
+  color: white;
+  background:
+    radial-gradient(circle at top left, rgba(251, 191, 36, 0.22), transparent 35%),
+    linear-gradient(135deg, #020617, #1e1b4b, #1e3a8a);
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.35);
+  border: 1px solid rgba(191, 219, 254, 0.28);
+}
+
+.verb-quest-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.verb-quest-badge {
+  display: inline-flex;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.18);
+  color: #fde68a;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.verb-quest-top h2 {
+  margin: 10px 0 5px;
+  color: white;
+  font-size: 30px;
+}
+
+.verb-quest-top p {
+  margin: 0;
+  color: #dbeafe;
+  font-weight: 700;
+}
+
+.verb-quest-mission {
+  min-width: 92px;
+  height: 92px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.verb-quest-mission span {
+  font-size: 12px;
+  color: #bfdbfe;
+  font-weight: 900;
+}
+
+.verb-quest-mission strong {
+  color: #fbbf24;
+  font-size: 34px;
+}
+
+.verb-quest-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.verb-quest-stats div {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 12px;
+  text-align: center;
+}
+
+.verb-quest-stats span {
+  display: block;
+  color: #bfdbfe;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 5px;
+}
+
+.verb-quest-stats strong {
+  color: #fbbf24;
+  font-size: 22px;
+}
+
+.verb-quest-card {
+  background: rgba(255, 255, 255, 0.96);
+  color: #0f172a;
+  border-radius: 26px;
+  padding: 22px;
+  margin: 18px 0;
+}
+
+.verb-quest-label {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.verb-quest-card p {
+  margin: 6px 0 18px;
+  font-weight: 900;
+  color: #1e3a8a;
+}
+
+.verb-chain {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.verb-chain-slot {
+  min-height: 105px;
+  border-radius: 22px;
+  padding: 16px;
+  background: #f1f5f9;
+  border: 2px dashed #94a3b8;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.verb-chain-slot span {
+  font-size: 12px;
+  font-weight: 900;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.verb-chain-slot strong {
+  font-size: 28px;
+  color: #0f172a;
+}
+
+.verb-chain-slot.done {
+  background: #dcfce7;
+  border-style: solid;
+  border-color: #22c55e;
+}
+
+.verb-chain-slot.done strong {
+  color: #166534;
+}
+
+.verb-chain-slot.wrong {
+  background: #fee2e2;
+  border-style: solid;
+  border-color: #ef4444;
+}
+
+.verb-chain-arrow {
+  font-size: 30px;
+  font-weight: 900;
+  color: #2563eb;
+}
+
+.verb-word-bank {
+  margin-top: 18px;
+}
+
+.verb-word-bank h3 {
+  color: white;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.verb-word-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 11px;
+}
+
+.verb-word-buttons button {
+  border: none !important;
+  border-radius: 18px !important;
+  padding: 15px !important;
+  font-weight: 900 !important;
+  font-size: 17px !important;
+  color: #111827 !important;
+  background: linear-gradient(135deg, #ffffff, #dbeafe) !important;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.2) !important;
+  cursor: pointer !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+.verb-word-buttons button:hover {
+  transform: translateY(-3px) scale(1.02);
+  background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+}
+
+.verb-quest-feedback {
+  margin-top: 16px;
+  padding: 13px;
+  text-align: center;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.11);
+  color: #dbeafe;
+  font-weight: 900;
+}
+
+.verb-quest-feedback.success {
+  background: rgba(34, 197, 94, 0.2);
+  color: #bbf7d0;
+}
+
+.verb-quest-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.verb-quest-actions button {
+  border-radius: 14px !important;
+  font-weight: 900 !important;
+  padding: 11px 16px !important;
+}
+
+.verb-quest-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .verb-quest-top {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .verb-quest-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .verb-chain {
+    grid-template-columns: 1fr;
+  }
+
+  .verb-chain-arrow {
+    transform: rotate(90deg);
+  }
+
+  .verb-word-buttons {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* =========================
+   Games V2 - Hangman 2009 / Word Escape
+========================= */
+.word-escape-shell {
+  border-radius: 30px;
+  padding: 24px;
+  margin: 18px 0;
+  color: white;
+  background:
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.2), transparent 32%),
+    linear-gradient(135deg, #020617, #172554, #312e81);
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.35);
+  border: 1px solid rgba(191, 219, 254, 0.28);
+}
+
+.word-escape-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.word-escape-badge {
+  display: inline-flex;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.18);
+  color: #bbf7d0;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.word-escape-header h2 {
+  margin: 10px 0 5px;
+  color: white;
+  font-size: 30px;
+}
+
+.word-escape-header p {
+  margin: 0;
+  color: #dbeafe;
+  font-weight: 700;
+}
+
+.word-escape-level {
+  min-width: 96px;
+  height: 92px;
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.word-escape-level span {
+  font-size: 12px;
+  color: #bfdbfe;
+  font-weight: 900;
+}
+
+.word-escape-level strong {
+  color: #86efac;
+  font-size: 19px;
+  text-transform: capitalize;
+}
+
+.word-escape-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.word-escape-stats div {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 12px;
+  text-align: center;
+}
+
+.word-escape-stats span {
+  display: block;
+  color: #bfdbfe;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 5px;
+}
+
+.word-escape-stats strong {
+  color: #fbbf24;
+  font-size: 22px;
+}
+
+.word-escape-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 14px 0;
+}
+
+.word-escape-controls button {
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 9px 13px !important;
+  font-weight: 900 !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #dbeafe !important;
+}
+
+.word-escape-controls button.active {
+  background: #fbbf24 !important;
+  color: #111827 !important;
+}
+
+.word-escape-card {
+  background: rgba(255, 255, 255, 0.96);
+  color: #0f172a;
+  border-radius: 26px;
+  padding: 22px;
+  margin: 18px 0;
+}
+
+.word-escape-meta {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.word-escape-meta span {
+  background: #dbeafe;
+  color: #1e3a8a;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: capitalize;
+}
+
+.word-escape-word {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.word-escape-letter {
+  min-width: 42px;
+  height: 52px;
+  border-radius: 14px;
+  background: #e2e8f0;
+  border: 2px solid #cbd5e1;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.word-escape-letter.revealed {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #22c55e;
+}
+
+.word-escape-space {
+  width: 22px;
+}
+
+.word-escape-hint {
+  background: #eff6ff;
+  border-left: 5px solid #2563eb;
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.word-escape-hint h3 {
+  margin: 0 0 8px;
+  color: #1e3a8a;
+}
+
+.word-escape-hint p {
+  margin: 5px 0;
+  color: #334155;
+  font-weight: 800;
+}
+
+.word-escape-keyboard {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.word-escape-keyboard button {
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 11px 0 !important;
+  font-weight: 900 !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.18) !important;
+  cursor: pointer !important;
+}
+
+.word-escape-keyboard button.right {
+  background: #bbf7d0 !important;
+  color: #166534 !important;
+}
+
+.word-escape-keyboard button.wrong {
+  background: #fecaca !important;
+  color: #991b1b !important;
+}
+
+.word-escape-keyboard button:disabled {
+  opacity: 0.75;
+  cursor: not-allowed !important;
+}
+
+.word-escape-message {
+  margin-top: 16px;
+  text-align: center;
+  padding: 13px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.11);
+  color: #dbeafe;
+  font-weight: 900;
+}
+
+.word-escape-message.win {
+  background: rgba(34, 197, 94, 0.2);
+  color: #bbf7d0;
+}
+
+.word-escape-message.lose {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fecaca;
+}
+
+.word-escape-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.word-escape-actions button {
+  border-radius: 14px !important;
+  padding: 11px 16px !important;
+  font-weight: 900 !important;
+}
+
+@media (max-width: 768px) {
+  .word-escape-header {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+
+  .word-escape-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .word-escape-keyboard {
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .word-escape-letter {
+    min-width: 34px;
+    height: 46px;
+    font-size: 20px;
+  }
+}
+
+/* =========================
+   JAK Prosody Lab V1
+   ========================= */
+.prosody-shell,
+.prosody-shell * {
+  font-family: "Cairo", "Tajawal", "Amiri", sans-serif;
+  box-sizing: border-box;
+}
+
+.prosody-shell {
+  direction: rtl;
+  color: #123127;
+}
+
+.prosody-hero {
+  display: grid;
+  grid-template-columns: 1.6fr 0.9fr;
+  gap: 20px;
+  padding: 24px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(212, 175, 55, 0.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(15, 87, 65, 0.22), transparent 32%),
+    linear-gradient(135deg, #f8f3e8, #f5efe1, #eef6f1);
+  border: 1px solid rgba(15, 87, 65, 0.12);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.08);
+}
+
+.prosody-kicker {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(15, 87, 65, 0.1);
+  color: #0f5741;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.prosody-hero h1 {
+  margin: 14px 0 10px;
+  font-family: "Amiri", serif;
+  font-size: 42px;
+  line-height: 1.2;
+  color: #0f5741;
+}
+
+.prosody-hero p {
+  margin: 0;
+  color: #3f4d47;
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.prosody-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.prosody-hero-side {
+  display: flex;
+  align-items: stretch;
+}
+
+.prosody-hero-card {
+  width: 100%;
+  border-radius: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #0f5741, #144f78);
+  color: #fff;
+  box-shadow: 0 16px 36px rgba(15, 87, 65, 0.18);
+}
+
+.prosody-hero-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.prosody-hero-card h3 {
+  margin: 0 0 8px;
+  font-family: "Amiri", serif;
+  font-size: 28px;
+}
+
+.prosody-hero-card p {
+  color: #eef7f3;
+  line-height: 1.9;
+}
+
+.prosody-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.prosody-tab-btn {
+  border: 1px solid rgba(15, 87, 65, 0.18);
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: #ffffff;
+  color: #0f5741;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.prosody-tab-btn:hover,
+.prosody-tab-btn.active {
+  background: linear-gradient(135deg, #0f5741, #d4af37);
+  color: #fff;
+  border-color: transparent;
+}
+
+.prosody-body {
+  margin-top: 12px;
+}
+
+.prosody-screen {
+  display: none;
+}
+
+.prosody-screen.active {
+  display: block;
+}
+
+.prosody-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.prosody-panel {
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(249,247,241,0.98));
+  border: 1px solid rgba(15, 87, 65, 0.08);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.05);
+}
+
+.prosody-panel h2 {
+  margin-top: 0;
+  font-family: "Amiri", serif;
+  font-size: 30px;
+  color: #0f5741;
+}
+
+.prosody-panel p,
+.prosody-panel li {
+  line-height: 1.9;
+  color: #43514c;
+}
+
+.prosody-lesson-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.prosody-lesson-list button,
+.prosody-action-row button,
+.prosody-hero-actions button {
+  border: none;
+  border-radius: 16px;
+  padding: 12px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.prosody-lesson-list button,
+.prosody-action-row button:first-child,
+.prosody-hero-actions button:first-child {
+  background: linear-gradient(135deg, #0f5741, #197149);
+  color: #fff;
+}
+
+.prosody-lesson-list button:hover,
+.prosody-action-row button:first-child:hover,
+.prosody-hero-actions button:first-child:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(15, 87, 65, 0.18);
+}
+
+.prosody-hero-actions button.secondary,
+.prosody-action-row button.secondary {
+  background: #f6efe0;
+  color: #7a5a16;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+.prosody-textarea {
+  width: 100%;
+  min-height: 140px;
+  border-radius: 20px;
+  padding: 16px;
+  border: 1px solid rgba(15, 87, 65, 0.16);
+  background: #fffefb;
+  color: #21342d;
+  font-size: 16px;
+  resize: vertical;
+  outline: none;
+}
+
+.prosody-textarea:focus {
+  border-color: #0f5741;
+  box-shadow: 0 0 0 3px rgba(15, 87, 65, 0.08);
+}
+
+.prosody-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.prosody-mini-card {
+  padding: 16px;
+  border-radius: 18px;
+  background: #f8f5ed;
+  border: 1px solid rgba(15, 87, 65, 0.08);
+  margin-top: 10px;
+}
+
+.prosody-mini-card h3 {
+  margin: 0 0 8px;
+  color: #0f5741;
+  font-size: 18px;
+}
+
+.prosody-list {
+  margin: 0;
+  padding-right: 18px;
+}
+
+.prosody-result-card {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #f7fbf8;
+  border: 1px solid rgba(15, 87, 65, 0.08);
+}
+
+.prosody-result-card h3 {
+  margin: 0 0 8px;
+  color: #0f5741;
+  font-size: 18px;
+}
+
+.prosody-badge-inline {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.16);
+  color: #8a6a1a;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+@media (max-width: 980px) {
+  .prosody-hero,
+  .prosody-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .prosody-hero h1 {
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 640px) {
+  .prosody-hero {
+    padding: 18px;
+  }
+
+  .prosody-panel {
+    padding: 18px;
+  }
+
+  .prosody-hero h1 {
+    font-size: 30px;
+  }
+
+  .prosody-panel h2 {
+    font-size: 24px;
+  }
+}
+/* =========================
+   Prosody Lab Visibility Fix
+========================= */
+#prosodyLab.page {
+  display: none;
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px;
+  overflow: visible;
+}
+
+#prosodyLab.page.active {
+  display: block !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#prosodyLab .prosody-shell {
+  display: block !important;
+  position: relative !important;
+  width: 100%;
+  min-height: 600px;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: 2;
+}
+
+#prosodyLab .prosody-hero,
+#prosodyLab .prosody-tabs,
+#prosodyLab .prosody-body {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
+/* PROSODY TEST FIX */
+#prosodyLab {
+  display: block !important;
+  min-height: 100vh !important;
+  padding: 30px !important;
+  background: #f8f3e8 !important;
+}
+
+#prosodyLab .prosody-shell {
+  display: block !important;
+  min-height: 800px !important;
+  background: #fff7e6 !important;
+  border: 5px solid #0f5741 !important;
+  padding: 24px !important;
+}
+
+#prosodyLab .prosody-hero {
+  display: grid !important;
+  grid-template-columns: 1.6fr 0.9fr !important;
+  gap: 20px !important;
+  min-height: 260px !important;
+  background: linear-gradient(135deg, #f8f3e8, #eef6f1) !important;
+  border-radius: 28px !important;
+  padding: 24px !important;
+}
+
+/* =========================
+   Prosody Lab Emergency Layout Fix
+========================= */
+main > section#prosodyLab.page.active {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 28px !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  content-visibility: visible !important;
+  contain: none !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+main > section#prosodyLab.page.active > .prosody-shell {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  min-height: 800px !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  content-visibility: visible !important;
+  contain: none !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+main > section#prosodyLab.page.active .prosody-hero {
+  display: grid !important;
+  grid-template-columns: 1.6fr 0.9fr !important;
+  gap: 20px !important;
+  min-height: 280px !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 24px !important;
+  margin-bottom: 18px !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  content-visibility: visible !important;
+  contain: none !important;
+}
+
+main > section#prosodyLab.page.active .prosody-tabs {
+  display: flex !important;
+  min-height: 60px !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+main > section#prosodyLab.page.active .prosody-body,
+main > section#prosodyLab.page.active .prosody-screen.active {
+  display: block !important;
+  min-height: 300px !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* =====================================================
+   Prosody Lab Islamic Premium UI Polish Patch
+   واجهة إسلامية عربية فاخرة لمدرب العروض
+===================================================== */
+
+#prosodyLab {
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.16), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(15, 87, 65, 0.16), transparent 32%),
+    linear-gradient(135deg, #fbf6e8 0%, #f5ead2 45%, #eef7f0 100%) !important;
+  padding: 28px !important;
+  color: #16382f !important;
+}
+
+/* زخرفة خلفية خفيفة */
+#prosodyLab .prosody-shell {
+  position: relative !important;
+  isolation: isolate !important;
+  border-radius: 34px !important;
+  padding: 24px !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,250,239,0.72)) !important;
+  border: 1px solid rgba(139, 101, 28, 0.22) !important;
+  box-shadow: 0 24px 60px rgba(36, 54, 44, 0.12) !important;
+  overflow: hidden !important;
+}
+
+#prosodyLab .prosody-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(45deg, rgba(15,87,65,.18) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(15,87,65,.18) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(212,175,55,.20) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(212,175,55,.20) 75%);
+  background-size: 42px 42px;
+  background-position: 0 0, 0 21px, 21px -21px, -21px 0px;
+}
+
+/* Hero فاخر */
+#prosodyLab .prosody-hero {
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.28), transparent 30%),
+    linear-gradient(135deg, #0b3d2e 0%, #0f5741 45%, #8a681c 100%) !important;
+  color: #fff !important;
+  border-radius: 32px !important;
+  padding: 34px !important;
+  border: 1px solid rgba(255, 230, 170, 0.32) !important;
+  box-shadow: 0 22px 46px rgba(15, 87, 65, 0.22) !important;
+}
+
+#prosodyLab .prosody-kicker {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffe9a8 !important;
+  border: 1px solid rgba(255, 233, 168, 0.35) !important;
+  font-weight: 900 !important;
+}
+
+#prosodyLab .prosody-hero h1 {
+  color: #fff7d6 !important;
+  font-family: "Amiri", "Cairo", serif !important;
+  font-size: 48px !important;
+  font-weight: 700 !important;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.22) !important;
+}
+
+#prosodyLab .prosody-hero p {
+  color: #f7f1dc !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  line-height: 2 !important;
+}
+
+/* الكرت الجانبي */
+#prosodyLab .prosody-hero-card {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.08)) !important;
+  border: 1px solid rgba(255,255,255,0.24) !important;
+  backdrop-filter: blur(10px) !important;
+  color: #fff !important;
+}
+
+#prosodyLab .prosody-hero-card h3 {
+  color: #ffe9a8 !important;
+}
+
+#prosodyLab .prosody-hero-card p {
+  color: #f7f1dc !important;
+}
+
+/* إصلاح الأزرار: وضوح النص */
+#prosodyLab button,
+#prosodyLab .prosody-tab-btn,
+#prosodyLab .prosody-lesson-list button,
+#prosodyLab .prosody-action-row button,
+#prosodyLab .prosody-hero-actions button {
+  font-family: "Cairo", "Tajawal", sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+  text-shadow: none !important;
+  min-height: 46px !important;
+  line-height: 1.4 !important;
+  white-space: normal !important;
+  color: #fff !important;
+  background: linear-gradient(135deg, #0f5741, #197149) !important;
+  border: 1px solid rgba(255, 233, 168, 0.28) !important;
+  box-shadow: 0 10px 24px rgba(15, 87, 65, 0.18) !important;
+}
+
+#prosodyLab button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 16px 32px rgba(15, 87, 65, 0.26) !important;
+}
+
+/* أزرار ثانوية واضحة */
+#prosodyLab button.secondary,
+#prosodyLab .prosody-hero-actions button.secondary,
+#prosodyLab .prosody-action-row button.secondary {
+  color: #173b30 !important;
+  background: linear-gradient(135deg, #fff7df, #ead49b) !important;
+  border: 1px solid rgba(138, 104, 28, 0.28) !important;
+}
+
+/* Tabs أوضح وأفخم */
+#prosodyLab .prosody-tabs {
+  padding: 14px !important;
+  border-radius: 24px !important;
+  background: rgba(255,255,255,0.62) !important;
+  border: 1px solid rgba(139, 101, 28, 0.14) !important;
+  box-shadow: 0 14px 34px rgba(36, 54, 44, 0.08) !important;
+}
+
+#prosodyLab .prosody-tab-btn {
+  color: #0f5741 !important;
+  background: #fffaf0 !important;
+  border: 1px solid rgba(15, 87, 65, 0.16) !important;
+  box-shadow: none !important;
+}
+
+#prosodyLab .prosody-tab-btn.active,
+#prosodyLab .prosody-tab-btn:hover {
+  color: #fff !important;
+  background: linear-gradient(135deg, #0f5741, #b88a22) !important;
+  border-color: transparent !important;
+}
+
+/* Panels */
+#prosodyLab .prosody-panel {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,250,239,0.96)) !important;
+  border: 1px solid rgba(139, 101, 28, 0.16) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 16px 38px rgba(36, 54, 44, 0.08) !important;
+  color: #18382f !important;
+}
+
+#prosodyLab .prosody-panel h2 {
+  color: #0f5741 !important;
+  font-family: "Amiri", "Cairo", serif !important;
+  font-size: 34px !important;
+  font-weight: 700 !important;
+}
+
+#prosodyLab .prosody-panel p,
+#prosodyLab .prosody-panel li {
+  color: #324840 !important;
+  font-weight: 700 !important;
+  line-height: 2 !important;
+}
+
+/* Lesson buttons */
+#prosodyLab .prosody-lesson-list button {
+  text-align: right !important;
+  justify-content: flex-start !important;
+  padding: 14px 18px !important;
+  border-radius: 18px !important;
+}
+
+/* Cards */
+#prosodyLab .prosody-mini-card,
+#prosodyLab .prosody-result-card {
+  background: linear-gradient(135deg, #fffaf0, #f5ead2) !important;
+  border: 1px solid rgba(139, 101, 28, 0.15) !important;
+  border-right: 6px solid #0f5741 !important;
+  border-radius: 22px !important;
+}
+
+#prosodyLab .prosody-mini-card h3,
+#prosodyLab .prosody-result-card h3 {
+  color: #0f5741 !important;
+  font-weight: 900 !important;
+}
+
+/* Textarea */
+#prosodyLab .prosody-textarea {
+  font-family: "Cairo", "Tajawal", sans-serif !important;
+  background: #fffdf7 !important;
+  border: 2px solid rgba(15, 87, 65, 0.18) !important;
+  color: #172e27 !important;
+  font-weight: 700 !important;
+  line-height: 2 !important;
+}
+
+#prosodyLab .prosody-textarea::placeholder {
+  color: #8a7a5b !important;
+}
+
+/* شاشات صغيرة */
+@media (max-width: 768px) {
+  #prosodyLab {
+    padding: 14px !important;
+  }
+
+  #prosodyLab .prosody-shell {
+    padding: 14px !important;
+    border-radius: 24px !important;
+  }
+
+  #prosodyLab .prosody-hero {
+    padding: 22px !important;
+  }
+
+  #prosodyLab .prosody-hero h1 {
+    font-size: 34px !important;
+  }
+
+  #prosodyLab .prosody-tabs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  #prosodyLab .prosody-tab-btn {
+    width: 100% !important;
+    font-size: 13px !important;
+  }
+}
+
+/* =====================================================
+   Prosody Practice V1 - Moving / Silent Training
+===================================================== */
+
+#prosodyLab .prosody-practice-launch {
+  margin: 16px 0;
+}
+
+#prosodyLab .prosody-moving-practice-box {
+  margin-top: 16px;
+}
+
+#prosodyLab .prosody-practice-card {
+  background:
+    radial-gradient(circle at top left, rgba(212, 175, 55, 0.12), transparent 30%),
+    linear-gradient(135deg, #fffaf0, #f7f1df);
+  border: 1px solid rgba(139, 101, 28, 0.16);
+  border-radius: 26px;
+  padding: 18px;
+  box-shadow: 0 16px 36px rgba(36, 54, 44, 0.08);
+}
+
+#prosodyLab .prosody-practice-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+#prosodyLab .prosody-practice-head h3 {
+  margin: 10px 0 4px;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+}
+
+#prosodyLab .prosody-practice-head p {
+  margin: 0;
+  color: #31483f;
+  font-weight: 800;
+}
+
+#prosodyLab .prosody-practice-score {
+  min-width: 86px;
+  height: 86px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0f5741, #b88a22);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 14px 28px rgba(15, 87, 65, 0.18);
+}
+
+#prosodyLab .prosody-practice-score span {
+  font-size: 12px;
+  font-weight: 900;
+  color: #fff3c4;
+}
+
+#prosodyLab .prosody-practice-score strong {
+  font-size: 30px;
+}
+
+#prosodyLab .prosody-letter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+#prosodyLab .prosody-letter-card {
+  background: #fffdf7;
+  border: 1px solid rgba(15, 87, 65, 0.12);
+  border-radius: 22px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 12px 26px rgba(36, 54, 44, 0.06);
+}
+
+#prosodyLab .prosody-letter-card.selected {
+  border-color: rgba(184, 138, 34, 0.35);
+  box-shadow: 0 14px 28px rgba(184, 138, 34, 0.12);
+}
+
+#prosodyLab .prosody-letter-symbol {
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 14px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #0f5741, #143f70);
+  color: #fff7d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Amiri", serif;
+  font-size: 34px;
+  font-weight: 700;
+  box-shadow: 0 14px 26px rgba(15, 87, 65, 0.18);
+}
+
+#prosodyLab .prosody-letter-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+#prosodyLab .prosody-letter-actions button {
+  border-radius: 14px !important;
+  min-height: 42px !important;
+  padding: 9px 10px !important;
+  font-size: 14px !important;
+  background: #f3ead4 !important;
+  color: #18382f !important;
+  border: 1px solid rgba(139, 101, 28, 0.16) !important;
+  box-shadow: none !important;
+}
+
+#prosodyLab .prosody-letter-actions button.active {
+  background: linear-gradient(135deg, #0f5741, #b88a22) !important;
+  color: white !important;
+}
+
+#prosodyLab .prosody-letter-feedback {
+  margin-top: 12px;
+  min-height: 44px;
+  font-weight: 800;
+  color: #4b5d55;
+  line-height: 1.7;
+}
+
+#prosodyLab .prosody-feedback-correct {
+  color: #166534;
+}
+
+#prosodyLab .prosody-feedback-wrong {
+  color: #991b1b;
+}
+
+#prosodyLab .prosody-feedback-warn {
+  color: #8a6a1a;
+}
+
+#prosodyLab .prosody-practice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .prosody-practice-head {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #prosodyLab .prosody-letter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   Prosody Teaching Card - Moving / Silent Explanation
+===================================================== */
+
+#prosodyLab .prosody-teaching-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 18px;
+  margin: 16px 0;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.16), transparent 35%),
+    linear-gradient(135deg, #fffaf0, #eef7f0);
+  border: 1px solid rgba(139, 101, 28, 0.18);
+  border-right: 7px solid #0f5741;
+  box-shadow: 0 14px 32px rgba(36, 54, 44, 0.08);
+}
+
+#prosodyLab .prosody-teaching-icon {
+  min-width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0f5741, #b88a22);
+  color: #fff7d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  box-shadow: 0 12px 24px rgba(15, 87, 65, 0.18);
+}
+
+#prosodyLab .prosody-teaching-card h3 {
+  margin: 0 0 10px;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 28px;
+}
+
+#prosodyLab .prosody-teaching-card p {
+  margin: 8px 0;
+  color: #31483f;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .prosody-example {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  margin: 0 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #0f5741;
+  color: #fff7d6;
+  font-family: "Amiri", serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+#prosodyLab .prosody-rule-box {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(212, 175, 55, 0.16);
+  color: #5d4614;
+  font-weight: 900;
+  line-height: 2;
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .prosody-teaching-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #prosodyLab .prosody-teaching-icon {
+    margin: 0 auto;
+  }
+}
+
+/* =====================================================
+   Prosody Methodology Card
+===================================================== */
+
+#prosodyLab .prosody-method-card {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  margin: 20px 0;
+  padding: 22px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(212, 175, 55, 0.16), transparent 35%),
+    linear-gradient(135deg, #fffaf0, #eef7f0);
+  border: 1px solid rgba(139, 101, 28, 0.18);
+  border-right: 8px solid #0f5741;
+  box-shadow: 0 16px 38px rgba(36, 54, 44, 0.08);
+}
+
+#prosodyLab .prosody-method-icon {
+  min-width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #0f5741, #b88a22);
+  color: #fff7d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  box-shadow: 0 14px 28px rgba(15, 87, 65, 0.18);
+}
+
+#prosodyLab .prosody-method-card h2 {
+  margin: 0 0 10px;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 32px;
+}
+
+#prosodyLab .prosody-method-card p,
+#prosodyLab .prosody-method-card li {
+  color: #31483f;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .prosody-method-card ul {
+  margin: 12px 0;
+  padding-right: 22px;
+}
+
+#prosodyLab .prosody-method-warning {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(212, 175, 55, 0.16);
+  color: #5d4614;
+  font-weight: 900;
+  line-height: 2;
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .prosody-method-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #prosodyLab .prosody-method-icon {
+    margin: 0 auto;
+  }
+
+  #prosodyLab .prosody-method-card ul {
+    text-align: right;
+  }
+}
+
+/* =====================================================
+   Prosody Writing Rules Cards
+===================================================== */
+
+#prosodyLab .prosody-rules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+
+#prosodyLab .prosody-rule-card {
+  padding: 16px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.13), transparent 34%),
+    linear-gradient(135deg, #fffaf0, #eef7f0);
+  border: 1px solid rgba(139, 101, 28, 0.16);
+  border-right: 6px solid #0f5741;
+  box-shadow: 0 12px 28px rgba(36, 54, 44, 0.07);
+}
+
+#prosodyLab .prosody-rule-card h3 {
+  margin: 0 0 8px;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 24px;
+}
+
+#prosodyLab .prosody-rule-card p {
+  margin: 0 0 10px;
+  color: #31483f;
+  font-weight: 800;
+  line-height: 1.9;
+}
+
+#prosodyLab .prosody-rule-card span {
+  display: inline-block;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.16);
+  color: #5d4614;
+  font-weight: 900;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .prosody-rules-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   Prosody Practice V2 - Prosodic Writing Training
+===================================================== */
+
+#prosodyLab .prosody-writing-practice-box {
+  margin-top: 16px;
+}
+
+#prosodyLab .prosody-writing-task {
+  display: grid;
+  grid-template-columns: 1fr auto 1.2fr;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+#prosodyLab .prosody-writing-original,
+#prosodyLab .prosody-writing-answer {
+  background: #fffdf7;
+  border: 1px solid rgba(15, 87, 65, 0.14);
+  border-radius: 22px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 12px 26px rgba(36, 54, 44, 0.06);
+}
+
+#prosodyLab .prosody-writing-original span,
+#prosodyLab .prosody-writing-answer span {
+  display: block;
+  color: #8a6a1a;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+#prosodyLab .prosody-writing-original strong {
+  display: block;
+  color: #0f5741;
+  font-family: "Amiri", serif;
+  font-size: 42px;
+}
+
+#prosodyLab .prosody-writing-arrow {
+  font-size: 34px;
+  font-weight: 900;
+  color: #b88a22;
+}
+
+#prosodyLab .prosody-writing-answer input {
+  width: 100%;
+  border: 2px solid rgba(15, 87, 65, 0.16);
+  border-radius: 16px;
+  padding: 13px;
+  text-align: center;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: #0f5741;
+  background: #fffaf0;
+  outline: none;
+}
+
+#prosodyLab .prosody-writing-answer input:focus {
+  border-color: #0f5741;
+  box-shadow: 0 0 0 4px rgba(15, 87, 65, 0.08);
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .prosody-writing-task {
+    grid-template-columns: 1fr;
+  }
+
+  #prosodyLab .prosody-writing-arrow {
+    transform: rotate(-90deg);
+    text-align: center;
+  }
+}
+
+/* =====================================================
+   Prosody Reference Path / Meter Roadmap
+===================================================== */
+
+#prosodyLab .prosody-path-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 20px 0;
+}
+
+#prosodyLab .prosody-path-steps div {
+  background: linear-gradient(135deg, #fffaf0, #eef7f0);
+  border: 1px solid rgba(139, 101, 28, 0.16);
+  border-radius: 22px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 12px 28px rgba(36, 54, 44, 0.07);
+}
+
+#prosodyLab .prosody-path-steps span {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f5741, #b88a22);
+  color: #fff7d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-path-steps strong {
+  display: block;
+  color: #0f5741;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+#prosodyLab .prosody-path-steps p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+#prosodyLab .prosody-meter-roadmap {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 20px 0;
+}
+
+#prosodyLab .prosody-meter-card {
+  position: relative;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(212, 175, 55, 0.14), transparent 35%),
+    linear-gradient(135deg, #fffdf7, #f2f8f3);
+  border: 1px solid rgba(15, 87, 65, 0.14);
+  border-right: 7px solid #0f5741;
+  box-shadow: 0 14px 32px rgba(36, 54, 44, 0.08);
+}
+
+#prosodyLab .prosody-meter-badge {
+  display: inline-flex;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.18);
+  color: #6c5015;
+  font-weight: 900;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+#prosodyLab .prosody-meter-card h3 {
+  margin: 0 0 10px;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 28px;
+}
+
+#prosodyLab .prosody-meter-card p {
+  margin: 6px 0;
+  color: #31483f;
+  font-weight: 800;
+  line-height: 1.9;
+}
+
+@media (max-width: 900px) {
+  #prosodyLab .prosody-path-steps {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #prosodyLab .prosody-meter-roadmap {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  #prosodyLab .prosody-path-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Prosody Meter Lesson - Rajaz
+===================================================== */
+
+#prosodyLab .prosody-meter-focus-card {
+  padding: 20px;
+  margin: 18px 0;
+  border-radius: 26px;
+  text-align: center;
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.18), transparent 35%),
+    linear-gradient(135deg, #0f5741, #143f70);
+  color: #fff;
+  border: 1px solid rgba(255, 233, 168, 0.28);
+  box-shadow: 0 16px 36px rgba(15, 87, 65, 0.16);
+}
+
+#prosodyLab .prosody-meter-focus-card h3 {
+  margin: 10px 0;
+  color: #fff7d6;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 44px;
+}
+
+#prosodyLab .prosody-meter-focus-card p {
+  color: #f7f1dc;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .prosody-meter-patterns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+#prosodyLab .prosody-pattern-card {
+  padding: 18px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #fffaf0, #eef7f0);
+  border: 1px solid rgba(139, 101, 28, 0.16);
+  border-right: 7px solid #0f5741;
+  box-shadow: 0 14px 30px rgba(36, 54, 44, 0.08);
+}
+
+#prosodyLab .prosody-pattern-card h3 {
+  margin: 0 0 10px;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+}
+
+#prosodyLab .prosody-pattern-card p {
+  color: #31483f;
+  font-weight: 800;
+  line-height: 1.9;
+}
+
+#prosodyLab .prosody-pattern-line {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 18px;
+  background: #fffdf7;
+  border: 1px solid rgba(15, 87, 65, 0.12);
+}
+
+#prosodyLab .prosody-pattern-line span {
+  display: block;
+  color: #8a6a1a;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+#prosodyLab .prosody-pattern-line strong {
+  display: block;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 24px;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .prosody-meter-patterns {
+    grid-template-columns: 1fr;
+  }
+
+  #prosodyLab .prosody-meter-focus-card h3 {
+    font-size: 36px;
+  }
+}
+/* =====================================================
+   Prosody Rajaz Practice
+===================================================== */
+
+#prosodyLab .prosody-rajaz-practice-box {
+  margin-top: 16px;
+}
+
+#prosodyLab .rajaz-mission-card {
+  padding: 20px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.16), transparent 32%),
+    linear-gradient(135deg, #fffaf0, #eef7f0);
+  border: 1px solid rgba(139, 101, 28, 0.16);
+  box-shadow: 0 16px 38px rgba(36, 54, 44, 0.08);
+}
+
+#prosodyLab .rajaz-mission-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+#prosodyLab .rajaz-mission-header h3 {
+  margin: 10px 0 6px;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 32px;
+}
+
+#prosodyLab .rajaz-mission-header p {
+  color: #31483f;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .rajaz-rhythm-box,
+#prosodyLab .rajaz-question-box {
+  margin: 16px 0;
+  padding: 16px;
+  border-radius: 22px;
+  background: #fffdf7;
+  border: 1px solid rgba(15, 87, 65, 0.12);
+}
+
+#prosodyLab .rajaz-rhythm-box h4,
+#prosodyLab .rajaz-question-box h4 {
+  margin: 0 0 10px;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 26px;
+}
+
+#prosodyLab .rajaz-tafeela-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+#prosodyLab .rajaz-tafeela-card {
+  min-height: 110px !important;
+  padding: 14px !important;
+  border-radius: 20px !important;
+  background: linear-gradient(135deg, #0f5741, #143f70) !important;
+  color: #fff7d6 !important;
+  border: 1px solid rgba(255, 233, 168, 0.25) !important;
+  box-shadow: 0 14px 28px rgba(15, 87, 65, 0.16) !important;
+}
+
+#prosodyLab .rajaz-tafeela-card.selected {
+  background: linear-gradient(135deg, #b88a22, #0f5741) !important;
+  outline: 3px solid rgba(212, 175, 55, 0.35) !important;
+}
+
+#prosodyLab .rajaz-tafeela-card span {
+  display: block;
+  color: #fff3c4;
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+#prosodyLab .rajaz-tafeela-card strong {
+  display: block;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+  color: #fff7d6;
+}
+
+#prosodyLab .rajaz-choice-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+#prosodyLab .rajaz-choice-row button {
+  flex: 1;
+  min-width: 150px;
+}
+
+#prosodyLab .rajaz-choice-row button.active {
+  background: linear-gradient(135deg, #b88a22, #0f5741) !important;
+  color: #fff !important;
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .rajaz-mission-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #prosodyLab .rajaz-tafeela-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Rajaz Journey Mode
+===================================================== */
+
+#prosodyLab .prosody-rajaz-journey-box {
+  margin-top: 18px;
+}
+
+#prosodyLab .rajaz-journey-card {
+  padding: 22px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.18), transparent 34%),
+    linear-gradient(135deg, #fffaf0, #eef7f0);
+  border: 1px solid rgba(139, 101, 28, 0.18);
+  box-shadow: 0 18px 42px rgba(36, 54, 44, 0.1);
+}
+
+#prosodyLab .rajaz-journey-progress {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 14px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(15, 87, 65, 0.12);
+}
+
+#prosodyLab .rajaz-journey-progress span {
+  color: #8a6a1a;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-journey-progress strong {
+  color: #0f5741;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-journey-bar {
+  height: 12px;
+  background: #eadfca;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+#prosodyLab .rajaz-journey-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(135deg, #0f5741, #b88a22);
+  border-radius: 999px;
+}
+
+#prosodyLab .rajaz-teacher-box {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0f5741, #143f70);
+  color: #fff;
+  border: 1px solid rgba(255, 233, 168, 0.26);
+}
+
+#prosodyLab .rajaz-teacher-icon {
+  min-width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.14);
+  color: #fff7d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Amiri", serif;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-teacher-box h3 {
+  margin: 0 0 8px;
+  color: #fff7d6;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+}
+
+#prosodyLab .rajaz-teacher-box p {
+  margin: 0;
+  color: #f7f1dc;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .rajaz-discovery-box,
+#prosodyLab .rajaz-question-box {
+  padding: 18px;
+  border-radius: 24px;
+  background: #fffdf7;
+  border: 1px solid rgba(15, 87, 65, 0.12);
+  margin: 16px 0;
+}
+
+#prosodyLab .rajaz-discovery-box h3,
+#prosodyLab .rajaz-question-box h4 {
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 28px;
+  margin: 0 0 10px;
+}
+
+#prosodyLab .rajaz-journey-tafeela-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 16px 0;
+}
+
+#prosodyLab .rajaz-journey-tafeela {
+  min-height: 120px !important;
+  padding: 14px !important;
+  border-radius: 22px !important;
+  background: linear-gradient(135deg, #0f5741, #143f70) !important;
+  color: #fff7d6 !important;
+  border: 1px solid rgba(255, 233, 168, 0.25) !important;
+}
+
+#prosodyLab .rajaz-journey-tafeela.selected {
+  background: linear-gradient(135deg, #b88a22, #0f5741) !important;
+  outline: 3px solid rgba(212, 175, 55, 0.35);
+}
+
+#prosodyLab .rajaz-journey-tafeela span,
+#prosodyLab .rajaz-journey-tafeela small {
+  display: block;
+  color: #fff3c4;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-journey-tafeela strong {
+  display: block;
+  margin: 8px 0;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 32px;
+  color: #fff7d6;
+}
+
+#prosodyLab .rajaz-rule-strip,
+#prosodyLab .rajaz-role-explain,
+#prosodyLab .rajaz-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+}
+
+#prosodyLab .rajaz-role-explain {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+#prosodyLab .rajaz-rule-strip div,
+#prosodyLab .rajaz-role-explain div,
+#prosodyLab .rajaz-summary-grid div {
+  padding: 16px;
+  border-radius: 20px;
+  background: #fffdf7;
+  border: 1px solid rgba(139, 101, 28, 0.15);
+  border-right: 6px solid #0f5741;
+}
+
+#prosodyLab .rajaz-rule-strip strong,
+#prosodyLab .rajaz-role-explain strong,
+#prosodyLab .rajaz-summary-grid strong {
+  display: block;
+  color: #0f5741;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+#prosodyLab .rajaz-rule-strip span,
+#prosodyLab .rajaz-role-explain span,
+#prosodyLab .rajaz-summary-grid span {
+  color: #31483f;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .rajaz-teacher-box {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  #prosodyLab .rajaz-teacher-icon {
+    margin: 0 auto;
+  }
+
+  #prosodyLab .rajaz-journey-tafeela-row,
+  #prosodyLab .rajaz-rule-strip,
+  #prosodyLab .rajaz-role-explain,
+  #prosodyLab .rajaz-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Rajaz Journey Summary Upgrade
+===================================================== */
+
+#prosodyLab .rajaz-understanding-map {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+
+#prosodyLab .rajaz-map-step {
+  position: relative;
+  padding: 18px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.14), transparent 36%),
+    linear-gradient(135deg, #fffdf7, #eef7f0);
+  border: 1px solid rgba(15, 87, 65, 0.13);
+  border-top: 6px solid #0f5741;
+  box-shadow: 0 14px 30px rgba(36, 54, 44, 0.07);
+}
+
+#prosodyLab .rajaz-map-step span {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f5741, #b88a22);
+  color: #fff7d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+#prosodyLab .rajaz-map-step h4 {
+  margin: 0 0 8px;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 22px;
+}
+
+#prosodyLab .rajaz-map-step p {
+  margin: 0;
+  color: #31483f;
+  font-weight: 800;
+  line-height: 1.9;
+}
+
+#prosodyLab .rajaz-applied-thinking-box {
+  margin: 18px 0;
+  padding: 20px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, #0f5741, #143f70);
+  color: #fff;
+  border: 1px solid rgba(255, 233, 168, 0.24);
+  box-shadow: 0 16px 34px rgba(15, 87, 65, 0.16);
+}
+
+#prosodyLab .rajaz-applied-thinking-box h3 {
+  margin: 0 0 14px;
+  color: #fff7d6;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+}
+
+#prosodyLab .rajaz-thinking-flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+#prosodyLab .rajaz-thinking-flow div {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 233, 168, 0.2);
+}
+
+#prosodyLab .rajaz-thinking-flow strong {
+  display: block;
+  color: #fff3c4;
+  margin-bottom: 6px;
+}
+
+#prosodyLab .rajaz-thinking-flow span {
+  color: #f7f1dc;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+#prosodyLab .rajaz-mini-board {
+  margin: 18px 0;
+  padding: 18px;
+  border-radius: 26px;
+  background: #fffdf7;
+  border: 1px solid rgba(139, 101, 28, 0.16);
+  box-shadow: 0 14px 30px rgba(36, 54, 44, 0.07);
+}
+
+#prosodyLab .rajaz-mini-board h3 {
+  margin: 0 0 14px;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 28px;
+}
+
+#prosodyLab .rajaz-mini-board-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+  background: #f8f3e8;
+  margin-bottom: 10px;
+}
+
+#prosodyLab .rajaz-mini-board-row span {
+  color: #8a6a1a;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-mini-board-row strong {
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 22px;
+}
+
+@media (max-width: 900px) {
+  #prosodyLab .rajaz-understanding-map,
+  #prosodyLab .rajaz-thinking-flow {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  #prosodyLab .rajaz-understanding-map,
+  #prosodyLab .rajaz-thinking-flow {
+    grid-template-columns: 1fr;
+  }
+
+  #prosodyLab .rajaz-mini-board-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Rajaz Applied Example Journey
+===================================================== */
+
+#prosodyLab .prosody-rajaz-example-box {
+  margin-top: 18px;
+}
+
+#prosodyLab .rajaz-example-verse-card {
+  margin: 18px 0;
+  padding: 22px;
+  border-radius: 26px;
+  text-align: center;
+  background:
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.18), transparent 36%),
+    linear-gradient(135deg, #fffdf7, #eef7f0);
+  border: 1px solid rgba(15, 87, 65, 0.14);
+  box-shadow: 0 14px 30px rgba(36, 54, 44, 0.08);
+}
+
+#prosodyLab .rajaz-example-verse-card span {
+  display: block;
+  color: #8a6a1a;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+#prosodyLab .rajaz-example-verse-card strong {
+  display: block;
+  color: #0f5741;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 34px;
+  line-height: 1.9;
+}
+
+/* =====================================================
+   Prosody Lab V2 — Andalusian Islamic Theme Rebuild
+   هوية أندلسية إسلامية لمختبر العَروض
+===================================================== */
+
+#prosodyLab {
+  --prosody-emerald: #0b3d2e;
+  --prosody-emerald-2: #12634a;
+  --prosody-gold: #b88a22;
+  --prosody-gold-soft: #ead39a;
+  --prosody-ivory: #fffaf0;
+  --prosody-paper: #f7efd9;
+  --prosody-ink: #17382f;
+  --prosody-muted: #5c6a60;
+  --prosody-turquoise: #1d8a82;
+  --prosody-danger: #9b1c1c;
+
+  direction: rtl;
+  font-family: "Cairo", "Tajawal", sans-serif !important;
+  color: var(--prosody-ink) !important;
+
+  background:
+    radial-gradient(circle at 12% 10%, rgba(184, 138, 34, 0.18), transparent 28%),
+    radial-gradient(circle at 88% 18%, rgba(29, 138, 130, 0.13), transparent 26%),
+    radial-gradient(circle at 50% 100%, rgba(11, 61, 46, 0.14), transparent 32%),
+    linear-gradient(135deg, #f9f1db 0%, #fffaf0 42%, #edf7f2 100%) !important;
+}
+
+/* خلفية زخرفية أندلسية خفيفة */
+#prosodyLab .prosody-shell {
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 34px !important;
+  padding: 26px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 240, 0.94), rgba(247, 239, 217, 0.92)) !important;
+  border: 1px solid rgba(120, 88, 23, 0.24) !important;
+  box-shadow:
+    0 28px 70px rgba(11, 61, 46, 0.16),
+    inset 0 0 0 1px rgba(255,255,255,0.55) !important;
+}
+
+#prosodyLab .prosody-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.085;
+  background-image:
+    linear-gradient(45deg, var(--prosody-emerald) 12.5%, transparent 12.5%, transparent 50%, var(--prosody-emerald) 50%, var(--prosody-emerald) 62.5%, transparent 62.5%, transparent),
+    linear-gradient(-45deg, var(--prosody-gold) 12.5%, transparent 12.5%, transparent 50%, var(--prosody-gold) 50%, var(--prosody-gold) 62.5%, transparent 62.5%, transparent);
+  background-size: 44px 44px;
+  z-index: 0;
+}
+
+#prosodyLab .prosody-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero أندلسي */
+#prosodyLab .prosody-hero {
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 34px !important;
+  padding: 38px !important;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.18), transparent 30%),
+    linear-gradient(135deg, #082f24 0%, #0b3d2e 48%, #6f5318 100%) !important;
+  border: 1px solid rgba(234, 211, 154, 0.38) !important;
+  box-shadow:
+    0 24px 52px rgba(11, 61, 46, 0.26),
+    inset 0 0 0 1px rgba(255,255,255,0.08) !important;
+}
+
+#prosodyLab .prosody-hero::after {
+  content: "✦ ❖ ✦";
+  position: absolute;
+  left: 28px;
+  top: 22px;
+  color: rgba(255, 247, 214, 0.32);
+  font-size: 30px;
+  letter-spacing: 10px;
+}
+
+#prosodyLab .prosody-kicker,
+#prosodyLab .prosody-badge-inline {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  border-radius: 999px !important;
+  padding: 7px 14px !important;
+  background: rgba(255, 247, 214, 0.13) !important;
+  color: #fff1b8 !important;
+  border: 1px solid rgba(234, 211, 154, 0.32) !important;
+  font-weight: 900 !important;
+}
+
+#prosodyLab .prosody-hero h1 {
+  font-family: "Amiri", "Cairo", serif !important;
+  font-size: clamp(38px, 5vw, 62px) !important;
+  line-height: 1.25 !important;
+  color: #fff7d6 !important;
+  text-shadow: 0 4px 18px rgba(0,0,0,0.24) !important;
+}
+
+#prosodyLab .prosody-hero p {
+  color: #f9f0d2 !important;
+  font-weight: 800 !important;
+  line-height: 2.1 !important;
+  font-size: 17px !important;
+}
+
+/* بطاقة جانبية داخل الهيرو */
+#prosodyLab .prosody-hero-card {
+  border-radius: 28px !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.08)) !important;
+  border: 1px solid rgba(234, 211, 154, 0.28) !important;
+  color: #fff !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+#prosodyLab .prosody-hero-card h3 {
+  color: #fff1b8 !important;
+  font-family: "Amiri", "Cairo", serif !important;
+  font-size: 28px !important;
+}
+
+#prosodyLab .prosody-hero-card p {
+  color: #f9f0d2 !important;
+}
+
+/* Tabs */
+#prosodyLab .prosody-tabs {
+  margin: 20px 0 !important;
+  padding: 12px !important;
+  border-radius: 26px !important;
+  background: rgba(255, 250, 240, 0.82) !important;
+  border: 1px solid rgba(120, 88, 23, 0.16) !important;
+  box-shadow: 0 16px 34px rgba(11, 61, 46, 0.08) !important;
+}
+
+#prosodyLab .prosody-tab-btn {
+  border-radius: 18px !important;
+  min-height: 48px !important;
+  padding: 12px 16px !important;
+  background: #fffdf7 !important;
+  color: var(--prosody-emerald) !important;
+  border: 1px solid rgba(11, 61, 46, 0.14) !important;
+  font-weight: 900 !important;
+  box-shadow: none !important;
+}
+
+#prosodyLab .prosody-tab-btn.active,
+#prosodyLab .prosody-tab-btn:hover {
+  color: #fff7d6 !important;
+  background: linear-gradient(135deg, var(--prosody-emerald), var(--prosody-gold)) !important;
+  border-color: rgba(234, 211, 154, 0.25) !important;
+}
+
+/* Panels عامة */
+#prosodyLab .prosody-panel,
+#prosodyLab .box.prosody-panel,
+#prosodyLab .prosody-result-card,
+#prosodyLab .prosody-teaching-card,
+#prosodyLab .prosody-method-card,
+#prosodyLab .prosody-practice-card,
+#prosodyLab .rajaz-journey-card,
+#prosodyLab .rajaz-mission-card {
+  border-radius: 28px !important;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.10), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f7efd9) !important;
+  border: 1px solid rgba(120, 88, 23, 0.18) !important;
+  box-shadow: 0 18px 42px rgba(11, 61, 46, 0.10) !important;
+  color: var(--prosody-ink) !important;
+}
+
+/* عناوين البطاقات */
+#prosodyLab h2,
+#prosodyLab h3,
+#prosodyLab h4 {
+  color: var(--prosody-emerald) !important;
+}
+
+#prosodyLab .prosody-panel h2,
+#prosodyLab .prosody-result-card h3,
+#prosodyLab .prosody-teaching-card h3,
+#prosodyLab .prosody-method-card h2,
+#prosodyLab .rajaz-discovery-box h3,
+#prosodyLab .rajaz-question-box h4 {
+  font-family: "Amiri", "Cairo", serif !important;
+  font-weight: 700 !important;
+}
+
+/* النصوص */
+#prosodyLab p,
+#prosodyLab li,
+#prosodyLab span {
+  line-height: 2 !important;
+}
+
+#prosodyLab .prosody-panel p,
+#prosodyLab .prosody-result-card p,
+#prosodyLab .prosody-teaching-card p,
+#prosodyLab .prosody-method-card p,
+#prosodyLab .rajaz-question-box p,
+#prosodyLab .rajaz-discovery-box p {
+  color: #2f463d !important;
+  font-weight: 750 !important;
+}
+
+/* أزرار موحدة بتباين قوي */
+#prosodyLab button {
+  font-family: "Cairo", "Tajawal", sans-serif !important;
+  font-weight: 900 !important;
+  color: #fffaf0 !important;
+  background: linear-gradient(135deg, #0b3d2e, #12634a) !important;
+  border: 1px solid rgba(234, 211, 154, 0.28) !important;
+  border-radius: 18px !important;
+  min-height: 46px !important;
+  padding: 11px 16px !important;
+  box-shadow: 0 12px 26px rgba(11, 61, 46, 0.18) !important;
+  text-shadow: none !important;
+}
+
+#prosodyLab button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 18px 34px rgba(11, 61, 46, 0.26) !important;
+}
+
+#prosodyLab button.secondary {
+  color: #18382f !important;
+  background: linear-gradient(135deg, #fff7dd, #ead39a) !important;
+  border: 1px solid rgba(120, 88, 23, 0.24) !important;
+}
+
+#prosodyLab button.gold,
+#prosodyLab .gold {
+  color: #fffaf0 !important;
+  background: linear-gradient(135deg, #9a6b13, #c89b2e) !important;
+}
+
+/* Teacher / coach boxes */
+#prosodyLab .rajaz-teacher-box {
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.14), transparent 30%),
+    linear-gradient(135deg, #082f24, #0b3d2e 58%, #6f5318) !important;
+  border: 1px solid rgba(234, 211, 154, 0.32) !important;
+  color: #fff !important;
+}
+
+#prosodyLab .rajaz-teacher-box h3 {
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .rajaz-teacher-box p {
+  color: #f9f0d2 !important;
+}
+
+#prosodyLab .rajaz-teacher-icon,
+#prosodyLab .prosody-method-icon,
+#prosodyLab .prosody-teaching-icon {
+  background: linear-gradient(135deg, var(--prosody-emerald), var(--prosody-gold)) !important;
+  color: #fff7d6 !important;
+  border: 1px solid rgba(234, 211, 154, 0.28) !important;
+}
+
+/* Tafeela cards */
+#prosodyLab .rajaz-tafeela-card,
+#prosodyLab .rajaz-journey-tafeela,
+#prosodyLab .prosody-letter-symbol {
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.13), transparent 32%),
+    linear-gradient(135deg, #0b3d2e, #12634a) !important;
+  color: #fff7d6 !important;
+  border: 1px solid rgba(234, 211, 154, 0.30) !important;
+}
+
+#prosodyLab .rajaz-tafeela-card strong,
+#prosodyLab .rajaz-journey-tafeela strong {
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .rajaz-tafeela-card span,
+#prosodyLab .rajaz-journey-tafeela span,
+#prosodyLab .rajaz-journey-tafeela small {
+  color: #fff1b8 !important;
+}
+
+/* Selected */
+#prosodyLab .selected,
+#prosodyLab .rajaz-tafeela-card.selected,
+#prosodyLab .rajaz-journey-tafeela.selected,
+#prosodyLab .prosody-letter-card.selected {
+  outline: 3px solid rgba(184, 138, 34, 0.35) !important;
+  box-shadow: 0 18px 36px rgba(184, 138, 34, 0.20) !important;
+}
+
+/* Rule strips and mini boards */
+#prosodyLab .rajaz-rule-strip div,
+#prosodyLab .rajaz-role-explain div,
+#prosodyLab .rajaz-summary-grid div,
+#prosodyLab .rajaz-map-step,
+#prosodyLab .prosody-rule-card,
+#prosodyLab .prosody-meter-card {
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.11), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1) !important;
+  border: 1px solid rgba(120, 88, 23, 0.16) !important;
+  border-right: 7px solid var(--prosody-emerald) !important;
+  color: var(--prosody-ink) !important;
+}
+
+/* Mini board */
+#prosodyLab .rajaz-mini-board {
+  background: #fffdf7 !important;
+  border: 1px solid rgba(120, 88, 23, 0.18) !important;
+}
+
+#prosodyLab .rajaz-mini-board-row {
+  background: #f7efd9 !important;
+  border: 1px solid rgba(120, 88, 23, 0.11) !important;
+}
+
+#prosodyLab .rajaz-mini-board-row span {
+  color: #7c5b18 !important;
+}
+
+#prosodyLab .rajaz-mini-board-row strong {
+  color: var(--prosody-emerald) !important;
+}
+
+/* Inputs */
+#prosodyLab input,
+#prosodyLab textarea,
+#prosodyLab .prosody-textarea {
+  background: #fffdf7 !important;
+  color: var(--prosody-ink) !important;
+  border: 2px solid rgba(11, 61, 46, 0.16) !important;
+  border-radius: 16px !important;
+  font-weight: 800 !important;
+}
+
+#prosodyLab input:focus,
+#prosodyLab textarea:focus,
+#prosodyLab .prosody-textarea:focus {
+  outline: none !important;
+  border-color: var(--prosody-emerald) !important;
+  box-shadow: 0 0 0 4px rgba(11, 61, 46, 0.10) !important;
+}
+
+/* Feedback colors with readability */
+#prosodyLab .prosody-feedback-correct {
+  color: #116138 !important;
+  font-weight: 900 !important;
+}
+
+#prosodyLab .prosody-feedback-wrong {
+  color: #9b1c1c !important;
+  font-weight: 900 !important;
+}
+
+#prosodyLab .prosody-feedback-warn {
+  color: #7c5b18 !important;
+  font-weight: 900 !important;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  #prosodyLab {
+    padding: 12px !important;
+  }
+
+  #prosodyLab .prosody-shell {
+    padding: 14px !important;
+    border-radius: 24px !important;
+  }
+
+  #prosodyLab .prosody-hero {
+    padding: 24px !important;
+    border-radius: 24px !important;
+  }
+
+  #prosodyLab .prosody-hero h1 {
+    font-size: 36px !important;
+  }
+
+  #prosodyLab .prosody-tabs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  #prosodyLab button {
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   Prosody Learning Path — Andalusian Course Map
+===================================================== */
+
+#prosodyLab .prosody-learning-path {
+  margin: 22px 0;
+  padding: 22px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.14), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 42px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .prosody-path-head {
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+#prosodyLab .prosody-path-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18;
+  font-weight: 900;
+  border: 1px solid rgba(120, 88, 23, 0.18);
+}
+
+#prosodyLab .prosody-path-head h2 {
+  margin: 12px 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif !important;
+  font-size: clamp(30px, 4vw, 44px);
+}
+
+#prosodyLab .prosody-path-head p {
+  max-width: 820px;
+  margin: 0 auto;
+  color: #2f463d !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .prosody-path-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+#prosodyLab .prosody-path-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: right;
+  gap: 8px;
+  min-height: 230px;
+  padding: 18px !important;
+  border-radius: 24px !important;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.38), transparent 35%),
+    linear-gradient(135deg, #fffaf0, #eef7f0) !important;
+  color: #17382f !important;
+  border: 1px solid rgba(11, 61, 46, 0.14) !important;
+  box-shadow: 0 14px 30px rgba(11, 61, 46, 0.08) !important;
+  overflow: hidden;
+}
+
+#prosodyLab .prosody-path-card::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  width: 7px;
+  height: 100%;
+  background: linear-gradient(180deg, #0b3d2e, #b88a22);
+}
+
+#prosodyLab .prosody-path-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 22px 40px rgba(11, 61, 46, 0.16) !important;
+}
+
+#prosodyLab .prosody-path-card .path-number {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0b3d2e, #12634a);
+  color: #fff7d6 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  box-shadow: 0 10px 20px rgba(11, 61, 46, 0.18);
+}
+
+#prosodyLab .prosody-path-card strong {
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 25px;
+  line-height: 1.4;
+}
+
+#prosodyLab .prosody-path-card small {
+  color: #7c5b18 !important;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+#prosodyLab .prosody-path-card p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.9 !important;
+  margin: 0;
+}
+
+#prosodyLab .prosody-path-card em {
+  margin-top: auto;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(11, 61, 46, 0.10);
+  color: #0b3d2e;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+#prosodyLab .prosody-path-card.gold {
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.30), transparent 35%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18) !important;
+  color: #fffaf0 !important;
+}
+
+#prosodyLab .prosody-path-card.gold strong,
+#prosodyLab .prosody-path-card.gold small,
+#prosodyLab .prosody-path-card.gold p {
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .prosody-path-card.gold em {
+  background: rgba(255, 247, 214, 0.16);
+  color: #fff7d6;
+}
+
+#prosodyLab .prosody-path-card.soon {
+  opacity: 0.92;
+}
+
+#prosodyLab .prosody-path-card.locked {
+  opacity: 0.78;
+  filter: grayscale(0.18);
+}
+
+#prosodyLab .prosody-path-card.locked::after {
+  content: "قريبًا";
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(155, 28, 28, 0.10);
+  color: #9b1c1c;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+@media (max-width: 1100px) {
+  #prosodyLab .prosody-path-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  #prosodyLab .prosody-learning-path {
+    padding: 14px;
+  }
+
+  #prosodyLab .prosody-path-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #prosodyLab .prosody-path-card {
+    min-height: auto;
+  }
+}
+/* =====================================================
+   Rajaz Drill Bank V1
+===================================================== */
+
+#prosodyLab .prosody-rajaz-drill-bank-box {
+  margin-top: 18px;
+}
+
+#prosodyLab .rajaz-drill-card {
+  padding: 22px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.15), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 42px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .rajaz-drill-pattern {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+
+#prosodyLab .rajaz-drill-pattern button:disabled {
+  opacity: 1 !important;
+  cursor: default !important;
+}
+
+#prosodyLab .rajaz-drill-score-orb {
+  width: min(260px, 100%);
+  min-height: 210px;
+  margin: 18px auto;
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.20), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18);
+  border: 1px solid rgba(234, 211, 154, 0.28);
+  color: #fff7d6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 20px 42px rgba(11, 61, 46, 0.20);
+}
+
+#prosodyLab .rajaz-drill-score-orb span {
+  color: #fff3c4 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-drill-score-orb strong {
+  color: #fff7d6 !important;
+  font-size: 42px;
+  font-family: "Amiri", "Cairo", serif;
+}
+
+#prosodyLab .rajaz-drill-score-orb em {
+  color: #f9f0d2;
+  font-style: normal;
+  font-weight: 900;
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .rajaz-drill-pattern {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Letter Scansion Lab V1
+===================================================== */
+
+#prosodyLab .prosody-letter-scansion-box {
+  margin-top: 18px;
+}
+
+#prosodyLab .letter-scansion-card {
+  padding: 22px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.15), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 42px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .letter-scansion-head {
+  margin: 18px 0;
+  text-align: center;
+}
+
+#prosodyLab .letter-scansion-head h3 {
+  margin: 12px 0 6px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 32px;
+}
+
+#prosodyLab .letter-scansion-word {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+#prosodyLab .letter-scansion-unit {
+  padding: 14px;
+  border-radius: 22px;
+  background: #fffaf0;
+  border: 2px solid rgba(11, 61, 46, 0.13);
+  box-shadow: 0 12px 26px rgba(11, 61, 46, 0.07);
+  text-align: center;
+  transition: 0.2s ease;
+}
+
+#prosodyLab .letter-scansion-unit.correct {
+  border-color: #116138;
+  background: #edf9f1;
+  box-shadow: 0 12px 26px rgba(17, 97, 56, 0.13);
+}
+
+#prosodyLab .letter-scansion-unit.wrong {
+  border-color: #9b1c1c;
+  background: #fff0f0;
+  box-shadow: 0 12px 26px rgba(155, 28, 28, 0.12);
+}
+
+#prosodyLab .letter-char {
+  min-height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0b3d2e, #12634a);
+  color: #fff7d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 34px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+#prosodyLab .letter-symbol-choice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+#prosodyLab .letter-symbol-choice button {
+  min-height: 42px !important;
+  padding: 8px !important;
+  border-radius: 14px !important;
+  font-size: 22px !important;
+}
+
+#prosodyLab .letter-symbol-choice button.selected {
+  background: linear-gradient(135deg, #b88a22, #0b3d2e) !important;
+  outline: 3px solid rgba(184, 138, 34, 0.28) !important;
+}
+
+#prosodyLab .letter-result-symbol {
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.70);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+}
+
+#prosodyLab .letter-result-symbol strong {
+  color: #0b3d2e;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+#prosodyLab .letter-scansion-unit.correct .letter-result-symbol strong {
+  color: #116138;
+}
+
+#prosodyLab .letter-scansion-unit.wrong .letter-result-symbol strong {
+  color: #9b1c1c;
+}
+
+#prosodyLab .letter-scansion-unit small {
+  display: block;
+  margin-top: 10px;
+  color: #31483f;
+  font-weight: 800;
+  line-height: 1.7;
+}
+
+#prosodyLab .letter-scansion-symbol-key {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+#prosodyLab .letter-scansion-symbol-key div {
+  padding: 14px;
+  border-radius: 18px;
+  background: #fffdf7;
+  border: 1px solid rgba(120, 88, 23, 0.16);
+  text-align: center;
+}
+
+#prosodyLab .letter-scansion-symbol-key strong {
+  display: block;
+  color: #0b3d2e;
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+#prosodyLab .letter-scansion-symbol-key span {
+  color: #31483f !important;
+  font-weight: 900;
+}
+
+#prosodyLab .letter-scansion-mistake-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+#prosodyLab .letter-scansion-mistake {
+  padding: 12px;
+  border-radius: 16px;
+  background: #fff0f0;
+  border-right: 6px solid #9b1c1c;
+}
+
+#prosodyLab .letter-scansion-mistake strong {
+  color: #9b1c1c;
+}
+
+#prosodyLab .letter-scansion-mistake p {
+  margin: 5px 0;
+}
+
+@media (max-width: 640px) {
+  #prosodyLab .letter-scansion-symbol-key {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   Prosody Organized Command Center V2
+===================================================== */
+
+#prosodyLab .prosody-command-center-v2 {
+  margin: 24px 0;
+  padding: 24px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.16), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 20px 46px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .prosody-command-head {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#prosodyLab .prosody-command-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-command-head h2 {
+  margin: 12px 0 8px;
+  font-family: "Amiri", "Cairo", serif !important;
+  color: #0b3d2e !important;
+  font-size: clamp(30px, 4vw, 46px);
+}
+
+#prosodyLab .prosody-command-head p {
+  max-width: 860px;
+  margin: 0 auto;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .prosody-command-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+#prosodyLab .prosody-command-card {
+  min-height: 210px;
+  padding: 16px !important;
+  border-radius: 24px !important;
+  text-align: right !important;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.30), transparent 35%),
+    linear-gradient(135deg, #fffaf0, #eef7f0) !important;
+  color: #17382f !important;
+  border: 1px solid rgba(11, 61, 46, 0.14) !important;
+  box-shadow: 0 14px 30px rgba(11, 61, 46, 0.08) !important;
+}
+
+#prosodyLab .prosody-command-card.active {
+  background: linear-gradient(135deg, #0b3d2e, #7c5b18) !important;
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .prosody-command-card span {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0b3d2e, #12634a);
+  color: #fff7d6 !important;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+#prosodyLab .prosody-command-card.active span {
+  background: rgba(255, 247, 214, 0.16);
+}
+
+#prosodyLab .prosody-command-card strong {
+  display: block;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+#prosodyLab .prosody-command-card.active strong,
+#prosodyLab .prosody-command-card.active small,
+#prosodyLab .prosody-command-card.active p {
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .prosody-command-card small {
+  display: block;
+  color: #7c5b18 !important;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+#prosodyLab .prosody-command-card p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.8 !important;
+  margin: 0;
+}
+
+/* Module Stage */
+#prosodyLab .prosody-module-stage {
+  margin: 22px 0;
+}
+
+#prosodyLab .prosody-module-screen {
+  display: none;
+}
+
+#prosodyLab .prosody-module-screen.active {
+  display: block;
+}
+
+#prosodyLab .prosody-module-hero-card,
+#prosodyLab .prosody-module-note,
+#prosodyLab .prosody-exam-preview-card {
+  padding: 22px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.12), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 16px 36px rgba(11, 61, 46, 0.08);
+  margin-bottom: 16px;
+}
+
+#prosodyLab .prosody-module-hero-card h3,
+#prosodyLab .prosody-module-note h4,
+#prosodyLab .prosody-exam-preview-card h4 {
+  margin: 0 0 10px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif !important;
+  font-size: 30px;
+}
+
+#prosodyLab .prosody-module-hero-card p,
+#prosodyLab .prosody-module-note p,
+#prosodyLab .prosody-exam-preview-card p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .prosody-module-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+#prosodyLab .prosody-module-road {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+#prosodyLab .prosody-module-road div {
+  padding: 16px;
+  border-radius: 22px;
+  background: #fffaf0;
+  border: 1px solid rgba(120, 88, 23, 0.16);
+  text-align: center;
+}
+
+#prosodyLab .prosody-module-road span {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0b3d2e, #b88a22);
+  color: #fff7d6 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-module-road strong {
+  display: block;
+  color: #0b3d2e;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 22px;
+}
+
+#prosodyLab .prosody-symbol-preview,
+#prosodyLab .prosody-meter-module-grid {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+#prosodyLab .prosody-symbol-preview {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+#prosodyLab .prosody-symbol-preview div,
+#prosodyLab .prosody-meter-module-grid button {
+  padding: 16px !important;
+  border-radius: 22px !important;
+  background: #fffaf0 !important;
+  border: 1px solid rgba(120, 88, 23, 0.16) !important;
+  color: #17382f !important;
+  text-align: center;
+}
+
+#prosodyLab .prosody-symbol-preview strong,
+#prosodyLab .prosody-meter-module-grid strong {
+  display: block;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+#prosodyLab .prosody-meter-module-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+#prosodyLab .prosody-meter-module-grid button.ready {
+  background: linear-gradient(135deg, #0b3d2e, #7c5b18) !important;
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .prosody-meter-module-grid button.ready strong,
+#prosodyLab .prosody-meter-module-grid button.ready p,
+#prosodyLab .prosody-meter-module-grid button.ready span {
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .prosody-meter-module-grid button.soon {
+  opacity: 0.85;
+}
+
+@media (max-width: 1150px) {
+  #prosodyLab .prosody-command-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  #prosodyLab .prosody-module-road {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #prosodyLab .prosody-meter-module-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  #prosodyLab .prosody-command-grid,
+  #prosodyLab .prosody-module-road,
+  #prosodyLab .prosody-symbol-preview,
+  #prosodyLab .prosody-meter-module-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   Prosody Scansion Module Organization
+   تنظيم باب التقطيع
+===================================================== */
+
+#prosodyLab .scansion-learning-ladder {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+
+#prosodyLab .scansion-step-card {
+  position: relative;
+  min-height: 245px;
+  padding: 18px !important;
+  border-radius: 26px !important;
+  text-align: right !important;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.12), transparent 36%),
+    linear-gradient(135deg, #fffdf7, #f4ead1) !important;
+  color: #17382f !important;
+  border: 1px solid rgba(120, 88, 23, 0.18) !important;
+  box-shadow: 0 16px 34px rgba(11, 61, 46, 0.09) !important;
+  overflow: hidden;
+}
+
+#prosodyLab .scansion-step-card::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  width: 7px;
+  height: 100%;
+  background: linear-gradient(180deg, #0b3d2e, #b88a22);
+}
+
+#prosodyLab .scansion-step-card span {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0b3d2e, #12634a);
+  color: #fff7d6 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+#prosodyLab .scansion-step-card strong {
+  display: block;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 26px;
+  margin-bottom: 4px;
+}
+
+#prosodyLab .scansion-step-card small {
+  display: block;
+  color: #7c5b18 !important;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+#prosodyLab .scansion-step-card p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.9 !important;
+  margin: 0 0 12px;
+}
+
+#prosodyLab .scansion-step-card em {
+  position: absolute;
+  bottom: 14px;
+  right: 18px;
+  left: 18px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(11, 61, 46, 0.10);
+  color: #0b3d2e;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 12px;
+  text-align: center;
+}
+
+#prosodyLab .scansion-step-card.ready:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 22px 44px rgba(11, 61, 46, 0.16) !important;
+}
+
+#prosodyLab .scansion-step-card.soon {
+  opacity: 0.82;
+  filter: grayscale(0.08);
+}
+
+#prosodyLab .scansion-step-card.soon::after {
+  content: "قريبًا";
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(155, 28, 28, 0.10);
+  color: #9b1c1c;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+#prosodyLab .scansion-symbol-board {
+  margin-top: 18px;
+}
+
+#prosodyLab .scansion-teacher-note {
+  margin-top: 18px;
+  padding: 20px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.14), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18);
+  border: 1px solid rgba(234, 211, 154, 0.26);
+  color: #fff7d6;
+  box-shadow: 0 18px 38px rgba(11, 61, 46, 0.16);
+}
+
+#prosodyLab .scansion-teacher-note h4 {
+  margin: 0 0 10px;
+  color: #fff7d6 !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+}
+
+#prosodyLab .scansion-teacher-note p {
+  margin: 0;
+  color: #f9f0d2 !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+@media (max-width: 1150px) {
+  #prosodyLab .scansion-learning-ladder {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  #prosodyLab .scansion-learning-ladder {
+    grid-template-columns: 1fr;
+  }
+
+  #prosodyLab .scansion-step-card {
+    min-height: 220px;
+  }
+}
+
+/* =====================================================
+   Tafeela Match Lab V1
+===================================================== */
+
+#prosodyLab .prosody-tafeela-match-box {
+  margin-top: 18px;
+}
+
+#prosodyLab .tafeela-match-card {
+  padding: 22px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.15), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 42px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .tafeela-match-head {
+  text-align: center;
+  margin: 18px 0;
+}
+
+#prosodyLab .tafeela-match-head h3 {
+  margin: 12px 0 6px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 34px;
+}
+
+#prosodyLab .tafeela-match-head p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .tafeela-symbol-strip {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  direction: rtl;
+}
+
+#prosodyLab .tafeela-symbol-unit {
+  min-width: 70px;
+  min-height: 90px;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.18), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #12634a);
+  border: 1px solid rgba(234, 211, 154, 0.28);
+  color: #fff7d6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 14px 28px rgba(11, 61, 46, 0.15);
+}
+
+#prosodyLab .tafeela-symbol-unit span {
+  color: #fff1b8 !important;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+#prosodyLab .tafeela-symbol-unit strong {
+  color: #fff7d6 !important;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-choice-row button.active {
+  background: linear-gradient(135deg, #b88a22, #0b3d2e) !important;
+  color: #fff7d6 !important;
+  outline: 3px solid rgba(184, 138, 34, 0.26);
+}
+
+@media (max-width: 640px) {
+  #prosodyLab .tafeela-symbol-unit {
+    min-width: 58px;
+    min-height: 78px;
+  }
+
+  #prosodyLab .tafeela-symbol-unit strong {
+    font-size: 28px;
+  }
+}
+
+/* =====================================================
+   Prosody Reference Viewer
+===================================================== */
+
+#prosodyLab .prosody-reference-viewer {
+  margin: 18px 0;
+}
+
+#prosodyLab .prosody-reference-card {
+  padding: 22px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.14), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 42px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .prosody-reference-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+#prosodyLab .prosody-reference-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-reference-head h3 {
+  margin: 12px 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 36px;
+}
+
+#prosodyLab .prosody-reference-head p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+#prosodyLab .prosody-reference-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+#prosodyLab .prosody-reference-meter {
+  position: relative;
+  padding: 18px;
+  border-radius: 24px;
+  background: #fffaf0;
+  border: 1px solid rgba(120, 88, 23, 0.16);
+  box-shadow: 0 14px 30px rgba(11, 61, 46, 0.08);
+  overflow: hidden;
+}
+
+#prosodyLab .prosody-reference-meter::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  width: 7px;
+  height: 100%;
+  background: linear-gradient(180deg, #0b3d2e, #b88a22);
+}
+
+#prosodyLab .prosody-reference-meter-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+#prosodyLab .prosody-reference-meter-top span {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #0b3d2e, #12634a);
+  color: #fff7d6 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-reference-meter-top em {
+  font-style: normal;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(11, 61, 46, 0.10);
+  color: #0b3d2e;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-reference-meter h4 {
+  margin: 0 0 10px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 28px;
+}
+
+#prosodyLab .prosody-reference-meter p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.8;
+  margin: 5px 0;
+}
+
+#prosodyLab .prosody-reference-actions {
+  margin-top: 14px;
+}
+
+#prosodyLab .prosody-reference-note {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.14), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18);
+  border: 1px solid rgba(234, 211, 154, 0.26);
+}
+
+#prosodyLab .prosody-reference-note h4 {
+  color: #fff7d6 !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+#prosodyLab .prosody-reference-note p {
+  color: #f9f0d2 !important;
+  font-weight: 800;
+  line-height: 2;
+  margin: 0;
+}
+
+@media (max-width: 1000px) {
+  #prosodyLab .prosody-reference-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  #prosodyLab .prosody-reference-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Prosody Reference Viewer — Examples Stats
+===================================================== */
+
+#prosodyLab .prosody-reference-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 14px 0;
+}
+
+#prosodyLab .prosody-reference-stats div {
+  padding: 10px;
+  border-radius: 16px;
+  background: rgba(11, 61, 46, 0.08);
+  text-align: center;
+  border: 1px solid rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .prosody-reference-stats strong {
+  display: block;
+  color: #0b3d2e;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-reference-stats span {
+  display: block;
+  color: #7c5b18 !important;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-reference-example-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+#prosodyLab .prosody-reference-example-item,
+#prosodyLab .prosody-reference-example-empty {
+  padding: 12px;
+  border-radius: 16px;
+  background: #fffdf7;
+  border: 1px solid rgba(120, 88, 23, 0.14);
+}
+
+#prosodyLab .prosody-reference-example-item strong {
+  display: block;
+  color: #0b3d2e;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+#prosodyLab .prosody-reference-example-item span {
+  display: inline-flex;
+  margin: 6px 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.14);
+  color: #7c5b18 !important;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-reference-example-item p,
+#prosodyLab .prosody-reference-example-empty {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.8;
+  margin: 0;
+}
+
+@media (max-width: 650px) {
+  #prosodyLab .prosody-reference-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Reference Verification Workspace
+===================================================== */
+
+#prosodyLab .prosody-reference-verification-box {
+  margin-top: 18px;
+}
+
+#prosodyLab .reference-verification-card {
+  padding: 22px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.15), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 42px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .reference-verification-form {
+  display: grid;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+#prosodyLab .reference-verification-form label {
+  display: grid;
+  gap: 8px;
+}
+
+#prosodyLab .reference-verification-form label span {
+  color: #0b3d2e !important;
+  font-weight: 900;
+}
+
+#prosodyLab .reference-verification-form textarea,
+#prosodyLab .reference-verification-form input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  border: 2px solid rgba(11, 61, 46, 0.16);
+  background: #fffaf0;
+  color: #17382f;
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+#prosodyLab .reference-verification-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+#prosodyLab .reference-verification-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+#prosodyLab .reference-verification-warning {
+  margin: 18px 0;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(155, 28, 28, 0.08);
+  border: 1px solid rgba(155, 28, 28, 0.18);
+}
+
+#prosodyLab .reference-verification-warning h3 {
+  margin: 0 0 8px;
+  color: #9b1c1c !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 26px;
+}
+
+#prosodyLab .reference-verification-warning p {
+  margin: 0;
+  color: #4b2b2b !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+@media (max-width: 700px) {
+  #prosodyLab .reference-verification-two {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Rajaz Master Panel
+   ملف بحر الرجز داخل باب البحور
+===================================================== */
+
+#prosodyLab .rajaz-master-panel {
+  margin: 22px 0;
+  padding: 24px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.16), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 20px 46px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .rajaz-master-head {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#prosodyLab .rajaz-master-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-master-head h3 {
+  margin: 12px 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: clamp(34px, 5vw, 54px);
+}
+
+#prosodyLab .rajaz-master-head p {
+  max-width: 850px;
+  margin: 0 auto;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .rajaz-master-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+#prosodyLab .rajaz-master-steps button {
+  position: relative;
+  min-height: 180px;
+  padding: 18px !important;
+  border-radius: 24px !important;
+  text-align: right !important;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.25), transparent 35%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18) !important;
+  color: #fff7d6 !important;
+  border: 1px solid rgba(234, 211, 154, 0.28) !important;
+  box-shadow: 0 16px 34px rgba(11, 61, 46, 0.16) !important;
+}
+
+#prosodyLab .rajaz-master-steps button:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 24px 46px rgba(11, 61, 46, 0.24) !important;
+}
+
+#prosodyLab .rajaz-master-steps span {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: rgba(255, 247, 214, 0.16);
+  color: #fff7d6 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+#prosodyLab .rajaz-master-steps strong {
+  display: block;
+  color: #fff7d6 !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 25px;
+  margin-bottom: 8px;
+}
+
+#prosodyLab .rajaz-master-steps small {
+  display: block;
+  color: #f9f0d2 !important;
+  font-weight: 900;
+  line-height: 1.8;
+}
+
+#prosodyLab .rajaz-master-note {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 24px;
+  background: #fffaf0;
+  border: 1px solid rgba(120, 88, 23, 0.16);
+}
+
+#prosodyLab .rajaz-master-note h4 {
+  margin: 0 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 28px;
+}
+
+#prosodyLab .rajaz-master-note p {
+  margin: 0;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+@media (max-width: 950px) {
+  #prosodyLab .rajaz-master-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  #prosodyLab .rajaz-master-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Rajaz Core Understanding Board
+===================================================== */
+
+#prosodyLab .rajaz-core-board {
+  margin: 18px 0 22px;
+  padding: 22px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.13), transparent 34%),
+    linear-gradient(135deg, #fffaf0, #eef7f0);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 16px 36px rgba(11, 61, 46, 0.08);
+}
+
+#prosodyLab .rajaz-core-title {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+#prosodyLab .rajaz-core-title span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-core-title h4 {
+  margin: 12px 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 34px;
+}
+
+#prosodyLab .rajaz-core-title p {
+  max-width: 820px;
+  margin: 0 auto;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .rajaz-core-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+#prosodyLab .rajaz-core-item {
+  padding: 16px;
+  border-radius: 22px;
+  background: #fffdf7;
+  border: 1px solid rgba(120, 88, 23, 0.15);
+  border-top: 6px solid #0b3d2e;
+  text-align: center;
+}
+
+#prosodyLab .rajaz-core-item span {
+  display: block;
+  color: #7c5b18 !important;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+#prosodyLab .rajaz-core-item strong {
+  display: block;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 23px;
+  line-height: 1.8;
+}
+
+#prosodyLab .rajaz-core-item p {
+  margin: 8px 0 0;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+#prosodyLab .rajaz-core-warning {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.14), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18);
+  border: 1px solid rgba(234, 211, 154, 0.26);
+}
+
+#prosodyLab .rajaz-core-warning h4 {
+  margin: 0 0 8px;
+  color: #fff7d6 !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 28px;
+}
+
+#prosodyLab .rajaz-core-warning p {
+  margin: 0;
+  color: #f9f0d2 !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+@media (max-width: 1100px) {
+  #prosodyLab .rajaz-core-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  #prosodyLab .rajaz-core-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   Rajaz Learning Map
+===================================================== */
+
+#prosodyLab .rajaz-learning-map {
+  margin: 18px 0 22px;
+  padding: 22px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.13), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 16px 36px rgba(11, 61, 46, 0.08);
+}
+
+#prosodyLab .rajaz-learning-map-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+#prosodyLab .rajaz-learning-map-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-learning-map-head h4 {
+  margin: 12px 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 34px;
+}
+
+#prosodyLab .rajaz-learning-map-head p {
+  max-width: 820px;
+  margin: 0 auto;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .rajaz-learning-map-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+#prosodyLab .rajaz-learning-map-grid button {
+  min-height: 205px;
+  padding: 18px !important;
+  border-radius: 24px !important;
+  text-align: right !important;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.25), transparent 35%),
+    linear-gradient(135deg, #fffaf0, #eef7f0) !important;
+  color: #17382f !important;
+  border: 1px solid rgba(120, 88, 23, 0.18) !important;
+  box-shadow: 0 14px 30px rgba(11, 61, 46, 0.08) !important;
+}
+
+#prosodyLab .rajaz-learning-map-grid button:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 22px 44px rgba(11, 61, 46, 0.16) !important;
+}
+
+#prosodyLab .rajaz-learning-map-grid span {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0b3d2e, #12634a);
+  color: #fff7d6 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+#prosodyLab .rajaz-learning-map-grid strong {
+  display: block;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+#prosodyLab .rajaz-learning-map-grid small {
+  display: block;
+  color: #7c5b18 !important;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+#prosodyLab .rajaz-learning-map-grid p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.8 !important;
+  margin: 0;
+}
+
+@media (max-width: 950px) {
+  #prosodyLab .rajaz-learning-map-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  #prosodyLab .rajaz-learning-map-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   Rajaz Teacher Lesson
+===================================================== */
+
+#prosodyLab .rajaz-teacher-lesson {
+  margin: 18px 0 22px;
+  padding: 22px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.15), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 40px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .rajaz-teacher-lesson-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+#prosodyLab .rajaz-teacher-lesson-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-teacher-lesson-head h4 {
+  margin: 12px 0 0;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: clamp(30px, 4vw, 42px);
+}
+
+#prosodyLab .rajaz-teacher-lesson-body {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+#prosodyLab .rajaz-teacher-avatar {
+  width: 78px;
+  height: 78px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.18), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18);
+  color: #fff7d6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 42px;
+  font-weight: 900;
+  border: 1px solid rgba(234, 211, 154, 0.28);
+  box-shadow: 0 16px 32px rgba(11, 61, 46, 0.18);
+}
+
+#prosodyLab .rajaz-teacher-speech {
+  padding: 20px;
+  border-radius: 26px;
+  background: #fffaf0;
+  border: 1px solid rgba(120, 88, 23, 0.16);
+  position: relative;
+}
+
+#prosodyLab .rajaz-teacher-speech::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background: #fffaf0;
+  border-right: 1px solid rgba(120, 88, 23, 0.16);
+  border-bottom: 1px solid rgba(120, 88, 23, 0.16);
+  transform: rotate(-45deg);
+}
+
+#prosodyLab .rajaz-teacher-speech p {
+  margin: 0 0 12px;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2.1 !important;
+}
+
+#prosodyLab .rajaz-teacher-speech p:last-child {
+  margin-bottom: 0;
+}
+
+#prosodyLab .rajaz-teacher-speech strong {
+  color: #0b3d2e !important;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-teacher-rules {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+#prosodyLab .rajaz-teacher-rules div {
+  padding: 16px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.18), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18);
+  border: 1px solid rgba(234, 211, 154, 0.24);
+  text-align: center;
+  color: #fff7d6;
+}
+
+#prosodyLab .rajaz-teacher-rules span {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  margin: 0 auto 8px;
+  background: rgba(255, 247, 214, 0.16);
+  color: #fff7d6 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-teacher-rules strong {
+  display: block;
+  color: #fff7d6 !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+#prosodyLab .rajaz-teacher-rules p {
+  margin: 0;
+  color: #f9f0d2 !important;
+  font-weight: 800;
+  line-height: 1.8 !important;
+}
+
+@media (max-width: 900px) {
+  #prosodyLab .rajaz-teacher-lesson-body {
+    grid-template-columns: 1fr;
+  }
+
+  #prosodyLab .rajaz-teacher-avatar {
+    margin: 0 auto;
+  }
+
+  #prosodyLab .rajaz-teacher-speech::before {
+    display: none;
+  }
+
+  #prosodyLab .rajaz-teacher-rules {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  #prosodyLab .rajaz-teacher-rules {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Rajaz Complete vs Majzoo Compare Board
+===================================================== */
+
+#prosodyLab .rajaz-compare-board {
+  margin: 18px 0 22px;
+  padding: 22px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.14), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 40px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .rajaz-compare-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+#prosodyLab .rajaz-compare-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-compare-head h4 {
+  margin: 12px 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: clamp(30px, 4vw, 42px);
+}
+
+#prosodyLab .rajaz-compare-head p {
+  max-width: 820px;
+  margin: 0 auto;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .rajaz-compare-table {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+#prosodyLab .rajaz-compare-row {
+  display: grid;
+  grid-template-columns: 1.1fr 2fr 0.8fr 2fr 2fr;
+  gap: 10px;
+  align-items: stretch;
+}
+
+#prosodyLab .rajaz-compare-row > div {
+  padding: 14px;
+  border-radius: 16px;
+  background: #fffaf0;
+  border: 1px solid rgba(120, 88, 23, 0.14);
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.9;
+}
+
+#prosodyLab .rajaz-compare-row.header > div {
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.18), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18);
+  color: #fff7d6 !important;
+  font-weight: 900;
+  text-align: center;
+}
+
+#prosodyLab .rajaz-compare-row strong {
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 22px;
+}
+
+#prosodyLab .rajaz-compare-row.header strong {
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .rajaz-pattern-pill {
+  display: inline-flex;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(11, 61, 46, 0.10);
+  color: #0b3d2e !important;
+  font-weight: 900;
+  line-height: 1.8 !important;
+}
+
+#prosodyLab .rajaz-compare-teacher-tip {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.14), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18);
+  border: 1px solid rgba(234, 211, 154, 0.26);
+}
+
+#prosodyLab .rajaz-compare-teacher-tip h4 {
+  margin: 0 0 8px;
+  color: #fff7d6 !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 28px;
+}
+
+#prosodyLab .rajaz-compare-teacher-tip p {
+  margin: 0;
+  color: #f9f0d2 !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .rajaz-compare-teacher-tip strong {
+  color: #fff7d6 !important;
+}
+
+@media (max-width: 1000px) {
+  #prosodyLab .rajaz-compare-row,
+  #prosodyLab .rajaz-compare-row.header {
+    grid-template-columns: 1fr;
+  }
+
+  #prosodyLab .rajaz-compare-row.header {
+    display: none;
+  }
+
+  #prosodyLab .rajaz-compare-row > div {
+    text-align: center;
+  }
+}
+/* =====================================================
+   Rajaz Mini Quiz
+===================================================== */
+
+#prosodyLab .rajaz-mini-quiz {
+  margin: 18px 0 22px;
+  padding: 22px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.14), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 40px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .rajaz-mini-quiz-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+#prosodyLab .rajaz-mini-quiz-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-mini-quiz-head h4 {
+  margin: 12px 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: clamp(30px, 4vw, 42px);
+}
+
+#prosodyLab .rajaz-mini-quiz-head p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .rajaz-mini-quiz-pattern {
+  text-align: center;
+  padding: 22px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.16), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18);
+  border: 1px solid rgba(234, 211, 154, 0.26);
+  margin-bottom: 18px;
+}
+
+#prosodyLab .rajaz-mini-quiz-pattern span {
+  display: block;
+  color: #fff1b8 !important;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+#prosodyLab .rajaz-mini-quiz-pattern strong {
+  display: block;
+  color: #fff7d6 !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.8;
+}
+
+#prosodyLab .rajaz-mini-quiz-question {
+  text-align: center;
+}
+
+#prosodyLab .rajaz-mini-quiz-question h4 {
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+#prosodyLab .rajaz-mini-quiz-options {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+#prosodyLab .rajaz-mini-quiz-result {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 22px;
+  background: #fffaf0;
+  border: 1px solid rgba(120, 88, 23, 0.16);
+  text-align: center;
+}
+
+#prosodyLab .rajaz-mini-quiz-result h4 {
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 26px;
+  margin: 0 0 8px;
+}
+
+#prosodyLab .rajaz-mini-quiz-result p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+  margin: 0;
+}
+
+#prosodyLab .rajaz-mini-quiz-result.correct {
+  border-right: 7px solid #116138;
+  background: #edf9f1;
+}
+
+#prosodyLab .rajaz-mini-quiz-result.wrong {
+  border-right: 7px solid #9b1c1c;
+  background: #fff0f0;
+}
+
+/* =====================================================
+   Rajaz Accordion Navigation
+===================================================== */
+
+#prosodyLab .rajaz-accordion-nav {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+  padding: 12px;
+  border-radius: 26px;
+  background: rgba(255, 250, 240, 0.82);
+  border: 1px solid rgba(120, 88, 23, 0.16);
+}
+
+#prosodyLab .rajaz-accordion-nav button {
+  min-height: 74px !important;
+  padding: 10px !important;
+  border-radius: 18px !important;
+  background: #fffdf7 !important;
+  color: #0b3d2e !important;
+  border: 1px solid rgba(11, 61, 46, 0.14) !important;
+  box-shadow: none !important;
+  font-weight: 900 !important;
+}
+
+#prosodyLab .rajaz-accordion-nav button span {
+  display: block;
+  margin-bottom: 5px;
+  color: #7c5b18 !important;
+  font-size: 13px;
+}
+
+#prosodyLab .rajaz-accordion-nav button.active,
+#prosodyLab .rajaz-accordion-nav button:hover {
+  color: #fff7d6 !important;
+  background: linear-gradient(135deg, #0b3d2e, #7c5b18) !important;
+  border-color: rgba(234, 211, 154, 0.28) !important;
+}
+
+#prosodyLab .rajaz-accordion-nav button.active span,
+#prosodyLab .rajaz-accordion-nav button:hover span {
+  color: #fff1b8 !important;
+}
+
+#prosodyLab .rajaz-accordion-stage {
+  margin: 18px 0 22px;
+}
+
+#prosodyLab .rajaz-accordion-panel {
+  display: none;
+}
+
+#prosodyLab .rajaz-accordion-panel.active {
+  display: block;
+}
+
+#prosodyLab .rajaz-accordion-placeholder {
+  padding: 22px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.13), transparent 34%),
+    linear-gradient(135deg, #fffaf0, #eef7f0);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 16px 36px rgba(11, 61, 46, 0.08);
+  text-align: center;
+}
+
+#prosodyLab .rajaz-accordion-placeholder h4 {
+  margin: 0 0 10px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 32px;
+}
+
+#prosodyLab .rajaz-accordion-placeholder p {
+  max-width: 820px;
+  margin: 0 auto 14px;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .rajaz-accordion-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+@media (max-width: 1100px) {
+  #prosodyLab .rajaz-accordion-nav {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  #prosodyLab .rajaz-accordion-nav {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   Prosody Lab Dashboard Cleanup
+===================================================== */
+
+#prosodyLab .prosody-dashboard-clean {
+  margin: 24px 0;
+  padding: 26px;
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.16), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 22px 50px rgba(11, 61, 46, 0.12);
+}
+
+#prosodyLab .prosody-dashboard-hero {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+#prosodyLab .prosody-dashboard-hero span {
+  display: inline-flex;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-dashboard-hero h2 {
+  margin: 14px 0 10px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif !important;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1.35;
+}
+
+#prosodyLab .prosody-dashboard-hero p {
+  max-width: 880px;
+  margin: 0 auto;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .prosody-dashboard-flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 22px 0;
+}
+
+#prosodyLab .prosody-dashboard-flow div {
+  padding: 18px;
+  border-radius: 24px;
+  background: #fffaf0;
+  border: 1px solid rgba(120, 88, 23, 0.16);
+  text-align: center;
+  box-shadow: 0 12px 28px rgba(11, 61, 46, 0.07);
+}
+
+#prosodyLab .prosody-dashboard-flow span {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 10px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0b3d2e, #7c5b18);
+  color: #fff7d6 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+#prosodyLab .prosody-dashboard-flow strong {
+  display: block;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+#prosodyLab .prosody-dashboard-flow p {
+  margin: 0;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+#prosodyLab .prosody-dashboard-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+@media (max-width: 950px) {
+  #prosodyLab .prosody-dashboard-flow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  #prosodyLab .prosody-dashboard-clean {
+    padding: 16px;
+  }
+
+  #prosodyLab .prosody-dashboard-flow {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Foundations Learning Board
+===================================================== */
+
+#prosodyLab .foundations-learning-board {
+  margin: 18px 0 22px;
+  padding: 22px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.13), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 40px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .foundations-learning-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+#prosodyLab .foundations-learning-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .foundations-learning-head h4 {
+  margin: 12px 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: clamp(30px, 4vw, 42px);
+}
+
+#prosodyLab .foundations-learning-head p {
+  max-width: 850px;
+  margin: 0 auto;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .foundations-accordion-nav {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+  padding: 12px;
+  border-radius: 24px;
+  background: rgba(255, 250, 240, 0.82);
+  border: 1px solid rgba(120, 88, 23, 0.16);
+}
+
+#prosodyLab .foundations-accordion-nav button {
+  min-height: 64px !important;
+  padding: 10px !important;
+  border-radius: 16px !important;
+  background: #fffdf7 !important;
+  color: #0b3d2e !important;
+  border: 1px solid rgba(11, 61, 46, 0.14) !important;
+  box-shadow: none !important;
+  font-weight: 900 !important;
+}
+
+#prosodyLab .foundations-accordion-nav button.active,
+#prosodyLab .foundations-accordion-nav button:hover {
+  background: linear-gradient(135deg, #0b3d2e, #7c5b18) !important;
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .foundations-panel {
+  display: none;
+  padding: 22px;
+  border-radius: 26px;
+  background: #fffaf0;
+  border: 1px solid rgba(120, 88, 23, 0.16);
+  text-align: center;
+}
+
+#prosodyLab .foundations-panel.active {
+  display: block;
+}
+
+#prosodyLab .foundations-panel h4 {
+  margin: 0 0 10px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+}
+
+#prosodyLab .foundations-panel p {
+  max-width: 820px;
+  margin: 0 auto 14px;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .foundations-panel strong {
+  color: #0b3d2e !important;
+}
+
+#prosodyLab .foundations-panel-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 950px) {
+  #prosodyLab .foundations-accordion-nav {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  #prosodyLab .foundations-accordion-nav {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   Scansion Stepper Board
+===================================================== */
+
+#prosodyLab .scansion-stepper-board {
+  margin: 18px 0 22px;
+  padding: 22px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.13), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 40px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .scansion-stepper-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+#prosodyLab .scansion-stepper-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .scansion-stepper-head h4 {
+  margin: 12px 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: clamp(30px, 4vw, 42px);
+}
+
+#prosodyLab .scansion-stepper-head p {
+  max-width: 850px;
+  margin: 0 auto;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .scansion-stepper-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+  padding: 12px;
+  border-radius: 24px;
+  background: rgba(255, 250, 240, 0.82);
+  border: 1px solid rgba(120, 88, 23, 0.16);
+}
+
+#prosodyLab .scansion-stepper-nav button {
+  min-height: 74px !important;
+  padding: 10px !important;
+  border-radius: 16px !important;
+  background: #fffdf7 !important;
+  color: #0b3d2e !important;
+  border: 1px solid rgba(11, 61, 46, 0.14) !important;
+  box-shadow: none !important;
+  font-weight: 900 !important;
+}
+
+#prosodyLab .scansion-stepper-nav button span {
+  display: block;
+  margin-bottom: 5px;
+  color: #7c5b18 !important;
+  font-size: 13px;
+}
+
+#prosodyLab .scansion-stepper-nav button.active,
+#prosodyLab .scansion-stepper-nav button:hover {
+  background: linear-gradient(135deg, #0b3d2e, #7c5b18) !important;
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .scansion-stepper-nav button.active span,
+#prosodyLab .scansion-stepper-nav button:hover span {
+  color: #fff1b8 !important;
+}
+
+#prosodyLab .scansion-panel {
+  display: none;
+  padding: 22px;
+  border-radius: 26px;
+  background: #fffaf0;
+  border: 1px solid rgba(120, 88, 23, 0.16);
+  text-align: center;
+}
+
+#prosodyLab .scansion-panel.active {
+  display: block;
+}
+
+#prosodyLab .scansion-panel h4 {
+  margin: 0 0 10px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+}
+
+#prosodyLab .scansion-panel p {
+  max-width: 820px;
+  margin: 0 auto 14px;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .scansion-panel strong {
+  color: #0b3d2e !important;
+}
+
+@media (max-width: 900px) {
+  #prosodyLab .scansion-stepper-nav {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  #prosodyLab .scansion-stepper-nav {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   Meter Selector Board
+===================================================== */
+
+#prosodyLab .meters-selector-board {
+  margin: 18px 0 22px;
+  padding: 22px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top right, rgba(184, 138, 34, 0.13), transparent 34%),
+    linear-gradient(135deg, #fffdf7, #f4ead1);
+  border: 1px solid rgba(120, 88, 23, 0.18);
+  box-shadow: 0 18px 40px rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .meters-selector-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+#prosodyLab .meters-selector-head span {
+  display: inline-flex;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(184, 138, 34, 0.16);
+  color: #7c5b18 !important;
+  font-weight: 900;
+}
+
+#prosodyLab .meters-selector-head h4 {
+  margin: 12px 0 8px;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: clamp(30px, 4vw, 42px);
+}
+
+#prosodyLab .meters-selector-head p {
+  max-width: 850px;
+  margin: 0 auto;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+#prosodyLab .meters-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+#prosodyLab .meters-selector-grid button {
+  min-height: 205px;
+  padding: 18px !important;
+  border-radius: 24px !important;
+  text-align: right !important;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.25), transparent 35%),
+    linear-gradient(135deg, #fffaf0, #eef7f0) !important;
+  color: #17382f !important;
+  border: 1px solid rgba(120, 88, 23, 0.18) !important;
+  box-shadow: 0 14px 30px rgba(11, 61, 46, 0.08) !important;
+}
+
+#prosodyLab .meters-selector-grid button.active,
+#prosodyLab .meters-selector-grid button:hover {
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.20), transparent 35%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18) !important;
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .meters-selector-grid span {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0b3d2e, #12634a);
+  color: #fff7d6 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+#prosodyLab .meters-selector-grid button.active span,
+#prosodyLab .meters-selector-grid button:hover span {
+  background: rgba(255, 247, 214, 0.16);
+}
+
+#prosodyLab .meters-selector-grid strong {
+  display: block;
+  color: #0b3d2e !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+#prosodyLab .meters-selector-grid button.active strong,
+#prosodyLab .meters-selector-grid button:hover strong,
+#prosodyLab .meters-selector-grid button.active small,
+#prosodyLab .meters-selector-grid button:hover small,
+#prosodyLab .meters-selector-grid button.active p,
+#prosodyLab .meters-selector-grid button:hover p {
+  color: #fff7d6 !important;
+}
+
+#prosodyLab .meters-selector-grid small {
+  display: block;
+  color: #7c5b18 !important;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+#prosodyLab .meters-selector-grid p {
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.8 !important;
+  margin: 0;
+}
+
+#prosodyLab .meter-profile-stage {
+  margin: 16px 0 22px;
+}
+
+#prosodyLab .meter-profile-panel {
+  display: none;
+}
+
+#prosodyLab .meter-profile-panel.active {
+  display: block;
+}
+
+#prosodyLab .meter-profile-open-note {
+  padding: 20px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.14), transparent 34%),
+    linear-gradient(135deg, #0b3d2e, #7c5b18);
+  border: 1px solid rgba(234, 211, 154, 0.26);
+  text-align: center;
+}
+
+#prosodyLab .meter-profile-open-note h4 {
+  margin: 0 0 8px;
+  color: #fff7d6 !important;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+}
+
+#prosodyLab .meter-profile-open-note p {
+  margin: 0;
+  color: #f9f0d2 !important;
+  font-weight: 800;
+  line-height: 2;
+}
+
+@media (max-width: 1000px) {
+  #prosodyLab .meters-selector-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  #prosodyLab .meters-selector-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* =====================================================
+   Rajaz Accordion Cleanup
+   إخفاء التفاصيل القديمة إلا عند الطلب
+===================================================== */
+
+/* إخفاء الأقسام التعليمية القديمة افتراضيًا */
+#prosodyLab .rajaz-master-panel:not(.show-rajaz-understanding) .rajaz-core-board,
+#prosodyLab .rajaz-master-panel:not(.show-rajaz-teacher) .rajaz-teacher-lesson,
+#prosodyLab .rajaz-master-panel:not(.show-rajaz-compare) .rajaz-compare-board,
+#prosodyLab .rajaz-master-panel:not(.show-rajaz-map) .rajaz-learning-map {
+  display: none;
+}
+
+/* إخفاء أزرار الرجز القديمة لأنها أصبحت موجودة داخل Accordion */
+#prosodyLab .rajaz-master-panel > .rajaz-master-steps,
+#prosodyLab .rajaz-master-panel > .rajaz-master-note {
+  display: none;
+}
+
+/* لمسة على القسم المفتوح */
+#prosodyLab .rajaz-master-panel.show-rajaz-understanding .rajaz-core-board,
+#prosodyLab .rajaz-master-panel.show-rajaz-teacher .rajaz-teacher-lesson,
+#prosodyLab .rajaz-master-panel.show-rajaz-compare .rajaz-compare-board,
+#prosodyLab .rajaz-master-panel.show-rajaz-map .rajaz-learning-map {
+  animation: rajazDetailFade 0.25s ease;
+}
+
+@keyframes rajazDetailFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#prosodyLab .rajaz-accordion-placeholder button {
+  margin-top: 8px;
+}
+/* =====================================================
+   Meters Module Cleanup
+   تنظيف باب البحور من العناصر القديمة المكررة
+===================================================== */
+
+/* إخفاء بطاقات البحور القديمة لأن عندنا الآن meters-selector-board */
+#prosodyLab #prosodyModuleMeters > .prosody-meter-module-grid {
+  display: none;
+}
+
+/* إخفاء أزرار البحور القديمة أسفل القسم */
+#prosodyLab #prosodyModuleMeters > .prosody-module-actions {
+  display: none;
+}
+
+/* جعل لوحة المرجع أقل بروزًا حتى لا تزاحم اختيار البحر */
+#prosodyLab #prosodyReferenceViewer {
+  margin-top: 18px;
+}
+
+/* يمكن لاحقًا تحويل بنك المرجع إلى زر فتح/إغلاق، لكن الآن نخفف الزحمة فقط */
+#prosodyLab #prosodyReferenceViewer .prosody-reference-card {
+  border-radius: 28px;
+}
+
+/* =====================================================
+   Prosody Reference Viewer Toggle
+===================================================== */
+
+#prosodyLab .prosody-reference-toggle-bar {
+  margin: 18px 0 12px;
+  padding: 16px;
+  border-radius: 24px;
+  background: #fffaf0;
+  border: 1px solid rgba(120, 88, 23, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+#prosodyLab .prosody-reference-toggle-bar button {
+  min-width: 190px;
+}
+
+#prosodyLab .prosody-reference-toggle-bar p {
+  margin: 0;
+  color: #31483f !important;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+#prosodyLab #prosodyReferenceViewer {
+  display: none;
+}
+
+#prosodyLab #prosodyReferenceViewer.is-open {
+  display: block;
+  animation: prosodyReferenceFade 0.25s ease;
+}
+
+@keyframes prosodyReferenceFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================================
+   Prosody Lab Global Card Cleanup
+   ترتيب عام لبطاقات مختبر العَروض بدون لمس الوظائف
+===================================================== */
+
+/* مسافة عامة بين أقسام العروض */
+#prosodyLab .prosody-dashboard-clean,
+#prosodyLab .prosody-command-center-v2,
+#prosodyLab .prosody-module-stage,
+#prosodyLab .meters-selector-board,
+#prosodyLab .rajaz-master-panel,
+#prosodyLab .foundations-learning-board,
+#prosodyLab .scansion-stepper-board {
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* جعل الأقسام الرئيسية أهدأ وأقل تكدسًا */
+#prosodyLab .prosody-module-screen.active {
+  display: block;
+  padding-block: 10px;
+}
+
+/* توحيد شكل البطاقات الكبيرة */
+#prosodyLab .prosody-module-hero-card,
+#prosodyLab .prosody-result-card,
+#prosodyLab .rajaz-master-panel,
+#prosodyLab .foundations-learning-board,
+#prosodyLab .scansion-stepper-board,
+#prosodyLab .meters-selector-board,
+#prosodyLab .rajaz-core-board,
+#prosodyLab .rajaz-learning-map,
+#prosodyLab .rajaz-teacher-lesson,
+#prosodyLab .rajaz-compare-board {
+  margin-bottom: 18px;
+}
+
+/* تقليل ضخامة بعض البطاقات */
+#prosodyLab .prosody-module-hero-card,
+#prosodyLab .prosody-result-card {
+  padding: 18px !important;
+  border-radius: 24px !important;
+}
+
+/* تحسين عناوين الأقسام */
+#prosodyLab h2,
+#prosodyLab h3,
+#prosodyLab h4 {
+  letter-spacing: 0;
+}
+
+/* تقليل الفوضى داخل الشبكات */
+#prosodyLab .prosody-command-grid,
+#prosodyLab .prosody-dashboard-flow,
+#prosodyLab .meters-selector-grid,
+#prosodyLab .rajaz-learning-map-grid,
+#prosodyLab .rajaz-master-steps,
+#prosodyLab .scansion-learning-ladder,
+#prosodyLab .prosody-reference-grid {
+  gap: 14px !important;
+}
+
+/* جعل بطاقات التنقل متقاربة بصريًا */
+#prosodyLab .prosody-command-card,
+#prosodyLab .meters-selector-grid button,
+#prosodyLab .rajaz-learning-map-grid button,
+#prosodyLab .scansion-step-card,
+#prosodyLab .prosody-reference-meter {
+  min-height: auto !important;
+  padding: 16px !important;
+  border-radius: 22px !important;
+}
+
+/* تقليل طول النصوص داخل البطاقات */
+#prosodyLab .prosody-command-card p,
+#prosodyLab .meters-selector-grid p,
+#prosodyLab .rajaz-learning-map-grid p,
+#prosodyLab .scansion-step-card p,
+#prosodyLab .prosody-reference-meter p {
+  font-size: 0.92rem;
+  line-height: 1.7 !important;
+}
+
+/* جعل أرقام البطاقات أصغر وأنظف */
+#prosodyLab .prosody-command-card span,
+#prosodyLab .meters-selector-grid span,
+#prosodyLab .rajaz-learning-map-grid span,
+#prosodyLab .scansion-step-card span,
+#prosodyLab .rajaz-master-steps span {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 14px !important;
+  font-size: 13px !important;
+}
+
+/* تحسين أزرار الأكوردين/التنقل */
+#prosodyLab .rajaz-accordion-nav,
+#prosodyLab .foundations-accordion-nav,
+#prosodyLab .scansion-stepper-nav {
+  position: sticky;
+  top: 78px;
+  z-index: 5;
+  backdrop-filter: blur(10px);
+}
+
+/* جعل أزرار الأكوردين أقل ضخامة */
+#prosodyLab .rajaz-accordion-nav button,
+#prosodyLab .foundations-accordion-nav button,
+#prosodyLab .scansion-stepper-nav button {
+  min-height: 56px !important;
+  font-size: 0.9rem !important;
+}
+
+/* إظهار القسم المفتوح بشكل واضح */
+#prosodyLab .rajaz-accordion-panel.active,
+#prosodyLab .foundations-panel.active,
+#prosodyLab .scansion-panel.active,
+#prosodyLab .meter-profile-panel.active {
+  animation: prosodyPanelSoftIn 0.22s ease;
+}
+
+@keyframes prosodyPanelSoftIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ترتيب خاص بملف الرجز حتى لا يبدو كأنه بطاقات متراكمة */
+#prosodyLab .rajaz-master-panel {
+  padding: 22px !important;
+}
+
+#prosodyLab .rajaz-master-head {
+  margin-bottom: 14px !important;
+}
+
+#prosodyLab .rajaz-master-head h3 {
+  margin-bottom: 6px !important;
+}
+
+/* جعل لوحة الرجز تعتمد على التنقل بدل النزول الطويل */
+#prosodyLab .rajaz-accordion-stage {
+  margin-top: 14px !important;
+}
+
+/* تحسين شكل جدول المقارنة عند ظهوره */
+#prosodyLab .rajaz-compare-table {
+  overflow-x: auto;
+}
+
+#prosodyLab .rajaz-compare-row {
+  min-width: 860px;
+}
+
+/* تخفيف بنك المرجع إذا ظهر */
+#prosodyLab #prosodyReferenceViewer .prosody-reference-card {
+  padding: 18px !important;
+}
+
+#prosodyLab #prosodyReferenceViewer .prosody-reference-head h3 {
+  font-size: 30px !important;
+}
+
+/* تحسين الموبايل */
+@media (max-width: 768px) {
+  #prosodyLab .prosody-dashboard-clean,
+  #prosodyLab .prosody-command-center-v2,
+  #prosodyLab .meters-selector-board,
+  #prosodyLab .rajaz-master-panel,
+  #prosodyLab .foundations-learning-board,
+  #prosodyLab .scansion-stepper-board {
+    padding: 16px !important;
+    border-radius: 24px !important;
+  }
+
+  #prosodyLab .rajaz-accordion-nav,
+  #prosodyLab .foundations-accordion-nav,
+  #prosodyLab .scansion-stepper-nav {
+    position: static;
+  }
+
+  #prosodyLab .prosody-dashboard-hero h2,
+  #prosodyLab .prosody-command-head h2,
+  #prosodyLab .rajaz-master-head h3 {
+    font-size: 30px !important;
+  }
+
+  #prosodyLab .prosody-module-hero-card p,
+  #prosodyLab .prosody-dashboard-hero p,
+  #prosodyLab .rajaz-master-head p {
+    font-size: 0.95rem;
+    line-height: 1.9 !important;
+  }
+}
+
+/* =====================================================
+   Patch 22H — Prosody Lab Visual Breathing Room
+   تنظيف بصري نهائي بدون لمس الوظائف
+===================================================== */
+
+/* مساحة تنفس عامة داخل مختبر العروض */
+#prosodyLab {
+  --prosody-section-gap: 22px;
+  --prosody-card-radius: 24px;
+  --prosody-soft-border: 1px solid rgba(120, 88, 23, 0.14);
+}
+
+/* تقليل عرض المحتوى حتى لا يمتد بشكل مزعج */
+#prosodyLab .prosody-shell,
+#prosodyLab .prosody-body,
+#prosodyLab .prosody-dashboard-clean,
+#prosodyLab .prosody-module-screen.active,
+#prosodyLab .rajaz-master-panel {
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+/* جعل كل شاشة داخلية أهدأ */
+#prosodyLab .prosody-module-screen.active {
+  padding: 14px 4px 28px;
+}
+
+/* تقليل ضخامة الهيرو داخل كل باب */
+#prosodyLab .prosody-module-hero-card {
+  padding: 18px 20px !important;
+  border-radius: 24px !important;
+  margin-bottom: 18px !important;
+}
+
+#prosodyLab .prosody-module-hero-card h3 {
+  font-size: clamp(26px, 3vw, 36px) !important;
+  margin-bottom: 8px !important;
+}
+
+#prosodyLab .prosody-module-hero-card p {
+  max-width: 850px;
+  margin-inline: auto;
+  line-height: 1.9 !important;
+}
+
+/* جعل لوحة القيادة أقل ارتفاعًا */
+#prosodyLab .prosody-dashboard-clean {
+  padding: 22px !important;
+  margin-top: 18px !important;
+  margin-bottom: 22px !important;
+  border-radius: 30px !important;
+}
+
+#prosodyLab .prosody-dashboard-hero h2 {
+  font-size: clamp(32px, 4vw, 48px) !important;
+  margin: 10px 0 8px !important;
+}
+
+#prosodyLab .prosody-dashboard-flow div {
+  padding: 14px !important;
+  border-radius: 20px !important;
+}
+
+/* تقليل تضخم بطاقات الاختيار */
+#prosodyLab .meters-selector-board,
+#prosodyLab .foundations-learning-board,
+#prosodyLab .scansion-stepper-board,
+#prosodyLab .rajaz-master-panel {
+  padding: 20px !important;
+  border-radius: 30px !important;
+  margin-bottom: 22px !important;
+}
+
+/* لوحة اختيار البحور تصبح أخف */
+#prosodyLab .meters-selector-grid {
+  gap: 12px !important;
+}
+
+#prosodyLab .meters-selector-grid button {
+  min-height: 165px !important;
+  padding: 14px !important;
+}
+
+#prosodyLab .meters-selector-grid strong {
+  font-size: 22px !important;
+}
+
+#prosodyLab .meters-selector-grid p {
+  font-size: 0.9rem !important;
+  line-height: 1.7 !important;
+}
+
+/* ملف الرجز يظهر كملف واحد واضح */
+#prosodyLab .rajaz-master-panel {
+  border: 2px solid rgba(11, 61, 46, 0.10);
+}
+
+#prosodyLab .rajaz-master-head {
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(120, 88, 23, 0.14);
+}
+
+#prosodyLab .rajaz-master-head h3 {
+  font-size: clamp(34px, 4vw, 48px) !important;
+}
+
+/* أزرار Accordion أوضح وأقل ضخامة */
+#prosodyLab .rajaz-accordion-nav,
+#prosodyLab .foundations-accordion-nav,
+#prosodyLab .scansion-stepper-nav {
+  gap: 8px !important;
+  padding: 10px !important;
+  border-radius: 22px !important;
+  margin: 16px 0 !important;
+}
+
+#prosodyLab .rajaz-accordion-nav button,
+#prosodyLab .foundations-accordion-nav button,
+#prosodyLab .scansion-stepper-nav button {
+  min-height: 52px !important;
+  padding: 8px 10px !important;
+  border-radius: 15px !important;
+}
+
+/* القسم المفتوح فقط يأخذ اهتمامًا واضحًا */
+#prosodyLab .rajaz-accordion-panel.active,
+#prosodyLab .foundations-panel.active,
+#prosodyLab .scansion-panel.active,
+#prosodyLab .meter-profile-panel.active {
+  margin-top: 12px;
+  border-radius: 24px;
+}
+
+/* تقليل النصوص الطويلة داخل البطاقات */
+#prosodyLab p {
+  line-height: 1.85;
+}
+
+/* جعل أزرار الإجراءات أكثر ترتيبًا */
+#prosodyLab .prosody-dashboard-actions,
+#prosodyLab .prosody-module-actions,
+#prosodyLab .prosody-practice-actions,
+#prosodyLab .rajaz-accordion-actions,
+#prosodyLab .foundations-panel-actions {
+  gap: 10px !important;
+  margin-top: 14px !important;
+}
+
+#prosodyLab button {
+  line-height: 1.5;
+}
+
+/* تقليل ظهور بنك المرجع حتى عند فتحه */
+#prosodyLab #prosodyReferenceViewer.is-open {
+  margin-top: 12px !important;
+}
+
+#prosodyLab #prosodyReferenceViewer .prosody-reference-card {
+  padding: 16px !important;
+  border-radius: 24px !important;
+}
+
+#prosodyLab #prosodyReferenceViewer .prosody-reference-grid {
+  gap: 10px !important;
+}
+
+#prosodyLab #prosodyReferenceViewer .prosody-reference-meter {
+  padding: 14px !important;
+  border-radius: 20px !important;
+}
+
+/* تقليل ازدحام صندوق التقطيع والأساسيات */
+#prosodyLab .scansion-learning-ladder,
+#prosodyLab .prosody-symbol-preview,
+#prosodyLab .scansion-teacher-note {
+  margin-top: 14px !important;
+}
+
+/* إذا بقيت بطاقات قديمة ظاهرة داخل التقطيع، نجعلها أخف */
+#prosodyLab .scansion-step-card {
+  min-height: 150px !important;
+}
+
+/* تحسين الموبايل */
+@media (max-width: 768px) {
+  #prosodyLab .prosody-dashboard-clean,
+  #prosodyLab .meters-selector-board,
+  #prosodyLab .foundations-learning-board,
+  #prosodyLab .scansion-stepper-board,
+  #prosodyLab .rajaz-master-panel {
+    padding: 14px !important;
+    border-radius: 22px !important;
+  }
+
+  #prosodyLab .prosody-dashboard-flow,
+  #prosodyLab .meters-selector-grid {
+    gap: 10px !important;
+  }
+
+  #prosodyLab .meters-selector-grid button {
+    min-height: auto !important;
+  }
+
+  #prosodyLab .prosody-dashboard-hero h2,
+  #prosodyLab .rajaz-master-head h3 {
+    font-size: 30px !important;
+  }
+}
+/* =====================================================
+   Prosody Lab - Rajaz UI Organization Patch
+   Safe CSS-only polish
+===================================================== */
+
+#prosodyLab #prosodyModuleMeters {
+  padding-bottom: 48px;
+}
+
+/* Make meters page breathe */
+#prosodyLab #prosodyModuleMeters .prosody-card,
+#prosodyLab #prosodyModuleMeters .rajaz-core-board,
+#prosodyLab #prosodyModuleMeters .rajaz-teacher-lesson,
+#prosodyLab #prosodyModuleMeters .rajaz-compare-board,
+#prosodyLab #prosodyModuleMeters .rajaz-learning-map {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Rajaz main sections */
+#prosodyLab .rajaz-core-board,
+#prosodyLab .rajaz-teacher-lesson,
+#prosodyLab .rajaz-compare-board,
+#prosodyLab .rajaz-learning-map {
+  margin-top: 22px !important;
+  padding: 22px !important;
+  border-radius: 24px !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.22) !important;
+}
+
+/* Reduce visual crowding inside Rajaz sections */
+#prosodyLab .rajaz-core-board > *,
+#prosodyLab .rajaz-teacher-lesson > *,
+#prosodyLab .rajaz-compare-board > *,
+#prosodyLab .rajaz-learning-map > * {
+  max-width: 100%;
+}
+
+/* Titles inside Rajaz */
+#prosodyLab .rajaz-core-board h2,
+#prosodyLab .rajaz-core-board h3,
+#prosodyLab .rajaz-teacher-lesson h2,
+#prosodyLab .rajaz-teacher-lesson h3,
+#prosodyLab .rajaz-compare-board h2,
+#prosodyLab .rajaz-compare-board h3,
+#prosodyLab .rajaz-learning-map h2,
+#prosodyLab .rajaz-learning-map h3 {
+  margin-top: 0 !important;
+  line-height: 1.5 !important;
+}
+
+/* Buttons / action cards spacing */
+#prosodyLab .rajaz-action-row,
+#prosodyLab .rajaz-detail-actions,
+#prosodyLab .rajaz-tabs,
+#prosodyLab .rajaz-nav,
+#prosodyLab .meter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0 18px;
+}
+
+/* Make buttons calmer */
+#prosodyLab .rajaz-action-row button,
+#prosodyLab .rajaz-detail-actions button,
+#prosodyLab .rajaz-tabs button,
+#prosodyLab .rajaz-nav button,
+#prosodyLab .meter-actions button {
+  border-radius: 999px !important;
+  padding: 10px 16px !important;
+  line-height: 1.4 !important;
+}
+
+/* Cards/grids inside Rajaz */
+#prosodyLab .rajaz-core-board .prosody-grid,
+#prosodyLab .rajaz-teacher-lesson .prosody-grid,
+#prosodyLab .rajaz-compare-board .prosody-grid,
+#prosodyLab .rajaz-learning-map .prosody-grid,
+#prosodyLab .rajaz-core-board .rajaz-grid,
+#prosodyLab .rajaz-teacher-lesson .rajaz-grid,
+#prosodyLab .rajaz-compare-board .rajaz-grid,
+#prosodyLab .rajaz-learning-map .rajaz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+  gap: 14px !important;
+}
+
+/* Inner cards */
+#prosodyLab .rajaz-core-board .prosody-mini-card,
+#prosodyLab .rajaz-teacher-lesson .prosody-mini-card,
+#prosodyLab .rajaz-compare-board .prosody-mini-card,
+#prosodyLab .rajaz-learning-map .prosody-mini-card,
+#prosodyLab .rajaz-core-board .rajaz-card,
+#prosodyLab .rajaz-teacher-lesson .rajaz-card,
+#prosodyLab .rajaz-compare-board .rajaz-card,
+#prosodyLab .rajaz-learning-map .rajaz-card {
+  min-height: auto !important;
+  padding: 16px !important;
+  border-radius: 18px !important;
+}
+
+/* Text readability */
+#prosodyLab .rajaz-core-board p,
+#prosodyLab .rajaz-teacher-lesson p,
+#prosodyLab .rajaz-compare-board p,
+#prosodyLab .rajaz-learning-map p,
+#prosodyLab .rajaz-core-board li,
+#prosodyLab .rajaz-teacher-lesson li,
+#prosodyLab .rajaz-compare-board li,
+#prosodyLab .rajaz-learning-map li {
+  line-height: 1.9 !important;
+}
+
+/* Keep long Arabic examples readable */
+#prosodyLab .rajaz-core-board,
+#prosodyLab .rajaz-teacher-lesson,
+#prosodyLab .rajaz-compare-board,
+#prosodyLab .rajaz-learning-map {
+  overflow-wrap: anywhere;
+}
+
+/* Mobile safety */
+@media (max-width: 768px) {
+  #prosodyLab .rajaz-core-board,
+  #prosodyLab .rajaz-teacher-lesson,
+  #prosodyLab .rajaz-compare-board,
+  #prosodyLab .rajaz-learning-map {
+    padding: 16px !important;
+    border-radius: 18px !important;
+  }
+
+  #prosodyLab .rajaz-action-row,
+  #prosodyLab .rajaz-detail-actions,
+  #prosodyLab .rajaz-tabs,
+  #prosodyLab .rajaz-nav,
+  #prosodyLab .meter-actions {
+    flex-direction: column;
+  }
+
+  #prosodyLab .rajaz-action-row button,
+  #prosodyLab .rajaz-detail-actions button,
+  #prosodyLab .rajaz-tabs button,
+  #prosodyLab .rajaz-nav button,
+  #prosodyLab .meter-actions button {
+    width: 100%;
+  }
+}
+/* =====================================================
+   Prosody Lab - Rajaz Learning Path Buttons
+   CSS-only safe patch
+===================================================== */
+
+#prosodyLab .rajaz-detail-actions,
+#prosodyLab .rajaz-action-row,
+#prosodyLab .meter-actions {
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+#prosodyLab .rajaz-detail-actions button,
+#prosodyLab .rajaz-action-row button,
+#prosodyLab .meter-actions button {
+  position: relative;
+  min-width: 170px;
+  font-weight: 800;
+  letter-spacing: 0;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+}
+
+#prosodyLab .rajaz-detail-actions button:nth-child(1)::before,
+#prosodyLab .rajaz-action-row button:nth-child(1)::before {
+  content: "١";
+}
+
+#prosodyLab .rajaz-detail-actions button:nth-child(2)::before,
+#prosodyLab .rajaz-action-row button:nth-child(2)::before {
+  content: "٢";
+}
+
+#prosodyLab .rajaz-detail-actions button:nth-child(3)::before,
+#prosodyLab .rajaz-action-row button:nth-child(3)::before {
+  content: "٣";
+}
+
+#prosodyLab .rajaz-detail-actions button:nth-child(4)::before,
+#prosodyLab .rajaz-action-row button:nth-child(4)::before {
+  content: "٤";
+}
+
+#prosodyLab .rajaz-detail-actions button::before,
+#prosodyLab .rajaz-action-row button::before {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  font-size: 0.85rem;
+  font-weight: 900;
+}
+
+#prosodyLab .rajaz-detail-actions button:hover,
+#prosodyLab .rajaz-action-row button:hover,
+#prosodyLab .meter-actions button:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .rajaz-detail-actions button,
+  #prosodyLab .rajaz-action-row button,
+  #prosodyLab .meter-actions button {
+    min-width: 100%;
+  }
+}
+/* =====================================================
+   Prosody Lab - Learning Windows System
+===================================================== */
+
+#prosodyLab .prosody-learning-windows-system {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 22px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 214, 102, 0.12), transparent 34%),
+    linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.035));
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.22);
+}
+
+#prosodyLab .prosody-learning-windows-head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+#prosodyLab .prosody-learning-windows-head span {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  font-weight: 800;
+}
+
+#prosodyLab .prosody-learning-windows-head h4 {
+  margin: 6px 0 8px;
+  font-size: 1.35rem;
+  line-height: 1.6;
+}
+
+#prosodyLab .prosody-learning-windows-head p {
+  max-width: 760px;
+  margin: 0 auto;
+  line-height: 1.9;
+  opacity: 0.92;
+}
+
+#prosodyLab .prosody-learning-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 10px;
+  margin: 20px 0;
+}
+
+#prosodyLab .prosody-learning-tab {
+  min-height: 54px;
+  border-radius: 18px;
+  padding: 11px 12px;
+  font-weight: 900;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.065);
+  color: inherit;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+#prosodyLab .prosody-learning-tab:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.11);
+}
+
+#prosodyLab .prosody-learning-tab.active {
+  background: linear-gradient(135deg, rgba(255,214,102,0.28), rgba(148,102,255,0.18));
+  box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+  border-color: rgba(255,214,102,0.38);
+}
+
+#prosodyLab .prosody-learning-stage {
+  margin-top: 16px;
+}
+
+#prosodyLab .prosody-learning-window {
+  display: none;
+  padding: 22px;
+  border-radius: 24px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.11);
+  animation: prosodyWindowFade 0.22s ease;
+}
+
+#prosodyLab .prosody-learning-window.active {
+  display: block;
+}
+
+#prosodyLab .prosody-learning-window h4 {
+  margin-top: 0;
+  line-height: 1.6;
+}
+
+#prosodyLab .prosody-learning-window p {
+  line-height: 1.95;
+  font-size: 1rem;
+}
+
+#prosodyLab .prosody-window-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+#prosodyLab .prosody-window-actions button {
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 900;
+}
+
+@keyframes prosodyWindowFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  #prosodyLab .prosody-learning-windows-system {
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  #prosodyLab .prosody-learning-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  #prosodyLab .prosody-learning-window {
+    padding: 16px;
+  }
+
+  #prosodyLab .prosody-window-actions {
+    flex-direction: column;
+  }
+
+  #prosodyLab .prosody-window-actions button {
+    width: 100%;
+  }
+}

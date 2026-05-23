@@ -3897,61 +3897,595 @@ const irregularGameBank = [
 ];
 let irregularState = { index: 0, score: 0, target: 'past' };
 
-function startIrregularGame() {
-  irregularState = { index: 0, score: 0, target: Math.random() > .5 ? 'past' : 'pp' };
+ function startIrregularGame() {
+  irregularState = {
+    index: 0,
+    score: 0,
+    xp: 0,
+    streak: 0,
+    lives: 3,
+    selectedPast: "",
+    selectedPP: "",
+    feedback: "Start your verb mission!",
+    completed: false
+  };
+
   renderIrregularQuestion();
 }
 
-function renderIrregularQuestion() {
-  if (!$('gameArea')) return;
+window.startIrregularGame = startIrregularGame;
+
+ function renderIrregularQuestion() {
+  if (!$("gameArea")) return;
+
   const q = irregularGameBank[irregularState.index % irregularGameBank.length];
-  const targetLabel = irregularState.target === 'past' ? 'past simple' : 'past participle';
-  const correct = q[irregularState.target];
-  const all = [...new Set(irregularGameBank.flatMap(v => [v.past, v.pp]))].filter(x => x !== correct);
-  const options = [correct, ...all.sort(() => Math.random() - .5).slice(0, 3)].sort(() => Math.random() - .5);
+
+  const distractors = [...new Set(
+    irregularGameBank.flatMap(v => [v.past, v.pp, v.base])
+  )].filter(word => word !== q.past && word !== q.pp && word !== q.base);
+
+  const wordBank = [
+    q.past,
+    q.pp,
+    ...distractors.sort(() => Math.random() - 0.5).slice(0, 4)
+  ].sort(() => Math.random() - 0.5);
+
+  const pastFilled = irregularState.selectedPast || "_____";
+  const ppFilled = irregularState.selectedPP || "_____";
+
+  const pastDone = irregularState.selectedPast === q.past;
+  const ppDone = irregularState.selectedPP === q.pp;
+  const missionComplete = pastDone && ppDone;
+
   gameArea.innerHTML = `
-    <div class="box">
-      <span class="badge">Irregular Verbs</span>
-      <h2>What is the ${targetLabel} of: ${q.base}?</h2>
-      <p>Arabic meaning: ${q.ar}</p>
-      <p><b>Score:</b> ${irregularState.score}</p>
-      <div class="actions">${options.map(o => `<button onclick="answerIrregular('${o.replace(/'/g, "\\'")}','${correct.replace(/'/g, "\\'")}')">${o}</button>`).join('')}</div>
-    </div>`;
+    <div class="verb-quest-shell">
+      <div class="verb-quest-top">
+        <div>
+          <span class="verb-quest-badge">Verb Quest</span>
+          <h2>Complete the Verb Chain ⚔️</h2>
+          <p>Build the full irregular verb power chain.</p>
+        </div>
+
+        <div class="verb-quest-mission">
+          <span>Mission</span>
+          <strong>${irregularState.index + 1}</strong>
+        </div>
+      </div>
+
+      <div class="verb-quest-stats">
+        <div>
+          <span>XP</span>
+          <strong>${irregularState.xp || 0}</strong>
+        </div>
+        <div>
+          <span>Score</span>
+          <strong>${irregularState.score || 0}</strong>
+        </div>
+        <div>
+          <span>Streak</span>
+          <strong>${irregularState.streak || 0}</strong>
+        </div>
+        <div>
+          <span>Hearts</span>
+          <strong>${"❤️".repeat(Math.max(0, irregularState.lives ?? 3)) || "0"}</strong>
+        </div>
+      </div>
+
+      <div class="verb-quest-card">
+        <span class="verb-quest-label">Arabic Meaning</span>
+        <p>${safeText(q.ar)}</p>
+
+        <div class="verb-chain">
+          <div class="verb-chain-slot base done">
+            <span>Base</span>
+            <strong>${safeText(q.base)}</strong>
+          </div>
+
+          <div class="verb-chain-arrow">→</div>
+
+          <div class="verb-chain-slot ${pastDone ? "done" : irregularState.selectedPast ? "wrong" : ""}">
+            <span>Past Simple</span>
+            <strong>${safeText(pastFilled)}</strong>
+          </div>
+
+          <div class="verb-chain-arrow">→</div>
+
+          <div class="verb-chain-slot ${ppDone ? "done" : irregularState.selectedPP ? "wrong" : ""}">
+            <span>Past Participle</span>
+            <strong>${safeText(ppFilled)}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="verb-word-bank">
+        <h3>Choose words from the power bank</h3>
+        <div class="verb-word-buttons">
+          ${wordBank.map(word => `
+            <button onclick="chooseVerbQuestWord('${String(word).replace(/'/g, "\\'")}')">
+              ${safeText(word)}
+            </button>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="verb-quest-feedback ${missionComplete ? "success" : ""}">
+        ${missionComplete ? "Mission complete! Great chain building 🔥" : safeText(irregularState.feedback || "Choose the correct words.")}
+      </div>
+
+      <div class="verb-quest-actions">
+        <button onclick="resetVerbQuestMission()" class="secondary">Reset Mission</button>
+        <button onclick="nextVerbQuestMission()" ${missionComplete ? "" : "disabled"}>
+          Next Mission 🚀
+        </button>
+      </div>
+    </div>
+  `;
 }
+
+window.renderIrregularQuestion = renderIrregularQuestion;
 
 function answerIrregular(choice, correct) {
-  if (choice === correct) irregularState.score++;
-  else alert(`Wrong. Correct answer: ${correct}`);
-  irregularState.index++;
-  irregularState.target = Math.random() > .5 ? 'past' : 'pp';
-  renderIrregularQuestion();
+  chooseVerbQuestWord(choice);
 }
 
-const hangmanWords = ['grammar','vocabulary','passive','reported','conditionals','article','revision','achievement'];
-let hangmanState = { word: '', letters: [], wrong: 0 };
-function startHangmanGame() {
-  hangmanState = { word: hangmanWords[Math.floor(Math.random() * hangmanWords.length)], letters: [], wrong: 0 };
+window.answerIrregular = answerIrregular;
+
+// =========================
+// Hangman 2009 Level System
+// =========================
+function getHangmanWordLevel(item) {
+  const word = String(item.word || "").trim();
+
+  if (word.includes(" ")) return "phrase";
+
+  const cleanLength = word.replace(/[^a-zA-Z]/g, "").length;
+
+  if (cleanLength <= 6) return "easy";
+  if (cleanLength <= 10) return "medium";
+  if (cleanLength <= 14) return "hard";
+
+  return "challenge";
+}
+
+function getHangman2009WordsByLevel(level = "all") {
+  const bank = Array.isArray(window.hangman2009) ? window.hangman2009 : [];
+
+  if (level === "all") return bank;
+
+  return bank.filter(item => {
+    const itemLevel = item.level || getHangmanWordLevel(item);
+    return itemLevel === level;
+  });
+}
+
+function getRandomHangman2009Word(level = "all") {
+  const words = getHangman2009WordsByLevel(level);
+
+  if (!words.length) {
+    return {
+      word: "teacher",
+      ar: "معلم",
+      hint: "A person who teaches students.",
+      category: "Default",
+      level: "easy"
+    };
+  }
+
+  return words[Math.floor(Math.random() * words.length)];
+}
+
+window.getHangmanWordLevel = getHangmanWordLevel;
+window.getHangman2009WordsByLevel = getHangman2009WordsByLevel;
+window.getRandomHangman2009Word = getRandomHangman2009Word;
+
+// =========================
+// Hangman 2009 Word Bank
+// Source: 2009 vocabulary bank
+// =========================
+window.hangman2009 = [
+  {
+    word: "rival",
+    ar: "منافس",
+    hint: "A person or group that competes with others.",
+    category: "Communication",
+    level: "easy"
+  },
+  {
+    word: "omnivore",
+    ar: "آكل لحوم ونباتات",
+    hint: "A living being that eats plants and animals.",
+    category: "Animals",
+    level: "medium"
+  },
+  {
+    word: "terrified",
+    ar: "مرعوب",
+    hint: "Very frightened.",
+    category: "Feelings",
+    level: "medium"
+  },
+  {
+    word: "astonished",
+    ar: "مندهش",
+    hint: "Very surprised.",
+    category: "Feelings",
+    level: "medium"
+  },
+  {
+    word: "exasperated",
+    ar: "منزعج جدًا",
+    hint: "Very annoyed.",
+    category: "Feelings",
+    level: "hard"
+  },
+  {
+    word: "livid",
+    ar: "غاضب جدًا",
+    hint: "Furious.",
+    category: "Feelings",
+    level: "easy"
+  },
+  {
+    word: "ecstatic",
+    ar: "سعيد جدًا",
+    hint: "Thrilled.",
+    category: "Feelings",
+    level: "medium"
+  },
+  {
+    word: "bewildered",
+    ar: "مرتبك",
+    hint: "Confused.",
+    category: "Feelings",
+    level: "hard"
+  },
+  {
+    word: "devastated",
+    ar: "حزين جدًا",
+    hint: "Very sad.",
+    category: "Feelings",
+    level: "hard"
+  },
+  {
+    word: "poacher",
+    ar: "صياد غير قانوني",
+    hint: "Someone who illegally catches animals.",
+    category: "Environment",
+    level: "medium"
+  },
+  {
+    word: "drought",
+    ar: "جفاف",
+    hint: "A long period with little or no rain.",
+    category: "Weather",
+    level: "medium"
+  },
+  {
+    word: "humidity",
+    ar: "رطوبة",
+    hint: "The amount of water in the air.",
+    category: "Weather",
+    level: "medium"
+  },
+  {
+    word: "backbone",
+    ar: "عمود فقري",
+    hint: "The row of bones down the back.",
+    category: "Animals",
+    level: "medium"
+  },
+  {
+    word: "crustacean",
+    ar: "قشري",
+    hint: "An animal such as a crab or lobster.",
+    category: "Animals",
+    level: "hard"
+  },
+  {
+    word: "nocturnal",
+    ar: "ليلي",
+    hint: "Awake and active at night.",
+    category: "Animals",
+    level: "medium"
+  },
+  {
+    word: "invertebrate",
+    ar: "لا فقاري",
+    hint: "An animal without a backbone.",
+    category: "Animals",
+    level: "hard"
+  },
+  {
+    word: "mammal",
+    ar: "ثديي",
+    hint: "A warm-blooded animal that feeds its babies milk.",
+    category: "Animals",
+    level: "easy"
+  },
+  {
+    word: "reptile",
+    ar: "زاحف",
+    hint: "An animal such as a snake, lizard, or crocodile.",
+    category: "Animals",
+    level: "medium"
+  },
+  {
+    word: "solitary",
+    ar: "وحيد",
+    hint: "Usually alone, not with others.",
+    category: "Animals",
+    level: "medium"
+  },
+  {
+    word: "extinct",
+    ar: "منقرض",
+    hint: "No longer existing.",
+    category: "Environment",
+    level: "medium"
+  },
+  {
+    word: "marine",
+    ar: "بحري",
+    hint: "Related to the sea.",
+    category: "Environment",
+    level: "easy"
+  },
+  {
+    word: "immature",
+    ar: "غير ناضج",
+    hint: "Behaving in a way that is not sensible for your age.",
+    category: "Personality",
+    level: "medium"
+  },
+  {
+    word: "decent",
+    ar: "محترم / لبق",
+    hint: "Honest and good.",
+    category: "Personality",
+    level: "easy"
+  },
+  {
+    word: "capable",
+    ar: "قادر",
+    hint: "Having the skills and ability to do something.",
+    category: "Personality",
+    level: "medium"
+  },
+  {
+    word: "inspirational",
+    ar: "ملهم",
+    hint: "Giving you the idea to be successful or better.",
+    category: "Personality",
+    level: "hard"
+  },
+  {
+    word: "hypocritical",
+    ar: "منافق",
+    hint: "Saying one thing but doing something different.",
+    category: "Personality",
+    level: "hard"
+  },
+  {
+    word: "dedicated",
+    ar: "مخلص",
+    hint: "Working very hard because something is important.",
+    category: "Personality",
+    level: "medium"
+  },
+  {
+    word: "sincere",
+    ar: "صادق / مخلص",
+    hint: "Really believing what you say.",
+    category: "Personality",
+    level: "medium"
+  },
+  {
+    word: "compassionate",
+    ar: "متعاطف",
+    hint: "Kind and sympathetic to people who have problems.",
+    category: "Personality",
+    level: "hard"
+  },
+  {
+    word: "trustworthy",
+    ar: "جدير بالثقة",
+    hint: "Can always be trusted.",
+    category: "Personality",
+    level: "hard"
+  },
+  {
+    word: "conceited",
+    ar: "مغرور",
+    hint: "Telling people how great you are.",
+    category: "Personality",
+    level: "medium"
+  }
+];
+
+// =========================
+// Hangman 2009 - Word Escape V2
+// =========================
+let hangmanState = {
+  item: null,
+  word: "",
+  letters: [],
+  wrong: 0,
+  score: 0,
+  streak: 0,
+  level: "medium",
+  status: "playing"
+};
+
+function startHangmanGame(level = "medium") {
+  const item =
+    typeof getRandomHangman2009Word === "function"
+      ? getRandomHangman2009Word(level)
+      : { word: "grammar", ar: "قواعد", hint: "Rules of a language.", category: "English", level: "medium" };
+
+  hangmanState = {
+    item,
+    word: String(item.word || "grammar").toLowerCase(),
+    letters: [],
+    wrong: 0,
+    score: hangmanState?.score || 0,
+    streak: hangmanState?.streak || 0,
+    level,
+    status: "playing"
+  };
+
   renderHangman();
 }
+
 function renderHangman() {
-  if (!$('gameArea')) return;
-  const display = hangmanState.word.split('').map(ch => hangmanState.letters.includes(ch) ? ch : '_').join(' ');
-  const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  if (!$("gameArea")) return;
+
+  const item = hangmanState.item || {};
+  const word = String(hangmanState.word || "").toLowerCase();
+  const maxWrong = 6;
+
+  const display = word.split("").map(ch => {
+    if (ch === " ") return `<span class="word-escape-space"></span>`;
+    if (!/[a-z]/i.test(ch)) return `<span class="word-escape-letter revealed">${safeText(ch)}</span>`;
+    return hangmanState.letters.includes(ch)
+      ? `<span class="word-escape-letter revealed">${safeText(ch)}</span>`
+      : `<span class="word-escape-letter">?</span>`;
+  }).join("");
+
+  const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+
+  const won = word
+    .split("")
+    .filter(ch => /[a-z]/i.test(ch))
+    .every(ch => hangmanState.letters.includes(ch));
+
+  const lost = hangmanState.wrong >= maxWrong;
+
+  if (won && hangmanState.status === "playing") {
+    hangmanState.status = "won";
+    hangmanState.score += 10 + Math.max(0, maxWrong - hangmanState.wrong);
+    hangmanState.streak += 1;
+  }
+
+  if (lost && hangmanState.status === "playing") {
+    hangmanState.status = "lost";
+    hangmanState.streak = 0;
+  }
+
+  const livesLeft = Math.max(0, maxWrong - hangmanState.wrong);
+
   gameArea.innerHTML = `
-    <div class="box">
-      <span class="badge">Hangman</span>
-      <h2>${display}</h2>
-      <p>Wrong tries: ${hangmanState.wrong} / 6</p>
-      <div class="actions">${alphabet.map(l => `<button class="secondary" onclick="guessHangman('${l}')" ${hangmanState.letters.includes(l) ? 'disabled' : ''}>${l}</button>`).join('')}</div>
-    </div>`;
-  if (!display.includes('_')) setTimeout(() => alert('Excellent! You guessed the word ✅'), 100);
-  if (hangmanState.wrong >= 6) setTimeout(() => alert('Game over. Word: ' + hangmanState.word), 100);
+    <div class="word-escape-shell">
+      <div class="word-escape-header">
+        <div>
+          <span class="word-escape-badge">Hangman 2009</span>
+          <h2>Word Escape Mission 🕵️‍♂️</h2>
+          <p>Guess the vocabulary word before the energy runs out.</p>
+        </div>
+
+        <div class="word-escape-level">
+          <span>Level</span>
+          <strong>${safeText(hangmanState.level)}</strong>
+        </div>
+      </div>
+
+      <div class="word-escape-stats">
+        <div>
+          <span>Score</span>
+          <strong>${hangmanState.score}</strong>
+        </div>
+        <div>
+          <span>Streak</span>
+          <strong>${hangmanState.streak}</strong>
+        </div>
+        <div>
+          <span>Energy</span>
+          <strong>${"⚡".repeat(livesLeft) || "0"}</strong>
+        </div>
+        <div>
+          <span>Wrong</span>
+          <strong>${hangmanState.wrong}/${maxWrong}</strong>
+        </div>
+      </div>
+
+      <div class="word-escape-controls">
+        <button onclick="startHangmanGame('easy')" class="${hangmanState.level === "easy" ? "active" : ""}">Easy</button>
+        <button onclick="startHangmanGame('medium')" class="${hangmanState.level === "medium" ? "active" : ""}">Medium</button>
+        <button onclick="startHangmanGame('hard')" class="${hangmanState.level === "hard" ? "active" : ""}">Hard</button>
+        <button onclick="startHangmanGame('all')" class="${hangmanState.level === "all" ? "active" : ""}">Mixed</button>
+      </div>
+
+      <div class="word-escape-card">
+        <div class="word-escape-meta">
+          <span>${safeText(item.category || "Vocabulary 2009")}</span>
+          <span>${safeText(item.level || hangmanState.level)}</span>
+        </div>
+
+        <div class="word-escape-word">
+          ${display}
+        </div>
+
+        <div class="word-escape-hint">
+          <h3>Hint 💡</h3>
+          <p><strong>Arabic:</strong> ${safeText(item.ar || "-")}</p>
+          <p><strong>English:</strong> ${safeText(item.hint || "Guess the word from the vocabulary bank.")}</p>
+        </div>
+      </div>
+
+      <div class="word-escape-keyboard">
+        ${alphabet.map(letter => {
+          const used = hangmanState.letters.includes(letter);
+          const right = used && word.includes(letter);
+          const wrong = used && !word.includes(letter);
+
+          return `
+            <button
+              onclick="guessHangman('${letter}')"
+              class="${right ? "right" : wrong ? "wrong" : ""}"
+              ${used || won || lost ? "disabled" : ""}
+            >
+              ${letter.toUpperCase()}
+            </button>
+          `;
+        }).join("")}
+      </div>
+
+      <div class="word-escape-message ${won ? "win" : lost ? "lose" : ""}">
+        ${
+          won
+            ? `Mission Complete! The word was <strong>${safeText(word)}</strong> ✅`
+            : lost
+              ? `Mission Failed! The word was <strong>${safeText(word)}</strong> ❌`
+              : "Choose a letter to reveal the hidden word."
+        }
+      </div>
+
+      <div class="word-escape-actions">
+        <button onclick="startHangmanGame(hangmanState.level)">Next Word 🚀</button>
+        <button onclick="startHangmanGame('medium')" class="secondary">Restart</button>
+      </div>
+    </div>
+  `;
 }
+
 function guessHangman(letter) {
-  if (!hangmanState.letters.includes(letter)) hangmanState.letters.push(letter);
-  if (!hangmanState.word.includes(letter)) hangmanState.wrong++;
+  if (hangmanState.status !== "playing") return;
+
+  const word = String(hangmanState.word || "").toLowerCase();
+
+  if (!hangmanState.letters.includes(letter)) {
+    hangmanState.letters.push(letter);
+  }
+
+  if (!word.includes(letter)) {
+    hangmanState.wrong++;
+  }
+
   renderHangman();
 }
+
+window.startHangmanGame = startHangmanGame;
+window.renderHangman = renderHangman;
+window.guessHangman = guessHangman;
 
 function generateSmartPlan() {
   const subjects = (smartSubjects?.value || 'English, Grammar, Vocabulary').split(',').map(s => s.trim()).filter(Boolean);
@@ -12384,3 +12918,4552 @@ function renderExamMasteryBadge(percentage, isRetryPractice = false) {
 
 window.getExamMasteryBadge = getExamMasteryBadge;
 window.renderExamMasteryBadge = renderExamMasteryBadge;
+
+function chooseVerbQuestWord(word) {
+  const q = irregularGameBank[irregularState.index % irregularGameBank.length];
+
+  if ((irregularState.lives ?? 3) <= 0) {
+    irregularState.feedback = "Game over. Restart the quest to try again.";
+    renderIrregularQuestion();
+    return;
+  }
+
+  if (!irregularState.selectedPast) {
+    if (word === q.past) {
+      irregularState.selectedPast = word;
+      irregularState.score += 1;
+      irregularState.xp += 10;
+      irregularState.streak += 1;
+      irregularState.feedback = "Nice! Past Simple unlocked ✅";
+    } else {
+      irregularState.lives -= 1;
+      irregularState.streak = 0;
+      irregularState.feedback = "Not the Past Simple. Try again carefully.";
+    }
+
+    renderIrregularQuestion();
+    return;
+  }
+
+  if (!irregularState.selectedPP) {
+    if (word === q.pp) {
+      irregularState.selectedPP = word;
+      irregularState.score += 1;
+      irregularState.xp += 15;
+      irregularState.streak += 1;
+      irregularState.feedback = "Excellent! Past Participle unlocked ✅";
+    } else {
+      irregularState.lives -= 1;
+      irregularState.streak = 0;
+      irregularState.feedback = "Not the Past Participle. Think of the third form.";
+    }
+
+    renderIrregularQuestion();
+    return;
+  }
+
+  irregularState.feedback = "Chain already complete. Go to the next mission!";
+  renderIrregularQuestion();
+}
+
+function resetVerbQuestMission() {
+  irregularState.selectedPast = "";
+  irregularState.selectedPP = "";
+  irregularState.feedback = "Mission reset. Build the chain again!";
+  renderIrregularQuestion();
+}
+
+function nextVerbQuestMission() {
+  const q = irregularGameBank[irregularState.index % irregularGameBank.length];
+
+  if (irregularState.selectedPast !== q.past || irregularState.selectedPP !== q.pp) {
+    irregularState.feedback = "Complete the full chain before moving on.";
+    renderIrregularQuestion();
+    return;
+  }
+
+  irregularState.index += 1;
+  irregularState.selectedPast = "";
+  irregularState.selectedPP = "";
+  irregularState.feedback = "New mission loaded!";
+  renderIrregularQuestion();
+}
+
+// =========================
+// JAK Prosody Lab V1
+// =========================
+const prosodyLessons = {
+  intro: {
+    title: "ما هو علم العَروض؟",
+    content: `
+      <p>علم العَروض هو العلم الذي يساعد الطالب على فهم أوزان الشعر العربي وتمييز بحوره.</p>
+      <p>في هذا المختبر لن ننتقل مباشرة إلى اسم البحر، بل سنسير في المسار الصحيح:</p>
+      <div class="prosody-result-card">
+        <span class="prosody-badge-inline">النطق ← الكتابة العروضية ← المتحرك والساكن ← التفعيلات ← البحر</span>
+      </div>
+    `
+  },
+  writing: {
+    title: "الكتابة العروضية",
+    content: `
+      <p>الكتابة العروضية تعتمد على <strong>ما يُنطق</strong> لا على الرسم الإملائي فقط.</p>
+      <ul class="prosody-list">
+        <li>ما يُنطق يُكتب.</li>
+        <li>ما لا يُنطق لا يُكتب.</li>
+        <li>الشدة تُفك إلى حرفين.</li>
+        <li>التنوين له أثر في التقطيع.</li>
+      </ul>
+    `
+  },
+  writingRules: {
+  title: "قواعد الكتابة العَروضية الأساسية",
+  content: `
+    <p>
+      الكتابة العَروضية هي تحويل الكلام إلى صورة تناسب النطق، لأن العَروض يقوم على ما يُسمع لا على ما يُكتب فقط.
+    </p>
+
+    <div class="prosody-rules-grid">
+      <div class="prosody-rule-card">
+        <h3>1) ما يُنطق يُكتب</h3>
+        <p>كل صوت يظهر في النطق يجب أن يُحسب في التقطيع.</p>
+        <span>مثال: هذا ← هاذا</span>
+      </div>
+
+      <div class="prosody-rule-card">
+        <h3>2) ما لا يُنطق لا يُكتب</h3>
+        <p>الحرف الموجود في الكتابة ولا يظهر في النطق لا يُعتدّ به عروضياً.</p>
+        <span>مثل بعض الألفات أو الحروف غير المنطوقة حسب السياق.</span>
+      </div>
+
+      <div class="prosody-rule-card">
+        <h3>3) الشدة حرفان</h3>
+        <p>الحرف المشدد يُفك إلى حرفين: الأول ساكن والثاني متحرك.</p>
+        <span>مثال: مدَّ = مدْدَ</span>
+      </div>
+
+      <div class="prosody-rule-card">
+        <h3>4) التنوين نون ساكنة</h3>
+        <p>التنوين في النطق يُعامل غالبًا كأنه نون ساكنة.</p>
+        <span>مثال: كتابٌ ← كتابنْ</span>
+      </div>
+
+      <div class="prosody-rule-card">
+        <h3>5) المدود تُسمع</h3>
+        <p>حروف المد تؤثر في النطق، لذلك يجب الانتباه لطول الصوت.</p>
+        <span>قالَ ≠ قَلَ</span>
+      </div>
+
+      <div class="prosody-rule-card">
+        <h3>6) لا تقفز إلى البحر</h3>
+        <p>لا تحدد البحر قبل أن تفهم الكتابة العَروضية والتقطيع.</p>
+        <span>الترتيب: نطق ← كتابة عروضية ← تفعيلات ← بحر</span>
+      </div>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>تنبيه مهم</h3>
+      <p>
+        إذا كان البيت غير مضبوط بالشكل، فقد يحتمل أكثر من قراءة. لذلك لا بد من الانتباه إلى النطق الصحيح قبل الحكم على البحر.
+      </p>
+    </div>
+  `
+},
+referencePath: {
+  title: "خريطة منهج العَروض في مدرّب JAK",
+  content: `
+    <p>
+      يعتمد هذا المسار على طريقة مدرسية منظمة: يبدأ الطالب بالاستماع والنطق،
+      ثم ينتقل إلى الكتابة العَروضية، ثم المتحرك والساكن، ثم التفعيلات،
+      وبعد ذلك فقط يتعلّم تمييز البحر.
+    </p>
+
+    <div class="prosody-path-steps">
+      <div>
+        <span>1</span>
+        <strong>أستعد</strong>
+        <p>أسمع البيت وأنتبه إلى إيقاعه قبل التقطيع.</p>
+      </div>
+
+      <div>
+        <span>2</span>
+        <strong>أقطع</strong>
+        <p>أحوّل البيت إلى حروف ومقاطع حسب النطق.</p>
+      </div>
+
+      <div>
+        <span>3</span>
+        <strong>أستنتج</strong>
+        <p>أربط المقاطع بالتفعيلات وألاحظ التكرار.</p>
+      </div>
+
+      <div>
+        <span>4</span>
+        <strong>أميّز البحر</strong>
+        <p>أصل إلى البحر بعد فهم الوزن لا قبل ذلك.</p>
+      </div>
+    </div>
+
+    <div class="prosody-meter-roadmap">
+      <div class="prosody-meter-card">
+        <span class="prosody-meter-badge">المرحلة 1</span>
+        <h3>بحر الرجز</h3>
+        <p><strong>التفعيلة الأساسية:</strong> مستفعلن</p>
+        <p>يركّز على تكرار التفعيلة وفهم الحشو والعَروض والضرب.</p>
+      </div>
+
+      <div class="prosody-meter-card">
+        <span class="prosody-meter-badge">المرحلة 2</span>
+        <h3>بحر البسيط</h3>
+        <p><strong>النمط التعليمي:</strong> مستفعلن فاعلن</p>
+        <p>يساعد الطالب على ملاحظة تعاقب تفعيلتين لا تفعيلة واحدة.</p>
+      </div>
+
+      <div class="prosody-meter-card">
+        <span class="prosody-meter-badge">المرحلة 3</span>
+        <h3>بحر الطويل</h3>
+        <p><strong>النمط التعليمي:</strong> فعولن مفاعيلن</p>
+        <p>مهم جدًا لتدريب الطالب على البحر المركب والتفعيلات المتناوبة.</p>
+      </div>
+
+      <div class="prosody-meter-card">
+        <span class="prosody-meter-badge">المرحلة 4</span>
+        <h3>بحر الكامل</h3>
+        <p><strong>التفعيلة الأساسية:</strong> متفاعلن</p>
+        <p>يركّز على صور التفعيلة وفهم التغيّر داخل الوزن.</p>
+      </div>
+
+      <div class="prosody-meter-card">
+        <span class="prosody-meter-badge">المرحلة 5</span>
+        <h3>بحر الرمل</h3>
+        <p><strong>التفعيلة الأساسية:</strong> فاعلاتن</p>
+        <p>يركّز على تكرار فاعلاتن وتمييز التام والمجزوء.</p>
+      </div>
+
+      <div class="prosody-meter-card">
+        <span class="prosody-meter-badge">المرحلة 6</span>
+        <h3>بحر المتدارك / المحدث</h3>
+        <p><strong>التفعيلة الأساسية:</strong> فاعلن</p>
+        <p>يعالج البحر من خلال الإيقاع السريع وتكرار التفعيلة.</p>
+      </div>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>ملاحظة منهجية</h3>
+      <p>
+        لن نبدأ باكتشاف البحر مباشرة. سنبني كل بحر من خلال:
+        مثال مضبوط، ثم تقطيع، ثم تفعيلات، ثم تدريب، ثم تقويم.
+      </p>
+    </div>
+  `
+},
+
+  moving: {
+    title: "المتحرك والساكن",
+    content: `
+      <p>هذه من أهم المراحل، لأن التفعيلات والبحور تقوم على نمط الحركات والسكنات.</p>
+      <div class="prosody-result-card">
+        <h3>قاعدة مهمة</h3>
+        <p>قبل أن تسأل عن البحر، اسأل أولًا: هل فهمت المتحرك والساكن في البيت؟</p>
+      </div>
+    `
+  },
+  rajazMeter: {
+  title: "بحر الرجز",
+  content: `
+    <p>
+      بحر الرجز من البحور التي يسهل على الطالب البدء بها؛ لأنه يقوم في صورته التعليمية الأساسية
+      على تكرار تفعيلة واحدة، وهي: <strong>مستفعلن</strong>.
+    </p>
+
+    <div class="prosody-meter-focus-card">
+      <span class="prosody-badge-inline">التفعيلة الأساسية</span>
+      <h3>مستفعلن</h3>
+      <p>
+        قبل أن يحفظ الطالب اسم البحر، يجب أن يتدرّب على سماع التفعيلة وتمييزها في الشطر.
+      </p>
+    </div>
+
+    <div class="prosody-meter-patterns">
+      <div class="prosody-pattern-card">
+        <h3>الرجز التام</h3>
+        <p>يتكرر فيه وزن <strong>مستفعلن</strong> ثلاث مرات في كل شطر.</p>
+
+        <div class="prosody-pattern-line">
+          <span>الصدر</span>
+          <strong>مستفعلن | مستفعلن | مستفعلن</strong>
+        </div>
+
+        <div class="prosody-pattern-line">
+          <span>العجز</span>
+          <strong>مستفعلن | مستفعلن | مستفعلن</strong>
+        </div>
+      </div>
+
+      <div class="prosody-pattern-card">
+        <h3>مجزوء الرجز</h3>
+        <p>ينقص من كل شطر تفعيلة، فيبقى في كل شطر تفعيلتان.</p>
+
+        <div class="prosody-pattern-line">
+          <span>الصدر</span>
+          <strong>مستفعلن | مستفعلن</strong>
+        </div>
+
+        <div class="prosody-pattern-line">
+          <span>العجز</span>
+          <strong>مستفعلن | مستفعلن</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>مصطلحات مهمة</h3>
+      <ul class="prosody-list">
+        <li><strong>الحشو:</strong> التفعيلات التي تأتي قبل آخر تفعيلة في الشطر.</li>
+        <li><strong>العَروض:</strong> آخر تفعيلة في صدر البيت.</li>
+        <li><strong>الضرب:</strong> آخر تفعيلة في عجز البيت.</li>
+      </ul>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>طريقة الطالب الصحيحة</h3>
+      <p>لا يبدأ الطالب بالسؤال: ما البحر؟ بل يسير هكذا:</p>
+      <p>
+        أقرأ البيت ← ألاحظ الإيقاع ← أقطع الشطر ← أبحث عن تكرار مستفعلن ← أحدد العَروض والضرب ← أستنتج البحر.
+      </p>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>تنبيه علمي</h3>
+      <p>
+        في المراحل القادمة سنضيف صور التفعيلة والتمارين كما وردت في المرجع خطوة خطوة.
+        الآن نثبت الفكرة الأساسية أولًا: الرجز يقوم تعليميًا على تكرار <strong>مستفعلن</strong>.
+      </p>
+    </div>
+  `
+},
+  shadda: {
+    title: "الشدة والتنوين",
+    content: `
+      <p>الطالب يخطئ كثيرًا هنا، لذلك سنجعل هذا القسم أساسيًا في التدريب.</p>
+      <ul class="prosody-list">
+        <li>الشدة = حرفان: الأول ساكن والثاني متحرك.</li>
+        <li>التنوين يدخل في التقطيع بحسب النطق.</li>
+      </ul>
+    `
+  },
+  tafeela: {
+    title: "التفعيلات",
+    content: `
+      <p>بعد فهم المقاطع ننتقل إلى التفعيلات مثل:</p>
+      <div class="prosody-result-card">
+        <p>فعولن – مفاعيلن – فاعلن – مستفعلن – متفاعلن – فاعلاتن</p>
+      </div>
+      <p>في المراحل القادمة سنحوّل هذا القسم إلى تدريب تفاعلي كامل.</p>
+    `
+  },
+  meters: {
+    title: "البحور الأساسية",
+    content: `
+      <p>سنبدأ في النسخة الأولى بالبحور الأكثر مناسبة للمسار التعليمي:</p>
+      <ul class="prosody-list">
+        <li>البحر الطويل</li>
+        <li>البحر البسيط</li>
+        <li>البحر الكامل</li>
+        <li>البحر الوافر</li>
+      </ul>
+      <p>ثم نتوسع لاحقًا لبقية البحور.</p>
+    `
+  }
+};
+
+function showProsodyScreen(screenName) {
+  document.querySelectorAll(".prosody-screen").forEach(screen => {
+    screen.classList.remove("active");
+  });
+
+  document.querySelectorAll(".prosody-tab-btn").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  const target = document.getElementById("prosodyScreen" + screenName.charAt(0).toUpperCase() + screenName.slice(1));
+  if (target) target.classList.add("active");
+
+  const activeBtn = document.querySelector(`.prosody-tab-btn[data-screen="${screenName}"]`);
+  if (activeBtn) activeBtn.classList.add("active");
+}
+
+function renderProsodyLesson(key = "intro") {
+  const target = document.getElementById("prosodyLessonViewer");
+  if (!target) return;
+
+  const lesson = prosodyLessons[key] || prosodyLessons.intro;
+
+  target.innerHTML = `
+    <h2>${lesson.title}</h2>
+    ${lesson.content}
+  `;
+}
+
+function clearProsodyInput() {
+  const input = document.getElementById("prosodyInput");
+  const output = document.getElementById("prosodyCutOutput");
+
+  if (input) input.value = "";
+
+  if (output) {
+    output.innerHTML = `
+      <h2>نتيجة التقطيع</h2>
+      <p>ستظهر هنا الخطوات التعليمية الخاصة بالنص الذي تدخله.</p>
+    `;
+  }
+}
+
+function normalizeProsodyArabic(text) {
+  return String(text || "")
+    .replace(/[،؛:!?]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function runProsodyGuidedCut() {
+  const input = document.getElementById("prosodyInput");
+  const output = document.getElementById("prosodyCutOutput");
+
+  if (!input || !output) return;
+
+  const rawText = input.value.trim();
+
+  if (!rawText) {
+    output.innerHTML = `
+      <h2>نتيجة التقطيع</h2>
+      <div class="prosody-result-card">
+        <h3>تنبيه</h3>
+        <p>من فضلك اكتب بيتًا أو شطرًا أولًا.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const normalized = normalizeProsodyArabic(rawText);
+  const words = normalized.split(" ").filter(Boolean);
+
+  output.innerHTML = `
+    <h2>نتيجة التقطيع</h2>
+
+    <div class="prosody-result-card">
+      <h3>النص الأصلي</h3>
+      <p>${rawText}</p>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>التهيئة الأولية</h3>
+      <p>${normalized}</p>
+      <p><strong>عدد الكلمات:</strong> ${words.length}</p>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>المسار التعليمي المعتمد</h3>
+      <p>1) ضبط القراءة الصحيحة</p>
+      <p>2) التحويل إلى كتابة عروضية</p>
+      <p>3) تمييز المتحرك والساكن</p>
+      <p>4) مطابقة التفعيلات</p>
+      <p>5) استنتاج البحر</p>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>ملاحظة تعليمية</h3>
+      <p>
+        هذه هي النواة الذكية الأولى لمدرب العَروض. في المرحلة القادمة سنفعّل
+        التحويل العروضي والتقطيع بصورة أعمق خطوة بخطوة.
+      </p>
+    </div>
+  `;
+
+  const detectInput = document.getElementById("prosodyDetectInput");
+  if (detectInput && !detectInput.value.trim()) {
+    detectInput.value = rawText;
+  }
+}
+
+function runProsodyMeterHint() {
+  const input = document.getElementById("prosodyDetectInput");
+  const output = document.getElementById("prosodyMeterOutput");
+
+  if (!input || !output) return;
+
+  const rawText = input.value.trim();
+
+  if (!rawText) {
+    output.innerHTML = `
+      <h2>موجّه البحر</h2>
+      <div class="prosody-result-card">
+        <h3>تنبيه</h3>
+        <p>من فضلك اكتب بيتًا أو شطرًا أولًا.</p>
+      </div>
+    `;
+    return;
+  }
+
+  output.innerHTML = `
+    <h2>موجّه البحر</h2>
+
+    <div class="prosody-result-card">
+      <h3>النص المدخل</h3>
+      <p>${rawText}</p>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>توجيه أولي</h3>
+      <p>
+        في هذا المسار لن نعطي اسم البحر مباشرة بلا تفسير، بل سنربط:
+        الكتابة العروضية → التفعيلات → البحر المتوقع.
+      </p>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>البحور المستهدفة في النسخة الأولى</h3>
+      <p>الطويل – البسيط – الكامل – الوافر</p>
+    </div>
+
+    <div class="prosody-result-card">
+      <h3>ملاحظة مهمة</h3>
+      <p>
+        إذا كان البيت غير مضبوط بالشكل، فقد تظهر أكثر من قراءة، ولذلك سنبني
+        النظام لاحقًا ليشرح للطالب سبب النتيجة لا أن يعطيه جوابًا جامدًا فقط.
+      </p>
+    </div>
+  `;
+}
+
+window.showProsodyScreen = showProsodyScreen;
+window.renderProsodyLesson = renderProsodyLesson;
+window.clearProsodyInput = clearProsodyInput;
+window.runProsodyGuidedCut = runProsodyGuidedCut;
+window.runProsodyMeterHint = runProsodyMeterHint;
+window.chooseVerbQuestWord = chooseVerbQuestWord;
+window.resetVerbQuestMission = resetVerbQuestMission;
+window.nextVerbQuestMission = nextVerbQuestMission;
+
+// =========================
+// Prosody Practice V1
+// Moving / Silent Training
+// =========================
+
+const prosodyMovingPracticeBank = [
+  {
+    word: "قَلَم",
+    display: "قَلَم",
+    letters: [
+      { ch: "قَ", answer: "moving", note: "القاف متحركة بالفتحة." },
+      { ch: "لَ", answer: "moving", note: "اللام متحركة بالفتحة." },
+      { ch: "مْ", answer: "silent", note: "الميم ساكنة لأنها منتهية بالسكون." }
+    ],
+    explanation: "كلمة قَلَم تتكوّن من حروف متحركة ثم حرف ساكن في النهاية."
+  },
+  {
+    word: "بَيْت",
+    display: "بَيْت",
+    letters: [
+      { ch: "بَ", answer: "moving", note: "الباء متحركة بالفتحة." },
+      { ch: "يْ", answer: "silent", note: "الياء ساكنة لأنها جزء من صوت المد/اللّين." },
+      { ch: "تْ", answer: "silent", note: "التاء ساكنة عند الوقف." }
+    ],
+    explanation: "في بَيْت نلاحظ وجود حرف متحرك ثم حروف ساكنة."
+  },
+  {
+    word: "كَتَبَ",
+    display: "كَتَبَ",
+    letters: [
+      { ch: "كَ", answer: "moving", note: "الكاف متحركة بالفتحة." },
+      { ch: "تَ", answer: "moving", note: "التاء متحركة بالفتحة." },
+      { ch: "بَ", answer: "moving", note: "الباء متحركة بالفتحة." }
+    ],
+    explanation: "كل حروف كَتَبَ هنا متحركة."
+  },
+  {
+    word: "عِلْم",
+    display: "عِلْم",
+    letters: [
+      { ch: "عِ", answer: "moving", note: "العين متحركة بالكسرة." },
+      { ch: "لْ", answer: "silent", note: "اللام ساكنة." },
+      { ch: "مْ", answer: "silent", note: "الميم ساكنة عند الوقف." }
+    ],
+    explanation: "كلمة عِلْم تساعد الطالب على رؤية الساكن بوضوح."
+  }
+];
+
+let prosodyMovingState = {
+  index: 0,
+  answers: [],
+  checked: false,
+  score: 0
+};
+
+function startProsodyMovingPractice() {
+  prosodyMovingState = {
+    index: 0,
+    answers: [],
+    checked: false,
+    score: 0
+  };
+
+  showProsodyScreen("practice");
+  renderProsodyMovingPractice();
+}
+
+function renderProsodyMovingPractice() {
+  const box = document.getElementById("prosodyMovingPracticeBox");
+  if (!box) return;
+
+  const item = prosodyMovingPracticeBank[prosodyMovingState.index % prosodyMovingPracticeBank.length];
+
+  if (!prosodyMovingState.answers.length) {
+    prosodyMovingState.answers = item.letters.map(() => "");
+  }
+
+  box.innerHTML = `
+    <div class="prosody-practice-card">
+      <div class="prosody-practice-head">
+        <div>
+          <span class="prosody-badge-inline">تدريب تفاعلي</span>
+          <h3>حدّد المتحرك والساكن</h3>
+          <p>الكلمة: <strong>${item.display}</strong></p>
+        </div>
+
+        <div class="prosody-practice-score">
+          <span>النتيجة</span>
+          <strong>${prosodyMovingState.score}</strong>
+        </div>
+      </div>
+
+      <div class="prosody-letter-grid">
+        ${item.letters.map((letter, i) => {
+          const selected = prosodyMovingState.answers[i];
+
+          return `
+            <div class="prosody-letter-card ${selected ? "selected" : ""}">
+              <div class="prosody-letter-symbol">${letter.ch}</div>
+
+              <div class="prosody-letter-actions">
+                <button
+                  class="${selected === "moving" ? "active" : ""}"
+                  onclick="chooseProsodyMovingAnswer(${i}, 'moving')"
+                >
+                  متحرك
+                </button>
+
+                <button
+                  class="${selected === "silent" ? "active" : ""}"
+                  onclick="chooseProsodyMovingAnswer(${i}, 'silent')"
+                >
+                  ساكن
+                </button>
+              </div>
+
+              <div class="prosody-letter-feedback" id="prosodyLetterFeedback${i}">
+                ${prosodyMovingState.checked ? getProsodyLetterFeedback(letter, selected) : "اختر الإجابة"}
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="checkProsodyMovingPractice()">تحقق من الإجابة</button>
+        <button class="secondary" onclick="nextProsodyMovingPractice()">تدريب جديد</button>
+      </div>
+
+      <div id="prosodyMovingPracticeResult" class="prosody-result-card">
+        <h3>ملاحظة تعليمية</h3>
+        <p>
+          في العَروض، فهم المتحرك والساكن هو الأساس قبل الانتقال إلى التفعيلات والبحور.
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function chooseProsodyMovingAnswer(index, value) {
+  prosodyMovingState.answers[index] = value;
+  prosodyMovingState.checked = false;
+  renderProsodyMovingPractice();
+}
+
+function getProsodyLetterFeedback(letter, selected) {
+  if (!selected) {
+    return `<span class="prosody-feedback-warn">لم تختر إجابة بعد.</span>`;
+  }
+
+  if (selected === letter.answer) {
+    return `<span class="prosody-feedback-correct">صحيح ✅ ${letter.note}</span>`;
+  }
+
+  return `<span class="prosody-feedback-wrong">خطأ ❌ ${letter.note}</span>`;
+}
+
+function checkProsodyMovingPractice() {
+  const item = prosodyMovingPracticeBank[prosodyMovingState.index % prosodyMovingPracticeBank.length];
+
+  let correct = 0;
+
+  item.letters.forEach((letter, i) => {
+    if (prosodyMovingState.answers[i] === letter.answer) correct++;
+  });
+
+  prosodyMovingState.checked = true;
+  prosodyMovingState.score += correct;
+
+  renderProsodyMovingPractice();
+
+  const result = document.getElementById("prosodyMovingPracticeResult");
+  if (result) {
+    result.innerHTML = `
+      <h3>نتيجة التدريب</h3>
+      <p><strong>الإجابات الصحيحة:</strong> ${correct} من ${item.letters.length}</p>
+      <p>${item.explanation}</p>
+      <p>
+        ${correct === item.letters.length
+          ? "أحسنت جدًا. أنت جاهز للانتقال إلى خطوة أصعب."
+          : "راجع الحروف التي أخطأت فيها، ثم أعد المحاولة بهدوء."}
+      </p>
+    `;
+  }
+}
+
+function nextProsodyMovingPractice() {
+  prosodyMovingState.index += 1;
+  prosodyMovingState.answers = [];
+  prosodyMovingState.checked = false;
+  renderProsodyMovingPractice();
+}
+
+window.startProsodyMovingPractice = startProsodyMovingPractice;
+window.renderProsodyMovingPractice = renderProsodyMovingPractice;
+window.chooseProsodyMovingAnswer = chooseProsodyMovingAnswer;
+window.checkProsodyMovingPractice = checkProsodyMovingPractice;
+window.nextProsodyMovingPractice = nextProsodyMovingPractice;
+
+// =========================
+// Prosody Practice V2
+// Prosodic Writing Training
+// =========================
+
+const prosodyWritingPracticeBank = [
+  {
+    original: "هذا",
+    expected: "هاذا",
+    rule: "ما يُنطق يُكتب",
+    explanation: "في النطق نقول: هاذا، لذلك تُكتب عروضياً بإثبات الألف المنطوقة."
+  },
+  {
+    original: "لكن",
+    expected: "لاكن",
+    rule: "ما يُنطق يُكتب",
+    explanation: "في النطق تظهر ألف بعد اللام: لاكن، لذلك ننتبه إلى المنطوق لا الرسم فقط."
+  },
+  {
+    original: "مدَّ",
+    expected: "مدْدَ",
+    rule: "الشدة حرفان",
+    explanation: "الحرف المشدد يُفك إلى حرفين: الأول ساكن والثاني متحرك."
+  },
+  {
+    original: "شدَّ",
+    expected: "شدْدَ",
+    rule: "الشدة حرفان",
+    explanation: "الدال المشددة تُفك إلى دال ساكنة ثم دال متحركة."
+  },
+  {
+    original: "كتابٌ",
+    expected: "كتابنْ",
+    rule: "التنوين نون ساكنة",
+    explanation: "التنوين يُنطق نونًا ساكنة، لذلك يظهر في الكتابة العَروضية."
+  },
+  {
+    original: "رجلٍ",
+    expected: "رجلنْ",
+    rule: "التنوين نون ساكنة",
+    explanation: "عند النطق يظهر التنوين نونًا ساكنة، وهذا يؤثر في التقطيع."
+  }
+];
+
+let prosodyWritingState = {
+  index: 0,
+  checked: false,
+  score: 0,
+  userAnswer: ""
+};
+
+function startProsodyWritingPractice() {
+  prosodyWritingState = {
+    index: 0,
+    checked: false,
+    score: 0,
+    userAnswer: ""
+  };
+
+  showProsodyScreen("practice");
+  renderProsodyWritingPractice();
+}
+
+function renderProsodyWritingPractice() {
+  const box = document.getElementById("prosodyWritingPracticeBox");
+  if (!box) return;
+
+  const item = prosodyWritingPracticeBank[prosodyWritingState.index % prosodyWritingPracticeBank.length];
+
+  box.innerHTML = `
+    <div class="prosody-practice-card prosody-writing-card">
+      <div class="prosody-practice-head">
+        <div>
+          <span class="prosody-badge-inline">تدريب الكتابة العَروضية</span>
+          <h3>حوّل الكلمة إلى كتابة عروضية</h3>
+          <p>القاعدة المستهدفة: <strong>${safeText(item.rule)}</strong></p>
+        </div>
+
+        <div class="prosody-practice-score">
+          <span>النتيجة</span>
+          <strong>${prosodyWritingState.score}</strong>
+        </div>
+      </div>
+
+      <div class="prosody-writing-task">
+        <div class="prosody-writing-original">
+          <span>الكلمة الإملائية</span>
+          <strong>${safeText(item.original)}</strong>
+        </div>
+
+        <div class="prosody-writing-arrow">←</div>
+
+        <div class="prosody-writing-answer">
+          <span>اكتبها عروضياً</span>
+          <input
+            id="prosodyWritingAnswerInput"
+            type="text"
+            value="${safeText(prosodyWritingState.userAnswer)}"
+            placeholder="اكتب الإجابة هنا..."
+            oninput="prosodyWritingState.userAnswer = this.value"
+          />
+        </div>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="checkProsodyWritingPractice()">تحقق من الإجابة</button>
+        <button class="secondary" onclick="showProsodyWritingHint()">أحتاج تلميحًا</button>
+        <button class="secondary" onclick="nextProsodyWritingPractice()">تدريب جديد</button>
+      </div>
+
+      <div id="prosodyWritingPracticeResult" class="prosody-result-card">
+        <h3>ملاحظة تعليمية</h3>
+        <p>اكتب ما يُنطق، ولا تنسَ أثر الشدة والتنوين والمدود.</p>
+      </div>
+    </div>
+  `;
+}
+
+function normalizeProsodyPracticeAnswer(value) {
+  return String(value || "")
+    .replace(/\s+/g, "")
+    .replace(/[ًٌٍَُِّْـ]/g, "")
+    .trim();
+}
+
+function checkProsodyWritingPractice() {
+  const item = prosodyWritingPracticeBank[prosodyWritingState.index % prosodyWritingPracticeBank.length];
+  const input = document.getElementById("prosodyWritingAnswerInput");
+  const result = document.getElementById("prosodyWritingPracticeResult");
+
+  if (!input || !result) return;
+
+  const rawAnswer = input.value.trim();
+  prosodyWritingState.userAnswer = rawAnswer;
+
+  if (!rawAnswer) {
+    result.innerHTML = `
+      <h3>تنبيه</h3>
+      <p>اكتب إجابتك أولًا، ثم اضغط تحقق.</p>
+    `;
+    return;
+  }
+
+  const user = normalizeProsodyPracticeAnswer(rawAnswer);
+  const expected = normalizeProsodyPracticeAnswer(item.expected);
+  const isCorrect = user === expected;
+
+  if (isCorrect) {
+    prosodyWritingState.score += 1;
+  }
+
+  result.innerHTML = `
+    <h3>${isCorrect ? "إجابة صحيحة ✅" : "تحتاج مراجعة ❌"}</h3>
+    <p><strong>إجابتك:</strong> ${safeText(rawAnswer)}</p>
+    <p><strong>الإجابة العَروضية المقترحة:</strong> ${safeText(item.expected)}</p>
+    <p><strong>القاعدة:</strong> ${safeText(item.rule)}</p>
+    <p>${safeText(item.explanation)}</p>
+  `;
+
+  renderProsodyWritingPractice();
+
+  const newResult = document.getElementById("prosodyWritingPracticeResult");
+  if (newResult) {
+    newResult.innerHTML = `
+      <h3>${isCorrect ? "إجابة صحيحة ✅" : "تحتاج مراجعة ❌"}</h3>
+      <p><strong>إجابتك:</strong> ${safeText(rawAnswer)}</p>
+      <p><strong>الإجابة العَروضية المقترحة:</strong> ${safeText(item.expected)}</p>
+      <p><strong>القاعدة:</strong> ${safeText(item.rule)}</p>
+      <p>${safeText(item.explanation)}</p>
+    `;
+  }
+}
+
+function showProsodyWritingHint() {
+  const item = prosodyWritingPracticeBank[prosodyWritingState.index % prosodyWritingPracticeBank.length];
+  const result = document.getElementById("prosodyWritingPracticeResult");
+
+  if (!result) return;
+
+  result.innerHTML = `
+    <h3>تلميح</h3>
+    <p>انتبه إلى قاعدة: <strong>${safeText(item.rule)}</strong></p>
+    <p>${safeText(item.explanation)}</p>
+  `;
+}
+
+function nextProsodyWritingPractice() {
+  prosodyWritingState.index += 1;
+  prosodyWritingState.checked = false;
+  prosodyWritingState.userAnswer = "";
+  renderProsodyWritingPractice();
+}
+window.startProsodyWritingPractice = startProsodyWritingPractice;
+window.renderProsodyWritingPractice = renderProsodyWritingPractice;
+window.checkProsodyWritingPractice = checkProsodyWritingPractice;
+window.showProsodyWritingHint = showProsodyWritingHint;
+window.nextProsodyWritingPractice = nextProsodyWritingPractice;
+window.prosodyWritingState = prosodyWritingState;
+
+// =========================
+// Prosody Practice V3
+// Rajaz Meter Training
+// =========================
+
+const rajazPracticeBank = [
+  {
+    title: "نمط الرجز التام",
+    pattern: ["مستفعلن", "مستفعلن", "مستفعلن"],
+    type: "تام",
+    question: "انظر إلى عدد التفعيلات في الشطر. هل هذا رجز تام أم مجزوء؟",
+    explanation: "هذا رجز تام؛ لأن الشطر يتكون من ثلاث تفعيلات من مستفعلن.",
+    roles: [
+      { label: "حشو", index: 0 },
+      { label: "حشو", index: 1 },
+      { label: "عَروض/ضرب", index: 2 }
+    ]
+  },
+  {
+    title: "نمط مجزوء الرجز",
+    pattern: ["مستفعلن", "مستفعلن"],
+    type: "مجزوء",
+    question: "انظر إلى عدد التفعيلات في الشطر. هل هذا رجز تام أم مجزوء؟",
+    explanation: "هذا مجزوء الرجز؛ لأن الشطر يتكون من تفعيلتين فقط، لا ثلاث.",
+    roles: [
+      { label: "حشو", index: 0 },
+      { label: "عَروض/ضرب", index: 1 }
+    ]
+  }
+];
+
+let rajazPracticeState = {
+  index: 0,
+  selectedType: "",
+  selectedRoleIndex: null,
+  checkedType: false,
+  checkedRole: false,
+  score: 0
+};
+
+function startRajazPractice() {
+  rajazPracticeState = {
+    index: 0,
+    selectedType: "",
+    selectedRoleIndex: null,
+    checkedType: false,
+    checkedRole: false,
+    score: 0
+  };
+
+  showProsodyScreen("practice");
+  renderRajazPractice();
+}
+
+function renderRajazPractice() {
+  const box = document.getElementById("rajazPracticeBox");
+  if (!box) return;
+
+  const item = rajazPracticeBank[rajazPracticeState.index % rajazPracticeBank.length];
+
+  box.innerHTML = `
+    <div class="rajaz-mission-card">
+      <div class="rajaz-mission-header">
+        <div>
+          <span class="prosody-badge-inline">مهمة عروضية</span>
+          <h3>بحر الرجز: اكتشف مستفعلن</h3>
+          <p>${safeText(item.question)}</p>
+        </div>
+
+        <div class="prosody-practice-score">
+          <span>النتيجة</span>
+          <strong>${rajazPracticeState.score}</strong>
+        </div>
+      </div>
+
+      <div class="rajaz-rhythm-box">
+        <h4>${safeText(item.title)}</h4>
+
+        <div class="rajaz-tafeela-row">
+          ${item.pattern.map((taf, i) => `
+            <button
+              class="rajaz-tafeela-card ${rajazPracticeState.selectedRoleIndex === i ? "selected" : ""}"
+              onclick="chooseRajazRole(${i})"
+            >
+              <span>التفعيلة ${i + 1}</span>
+              <strong>${safeText(taf)}</strong>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="rajaz-question-box">
+        <h4>السؤال الأول: نوع الرجز</h4>
+        <p>اختر الإجابة الصحيحة:</p>
+
+        <div class="rajaz-choice-row">
+          <button class="${rajazPracticeState.selectedType === "تام" ? "active" : ""}" onclick="chooseRajazType('تام')">
+            رجز تام
+          </button>
+
+          <button class="${rajazPracticeState.selectedType === "مجزوء" ? "active" : ""}" onclick="chooseRajazType('مجزوء')">
+            مجزوء الرجز
+          </button>
+        </div>
+
+        <button onclick="checkRajazType()">تحقق من نوع الرجز</button>
+      </div>
+
+      <div class="rajaz-question-box">
+        <h4>السؤال الثاني: أين العَروض أو الضرب؟</h4>
+        <p>
+          في التدريب الحالي ندرّب الطالب على قاعدة عامة:
+          <strong>آخر تفعيلة في الشطر هي العَروض إذا كان الشطر صدرًا، وهي الضرب إذا كان الشطر عجزًا.</strong>
+        </p>
+
+        <p>اضغط على آخر تفعيلة في النمط أعلاه، ثم تحقق.</p>
+
+        <button onclick="checkRajazRole()">تحقق من موضع العَروض/الضرب</button>
+      </div>
+
+      <div id="rajazPracticeResult" class="prosody-result-card">
+        <h3>ملاحظة تعليمية</h3>
+        <p>
+          بحر الرجز في صورته التعليمية يقوم على تكرار تفعيلة <strong>مستفعلن</strong>.
+          لا نحكم على البحر قبل أن نلاحظ عدد التفعيلات ونفهم موضع آخر تفعيلة.
+        </p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button class="secondary" onclick="nextRajazPractice()">مهمة جديدة</button>
+      </div>
+    </div>
+  `;
+}
+
+function chooseRajazType(type) {
+  rajazPracticeState.selectedType = type;
+  rajazPracticeState.checkedType = false;
+  renderRajazPractice();
+}
+
+function chooseRajazRole(index) {
+  rajazPracticeState.selectedRoleIndex = index;
+  rajazPracticeState.checkedRole = false;
+  renderRajazPractice();
+}
+
+function checkRajazType() {
+  const item = rajazPracticeBank[rajazPracticeState.index % rajazPracticeBank.length];
+  const result = document.getElementById("rajazPracticeResult");
+  if (!result) return;
+
+  if (!rajazPracticeState.selectedType) {
+    result.innerHTML = `
+      <h3>تنبيه</h3>
+      <p>اختر أولًا: هل النمط رجز تام أم مجزوء؟</p>
+    `;
+    return;
+  }
+
+  const isCorrect = rajazPracticeState.selectedType === item.type;
+  if (isCorrect) rajazPracticeState.score += 1;
+
+  rajazPracticeState.checkedType = true;
+  renderRajazPractice();
+
+  const newResult = document.getElementById("rajazPracticeResult");
+  if (newResult) {
+    newResult.innerHTML = `
+      <h3>${isCorrect ? "إجابة صحيحة ✅" : "تحتاج مراجعة ❌"}</h3>
+      <p><strong>إجابتك:</strong> ${safeText(rajazPracticeState.selectedType)}</p>
+      <p><strong>الجواب الصحيح:</strong> ${safeText(item.type)}</p>
+      <p>${safeText(item.explanation)}</p>
+    `;
+  }
+}
+
+function checkRajazRole() {
+  const item = rajazPracticeBank[rajazPracticeState.index % rajazPracticeBank.length];
+  const result = document.getElementById("rajazPracticeResult");
+  if (!result) return;
+
+  const lastIndex = item.pattern.length - 1;
+
+  if (rajazPracticeState.selectedRoleIndex === null) {
+    result.innerHTML = `
+      <h3>تنبيه</h3>
+      <p>اضغط على التفعيلة التي تظن أنها موضع العَروض أو الضرب.</p>
+    `;
+    return;
+  }
+
+  const isCorrect = rajazPracticeState.selectedRoleIndex === lastIndex;
+  if (isCorrect) rajazPracticeState.score += 1;
+
+  rajazPracticeState.checkedRole = true;
+  renderRajazPractice();
+
+  const newResult = document.getElementById("rajazPracticeResult");
+  if (newResult) {
+    newResult.innerHTML = `
+      <h3>${isCorrect ? "إجابة صحيحة ✅" : "تحتاج مراجعة ❌"}</h3>
+      <p>
+        <strong>القاعدة:</strong>
+        آخر تفعيلة في صدر البيت تسمى العَروض، وآخر تفعيلة في عجز البيت تسمى الضرب.
+      </p>
+      <p>
+        في هذا النمط، التفعيلة الأخيرة هي:
+        <strong>${safeText(item.pattern[lastIndex])}</strong>
+      </p>
+      <p>
+        ${isCorrect
+          ? "أحسنت. بدأت تميز موضع العَروض والضرب بدل حفظ المصطلح فقط."
+          : "انتبه: الحشو يكون قبل آخر تفعيلة، أما آخر تفعيلة فهي موضع العَروض أو الضرب بحسب الشطر."}
+      </p>
+    `;
+  }
+}
+
+function nextRajazPractice() {
+  rajazPracticeState.index += 1;
+  rajazPracticeState.selectedType = "";
+  rajazPracticeState.selectedRoleIndex = null;
+  rajazPracticeState.checkedType = false;
+  rajazPracticeState.checkedRole = false;
+  renderRajazPractice();
+}
+
+window.startRajazPractice = startRajazPractice;
+window.renderRajazPractice = renderRajazPractice;
+window.chooseRajazType = chooseRajazType;
+window.chooseRajazRole = chooseRajazRole;
+window.checkRajazType = checkRajazType;
+window.checkRajazRole = checkRajazRole;
+window.nextRajazPractice = nextRajazPractice;
+ 
+// =========================
+// Prosody Rajaz Journey Mode
+// Step-by-step learning path
+// =========================
+
+let rajazJourneyState = {
+  step: 0,
+  answers: {},
+  score: 0
+};
+
+const rajazJourneyData = {
+  pattern: ["مستفعلن", "مستفعلن", "مستفعلن"],
+  meterName: "بحر الرجز",
+  type: "تام"
+};
+
+function startRajazJourney() {
+  rajazJourneyState = {
+    step: 0,
+    answers: {},
+    score: 0
+  };
+
+  showProsodyScreen("practice");
+  renderRajazJourney();
+}
+
+
+ function renderRajazJourney() {
+  const box = document.getElementById("rajazJourneyBox");
+  if (!box) return;
+
+  const steps = [
+    renderRajazJourneyStepIntro,
+    renderRajazJourneyStepRepeat,
+    renderRajazJourneyStepCount,
+    renderRajazJourneyStepType,
+    renderRajazJourneyStepRoles,
+    renderRajazJourneyStepSummary
+  ];
+
+  const stepIndex = Number(rajazJourneyState.step) || 0;
+  const currentStep = steps[stepIndex] || renderRajazJourneyStepSummary;
+
+  box.innerHTML = currentStep();
+}
+
+function rajazJourneyProgress() {
+  const total = 6;
+  const current = rajazJourneyState.step + 1;
+  const percent = Math.round((current / total) * 100);
+
+  return `
+    <div class="rajaz-journey-progress">
+      <div>
+        <span>رحلة بحر الرجز</span>
+        <strong>الخطوة ${current} من ${total}</strong>
+      </div>
+      <div class="rajaz-journey-bar">
+        <i style="width:${percent}%"></i>
+      </div>
+    </div>
+  `;
+}
+
+function renderRajazTafeelaVisual(selectedIndex = null) {
+  return `
+    <div class="rajaz-journey-tafeela-row">
+      ${rajazJourneyData.pattern.map((taf, i) => `
+        <button
+          class="rajaz-journey-tafeela ${selectedIndex === i ? "selected" : ""}"
+          onclick="selectRajazJourneyTafeela(${i})"
+        >
+          <span>النغمة ${i + 1}</span>
+          <strong>${safeText(taf)}</strong>
+          <small>${i < 2 ? "حشو" : "آخر تفعيلة"}</small>
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderRajazJourneyStepIntro() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazJourneyProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">أ</span>
+        <div>
+          <h3>قبل أن نحفظ: دعنا نسمع النمط</h3>
+          <p>
+            لا تبدأ بسؤال: ما البحر؟  
+            ابدأ بسؤال أسهل: هل ألاحظ تكرارًا في الإيقاع؟
+          </p>
+        </div>
+      </div>
+
+      <div class="rajaz-discovery-box">
+        <h3>انظر إلى هذا النمط</h3>
+        ${renderRajazTafeelaVisual()}
+        <p>
+          في هذا المثال تتكرر التفعيلة نفسها أكثر من مرة.  
+          هذه التفعيلة هي: <strong>مستفعلن</strong>.
+        </p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="nextRajazJourneyStep()">فهمت، انتقل للخطوة التالية</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderRajazJourneyStepRepeat() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazJourneyProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">١</span>
+        <div>
+          <h3>الخطوة الأولى: لاحظ التكرار</h3>
+          <p>
+            ركّز في البطاقات. هل ترى أن الكلمة العَروضية نفسها تتكرر؟
+          </p>
+        </div>
+      </div>
+
+      ${renderRajazTafeelaVisual()}
+
+      <div class="rajaz-question-box">
+        <h4>هل التفعيلات متشابهة؟</h4>
+        <div class="rajaz-choice-row">
+          <button onclick="checkRajazJourneyRepeat(true)">نعم، كلها مستفعلن</button>
+          <button onclick="checkRajazJourneyRepeat(false)">لا، مختلفة</button>
+        </div>
+      </div>
+
+      <div id="rajazJourneyFeedback" class="prosody-result-card">
+        <h3>تلميح المعلم</h3>
+        <p>في الرجز نبدأ بملاحظة تكرار <strong>مستفعلن</strong>.</p>
+      </div>
+    </div>
+  `;
+}
+
+function checkRajazJourneyRepeat(answer) {
+  const feedback = document.getElementById("rajazJourneyFeedback");
+  if (!feedback) return;
+
+  if (answer === true) {
+    rajazJourneyState.score += 1;
+    feedback.innerHTML = `
+      <h3>أحسنت ✅</h3>
+      <p>
+        صحيح. البطاقات الثلاث كلها <strong>مستفعلن</strong>.  
+        هذه أول إشارة تساعدنا على فهم بحر الرجز.
+      </p>
+      <button onclick="nextRajazJourneyStep()">تابع</button>
+    `;
+  } else {
+    feedback.innerHTML = `
+      <h3>انتبه ❌</h3>
+      <p>
+        انظر مرة أخرى: كل بطاقة مكتوب فيها <strong>مستفعلن</strong>.  
+        إذن هناك تكرار واضح.
+      </p>
+    `;
+  }
+}
+
+function renderRajazJourneyStepCount() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazJourneyProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">٢</span>
+        <div>
+          <h3>الخطوة الثانية: عدّ التفعيلات</h3>
+          <p>
+            قبل أن تقول تام أو مجزوء، عدّ عدد التفعيلات في الشطر.
+          </p>
+        </div>
+      </div>
+
+      ${renderRajazTafeelaVisual()}
+
+      <div class="rajaz-question-box">
+        <h4>كم تفعيلة أمامك؟</h4>
+        <div class="rajaz-choice-row">
+          <button onclick="checkRajazJourneyCount(2)">تفعيلتان</button>
+          <button onclick="checkRajazJourneyCount(3)">ثلاث تفعيلات</button>
+          <button onclick="checkRajazJourneyCount(4)">أربع تفعيلات</button>
+        </div>
+      </div>
+
+      <div id="rajazJourneyFeedback" class="prosody-result-card">
+        <h3>تلميح</h3>
+        <p>عدّ البطاقات واحدة واحدة: مستفعلن | مستفعلن | مستفعلن.</p>
+      </div>
+    </div>
+  `;
+}
+
+function checkRajazJourneyCount(count) {
+  const feedback = document.getElementById("rajazJourneyFeedback");
+  if (!feedback) return;
+
+  if (count === 3) {
+    rajazJourneyState.score += 1;
+    feedback.innerHTML = `
+      <h3>صحيح ✅</h3>
+      <p>
+        أمامك ثلاث تفعيلات.  
+        وهذه نقطة مهمة جدًا؛ لأن الرجز التام يكون فيه ثلاث تفعيلات في الشطر.
+      </p>
+      <button onclick="nextRajazJourneyStep()">تابع</button>
+    `;
+  } else {
+    feedback.innerHTML = `
+      <h3>ليست دقيقة ❌</h3>
+      <p>
+        عدّ مرة أخرى:  
+        <strong>مستفعلن | مستفعلن | مستفعلن</strong>  
+        إذن العدد هو ثلاث تفعيلات.
+      </p>
+    `;
+  }
+}
+
+function renderRajazJourneyStepType() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazJourneyProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">٣</span>
+        <div>
+          <h3>الخطوة الثالثة: تام أم مجزوء؟</h3>
+          <p>
+            الآن بعد أن عرفنا أن الشطر فيه ثلاث تفعيلات، نستطيع الحكم على النوع.
+          </p>
+        </div>
+      </div>
+
+      <div class="rajaz-rule-strip">
+        <div>
+          <strong>الرجز التام</strong>
+          <span>ثلاث تفعيلات في الشطر</span>
+        </div>
+        <div>
+          <strong>مجزوء الرجز</strong>
+          <span>تفعيلتان في الشطر</span>
+        </div>
+      </div>
+
+      ${renderRajazTafeelaVisual()}
+
+      <div class="rajaz-question-box">
+        <h4>إذن هذا النمط يمثل:</h4>
+        <div class="rajaz-choice-row">
+          <button onclick="checkRajazJourneyType('تام')">رجز تام</button>
+          <button onclick="checkRajazJourneyType('مجزوء')">مجزوء الرجز</button>
+        </div>
+      </div>
+
+      <div id="rajazJourneyFeedback" class="prosody-result-card">
+        <h3>فكّر قبل الإجابة</h3>
+        <p>ثلاث تفعيلات = تام. تفعيلتان = مجزوء.</p>
+      </div>
+    </div>
+  `;
+}
+
+function checkRajazJourneyType(type) {
+  const feedback = document.getElementById("rajazJourneyFeedback");
+  if (!feedback) return;
+
+  if (type === "تام") {
+    rajazJourneyState.score += 1;
+    feedback.innerHTML = `
+      <h3>ممتاز ✅</h3>
+      <p>
+        هذا <strong>رجز تام</strong>؛ لأن الشطر فيه ثلاث تفعيلات من مستفعلن.
+      </p>
+      <button onclick="nextRajazJourneyStep()">تابع</button>
+    `;
+  } else {
+    feedback.innerHTML = `
+      <h3>انتبه ❌</h3>
+      <p>
+        المجزوء يكون فيه تفعيلتان في الشطر.  
+        أما هنا فلدينا ثلاث تفعيلات، إذن هو رجز تام.
+      </p>
+    `;
+  }
+}
+
+function renderRajazJourneyStepRoles() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazJourneyProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">٤</span>
+        <div>
+          <h3>الخطوة الرابعة: الحشو والعَروض والضرب</h3>
+          <p>
+            الآن لا نريد اسم البحر فقط. نريد أن نفهم مواضع التفعيلات.
+          </p>
+        </div>
+      </div>
+
+      <div class="rajaz-role-explain">
+        <div>
+          <strong>الحشو</strong>
+          <span>كل تفعيلة قبل التفعيلة الأخيرة في الشطر.</span>
+        </div>
+        <div>
+          <strong>العَروض</strong>
+          <span>آخر تفعيلة في صدر البيت.</span>
+        </div>
+        <div>
+          <strong>الضرب</strong>
+          <span>آخر تفعيلة في عجز البيت.</span>
+        </div>
+      </div>
+
+      ${renderRajazTafeelaVisual(rajazJourneyState.answers.roleIndex)}
+
+      <div class="rajaz-question-box">
+        <h4>اضغط على موضع العَروض أو الضرب في هذا الشطر</h4>
+        <p>تذكّر: نحن نبحث عن آخر تفعيلة.</p>
+        <button onclick="checkRajazJourneyRole()">تحقق</button>
+      </div>
+
+      <div id="rajazJourneyFeedback" class="prosody-result-card">
+        <h3>تلميح</h3>
+        <p>الحشو قبل النهاية، أما العَروض/الضرب فموضعهما في آخر الشطر.</p>
+      </div>
+    </div>
+  `;
+}
+
+function selectRajazJourneyTafeela(index) {
+  rajazJourneyState.answers.roleIndex = index;
+  renderRajazJourney();
+}
+
+function checkRajazJourneyRole() {
+  const feedback = document.getElementById("rajazJourneyFeedback");
+  if (!feedback) return;
+
+  const selected = rajazJourneyState.answers.roleIndex;
+  const lastIndex = rajazJourneyData.pattern.length - 1;
+
+  if (selected === undefined || selected === null) {
+    feedback.innerHTML = `
+      <h3>تنبيه</h3>
+      <p>اضغط أولًا على التفعيلة التي تظن أنها موضع العَروض أو الضرب.</p>
+    `;
+    return;
+  }
+
+  if (selected === lastIndex) {
+    rajazJourneyState.score += 1;
+    feedback.innerHTML = `
+      <h3>أحسنت ✅</h3>
+      <p>
+        اخترت آخر تفعيلة.  
+        إذا كان هذا الشطر صدرًا فهي <strong>العَروض</strong>، وإذا كان عجزًا فهي <strong>الضرب</strong>.
+      </p>
+      <button onclick="nextRajazJourneyStep()">تابع إلى الخلاصة</button>
+    `;
+  } else {
+    feedback.innerHTML = `
+      <h3>اقتربت لكن انتبه ❌</h3>
+      <p>
+        هذه التفعيلة من الحشو؛ لأنها ليست آخر تفعيلة.  
+        العَروض أو الضرب يكونان في نهاية الشطر.
+      </p>
+    `;
+  }
+}
+
+function renderRajazJourneyStepSummary() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazJourneyProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">✓</span>
+        <div>
+          <h3>الخلاصة: أنت الآن لم تحفظ فقط، بل فهمت الطريق</h3>
+          <p>
+            الطالب القوي في العَروض لا يبدأ باسم البحر، بل يبدأ بالملاحظة:
+            هل يوجد تكرار؟ كم تفعيلة؟ أين آخر تفعيلة؟
+          </p>
+        </div>
+      </div>
+
+      <div class="rajaz-understanding-map">
+        <div class="rajaz-map-step">
+          <span>1</span>
+          <h4>لاحظت التكرار</h4>
+          <p>رأيت أن <strong>مستفعلن</strong> تكررت أكثر من مرة.</p>
+        </div>
+
+        <div class="rajaz-map-step">
+          <span>2</span>
+          <h4>عددت التفعيلات</h4>
+          <p>وجدت في الشطر: <strong>مستفعلن | مستفعلن | مستفعلن</strong>.</p>
+        </div>
+
+        <div class="rajaz-map-step">
+          <span>3</span>
+          <h4>استنتجت النوع</h4>
+          <p>ثلاث تفعيلات في الشطر تعني أن النمط هنا <strong>رجز تام</strong>.</p>
+        </div>
+
+        <div class="rajaz-map-step">
+          <span>4</span>
+          <h4>فهمت الموضع</h4>
+          <p>آخر تفعيلة في الصدر هي <strong>العَروض</strong>، وآخر تفعيلة في العجز هي <strong>الضرب</strong>.</p>
+        </div>
+      </div>
+
+      <div class="rajaz-applied-thinking-box">
+        <h3>كيف أفكر في أي مثال رجز بعد الآن؟</h3>
+
+        <div class="rajaz-thinking-flow">
+          <div>
+            <strong>لا أبدأ بـ:</strong>
+            <span>ما اسم البحر؟</span>
+          </div>
+
+          <div>
+            <strong>بل أبدأ بـ:</strong>
+            <span>هل أرى تكرار مستفعلن؟</span>
+          </div>
+
+          <div>
+            <strong>ثم أسأل:</strong>
+            <span>هل التفعيلات ثلاث أم اثنتان؟</span>
+          </div>
+
+          <div>
+            <strong>ثم أقرر:</strong>
+            <span>تام أم مجزوء؟</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rajaz-mini-board">
+        <h3>لوحة الفهم السريعة</h3>
+
+        <div class="rajaz-mini-board-row">
+          <span>النمط</span>
+          <strong>مستفعلن | مستفعلن | مستفعلن</strong>
+        </div>
+
+        <div class="rajaz-mini-board-row">
+          <span>عدد التفعيلات</span>
+          <strong>3</strong>
+        </div>
+
+        <div class="rajaz-mini-board-row">
+          <span>النوع</span>
+          <strong>رجز تام</strong>
+        </div>
+
+        <div class="rajaz-mini-board-row">
+          <span>الحشو</span>
+          <strong>التفعيلات قبل الأخيرة</strong>
+        </div>
+
+        <div class="rajaz-mini-board-row">
+          <span>العَروض / الضرب</span>
+          <strong>آخر تفعيلة في الشطر</strong>
+        </div>
+      </div>
+
+      <div class="prosody-result-card">
+        <h3>رسالة المعلم</h3>
+        <p>
+          ممتاز. الآن عندما ترى الرجز، لا تحفظ الاسم مباشرة.
+          اسأل نفسك: هل تتكرر <strong>مستفعلن</strong>؟ كم مرة؟ وأين آخر تفعيلة؟
+        </p>
+        <p><strong>نتيجتك في الرحلة:</strong> ${rajazJourneyState.score} من 4</p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="startRajazJourney()">إعادة الرحلة</button>
+        <button class="secondary" onclick="startRajazPractice()">تدريب سريع على الرجز</button>
+      </div>
+    </div>
+  `;
+} 
+
+function nextRajazJourneyStep() {
+  rajazJourneyState.step += 1;
+  renderRajazJourney();
+}
+
+window.startRajazJourney = startRajazJourney;
+window.renderRajazJourney = renderRajazJourney;
+window.nextRajazJourneyStep = nextRajazJourneyStep;
+window.checkRajazJourneyRepeat = checkRajazJourneyRepeat;
+window.checkRajazJourneyCount = checkRajazJourneyCount;
+window.checkRajazJourneyType = checkRajazJourneyType;
+window.selectRajazJourneyTafeela = selectRajazJourneyTafeela;
+window.checkRajazJourneyRole = checkRajazJourneyRole;
+
+// =========================
+// Rajaz Applied Example Journey
+// From text to meter
+// =========================
+
+let rajazExampleState = {
+  step: 0,
+  score: 0,
+  selected: ""
+};
+
+const rajazExampleData = {
+  note: "مثال تدريبي مضبوط للتعليم، وسنضيف أمثلة المرجع لاحقًا بعد تثبيتها حرفيًا.",
+  original: "يا طالبَ العلمِ اجتهدْ",
+  prosodic: "يا طالبَ العلمِ اجتهدْ",
+  pattern: ["مستفعلن", "مستفعلن"],
+  meter: "مجزوء الرجز",
+  reason: "لأن الشطر يتكون هنا من تفعيلتين من مستفعلن، وهذا يناسب مجزوء الرجز في المسار التعليمي."
+};
+
+function startRajazExampleJourney() {
+  rajazExampleState = {
+    step: 0,
+    score: 0,
+    selected: ""
+  };
+
+  showProsodyScreen("practice");
+  renderRajazExampleJourney();
+}
+
+function renderRajazExampleJourney() {
+  const box = document.getElementById("rajazExampleJourneyBox");
+  if (!box) return;
+
+  const steps = [
+    renderRajazExampleIntro,
+    renderRajazExampleTextStep,
+    renderRajazExamplePatternStep,
+    renderRajazExampleMeterStep,
+    renderRajazExampleSummary
+  ];
+
+  const stepIndex = Number(rajazExampleState.step) || 0;
+  const currentStep = steps[stepIndex] || renderRajazExampleSummary;
+
+  box.innerHTML = currentStep();
+}
+
+function rajazExampleProgress() {
+  const total = 5;
+  const current = rajazExampleState.step + 1;
+  const percent = Math.round((current / total) * 100);
+
+  return `
+    <div class="rajaz-journey-progress">
+      <div>
+        <span>مثال تطبيقي على الرجز</span>
+        <strong>الخطوة ${current} من ${total}</strong>
+      </div>
+      <div class="rajaz-journey-bar">
+        <i style="width:${percent}%"></i>
+      </div>
+    </div>
+  `;
+}
+
+function renderRajazExampleIntro() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazExampleProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">ر</span>
+        <div>
+          <h3>الآن ننتقل من النمط إلى المثال</h3>
+          <p>
+            في الرحلة السابقة فهمت أن الرجز يعتمد على تكرار <strong>مستفعلن</strong>.
+            الآن سنرى كيف نربط شطرًا شعريًا بهذا النمط.
+          </p>
+        </div>
+      </div>
+
+      <div class="prosody-result-card">
+        <h3>تنبيه دقيق</h3>
+        <p>
+          ${safeText(rajazExampleData.note)}
+          لن نستعمل أمثلة غير موثوقة في النسخة النهائية، لأن هذا القسم مخصص لطلاب توجيهي.
+        </p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="nextRajazExampleStep()">ابدأ المثال</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderRajazExampleTextStep() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazExampleProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">١</span>
+        <div>
+          <h3>الخطوة الأولى: اقرأ الشطر بهدوء</h3>
+          <p>
+            لا تبدأ بالحكم على البحر. اقرأ أولًا، ثم لاحظ الإيقاع.
+          </p>
+        </div>
+      </div>
+
+      <div class="rajaz-example-verse-card">
+        <span>الشطر التدريبي</span>
+        <strong>${safeText(rajazExampleData.original)}</strong>
+      </div>
+
+      <div class="rajaz-question-box">
+        <h4>ما أول خطوة صحيحة؟</h4>
+        <div class="rajaz-choice-row">
+          <button onclick="checkRajazExampleText('meter')">أحدد البحر مباشرة</button>
+          <button onclick="checkRajazExampleText('read')">أقرأ وألاحظ الإيقاع أولًا</button>
+        </div>
+      </div>
+
+      <div id="rajazExampleFeedback" class="prosody-result-card">
+        <h3>تلميح</h3>
+        <p>في العَروض لا نقفز إلى اسم البحر قبل القراءة والتقطيع.</p>
+      </div>
+    </div>
+  `;
+}
+
+function checkRajazExampleText(answer) {
+  const feedback = document.getElementById("rajazExampleFeedback");
+  if (!feedback) return;
+
+  if (answer === "read") {
+    rajazExampleState.score += 1;
+    feedback.innerHTML = `
+      <h3>صحيح ✅</h3>
+      <p>
+        البداية الصحيحة هي القراءة وملاحظة الإيقاع، ثم ننتقل إلى التقطيع والتفعيلات.
+      </p>
+      <button onclick="nextRajazExampleStep()">تابع</button>
+    `;
+  } else {
+    feedback.innerHTML = `
+      <h3>انتبه ❌</h3>
+      <p>
+        تحديد البحر مباشرة يجعل الطالب يحفظ ولا يفهم. الطريق الصحيح:
+        قراءة ← تقطيع ← تفعيلات ← بحر.
+      </p>
+    `;
+  }
+}
+
+function renderRajazExamplePatternStep() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazExampleProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">٢</span>
+        <div>
+          <h3>الخطوة الثانية: اربط الشطر بالتفعيلات</h3>
+          <p>
+            في هذا المثال التدريبي سنعرض التفعيلات جاهزة حتى يفهم الطالب العلاقة بين الشطر والنمط.
+            لاحقًا نجعل الطالب يكملها بنفسه.
+          </p>
+        </div>
+      </div>
+
+      <div class="rajaz-example-verse-card">
+        <span>الشطر</span>
+        <strong>${safeText(rajazExampleData.original)}</strong>
+      </div>
+
+      <div class="rajaz-journey-tafeela-row">
+        ${rajazExampleData.pattern.map((taf, i) => `
+          <div class="rajaz-journey-tafeela">
+            <span>التفعيلة ${i + 1}</span>
+            <strong>${safeText(taf)}</strong>
+            <small>${i === rajazExampleData.pattern.length - 1 ? "آخر تفعيلة" : "حشو"}</small>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="rajaz-question-box">
+        <h4>كم تفعيلة ظهرت في هذا المثال؟</h4>
+        <div class="rajaz-choice-row">
+          <button onclick="checkRajazExampleCount(2)">تفعيلتان</button>
+          <button onclick="checkRajazExampleCount(3)">ثلاث تفعيلات</button>
+        </div>
+      </div>
+
+      <div id="rajazExampleFeedback" class="prosody-result-card">
+        <h3>تلميح</h3>
+        <p>عدّ بطاقات التفعيلات أمامك.</p>
+      </div>
+    </div>
+  `;
+}
+
+function checkRajazExampleCount(count) {
+  const feedback = document.getElementById("rajazExampleFeedback");
+  if (!feedback) return;
+
+  if (count === rajazExampleData.pattern.length) {
+    rajazExampleState.score += 1;
+    feedback.innerHTML = `
+      <h3>أحسنت ✅</h3>
+      <p>
+        ظهرت هنا تفعيلتان. وعندما يكون النمط من <strong>مستفعلن | مستفعلن</strong>
+        فنحن نتجه إلى مجزوء الرجز في هذا التدريب.
+      </p>
+      <button onclick="nextRajazExampleStep()">تابع</button>
+    `;
+  } else {
+    feedback.innerHTML = `
+      <h3>راجع العدّ ❌</h3>
+      <p>عدّ البطاقات مرة أخرى. أمامك تفعيلتان فقط.</p>
+    `;
+  }
+}
+
+function renderRajazExampleMeterStep() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazExampleProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">٣</span>
+        <div>
+          <h3>الخطوة الثالثة: استنتج البحر</h3>
+          <p>
+            الآن لا نحفظ. نستنتج من عدد التفعيلات ومن نوعها.
+          </p>
+        </div>
+      </div>
+
+      <div class="rajaz-rule-strip">
+        <div>
+          <strong>رجز تام</strong>
+          <span>مستفعلن | مستفعلن | مستفعلن</span>
+        </div>
+        <div>
+          <strong>مجزوء الرجز</strong>
+          <span>مستفعلن | مستفعلن</span>
+        </div>
+      </div>
+
+      <div class="rajaz-question-box">
+        <h4>بناء على التفعيلات، ما النوع الأقرب؟</h4>
+        <div class="rajaz-choice-row">
+          <button onclick="checkRajazExampleMeter('تام')">رجز تام</button>
+          <button onclick="checkRajazExampleMeter('مجزوء')">مجزوء الرجز</button>
+        </div>
+      </div>
+
+      <div id="rajazExampleFeedback" class="prosody-result-card">
+        <h3>فكر</h3>
+        <p>هل ظهرت ثلاث تفعيلات أم تفعيلتان؟</p>
+      </div>
+    </div>
+  `;
+}
+
+function checkRajazExampleMeter(answer) {
+  const feedback = document.getElementById("rajazExampleFeedback");
+  if (!feedback) return;
+
+  if (answer === "مجزوء") {
+    rajazExampleState.score += 1;
+    feedback.innerHTML = `
+      <h3>صحيح ✅</h3>
+      <p>${safeText(rajazExampleData.reason)}</p>
+      <button onclick="nextRajazExampleStep()">تابع إلى الخلاصة</button>
+    `;
+  } else {
+    feedback.innerHTML = `
+      <h3>انتبه ❌</h3>
+      <p>
+        الرجز التام يحتاج ثلاث تفعيلات في الشطر. هنا لدينا تفعيلتان فقط،
+        لذلك هذا مثال على مجزوء الرجز في هذا التدريب.
+      </p>
+    `;
+  }
+}
+
+function renderRajazExampleSummary() {
+  return `
+    <div class="rajaz-journey-card">
+      ${rajazExampleProgress()}
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">✓</span>
+        <div>
+          <h3>الخلاصة: كيف انتقلنا من الشطر إلى البحر؟</h3>
+          <p>
+            الآن رأيت الطريق: لا نبدأ باسم البحر، بل نقرأ ثم نربط الشطر بالتفعيلات.
+          </p>
+        </div>
+      </div>
+
+      <div class="rajaz-mini-board">
+        <h3>لوحة التطبيق</h3>
+
+        <div class="rajaz-mini-board-row">
+          <span>الشطر</span>
+          <strong>${safeText(rajazExampleData.original)}</strong>
+        </div>
+
+        <div class="rajaz-mini-board-row">
+          <span>التفعيلات</span>
+          <strong>${rajazExampleData.pattern.map(safeText).join(" | ")}</strong>
+        </div>
+
+        <div class="rajaz-mini-board-row">
+          <span>النتيجة</span>
+          <strong>${safeText(rajazExampleData.meter)}</strong>
+        </div>
+
+        <div class="rajaz-mini-board-row">
+          <span>سبب الاختيار</span>
+          <strong>${safeText(rajazExampleData.reason)}</strong>
+        </div>
+      </div>
+
+      <div class="prosody-result-card">
+        <h3>رسالة مهمة</h3>
+        <p>
+          في النسخة النهائية، سنستبدل هذا المثال التدريبي بأمثلة من المرجع نفسه،
+          مع التقطيع كما ورد في الدرس، حتى يكون العمل مناسبًا لطلاب التوجيهي.
+        </p>
+        <p><strong>نتيجتك في المثال:</strong> ${rajazExampleState.score} من 3</p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="startRajazExampleJourney()">إعادة المثال</button>
+        <button class="secondary" onclick="startRajazJourney()">رجوع إلى رحلة الرجز</button>
+      </div>
+    </div>
+  `;
+}
+
+function nextRajazExampleStep() {
+  rajazExampleState.step += 1;
+  renderRajazExampleJourney();
+}
+
+window.startRajazExampleJourney = startRajazExampleJourney;
+window.renderRajazExampleJourney = renderRajazExampleJourney;
+window.nextRajazExampleStep = nextRajazExampleStep;
+window.checkRajazExampleText = checkRajazExampleText;
+window.checkRajazExampleCount = checkRajazExampleCount;
+window.checkRajazExampleMeter = checkRajazExampleMeter;
+
+// =========================
+// Rajaz Drill Bank V1
+// Repeated graduated practice
+// =========================
+
+ let rajazDrillState = {
+  index: 0,
+  score: 0,
+  answered: false,
+  lastCorrect: null,
+  mistakes: {}
+};
+
+const rajazDrillBank = [
+  {
+    type: "count",
+    level: "سهل",
+    title: "عدّ التفعيلات",
+    prompt: "كم تفعيلة ترى في هذا النمط؟",
+    pattern: ["مستفعلن", "مستفعلن", "مستفعلن"],
+    options: ["تفعيلتان", "ثلاث تفعيلات", "أربع تفعيلات"],
+    answer: "ثلاث تفعيلات",
+    mistakeType: "wrong_tafeele_count",
+    explanation: "عدّ البطاقات: مستفعلن | مستفعلن | مستفعلن. إذن العدد ثلاث تفعيلات."
+  },
+  {
+    type: "meterType",
+    level: "سهل",
+    title: "تام أم مجزوء؟",
+    prompt: "هذا النمط يمثل أي نوع من الرجز؟",
+    pattern: ["مستفعلن", "مستفعلن"],
+    options: ["رجز تام", "مجزوء الرجز"],
+    answer: "مجزوء الرجز",
+    mistakeType: "confused_complete_majzoo",
+    explanation: "مجزوء الرجز يتكوّن في هذا التدريب من تفعيلتين في الشطر، أما الرجز التام ففيه ثلاث تفعيلات."
+  },
+  {
+    type: "meterType",
+    level: "متوسط",
+    title: "استنتج النوع",
+    prompt: "إذا ظهر أمامك: مستفعلن | مستفعلن | مستفعلن، فماذا تستنتج؟",
+    pattern: ["مستفعلن", "مستفعلن", "مستفعلن"],
+    options: ["مجزوء الرجز", "رجز تام"],
+    answer: "رجز تام",
+    mistakeType: "confused_complete_majzoo",
+    explanation: "ثلاث تفعيلات في الشطر تعني الرجز التام في هذا المسار التعليمي."
+  },
+  {
+    type: "role",
+    level: "متوسط",
+    title: "موضع العَروض أو الضرب",
+    prompt: "اضغط على التفعيلة التي تمثل موضع العَروض أو الضرب في الشطر.",
+    pattern: ["مستفعلن", "مستفعلن", "مستفعلن"],
+    answerIndex: 2,
+    mistakeType: "confused_hasho_aroood",
+    explanation: "آخر تفعيلة في صدر البيت تسمى العَروض، وآخر تفعيلة في عجز البيت تسمى الضرب. وما قبلها حشو."
+  },
+  {
+    type: "role",
+    level: "متوسط",
+    title: "آخر تفعيلة",
+    prompt: "في مجزوء الرجز، أين موضع العَروض أو الضرب؟",
+    pattern: ["مستفعلن", "مستفعلن"],
+    answerIndex: 1,
+    mistakeType: "confused_hasho_aroood",
+    explanation: "حتى في المجزوء، نبحث عن آخر تفعيلة في الشطر. هنا آخر تفعيلة هي الثانية."
+  },
+  {
+    type: "fixMistake",
+    level: "ذكي",
+    title: "صحح خطأ طالب",
+    prompt: "طالب قال: هذا النمط رجز تام لأنه يحتوي على تفعيلتين. ما التصحيح؟",
+    pattern: ["مستفعلن", "مستفعلن"],
+    options: [
+      "صحيح، كل نمط فيه مستفعلن هو رجز تام",
+      "خطأ؛ وجود تفعيلتين يدل هنا على مجزوء الرجز",
+      "خطأ؛ الرجز لا يستعمل مستفعلن"
+    ],
+    answer: "خطأ؛ وجود تفعيلتين يدل هنا على مجزوء الرجز",
+    mistakeType: "fix_wrong_reasoning",
+    explanation: "وجود مستفعلن مهم، لكن عدد التفعيلات مهم أيضًا. تفعيلتان في الشطر تعني مجزوء الرجز في هذا التدريب."
+  },
+  {
+    type: "fixMistake",
+    level: "ذكي",
+    title: "صحح خطأ في العَروض",
+    prompt: "طالب اختار التفعيلة الأولى على أنها العَروض. ما التصحيح؟",
+    pattern: ["مستفعلن", "مستفعلن", "مستفعلن"],
+    options: [
+      "صحيح؛ العَروض هي أول تفعيلة",
+      "خطأ؛ العَروض تكون آخر تفعيلة في صدر البيت",
+      "العَروض لا علاقة لها بالتفعيلات"
+    ],
+    answer: "خطأ؛ العَروض تكون آخر تفعيلة في صدر البيت",
+    mistakeType: "confused_hasho_aroood",
+    explanation: "التفعيلات الأولى تكون من الحشو، أما آخر تفعيلة في الصدر فهي العَروض."
+  }
+];
+
+function startRajazDrillBank() {
+ rajazDrillState = {
+  index: 0,
+  score: 0,
+  answered: false,
+  lastCorrect: null,
+  mistakes: {}
+};
+
+  showProsodyScreen("practice");
+  renderRajazDrillBank();
+}
+
+function renderRajazDrillBank() {
+  const box = document.getElementById("rajazDrillBankBox");
+  if (!box) return;
+
+  const item = rajazDrillBank[rajazDrillState.index % rajazDrillBank.length];
+  const current = rajazDrillState.index + 1;
+  const total = rajazDrillBank.length;
+  const percent = Math.round((current / total) * 100);
+
+  box.innerHTML = `
+    <div class="rajaz-drill-card">
+      <div class="rajaz-journey-progress">
+        <div>
+          <span>تدريبات الرجز المتدرجة</span>
+          <strong>تدريب ${current} من ${total}</strong>
+        </div>
+        <div class="rajaz-journey-bar">
+          <i style="width:${percent}%"></i>
+        </div>
+      </div>
+
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">د</span>
+        <div>
+          <h3>${safeText(item.title)}</h3>
+          <p>
+            المستوى: <strong>${safeText(item.level)}</strong> — ${safeText(item.prompt)}
+          </p>
+        </div>
+      </div>
+
+      <div class="rajaz-drill-pattern">
+        ${item.pattern.map((taf, i) => `
+          <button
+            class="rajaz-journey-tafeela"
+            onclick="answerRajazDrillRole(${i})"
+            ${item.type === "role" ? "" : "disabled"}
+          >
+            <span>التفعيلة ${i + 1}</span>
+            <strong>${safeText(taf)}</strong>
+            <small>${i === item.pattern.length - 1 ? "آخر تفعيلة" : "حشو"}</small>
+          </button>
+        `).join("")}
+      </div>
+
+      ${renderRajazDrillQuestion(item)}
+
+      <div id="rajazDrillFeedback" class="prosody-result-card">
+        <h3>إرشاد المعلم</h3>
+        <p>${getRajazDrillHint(item)}</p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button class="secondary" onclick="nextRajazDrill()">التدريب التالي</button>
+        <button class="secondary" onclick="restartRajazDrillBank()">إعادة التدريبات</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderRajazDrillQuestion(item) {
+  if (item.type === "role") {
+    return `
+      <div class="rajaz-question-box">
+        <h4>اختر من البطاقات أعلاه</h4>
+        <p>اضغط على التفعيلة المناسبة، ثم سيظهر لك التصحيح مباشرة.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="rajaz-question-box">
+      <h4>اختر الإجابة الصحيحة</h4>
+      <div class="rajaz-choice-row">
+        ${item.options.map(option => `
+          <button onclick="answerRajazDrillChoice('${escapeForOnclick(option)}')">
+            ${safeText(option)}
+          </button>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function getRajazDrillHint(item) {
+  if (item.type === "count") {
+    return "ابدأ بعدّ بطاقات التفعيلات قبل أن تفكر في اسم البحر.";
+  }
+
+  if (item.type === "meterType") {
+    return "ثلاث تفعيلات تعني تامًا، وتفعيلتان تعني مجزوءًا في هذا التدريب.";
+  }
+
+  if (item.type === "role") {
+    return "الحشو قبل النهاية، أما العَروض أو الضرب فموضعهما آخر الشطر.";
+  }
+
+  return "لا تبحث عن الجواب فقط؛ اقرأ سبب الخطأ وصححه.";
+}
+
+function answerRajazDrillChoice(choice) {
+  const item = rajazDrillBank[rajazDrillState.index % rajazDrillBank.length];
+  const feedback = document.getElementById("rajazDrillFeedback");
+  if (!feedback) return;
+
+  const isCorrect = choice === item.answer;
+
+  if (isCorrect) {
+    rajazDrillState.score += 1;
+  }
+  if (!isCorrect) {
+  recordRajazMistake(item.mistakeType);
+}
+
+  rajazDrillState.answered = true;
+  rajazDrillState.lastCorrect = isCorrect;
+
+  feedback.innerHTML = `
+    <h3>${isCorrect ? "إجابة صحيحة ✅" : "تحتاج مراجعة ❌"}</h3>
+    <p><strong>إجابتك:</strong> ${safeText(choice)}</p>
+    <p><strong>الجواب الصحيح:</strong> ${safeText(item.answer)}</p>
+    <p><strong>السبب:</strong> ${safeText(item.explanation)}</p>
+    ${!isCorrect ? `<p><strong>نوع الخطأ:</strong> ${safeText(getRajazMistakeArabicName(item.mistakeType))}</p>` : ""}
+  `;
+}
+
+function answerRajazDrillRole(index) {
+  const item = rajazDrillBank[rajazDrillState.index % rajazDrillBank.length];
+  const feedback = document.getElementById("rajazDrillFeedback");
+  if (!feedback || item.type !== "role") return;
+
+  const isCorrect = index === item.answerIndex;
+
+  if (isCorrect) {
+    rajazDrillState.score += 1;
+  }
+ if (!isCorrect) {
+  recordRajazMistake(item.mistakeType);
+}
+  rajazDrillState.answered = true;
+  rajazDrillState.lastCorrect = isCorrect;
+
+  feedback.innerHTML = `
+    <h3>${isCorrect ? "أحسنت ✅" : "انتبه ❌"}</h3>
+    <p>
+      <strong>اختيارك:</strong>
+      التفعيلة ${index + 1} — ${safeText(item.pattern[index])}
+    </p>
+    <p><strong>التفسير:</strong> ${safeText(item.explanation)}</p>
+    ${!isCorrect ? `<p><strong>نوع الخطأ:</strong> ${safeText(getRajazMistakeArabicName(item.mistakeType))}</p>` : ""}
+  `;
+}
+
+function getRajazMistakeArabicName(type) {
+  const names = {
+    wrong_tafeele_count: "خطأ في عدّ التفعيلات",
+    confused_complete_majzoo: "خلط بين التام والمجزوء",
+    confused_hasho_aroood: "خلط بين الحشو والعَروض/الضرب",
+    fix_wrong_reasoning: "تصحيح سبب خاطئ"
+  };
+
+  return names[type] || "خطأ يحتاج مراجعة";
+}
+function recordRajazMistake(type) {
+  if (!type) return;
+
+  if (!rajazDrillState.mistakes) {
+    rajazDrillState.mistakes = {};
+  }
+
+  rajazDrillState.mistakes[type] = (rajazDrillState.mistakes[type] || 0) + 1;
+}
+
+function getTopRajazMistake() {
+  const mistakes = rajazDrillState.mistakes || {};
+  const entries = Object.entries(mistakes);
+
+  if (!entries.length) return null;
+
+  entries.sort((a, b) => b[1] - a[1]);
+
+  return {
+    type: entries[0][0],
+    count: entries[0][1],
+    label: getRajazMistakeArabicName(entries[0][0])
+  };
+}
+
+function renderRajazMistakeReport() {
+  const mistakes = rajazDrillState.mistakes || {};
+  const entries = Object.entries(mistakes);
+
+  if (!entries.length) {
+    return `
+      <div class="rajaz-mistake-report good">
+        <h3>تحليل الأخطاء</h3>
+        <p>رائع! لم تظهر أخطاء متكررة في هذه الجولة.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="rajaz-mistake-report">
+      <h3>تحليل أخطائك في الرجز</h3>
+      <p>
+        هذه ليست عقوبة، بل خريطة تساعدك تعرف أين تحتاج تدريبًا أكثر.
+      </p>
+
+      <div class="rajaz-mistake-list">
+        ${entries.map(([type, count]) => `
+          <div class="rajaz-mistake-item">
+            <strong>${safeText(getRajazMistakeArabicName(type))}</strong>
+            <span>${count} مرة</span>
+            <p>${safeText(getRajazMistakeAdvice(type))}</p>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function getRajazMistakeAdvice(type) {
+  const advice = {
+    wrong_tafeele_count:
+      "راجع العدّ أولًا. لا تسأل عن البحر قبل أن تعدّ التفعيلات واحدة واحدة.",
+    confused_complete_majzoo:
+      "تذكر: ثلاث تفعيلات في الشطر = رجز تام، وتفعيلتان = مجزوء الرجز في هذا التدريب.",
+    confused_hasho_aroood:
+      "ركز على آخر تفعيلة. ما قبل الأخيرة غالبًا حشو، أما الأخيرة فهي موضع العَروض أو الضرب.",
+    fix_wrong_reasoning:
+      "لا تكتفِ بالجواب. اقرأ السبب: لماذا كان جواب الطالب خطأ؟"
+  };
+
+  return advice[type] || "راجع هذه النقطة بتأنٍّ ثم أعد التدريب.";
+}
+
+function nextRajazDrill() {
+  if (rajazDrillState.index < rajazDrillBank.length - 1) {
+    rajazDrillState.index += 1;
+    rajazDrillState.answered = false;
+    rajazDrillState.lastCorrect = null;
+    renderRajazDrillBank();
+    return;
+  }
+
+  renderRajazDrillSummary();
+}
+
+function restartRajazDrillBank() {
+  startRajazDrillBank();
+}
+
+function renderRajazDrillSummary() {
+  const box = document.getElementById("rajazDrillBankBox");
+  if (!box) return;
+
+  const total = rajazDrillBank.length;
+  const score = rajazDrillState.score;
+  const percent = Math.round((score / total) * 100);
+
+  box.innerHTML = `
+    <div class="rajaz-drill-card">
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">✓</span>
+        <div>
+          <h3>نتيجة تدريبات الرجز</h3>
+          <p>
+            أنهيت مجموعة تدريبات الرجز الأولى. الآن نقرأ النتيجة لنقرر ماذا تراجع.
+          </p>
+        </div>
+      </div>
+
+      <div class="rajaz-drill-score-orb">
+        <span>نتيجتك</span>
+        <strong>${score} / ${total}</strong>
+        <em>${percent}%</em>
+      </div>
+       <div class="prosody-result-card">
+  <h3>توصية المعلم</h3>
+  <p>${getRajazDrillAdvice(percent)}</p>
+    </div>
+
+   ${renderRajazMistakeReport()}
+
+   ${renderRajazTargetedReviewButton()}
+
+      <div class="prosody-practice-actions">
+        <button onclick="restartRajazDrillBank()">إعادة التدريبات</button>
+        <button class="secondary" onclick="startRajazJourney()">راجع رحلة الرجز</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderRajazTargetedReviewButton() {
+  const topMistake = getTopRajazMistake();
+
+  if (!topMistake) {
+    return `
+      <div class="prosody-result-card">
+        <h3>الخطوة التالية</h3>
+        <p>أداؤك جيد في هذه الجولة. يمكنك الآن إعادة الرحلة أو الانتقال إلى أمثلة أكثر.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="prosody-result-card rajaz-targeted-review">
+      <h3>تدريب مخصص لك</h3>
+      <p>
+        أكثر نقطة تحتاج مراجعة عندك:
+        <strong>${safeText(topMistake.label)}</strong>
+      </p>
+      <button onclick="startRajazTargetedReview('${safeText(topMistake.type)}')">
+        ابدأ مراجعة هذه النقطة
+      </button>
+    </div>
+  `;
+}
+
+function getRajazDrillAdvice(percent) {
+  if (percent >= 85) {
+    return "ممتاز. يبدو أنك فهمت فكرة الرجز الأساسية. الخطوة القادمة أن نطبق على أمثلة أكثر من المرجع.";
+  }
+
+  if (percent >= 60) {
+    return "جيد، لكن تحتاج تدريبًا إضافيًا خصوصًا على الحشو والعَروض والضرب. أعد التدريبات مرة أخرى.";
+  }
+
+  return "لا تنتقل للبحر التالي الآن. راجع رحلة الرجز، ثم أعد التدريبات ببطء. العَروض يحتاج تكرارًا لا استعجالًا.";
+}
+
+function escapeForOnclick(text) {
+  return String(text || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, "&quot;");
+}
+
+window.startRajazDrillBank = startRajazDrillBank;
+window.renderRajazDrillBank = renderRajazDrillBank;
+window.answerRajazDrillChoice = answerRajazDrillChoice;
+window.answerRajazDrillRole = answerRajazDrillRole;
+window.nextRajazDrill = nextRajazDrill;
+window.restartRajazDrillBank = restartRajazDrillBank;
+function startRajazTargetedReview(type) {
+  const box = document.getElementById("rajazDrillBankBox");
+  if (!box) return;
+
+  const label = getRajazMistakeArabicName(type);
+  const advice = getRajazMistakeAdvice(type);
+
+  box.innerHTML = `
+    <div class="rajaz-drill-card">
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">م</span>
+        <div>
+          <h3>مراجعة مخصصة: ${safeText(label)}</h3>
+          <p>
+            النظام لاحظ أن هذه النقطة تحتاج تدريبًا إضافيًا.
+            سنراجعها بهدوء بدل الانتقال بسرعة.
+          </p>
+        </div>
+      </div>
+
+      <div class="prosody-result-card">
+        <h3>شرح سريع</h3>
+        <p>${safeText(advice)}</p>
+      </div>
+
+      ${renderRajazTargetedContent(type)}
+
+      <div class="prosody-practice-actions">
+        <button onclick="startRajazDrillBank()">إعادة بنك التدريبات</button>
+        <button class="secondary" onclick="startRajazJourney()">العودة إلى رحلة الرجز</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderRajazTargetedContent(type) {
+  if (type === "wrong_tafeele_count") {
+    return `
+      <div class="rajaz-targeted-box">
+        <h3>تدريب العدّ</h3>
+        <p>اقرأ النمط وعدّ البطاقات قبل أي جواب.</p>
+        <div class="rajaz-drill-pattern">
+          <div class="rajaz-journey-tafeela"><span>1</span><strong>مستفعلن</strong></div>
+          <div class="rajaz-journey-tafeela"><span>2</span><strong>مستفعلن</strong></div>
+          <div class="rajaz-journey-tafeela"><span>3</span><strong>مستفعلن</strong></div>
+        </div>
+        <p><strong>الخلاصة:</strong> العدد هنا ثلاث تفعيلات.</p>
+      </div>
+    `;
+  }
+
+  if (type === "confused_complete_majzoo") {
+    return `
+      <div class="rajaz-targeted-box">
+        <h3>تام أم مجزوء؟</h3>
+        <div class="rajaz-rule-strip">
+          <div>
+            <strong>رجز تام</strong>
+            <span>مستفعلن | مستفعلن | مستفعلن</span>
+          </div>
+          <div>
+            <strong>مجزوء الرجز</strong>
+            <span>مستفعلن | مستفعلن</span>
+          </div>
+        </div>
+        <p><strong>الخلاصة:</strong> الحكم يعتمد على عدد التفعيلات، لا على اسم مستفعلن وحده.</p>
+      </div>
+    `;
+  }
+
+  if (type === "confused_hasho_aroood") {
+    return `
+      <div class="rajaz-targeted-box">
+        <h3>الحشو والعَروض والضرب</h3>
+        <div class="rajaz-drill-pattern">
+          <div class="rajaz-journey-tafeela"><span>التفعيلة 1</span><strong>مستفعلن</strong><small>حشو</small></div>
+          <div class="rajaz-journey-tafeela"><span>التفعيلة 2</span><strong>مستفعلن</strong><small>حشو</small></div>
+          <div class="rajaz-journey-tafeela"><span>التفعيلة 3</span><strong>مستفعلن</strong><small>عَروض/ضرب</small></div>
+        </div>
+        <p><strong>الخلاصة:</strong> آخر تفعيلة هي موضع العَروض أو الضرب. وما قبلها حشو.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="rajaz-targeted-box">
+      <h3>تصحيح التفكير</h3>
+      <p>
+        لا تسأل فقط: ما الجواب؟
+        اسأل: لماذا هذا الجواب صحيح؟ ولماذا الجواب الآخر خطأ؟
+      </p>
+    </div>
+  `;
+}
+
+window.startRajazTargetedReview = startRajazTargetedReview;
+
+// =========================
+// Letter Scansion Lab V1
+// حرف بحرف: متحرك / ساكن
+// =========================
+
+let letterScansionState = {
+  index: 0,
+  answers: {},
+  checked: false,
+  score: 0
+};
+
+const letterScansionBank = [
+  {
+    title: "تدريب على كلمة: مُسْتَفْعِلُنْ",
+    word: "مُسْتَفْعِلُنْ",
+    letters: [
+      { char: "مُ", expected: "ب", reason: "الميم متحركة بالضمة؛ لذلك رمزها ب." },
+      { char: "سْ", expected: "ـ", reason: "السين ساكنة؛ لذلك رمزها ـ." },
+      { char: "تَ", expected: "ب", reason: "التاء متحركة بالفتحة؛ لذلك رمزها ب." },
+      { char: "فْ", expected: "ـ", reason: "الفاء ساكنة؛ لذلك رمزها ـ." },
+      { char: "عِ", expected: "ب", reason: "العين متحركة بالكسرة؛ لذلك رمزها ب." },
+      { char: "لُ", expected: "ب", reason: "اللام متحركة بالضمة؛ لذلك رمزها ب." },
+      { char: "نْ", expected: "ـ", reason: "النون ساكنة؛ لذلك رمزها ـ." }
+    ],
+    patternName: "مستفعلن"
+  },
+  {
+    title: "تدريب على كلمة: فَاعِلُنْ",
+    word: "فَاعِلُنْ",
+    letters: [
+      { char: "فَ", expected: "ب", reason: "الفاء متحركة بالفتحة؛ لذلك رمزها ب." },
+      { char: "ا", expected: "ـ", reason: "الألف هنا امتداد صوتي بعد حركة؛ وتُعامل في هذا التدريب كامتداد ساكن." },
+      { char: "عِ", expected: "ب", reason: "العين متحركة بالكسرة؛ لذلك رمزها ب." },
+      { char: "لُ", expected: "ب", reason: "اللام متحركة بالضمة؛ لذلك رمزها ب." },
+      { char: "نْ", expected: "ـ", reason: "النون ساكنة؛ لذلك رمزها ـ." }
+    ],
+    patternName: "فاعلن"
+  },
+  {
+    title: "تدريب على كلمة: فَعُولُنْ",
+    word: "فَعُولُنْ",
+    letters: [
+      { char: "فَ", expected: "ب", reason: "الفاء متحركة بالفتحة؛ لذلك رمزها ب." },
+      { char: "عُ", expected: "ب", reason: "العين متحركة بالضمة؛ لذلك رمزها ب." },
+      { char: "و", expected: "ـ", reason: "الواو هنا حرف مد/امتداد بعد الضمة؛ لذلك تُعامل كساكن في هذا التدريب." },
+      { char: "لُ", expected: "ب", reason: "اللام متحركة بالضمة؛ لذلك رمزها ب." },
+      { char: "نْ", expected: "ـ", reason: "النون ساكنة؛ لذلك رمزها ـ." }
+    ],
+    patternName: "فعولن"
+  }
+];
+
+function startLetterScansionLab() {
+  letterScansionState = {
+    index: 0,
+    answers: {},
+    checked: false,
+    score: 0
+  };
+
+  showProsodyScreen("practice");
+  renderLetterScansionLab();
+}
+
+function renderLetterScansionLab() {
+  const box = document.getElementById("letterScansionLabBox");
+  if (!box) return;
+
+  const item = letterScansionBank[letterScansionState.index % letterScansionBank.length];
+
+  box.innerHTML = `
+    <div class="letter-scansion-card">
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">ق</span>
+        <div>
+          <h3>مختبر التقطيع الحرفي</h3>
+          <p>
+            ضع الرمز المناسب تحت كل حرف:
+            <strong>ب = متحرك</strong>،
+            <strong>ـ = ساكن</strong>.
+          </p>
+        </div>
+      </div>
+
+      <div class="letter-scansion-head">
+        <span class="prosody-badge-inline">حرف بحرف</span>
+        <h3>${safeText(item.title)}</h3>
+        <p>التفعيلة / النمط: <strong>${safeText(item.patternName)}</strong></p>
+      </div>
+
+      <div class="letter-scansion-word">
+        ${item.letters.map((letter, i) => renderLetterScansionUnit(letter, i)).join("")}
+      </div>
+
+      <div class="letter-scansion-symbol-key">
+        <div><strong>ب</strong><span>حرف متحرك</span></div>
+        <div><strong>ـ</strong><span>حرف ساكن أو امتداد مدّي في هذا التدريب</span></div>
+      </div>
+
+      <div id="letterScansionFeedback" class="prosody-result-card">
+        <h3>إرشاد المعلم</h3>
+        <p>ابدأ حرفًا حرفًا. لا تفكر في البحر الآن؛ فقط اسأل: هل الحرف متحرك أم ساكن؟</p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="checkLetterScansionLab()">تحقق من التقطيع</button>
+        <button class="secondary" onclick="showLetterScansionAnswer()">أرني الجواب</button>
+        <button class="secondary" onclick="nextLetterScansionLab()">تدريب جديد</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderLetterScansionUnit(letter, index) {
+  const selected = letterScansionState.answers[index] || "";
+  const checked = letterScansionState.checked;
+  const isCorrect = checked && selected === letter.expected;
+  const isWrong = checked && selected && selected !== letter.expected;
+  const isEmptyWrong = checked && !selected;
+
+  let statusClass = "";
+  if (isCorrect) statusClass = "correct";
+  if (isWrong || isEmptyWrong) statusClass = "wrong";
+
+  return `
+    <div class="letter-scansion-unit ${statusClass}">
+      <div class="letter-char">${safeText(letter.char)}</div>
+
+      <div class="letter-symbol-choice">
+        <button
+          class="${selected === "ب" ? "selected" : ""}"
+          onclick="chooseLetterScansionSymbol(${index}, 'ب')"
+        >ب</button>
+
+        <button
+          class="${selected === "ـ" ? "selected" : ""}"
+          onclick="chooseLetterScansionSymbol(${index}, 'ـ')"
+        >ـ</button>
+      </div>
+
+      <div class="letter-result-symbol">
+        ${checked
+          ? `<strong>${safeText(selected || "؟")}</strong>
+             <span>${isCorrect ? "✅" : "❌"}</span>`
+          : `<strong>؟</strong>`}
+      </div>
+
+      ${checked
+        ? `<small>${safeText(letter.reason)}</small>`
+        : ""}
+    </div>
+  `;
+}
+
+function chooseLetterScansionSymbol(index, symbol) {
+  letterScansionState.answers[index] = symbol;
+  letterScansionState.checked = false;
+  renderLetterScansionLab();
+}
+
+function checkLetterScansionLab() {
+  const item = letterScansionBank[letterScansionState.index % letterScansionBank.length];
+  const feedback = document.getElementById("letterScansionFeedback");
+  if (!feedback) return;
+
+  letterScansionState.checked = true;
+
+  let correctCount = 0;
+  const mistakes = [];
+
+  item.letters.forEach((letter, i) => {
+    const answer = letterScansionState.answers[i];
+
+    if (answer === letter.expected) {
+      correctCount += 1;
+    } else {
+      mistakes.push({
+        index: i,
+        char: letter.char,
+        expected: letter.expected,
+        answer: answer || "لم يجب",
+        reason: letter.reason
+      });
+    }
+  });
+
+  letterScansionState.score = correctCount;
+
+  renderLetterScansionLab();
+
+  const newFeedback = document.getElementById("letterScansionFeedback");
+  if (!newFeedback) return;
+
+  const total = item.letters.length;
+
+  newFeedback.innerHTML = `
+    <h3>${mistakes.length === 0 ? "تقطيع صحيح ✅" : "راجع الأخطاء ❌"}</h3>
+    <p><strong>نتيجتك:</strong> ${correctCount} من ${total}</p>
+
+    ${mistakes.length === 0
+      ? `<p>ممتاز. وضعت رمز المتحرك والساكن بشكل صحيح تحت كل حرف.</p>`
+      : `
+        <div class="letter-scansion-mistake-list">
+          ${mistakes.map(m => `
+            <div class="letter-scansion-mistake">
+              <strong>الحرف: ${safeText(m.char)}</strong>
+              <p>إجابتك: <b>${safeText(m.answer)}</b> — الصحيح: <b>${safeText(m.expected)}</b></p>
+              <p>${safeText(m.reason)}</p>
+            </div>
+          `).join("")}
+        </div>
+      `}
+  `;
+}
+
+function showLetterScansionAnswer() {
+  const item = letterScansionBank[letterScansionState.index % letterScansionBank.length];
+
+  item.letters.forEach((letter, i) => {
+    letterScansionState.answers[i] = letter.expected;
+  });
+
+  letterScansionState.checked = true;
+  renderLetterScansionLab();
+
+  const feedback = document.getElementById("letterScansionFeedback");
+  if (feedback) {
+    feedback.innerHTML = `
+      <h3>الجواب النموذجي</h3>
+      <p>
+        الرموز الصحيحة:
+        <strong>${item.letters.map(l => l.expected).join(" ")}</strong>
+      </p>
+      <p>راجع كل حرف ولاحظ سبب كونه متحركًا أو ساكنًا.</p>
+    `;
+  }
+}
+
+function nextLetterScansionLab() {
+  letterScansionState.index += 1;
+  letterScansionState.answers = {};
+  letterScansionState.checked = false;
+  letterScansionState.score = 0;
+  renderLetterScansionLab();
+}
+
+window.startLetterScansionLab = startLetterScansionLab;
+window.renderLetterScansionLab = renderLetterScansionLab;
+window.chooseLetterScansionSymbol = chooseLetterScansionSymbol;
+window.checkLetterScansionLab = checkLetterScansionLab;
+window.showLetterScansionAnswer = showLetterScansionAnswer;
+window.nextLetterScansionLab = nextLetterScansionLab;
+
+// =========================
+// Prosody Lab Organized Modules
+// تنظيم واجهة مختبر العروض
+// =========================
+
+function openProsodyModule(moduleName) {
+  const map = {
+    home: "prosodyModuleHome",
+    foundations: "prosodyModuleFoundations",
+    scansion: "prosodyModuleScansion",
+    meters: "prosodyModuleMeters",
+    exam: "prosodyModuleExam",
+    mistakes: "prosodyModuleMistakes"
+  };
+
+  Object.values(map).forEach(id => {
+    const screen = document.getElementById(id);
+    if (screen) screen.classList.remove("active");
+  });
+
+  const target = document.getElementById(map[moduleName] || map.home);
+  if (target) target.classList.add("active");
+
+  document.querySelectorAll("#prosodyLab .prosody-command-card").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  const buttons = {
+    home: 0,
+    foundations: 1,
+    scansion: 2,
+    meters: 3,
+    exam: 4,
+    mistakes: 5
+  };
+
+  const activeButton = document.querySelectorAll("#prosodyLab .prosody-command-card")[buttons[moduleName] || 0];
+  if (activeButton) activeButton.classList.add("active");
+
+  if (moduleName === "meters" && typeof renderProsodyReferenceViewer === "function") {
+    renderProsodyReferenceViewer();
+  }
+
+  // ✅ Auto-open Rajaz first section when opening Meters module
+  if (moduleName === "meters" && typeof showRajazDetail === "function") {
+    showRajazDetail("core");
+  }
+}
+
+window.openProsodyModule = openProsodyModule;
+
+// =========================
+// Tafeela Match Lab V1
+// From symbols to tafeela
+// =========================
+
+let tafeelaMatchState = {
+  index: 0,
+  selected: "",
+  checked: false,
+  score: 0
+};
+
+const tafeelaMatchBank = [
+  {
+    title: "نمط مستفعلن",
+    symbols: ["ب", "ـ", "ب", "ـ", "ب", "ب", "ـ"],
+    answer: "مستفعلن",
+    options: ["مستفعلن", "فاعلن", "فعولن", "فاعلاتن"],
+    explanation: "هذا النمط يطابق مستفعلن في هذا التدريب؛ لأنه يسير على ترتيب: ب ـ ب ـ ب ب ـ."
+  },
+  {
+    title: "نمط فاعلن",
+    symbols: ["ب", "ـ", "ب", "ب", "ـ"],
+    answer: "فاعلن",
+    options: ["مستفعلن", "فاعلن", "فعولن", "متفاعلن"],
+    explanation: "هذا النمط يطابق فاعلن في هذا التدريب؛ لأن الرموز جاءت: ب ـ ب ب ـ."
+  },
+  {
+    title: "نمط فعولن",
+    symbols: ["ب", "ب", "ـ", "ب", "ـ"],
+    answer: "فعولن",
+    options: ["فعولن", "فاعلن", "مستفعلن", "فاعلاتن"],
+    explanation: "هذا النمط يطابق فعولن في هذا التدريب؛ لأن الرموز جاءت: ب ب ـ ب ـ."
+  },
+  {
+    title: "نمط فاعلاتن",
+    symbols: ["ب", "ـ", "ب", "ـ", "ب", "ب", "ـ"],
+    answer: "فاعلاتن",
+    options: ["فاعلاتن", "فاعلن", "فعولن", "متفاعلن"],
+    explanation: "هذا النمط تدريبي مؤقت لمطابقة التفعيلة، ويجب لاحقًا تثبيت الصياغة النهائية حسب المرجع قبل الإطلاق."
+  }
+];
+
+function startTafeelaMatchLab() {
+  tafeelaMatchState = {
+    index: 0,
+    selected: "",
+    checked: false,
+    score: 0
+  };
+
+  if (typeof showProsodyScreen === "function") {
+    showProsodyScreen("practice");
+  }
+
+  renderTafeelaMatchLab();
+}
+
+function renderTafeelaMatchLab() {
+  const box = document.getElementById("tafeelaMatchLabBox");
+  if (!box) return;
+
+  const item = tafeelaMatchBank[tafeelaMatchState.index % tafeelaMatchBank.length];
+
+  box.innerHTML = `
+    <div class="tafeela-match-card">
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">ت</span>
+        <div>
+          <h3>مطابقة التفعيلة</h3>
+          <p>
+            الآن ننتقل من رمز الحرف إلى التفعيلة. انظر إلى النمط، ثم اختر التفعيلة المناسبة.
+          </p>
+        </div>
+      </div>
+
+      <div class="tafeela-match-head">
+        <span class="prosody-badge-inline">من الرمز إلى التفعيلة</span>
+        <h3>${safeText(item.title)}</h3>
+        <p>اقرأ الرموز من اليمين إلى اليسار كما تظهر أمامك.</p>
+      </div>
+
+      <div class="tafeela-symbol-strip">
+        ${item.symbols.map((symbol, i) => `
+          <div class="tafeela-symbol-unit">
+            <span>${i + 1}</span>
+            <strong>${safeText(symbol)}</strong>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="rajaz-question-box">
+        <h4>أي تفعيلة تطابق هذا النمط؟</h4>
+        <div class="rajaz-choice-row">
+          ${item.options.map(option => `
+            <button
+              class="${tafeelaMatchState.selected === option ? "active" : ""}"
+              onclick="chooseTafeelaMatch('${escapeForOnclick(option)}')"
+            >
+              ${safeText(option)}
+            </button>
+          `).join("")}
+        </div>
+      </div>
+
+      <div id="tafeelaMatchFeedback" class="prosody-result-card">
+        <h3>إرشاد المعلم</h3>
+        <p>
+          لا تحفظ اسم التفعيلة فقط. قارن ترتيب الرموز أولًا، ثم اختر التفعيلة.
+        </p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="checkTafeelaMatch()">تحقق من الإجابة</button>
+        <button class="secondary" onclick="showTafeelaMatchAnswer()">أرني الجواب</button>
+        <button class="secondary" onclick="nextTafeelaMatch()">تدريب جديد</button>
+      </div>
+    </div>
+  `;
+}
+
+function chooseTafeelaMatch(option) {
+  tafeelaMatchState.selected = option;
+  tafeelaMatchState.checked = false;
+  renderTafeelaMatchLab();
+}
+
+function checkTafeelaMatch() {
+  const item = tafeelaMatchBank[tafeelaMatchState.index % tafeelaMatchBank.length];
+  const feedback = document.getElementById("tafeelaMatchFeedback");
+  if (!feedback) return;
+
+  if (!tafeelaMatchState.selected) {
+    feedback.innerHTML = `
+      <h3>تنبيه</h3>
+      <p>اختر التفعيلة أولًا، ثم اضغط تحقق.</p>
+    `;
+    return;
+  }
+
+  const isCorrect = tafeelaMatchState.selected === item.answer;
+
+  if (isCorrect) {
+    tafeelaMatchState.score += 1;
+  }
+
+  tafeelaMatchState.checked = true;
+
+  feedback.innerHTML = `
+    <h3>${isCorrect ? "إجابة صحيحة ✅" : "تحتاج مراجعة ❌"}</h3>
+    <p><strong>إجابتك:</strong> ${safeText(tafeelaMatchState.selected)}</p>
+    <p><strong>الإجابة الصحيحة:</strong> ${safeText(item.answer)}</p>
+    <p><strong>السبب:</strong> ${safeText(item.explanation)}</p>
+    ${!isCorrect ? `<p>راجع ترتيب الرموز قبل اختيار اسم التفعيلة.</p>` : ""}
+  `;
+}
+
+function showTafeelaMatchAnswer() {
+  const item = tafeelaMatchBank[tafeelaMatchState.index % tafeelaMatchBank.length];
+
+  tafeelaMatchState.selected = item.answer;
+  tafeelaMatchState.checked = true;
+
+  renderTafeelaMatchLab();
+
+  const feedback = document.getElementById("tafeelaMatchFeedback");
+  if (!feedback) return;
+
+  feedback.innerHTML = `
+    <h3>الجواب النموذجي</h3>
+    <p>
+      النمط:
+      <strong>${item.symbols.map(safeText).join(" ")}</strong>
+    </p>
+    <p>
+      التفعيلة المطابقة:
+      <strong>${safeText(item.answer)}</strong>
+    </p>
+    <p>${safeText(item.explanation)}</p>
+  `;
+}
+
+function nextTafeelaMatch() {
+  tafeelaMatchState.index += 1;
+  tafeelaMatchState.selected = "";
+  tafeelaMatchState.checked = false;
+  renderTafeelaMatchLab();
+}
+
+window.startTafeelaMatchLab = startTafeelaMatchLab;
+window.renderTafeelaMatchLab = renderTafeelaMatchLab;
+window.chooseTafeelaMatch = chooseTafeelaMatch;
+window.checkTafeelaMatch = checkTafeelaMatch;
+window.showTafeelaMatchAnswer = showTafeelaMatchAnswer;
+window.nextTafeelaMatch = nextTafeelaMatch;
+
+// =========================
+// Prosody Reference Bank V1
+// بنك المرجع لمختبر العَروض للتوجيهي
+// =========================
+// الهدف:
+// تنظيم البحور والأمثلة والأسئلة حسب المرجع المصوّر قبل استخدامها في التدريبات.
+// لا نستخدم أي مثال نهائيًا إلا إذا كان status: "verified".
+// أي مثال غير واضح من الصور يبقى needs_review حتى نراجعه.
+
+const prosodyReferenceBank = {
+  scope: "tawjihi",
+  sourcePolicy: {
+    primary: "الصور المرسلة من المرجع المدرسي",
+    secondary: "مصادر عربية موثوقة عند الحاجة",
+    rule: "لا تُستخدم أبيات أو أمثلة مخترعة في النسخة النهائية إلا إذا وُسمت بوضوح أنها تدريبية مؤقتة."
+  },
+
+  requiredMeters: [
+    {
+      id: "rajaz",
+      name: "بحر الرجز",
+      arabicName: "الرَّجَز",
+      requiredFor: "tawjihi",
+      status: "in_progress",
+      source: "المرجع المصوّر",
+      learningOrder: 1,
+      coreTafeela: "مستفعلن",
+      commonPatterns: [
+        {
+          id: "rajaz_complete",
+          label: "الرجز التام",
+          pattern: ["مستفعلن", "مستفعلن", "مستفعلن"],
+          note: "يتكرر في كل شطر ثلاث مرات في النموذج التعليمي."
+        },
+        {
+          id: "rajaz_majzoo",
+          label: "مجزوء الرجز",
+          pattern: ["مستفعلن", "مستفعلن"],
+          note: "يتكون الشطر من تفعيلتين في النموذج التعليمي."
+        }
+      ],
+      examples: [],
+      drills: [],
+      examQuestions: [],
+      commonMistakes: [
+        "الخلط بين الرجز التام ومجزوء الرجز",
+        "اعتبار كل تكرار لمستفعلن رجزًا تامًا دون عدّ التفعيلات",
+        "الخلط بين الحشو والعَروض والضرب"
+      ]
+    },
+
+    {
+      id: "baseet",
+      name: "بحر البسيط",
+      arabicName: "البَسيط",
+      requiredFor: "tawjihi",
+      status: "needs_building",
+      source: "المرجع المصوّر",
+      learningOrder: 2,
+      coreTafeela: "مستفعلن فاعلن",
+      commonPatterns: [],
+      examples: [],
+      drills: [],
+      examQuestions: [],
+      commonMistakes: []
+    },
+
+    {
+      id: "taweel",
+      name: "بحر الطويل",
+      arabicName: "الطَّويل",
+      requiredFor: "tawjihi",
+      status: "needs_building",
+      source: "المرجع المصوّر",
+      learningOrder: 3,
+      coreTafeela: "فعولن مفاعيلن",
+      commonPatterns: [],
+      examples: [],
+      drills: [],
+      examQuestions: [],
+      commonMistakes: []
+    },
+
+    {
+      id: "kamel",
+      name: "بحر الكامل",
+      arabicName: "الكامل",
+      requiredFor: "tawjihi",
+      status: "needs_building",
+      source: "المرجع المصوّر",
+      learningOrder: 4,
+      coreTafeela: "متفاعلن",
+      commonPatterns: [],
+      examples: [],
+      drills: [],
+      examQuestions: [],
+      commonMistakes: []
+    },
+
+    {
+      id: "ramal",
+      name: "بحر الرمل",
+      arabicName: "الرَّمَل",
+      requiredFor: "tawjihi",
+      status: "needs_building",
+      source: "المرجع المصوّر",
+      learningOrder: 5,
+      coreTafeela: "فاعلاتن",
+      commonPatterns: [],
+      examples: [],
+      drills: [],
+      examQuestions: [],
+      commonMistakes: []
+    },
+
+    {
+      id: "mutadarak",
+      name: "بحر المتدارك / المحدث",
+      arabicName: "المتدارك / المحدث",
+      requiredFor: "tawjihi",
+      status: "needs_building",
+      source: "المرجع المصوّر",
+      learningOrder: 6,
+      coreTafeela: "فاعلن",
+      commonPatterns: [],
+      examples: [],
+      drills: [],
+      examQuestions: [],
+      commonMistakes: []
+    }
+  ],
+
+  foundations: [
+    {
+      id: "moving_static",
+      title: "المتحرك والساكن",
+      status: "in_progress",
+      source: "المرجع المصوّر",
+      skills: [
+        "تمييز الحرف المتحرك",
+        "تمييز الحرف الساكن",
+        "وضع الرمز العَروضي المناسب"
+      ]
+    },
+    {
+      id: "prosodic_writing",
+      title: "الكتابة العَروضية",
+      status: "in_progress",
+      source: "المرجع المصوّر",
+      skills: [
+        "ما يُنطق يُكتب",
+        "ما لا يُنطق لا يُكتب",
+        "فك الشدة",
+        "التعامل مع التنوين والمدود"
+      ]
+    },
+    {
+      id: "short_long_syllables",
+      title: "المقطع القصير والطويل",
+      status: "needs_building",
+      source: "المرجع المصوّر",
+      skills: [
+        "تمييز المقطع القصير",
+        "تمييز المقطع الطويل",
+        "ربط المقاطع بالتفعيلات"
+      ]
+    }
+  ],
+
+  examPatterns: [
+    {
+      id: "scan_meter",
+      title: "قطّع البيت واذكر تفعيلاته وبحره",
+      marks: 4,
+      source: "المرجع المصوّر",
+      expectedFields: [
+        "النص الأصلي",
+        "الكتابة العَروضية",
+        "التقطيع",
+        "التفعيلات",
+        "البحر"
+      ],
+      status: "needs_examples"
+    },
+    {
+      id: "arood_darb",
+      title: "حدّد تفعيلتي العَروض والضرب",
+      marks: 3,
+      source: "المرجع المصوّر",
+      expectedFields: [
+        "العَروض",
+        "الضرب",
+        "سبب الاختيار"
+      ],
+      status: "needs_examples"
+    },
+    {
+      id: "choose_word_for_meter",
+      title: "اختر الكلمة المناسبة ليستقيم المعنى والوزن العَروضي",
+      marks: 2,
+      source: "المرجع المصوّر",
+      expectedFields: [
+        "الجملة",
+        "الاختيارات",
+        "الإجابة",
+        "سبب الوزن"
+      ],
+      status: "needs_examples"
+    }
+  ]
+};
+
+function getProsodyReferenceBank() {
+  return prosodyReferenceBank;
+}
+
+function getTawjihiProsodyMeters() {
+  return prosodyReferenceBank.requiredMeters || [];
+}
+
+function getProsodyMeterById(meterId) {
+  return getTawjihiProsodyMeters().find(meter => meter.id === meterId) || null;
+}
+
+function getVerifiedProsodyExamples(meterId) {
+  const meter = getProsodyMeterById(meterId);
+  if (!meter || !Array.isArray(meter.examples)) return [];
+
+  return meter.examples.filter(example => example.status === "verified");
+}
+
+function getProsodyExamplesNeedingReview(meterId) {
+  const meter = getProsodyMeterById(meterId);
+  if (!meter || !Array.isArray(meter.examples)) return [];
+
+  return meter.examples.filter(example => example.status !== "verified");
+}
+
+function printProsodyReferenceSummary() {
+  const meters = getTawjihiProsodyMeters();
+
+  console.table(
+    meters.map(meter => ({
+      id: meter.id,
+      name: meter.name,
+      order: meter.learningOrder,
+      status: meter.status,
+      examples: meter.examples.length,
+      source: meter.source
+    }))
+  );
+
+  return {
+    scope: prosodyReferenceBank.scope,
+    metersCount: meters.length,
+    meters: meters.map(m => m.name),
+    foundationsCount: prosodyReferenceBank.foundations.length,
+    examPatternsCount: prosodyReferenceBank.examPatterns.length
+  };
+}
+window.prosodyReferenceBank = prosodyReferenceBank;
+window.getProsodyReferenceBank = getProsodyReferenceBank;
+window.getTawjihiProsodyMeters = getTawjihiProsodyMeters;
+window.getProsodyMeterById = getProsodyMeterById;
+window.getVerifiedProsodyExamples = getVerifiedProsodyExamples;
+window.getProsodyExamplesNeedingReview = getProsodyExamplesNeedingReview;
+window.printProsodyReferenceSummary = printProsodyReferenceSummary;
+
+// =========================
+// Prosody Reference Viewer
+// عرض بحور التوجيهي من بنك المرجع
+// =========================
+
+function renderProsodyReferenceViewer() {
+  const box = document.getElementById("prosodyReferenceViewer");
+  if (!box) return;
+
+  const meters = typeof getTawjihiProsodyMeters === "function"
+    ? getTawjihiProsodyMeters()
+    : [];
+
+  if (!meters.length) {
+    box.innerHTML = `
+      <div class="prosody-result-card">
+        <h3>بحور التوجيهي المعتمدة</h3>
+        <p>لم يتم تحميل بنك المرجع بعد.</p>
+      </div>
+    `;
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="prosody-reference-card">
+      <div class="prosody-reference-head">
+        <span>بنك المرجع</span>
+        <h3>بحور التوجيهي المطلوبة فقط</h3>
+        <p>
+          هذه القائمة لا تعرض كل بحور الشعر العربي، بل البحور المطلوبة حاليًا في مختبر التوجيهي.
+          الأمثلة المعروضة هنا من الصور المرسلة، لكنها تبقى للمراجعة حتى نثبتها حرفيًا.
+        </p>
+      </div>
+
+      <div class="prosody-reference-grid">
+        ${meters.map(meter => {
+          const examples = Array.isArray(meter.examples) ? meter.examples : [];
+          const verified = examples.filter(ex => ex.status === "verified").length;
+          const needsReview = examples.filter(ex => ex.status !== "verified").length;
+
+          return `
+            <div class="prosody-reference-meter ${safeText(meter.status)}">
+              <div class="prosody-reference-meter-top">
+                <span>${safeText(String(meter.learningOrder).padStart(2, "0"))}</span>
+                <em>${safeText(getProsodyStatusLabel(meter.status))}</em>
+              </div>
+
+              <h4>${safeText(meter.name)}</h4>
+              <p><strong>التفعيلة الأساسية:</strong> ${safeText(meter.coreTafeela || "تحتاج مراجعة")}</p>
+              <p><strong>المصدر:</strong> ${safeText(meter.source || "المرجع المصوّر")}</p>
+
+              <div class="prosody-reference-stats">
+                <div>
+                  <strong>${examples.length}</strong>
+                  <span>أمثلة</span>
+                </div>
+                <div>
+                  <strong>${verified}</strong>
+                  <span>موثق</span>
+                </div>
+                <div>
+                  <strong>${needsReview}</strong>
+                  <span>للمراجعة</span>
+                </div>
+              </div>
+
+              ${examples.length
+                ? `
+                  <div class="prosody-reference-example-list">
+                    ${examples.slice(0, 2).map(example => `
+                      <div class="prosody-reference-example-item">
+                        <strong>${safeText(example.originalText || "مثال يحتاج تثبيت النص")}</strong>
+                        <span>${safeText(example.status === "verified" ? "موثق" : "يحتاج مراجعة")}</span>
+                        <p>${safeText(example.teacherNote || "مثال من المرجع المصوّر.")}</p>
+                      </div>
+                    `).join("")}
+                  </div>
+                `
+                : `
+                  <div class="prosody-reference-example-empty">
+                    لا توجد أمثلة مدخلة بعد لهذا البحر.
+                  </div>
+                `
+              }
+
+              <div class="prosody-reference-actions">
+                ${meter.id === "rajaz"
+                  ? `<button onclick="showProsodyScreen('practice');startRajazJourney()">ابدأ نموذج الرجز</button>`
+                  : `<button class="secondary" onclick="alert('سيتم بناء ${safeText(meter.name)} بعد تثبيت نموذج الرجز وأمثلة المرجع.')">قيد التنظيم</button>`
+                }
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+      <div class="prosody-reference-note">
+        <h4>قاعدة العمل</h4>
+        <p>
+          لا نستخدم أمثلة نهائية إلا إذا كانت من المرجع المصوّر أو من مصدر موثوق.
+          أي مثال غير مؤكد يبقى للمراجعة ولا يُعتمد في نسخة الطلاب.
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function getProsodyStatusLabel(status) {
+  const labels = {
+    in_progress: "قيد البناء",
+    needs_building: "سيُبنى لاحقًا",
+    verified: "موثق",
+    needs_review: "يحتاج مراجعة",
+    ready: "جاهز"
+  };
+
+  return labels[status] || "قيد التنظيم";
+}
+
+window.renderProsodyReferenceViewer = renderProsodyReferenceViewer;
+
+// =========================
+// Prosody Reference Draft Examples V1
+// أمثلة أولية من صور المرجع - تحتاج مراجعة قبل الاعتماد
+// =========================
+
+const prosodyReferenceDraftExamples = [
+  {
+    id: "rajaz_ref_draft_01",
+    meterId: "rajaz",
+    meter: "بحر الرجز",
+    source: "المرجع المصوّر",
+    sourceNote: "صفحة بحر الرجز / موسيقا الشعر",
+    originalText: "في أبحر الأرجاز بحر يسهل",
+    prosodicWriting: "",
+    symbols: [],
+    tafeelat: ["مستفعلن", "مستفعلن", "مستفعلن"],
+    type: "تام",
+    aroud: "",
+    darb: "",
+    status: "needs_review",
+    teacherNote: "نص مرئي من الصورة ويحتاج مراجعة حرفية قبل اعتماده في تدريب الطلاب."
+  },
+  {
+    id: "ramal_ref_draft_01",
+    meterId: "ramal",
+    meter: "بحر الرمل",
+    source: "المرجع المصوّر",
+    sourceNote: "صفحة موسيقا لغتي وإيقاعها / بحر الرمل",
+    originalText: "رمل الأبحر ترويه الثقاة",
+    prosodicWriting: "",
+    symbols: [],
+    tafeelat: ["فاعلاتن", "فاعلاتن", "فاعلاتن"],
+    type: "تام",
+    aroud: "",
+    darb: "",
+    status: "needs_review",
+    teacherNote: "نص مرئي من الصورة ويحتاج مراجعة حرفية قبل اعتماده."
+  },
+  {
+    id: "mutadarak_ref_draft_01",
+    meterId: "mutadarak",
+    meter: "بحر المتدارك / المحدث",
+    source: "المرجع المصوّر",
+    sourceNote: "صفحة بحر المحدث أو المتدارك",
+    originalText: "حركات المحدث تنتقل",
+    prosodicWriting: "",
+    symbols: [],
+    tafeelat: ["فاعلن", "فاعلن", "فاعلن", "فاعلن"],
+    type: "تام",
+    aroud: "",
+    darb: "",
+    status: "needs_review",
+    teacherNote: "مثال ظاهر في صفحة المتدارك/المحدث ويحتاج تثبيتًا حرفيًا."
+  },
+  {
+    id: "taweel_ref_draft_01",
+    meterId: "taweel",
+    meter: "بحر الطويل",
+    source: "المرجع المصوّر",
+    sourceNote: "صفحة بحر الطويل",
+    originalText: "طويل له دون البحور فضائل",
+    prosodicWriting: "",
+    symbols: [],
+    tafeelat: ["فعولن", "مفاعيلن", "فعولن", "مفاعيلن"],
+    type: "تام",
+    aroud: "",
+    darb: "",
+    status: "needs_review",
+    teacherNote: "مثال ظاهر في صفحة الطويل ويحتاج مراجعة قبل استعماله."
+  },
+  {
+    id: "kamel_ref_draft_01",
+    meterId: "kamel",
+    meter: "بحر الكامل",
+    source: "المرجع المصوّر",
+    sourceNote: "صفحة بحر الكامل",
+    originalText: "",
+    prosodicWriting: "",
+    symbols: [],
+    tafeelat: ["متفاعلن", "متفاعلن", "متفاعلن"],
+    type: "تام",
+    aroud: "",
+    darb: "",
+    status: "needs_review",
+    teacherNote: "يجب تثبيت أول مثال كامل من صورة بحر الكامل قبل الاعتماد."
+  },
+  {
+    id: "baseet_ref_draft_01",
+    meterId: "baseet",
+    meter: "بحر البسيط",
+    source: "المرجع المصوّر",
+    sourceNote: "صفحة بحر البسيط / مجزوء البسيط",
+    originalText: "",
+    prosodicWriting: "",
+    symbols: [],
+    tafeelat: ["مستفعلن", "فاعلن", "مستفعلن", "فاعلن"],
+    type: "تام / مجزوء بحسب المثال",
+    aroud: "",
+    darb: "",
+    status: "needs_review",
+    teacherNote: "يجب تثبيت نص المثال من صورة البسيط قبل استخدامه."
+  }
+];
+
+function installProsodyReferenceDraftExamples() {
+  if (!window.prosodyReferenceBank || !Array.isArray(window.prosodyReferenceBank.requiredMeters)) {
+    console.warn("Prosody reference bank is not ready.");
+    return false;
+  }
+
+  prosodyReferenceDraftExamples.forEach(example => {
+    const meter = getProsodyMeterById(example.meterId);
+    if (!meter) return;
+
+    if (!Array.isArray(meter.examples)) {
+      meter.examples = [];
+    }
+
+    const exists = meter.examples.some(item => item.id === example.id);
+    if (!exists) {
+      meter.examples.push(example);
+    }
+  });
+
+  return true;
+}
+
+function printProsodyReferenceExamplesSummary() {
+  const meters = getTawjihiProsodyMeters();
+
+  console.table(
+    meters.map(meter => ({
+      id: meter.id,
+      name: meter.name,
+      examples: Array.isArray(meter.examples) ? meter.examples.length : 0,
+      verified: Array.isArray(meter.examples)
+        ? meter.examples.filter(ex => ex.status === "verified").length
+        : 0,
+      needsReview: Array.isArray(meter.examples)
+        ? meter.examples.filter(ex => ex.status !== "verified").length
+        : 0
+    }))
+  );
+
+  return meters.map(meter => ({
+    meter: meter.name,
+    examples: meter.examples || []
+  }));
+}
+
+window.prosodyReferenceDraftExamples = prosodyReferenceDraftExamples;
+window.installProsodyReferenceDraftExamples = installProsodyReferenceDraftExamples;
+window.printProsodyReferenceExamplesSummary = printProsodyReferenceExamplesSummary;
+
+installProsodyReferenceDraftExamples();
+
+// =========================
+// Prosody Reference Verification Patch V1
+// تثبيت أول مثال مرجعي للرجز - قبل الاعتماد النهائي
+// =========================
+
+function updateRajazReferenceDraftExample() {
+  if (typeof getProsodyMeterById !== "function") {
+    console.warn("getProsodyMeterById is not available yet.");
+    return false;
+  }
+
+  const rajaz = getProsodyMeterById("rajaz");
+
+  if (!rajaz) {
+    console.warn("Rajaz meter was not found in prosodyReferenceBank.");
+    return false;
+  }
+
+  if (!Array.isArray(rajaz.examples)) {
+    rajaz.examples = [];
+  }
+
+  const updatedExample = {
+    id: "rajaz_ref_draft_01",
+    meterId: "rajaz",
+    meter: "بحر الرجز",
+    source: "المرجع المصوّر",
+    sourceNote: "صفحة بحر الرجز / موسيقا الشعر",
+    originalText: "في أبحر الأرجاز بحر يسهل",
+    prosodicWriting: "",
+    symbols: [],
+    tafeelat: ["مستفعلن", "مستفعلن", "مستفعلن"],
+    type: "تام",
+    aroud: "مستفعلن",
+    darb: "مستفعلن",
+    status: "needs_review",
+    textbookBased: true,
+    teacherNote:
+      "مثال مرجعي ظاهر في صورة بحر الرجز. النص مثبت مبدئيًا، لكن التقطيع الحرفي والكتابة العَروضية يحتاجان مراجعة قبل تحويله إلى verified.",
+    learningUse: [
+      "تمييز بحر الرجز",
+      "عدّ تفعيلات الرجز التام",
+      "الربط بين التفعيلة والبحر",
+      "التحضير لتقطيع الشطر حرفيًا"
+    ]
+  };
+
+  const existingIndex = rajaz.examples.findIndex(example => example.id === updatedExample.id);
+
+  if (existingIndex >= 0) {
+    rajaz.examples[existingIndex] = {
+      ...rajaz.examples[existingIndex],
+      ...updatedExample
+    };
+  } else {
+    rajaz.examples.push(updatedExample);
+  }
+
+  rajaz.status = "in_progress";
+
+  return true;
+}
+
+function printRajazReferenceExample() {
+  const rajaz = typeof getProsodyMeterById === "function"
+    ? getProsodyMeterById("rajaz")
+    : null;
+
+  if (!rajaz || !Array.isArray(rajaz.examples)) {
+    console.warn("Rajaz examples are not ready.");
+    return null;
+  }
+
+  const example = rajaz.examples.find(item => item.id === "rajaz_ref_draft_01");
+
+  console.table([
+    {
+      id: example?.id || "",
+      meter: example?.meter || "",
+      originalText: example?.originalText || "",
+      type: example?.type || "",
+      status: example?.status || "",
+      source: example?.source || ""
+    }
+  ]);
+
+  return example || null;
+}
+
+window.updateRajazReferenceDraftExample = updateRajazReferenceDraftExample;
+window.printRajazReferenceExample = printRajazReferenceExample;
+updateRajazReferenceDraftExample();
+
+// =========================
+// Reference Example Preview V1
+// عرض مثال مرجعي قبل تحويله إلى تدريب تفاعلي
+// =========================
+
+function startReferenceExamplePreview(meterId = "rajaz", exampleId = "rajaz_ref_draft_01") {
+  if (typeof showProsodyScreen === "function") {
+    showProsodyScreen("practice");
+  }
+
+  renderReferenceExamplePreview(meterId, exampleId);
+}
+
+function renderReferenceExamplePreview(meterId, exampleId) {
+  const box = document.getElementById("referenceExamplePreviewBox");
+  if (!box) return;
+
+  const meter = typeof getProsodyMeterById === "function"
+    ? getProsodyMeterById(meterId)
+    : null;
+
+  const example = meter?.examples?.find(item => item.id === exampleId);
+
+  if (!meter || !example) {
+    box.innerHTML = `
+      <div class="prosody-result-card">
+        <h3>لم يتم العثور على المثال</h3>
+        <p>تأكد أن بنك المرجع محمّل وأن المثال موجود داخل البحر المطلوب.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const statusLabel = example.status === "verified"
+    ? "موثق وجاهز"
+    : "يحتاج مراجعة قبل الاعتماد";
+
+  box.innerHTML = `
+    <div class="reference-example-preview-card">
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">م</span>
+        <div>
+          <h3>مثال من المرجع المصوّر</h3>
+          <p>
+            هذا المثال مأخوذ من الصور التي أرسلتها، لكنه لن يتحول إلى تدريب نهائي
+            قبل تثبيت التقطيع الحرفي والكتابة العَروضية.
+          </p>
+        </div>
+      </div>
+
+      <div class="reference-example-status ${safeText(example.status)}">
+        <span>${safeText(statusLabel)}</span>
+        <strong>${safeText(example.source || "المرجع المصوّر")}</strong>
+      </div>
+
+      <div class="reference-example-main">
+        <span>النص الأصلي</span>
+        <h3>${safeText(example.originalText || "النص يحتاج تثبيتًا")}</h3>
+      </div>
+
+      <div class="reference-example-info-grid">
+        <div>
+          <span>البحر</span>
+          <strong>${safeText(example.meter || meter.name)}</strong>
+        </div>
+
+        <div>
+          <span>النوع</span>
+          <strong>${safeText(example.type || "يحتاج مراجعة")}</strong>
+        </div>
+
+        <div>
+          <span>العَروض</span>
+          <strong>${safeText(example.aroud || "لم تثبت بعد")}</strong>
+        </div>
+
+        <div>
+          <span>الضرب</span>
+          <strong>${safeText(example.darb || "لم يثبت بعد")}</strong>
+        </div>
+      </div>
+
+      <div class="reference-tafeela-strip">
+        ${(example.tafeelat || []).map((taf, index) => `
+          <div>
+            <span>التفعيلة ${index + 1}</span>
+            <strong>${safeText(taf)}</strong>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="prosody-result-card">
+        <h3>ملاحظة المعلم</h3>
+        <p>${safeText(example.teacherNote || "هذا المثال يحتاج مراجعة قبل الاعتماد النهائي.")}</p>
+      </div>
+
+      <div class="prosody-result-card">
+        <h3>لماذا لا نبدأ بالتصحيح الحرفي الآن؟</h3>
+        <p>
+          لأن التقطيع الحرفي يحتاج نصًا مضبوطًا وكتابة عروضية ورموزًا مؤكدة.
+          سنستخدم هذا المثال أولًا للعرض والتنظيم، ثم نثبّت رموزه قبل جعله تدريبًا للطلاب.
+        </p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="openProsodyModule('meters')">العودة إلى لوحة البحور</button>
+        <button class="secondary" onclick="showProsodyScreen('practice');startRajazJourney()">راجع رحلة الرجز</button>
+      </div>
+    </div>
+  `;
+}
+
+window.startReferenceExamplePreview = startReferenceExamplePreview;
+window.renderReferenceExamplePreview = renderReferenceExamplePreview;
+
+// =========================
+// Rajaz Reference Scansion Draft V1
+// مسودة تقطيع مثال الرجز المرجعي - ليست اعتمادًا نهائيًا
+// =========================
+
+function addRajazReferenceScansionDraft() {
+  if (typeof getProsodyMeterById !== "function") {
+    console.warn("getProsodyMeterById is not available.");
+    return false;
+  }
+
+  const rajaz = getProsodyMeterById("rajaz");
+  if (!rajaz || !Array.isArray(rajaz.examples)) {
+    console.warn("Rajaz examples are not ready.");
+    return false;
+  }
+
+  const example = rajaz.examples.find(item => item.id === "rajaz_ref_draft_01");
+  if (!example) {
+    console.warn("Rajaz reference draft example was not found.");
+    return false;
+  }
+
+  const scansionDraft = {
+    originalText: "في أبحر الأرجاز بحر يسهل",
+
+    // لا نعتمد الكتابة العروضية النهائية قبل مراجعتها حرفيًا من المرجع
+    prosodicWriting: "",
+
+    // هذا نمط تعليمي مبني على تكرار مستفعلن في بحر الرجز
+    // لكنه لا يعني أن التقطيع الحرفي للنص قد اعتُمِد بعد
+    candidateTafeelat: ["مستفعلن", "مستفعلن", "مستفعلن"],
+
+    candidateSymbolsByTafeela: [
+      ["ب", "ـ", "ب", "ـ", "ب", "ب", "ـ"],
+      ["ب", "ـ", "ب", "ـ", "ب", "ب", "ـ"],
+      ["ب", "ـ", "ب", "ـ", "ب", "ب", "ـ"]
+    ],
+
+    candidateMeter: "بحر الرجز",
+    candidateType: "تام",
+
+    aroud: "مستفعلن",
+    darb: "مستفعلن",
+
+    scansionStatus: "needs_teacher_verification",
+
+    reviewChecklist: [
+      "تثبيت النص الأصلي كما في المرجع حرفيًا",
+      "تثبيت الحركات أو القراءة المعتمدة",
+      "استخراج الكتابة العَروضية",
+      "تقسيم النص حرفيًا إلى متحرك وساكن",
+      "مطابقة الرموز مع التفعيلات",
+      "التأكد من العَروض والضرب",
+      "تحويل المثال إلى verified بعد المراجعة"
+    ],
+
+    teacherWarning:
+      "هذه مسودة تعليمية منظمة وليست تصحيحًا نهائيًا. لا تُستخدم كتدريب تقطيع حرفي للطلاب قبل تثبيت الكتابة العَروضية والرموز."
+  };
+
+  example.scansionDraft = scansionDraft;
+  example.tafeelat = scansionDraft.candidateTafeelat;
+  example.type = scansionDraft.candidateType;
+  example.aroud = scansionDraft.aroud;
+  example.darb = scansionDraft.darb;
+  example.status = "needs_review";
+  example.scansionStatus = "needs_teacher_verification";
+
+  example.teacherNote =
+    "مثال مرجعي من صفحة بحر الرجز. أُضيفت له مسودة تفعيلات منظمة، لكن التقطيع الحرفي والكتابة العَروضية يحتاجان مراجعة قبل الاعتماد النهائي.";
+
+  return true;
+}
+
+function renderRajazReferenceScansionDraft() {
+  const box = document.getElementById("referenceExamplePreviewBox");
+  if (!box) return;
+
+  const rajaz = typeof getProsodyMeterById === "function"
+    ? getProsodyMeterById("rajaz")
+    : null;
+
+  const example = rajaz?.examples?.find(item => item.id === "rajaz_ref_draft_01");
+
+  if (!example || !example.scansionDraft) {
+    box.innerHTML = `
+      <div class="prosody-result-card">
+        <h3>مسودة التقطيع غير جاهزة</h3>
+        <p>لم يتم إنشاء مسودة التقطيع لهذا المثال بعد.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const draft = example.scansionDraft;
+
+  box.innerHTML = `
+    <div class="reference-example-preview-card">
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">ق</span>
+        <div>
+          <h3>مسودة تقطيع المثال المرجعي</h3>
+          <p>
+            هذه ليست نسخة نهائية للطلاب. هذه مرحلة مراجعة علمية قبل اعتماد التقطيع.
+          </p>
+        </div>
+      </div>
+
+      <div class="reference-example-status needs_review">
+        <span>يحتاج مراجعة قبل الاعتماد</span>
+        <strong>مصدره: المرجع المصوّر</strong>
+      </div>
+
+      <div class="reference-example-main">
+        <span>النص الأصلي</span>
+        <h3>${safeText(draft.originalText)}</h3>
+      </div>
+
+      <div class="prosody-result-card">
+        <h3>الكتابة العَروضية</h3>
+        <p>
+          لم تُعتمد بعد. يجب تثبيتها من القراءة الصحيحة قبل تحويل المثال إلى تدريب للطلاب.
+        </p>
+      </div>
+
+      <div class="reference-tafeela-strip">
+        ${draft.candidateTafeelat.map((taf, index) => `
+          <div>
+            <span>التفعيلة ${index + 1}</span>
+            <strong>${safeText(taf)}</strong>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="reference-symbol-draft">
+        <h3>نمط الرموز المقترح للتفعيلات</h3>
+        ${draft.candidateSymbolsByTafeela.map((group, index) => `
+          <div class="reference-symbol-row">
+            <span>التفعيلة ${index + 1}</span>
+            <strong>${group.map(safeText).join(" ")}</strong>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="reference-example-info-grid">
+        <div>
+          <span>البحر</span>
+          <strong>${safeText(draft.candidateMeter)}</strong>
+        </div>
+        <div>
+          <span>النوع</span>
+          <strong>${safeText(draft.candidateType)}</strong>
+        </div>
+        <div>
+          <span>العَروض</span>
+          <strong>${safeText(draft.aroud)}</strong>
+        </div>
+        <div>
+          <span>الضرب</span>
+          <strong>${safeText(draft.darb)}</strong>
+        </div>
+      </div>
+
+      <div class="prosody-result-card">
+        <h3>قائمة المراجعة قبل الاعتماد</h3>
+        <ul>
+          ${draft.reviewChecklist.map(item => `<li>${safeText(item)}</li>`).join("")}
+        </ul>
+      </div>
+
+      <div class="prosody-result-card">
+        <h3>تنبيه علمي</h3>
+        <p>${safeText(draft.teacherWarning)}</p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="startReferenceExamplePreview('rajaz', 'rajaz_ref_draft_01')">عرض المثال المرجعي</button>
+        <button class="secondary" onclick="openProsodyModule('meters')">العودة إلى لوحة البحور</button>
+      </div>
+    </div>
+  `;
+}
+
+window.addRajazReferenceScansionDraft = addRajazReferenceScansionDraft;
+window.renderRajazReferenceScansionDraft = renderRajazReferenceScansionDraft;
+
+addRajazReferenceScansionDraft();
+
+// =========================
+// Reference Verification Workspace V1
+// شاشة مراجعة المعلم قبل اعتماد المثال
+// =========================
+
+function startReferenceVerificationWorkspace(meterId = "rajaz", exampleId = "rajaz_ref_draft_01") {
+  if (typeof showProsodyScreen === "function") {
+    showProsodyScreen("practice");
+  }
+
+  renderReferenceVerificationWorkspace(meterId, exampleId);
+}
+
+function renderReferenceVerificationWorkspace(meterId, exampleId) {
+  const box = document.getElementById("referenceVerificationBox");
+  if (!box) return;
+
+  const meter = typeof getProsodyMeterById === "function"
+    ? getProsodyMeterById(meterId)
+    : null;
+
+  const example = meter?.examples?.find(item => item.id === exampleId);
+
+  if (!meter || !example) {
+    box.innerHTML = `
+      <div class="prosody-result-card">
+        <h3>لم يتم العثور على المثال</h3>
+        <p>تأكد أن المثال موجود في بنك المرجع.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const draft = example.scansionDraft || {};
+
+  box.innerHTML = `
+    <div class="reference-verification-card">
+      <div class="rajaz-teacher-box">
+        <span class="rajaz-teacher-icon">✓</span>
+        <div>
+          <h3>شاشة مراجعة المعلم</h3>
+          <p>
+            هنا نثبت البيانات العلمية قبل اعتماد المثال للطلاب. لا تجعل المثال موثقًا
+            إلا بعد التأكد من النص والكتابة العَروضية والرموز.
+          </p>
+        </div>
+      </div>
+
+      <div class="reference-example-main">
+        <span>النص الأصلي من المرجع</span>
+        <h3>${safeText(example.originalText || "النص يحتاج تثبيتًا")}</h3>
+      </div>
+
+      <div class="reference-verification-form">
+        <label>
+          <span>الكتابة العَروضية المقترحة</span>
+          <textarea id="verifyProsodicWritingInput" placeholder="اكتب الكتابة العَروضية بعد المراجعة">${safeText(example.prosodicWriting || draft.prosodicWriting || "")}</textarea>
+        </label>
+
+        <label>
+          <span>رموز التقطيع ب / ـ</span>
+          <textarea id="verifySymbolsInput" placeholder="مثال: ب ـ ب ـ ب ب ـ | ب ـ ب ـ ب ب ـ | ب ـ ب ـ ب ب ـ">${safeText(
+            draft.candidateSymbolsByTafeela
+              ? draft.candidateSymbolsByTafeela.map(group => group.join(" ")).join(" | ")
+              : ""
+          )}</textarea>
+        </label>
+
+        <label>
+          <span>التفعيلات</span>
+          <input id="verifyTafeelatInput" value="${safeText((example.tafeelat || []).join(" | "))}" placeholder="مستفعلن | مستفعلن | مستفعلن" />
+        </label>
+
+        <div class="reference-verification-two">
+          <label>
+            <span>العَروض</span>
+            <input id="verifyAroodInput" value="${safeText(example.aroud || "")}" placeholder="مثال: مستفعلن" />
+          </label>
+
+          <label>
+            <span>الضرب</span>
+            <input id="verifyDarbInput" value="${safeText(example.darb || "")}" placeholder="مثال: مستفعلن" />
+          </label>
+        </div>
+
+        <label>
+          <span>ملاحظات المعلم</span>
+          <textarea id="verifyTeacherNoteInput" placeholder="اكتب ملاحظات الاعتماد أو أسباب إبقاء المثال للمراجعة">${safeText(example.teacherNote || "")}</textarea>
+        </label>
+      </div>
+
+      <div class="reference-verification-warning">
+        <h3>تنبيه مهم</h3>
+        <p>
+          زر الحفظ هنا يحفظ البيانات داخل الجلسة الحالية في JavaScript فقط.
+          لاحقًا سنربطه بقاعدة بيانات أو ملف منظم. لا نضغط "اعتماد نهائي" إلا بعد مراجعة حقيقية.
+        </p>
+      </div>
+
+      <div class="prosody-practice-actions">
+        <button onclick="saveReferenceVerificationDraft('${safeText(meterId)}', '${safeText(exampleId)}')">
+          حفظ مسودة المراجعة
+        </button>
+        <button class="secondary" onclick="renderRajazReferenceScansionDraft()">
+          عرض مسودة التقطيع
+        </button>
+        <button class="secondary" onclick="startReferenceExamplePreview('${safeText(meterId)}', '${safeText(exampleId)}')">
+          عرض المثال
+        </button>
+      </div>
+
+      <div id="referenceVerificationStatus" class="prosody-result-card">
+        <h3>حالة المثال</h3>
+        <p>
+          الحالة الحالية:
+          <strong>${safeText(example.status || "needs_review")}</strong>
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+function saveReferenceVerificationDraft(meterId, exampleId) {
+  const meter = typeof getProsodyMeterById === "function"
+    ? getProsodyMeterById(meterId)
+    : null;
+
+  const example = meter?.examples?.find(item => item.id === exampleId);
+  const statusBox = document.getElementById("referenceVerificationStatus");
+
+  if (!meter || !example) {
+    if (statusBox) {
+      statusBox.innerHTML = `
+        <h3>تعذر الحفظ</h3>
+        <p>لم يتم العثور على المثال داخل بنك المرجع.</p>
+      `;
+    }
+    return;
+  }
+
+  const prosodicWriting = document.getElementById("verifyProsodicWritingInput")?.value.trim() || "";
+  const symbolsRaw = document.getElementById("verifySymbolsInput")?.value.trim() || "";
+  const tafeelatRaw = document.getElementById("verifyTafeelatInput")?.value.trim() || "";
+  const aroud = document.getElementById("verifyAroodInput")?.value.trim() || "";
+  const darb = document.getElementById("verifyDarbInput")?.value.trim() || "";
+  const teacherNote = document.getElementById("verifyTeacherNoteInput")?.value.trim() || "";
+
+  example.prosodicWriting = prosodicWriting;
+  example.symbolsRaw = symbolsRaw;
+  example.tafeelat = tafeelatRaw
+    ? tafeelatRaw.split("|").map(item => item.trim()).filter(Boolean)
+    : example.tafeelat || [];
+
+  example.aroud = aroud;
+  example.darb = darb;
+  example.teacherNote = teacherNote || example.teacherNote;
+
+  example.scansionStatus = "teacher_draft_saved";
+  example.status = "needs_review";
+
+  example.lastTeacherReview = {
+    savedAt: new Date().toISOString(),
+    note: "تم حفظ مسودة مراجعة المعلم داخل الجلسة الحالية."
+  };
+
+  if (statusBox) {
+    statusBox.innerHTML = `
+      <h3>تم حفظ المسودة ✅</h3>
+      <p>تم تحديث المثال داخل بنك المرجع في الجلسة الحالية.</p>
+      <p><strong>الحالة:</strong> ${safeText(example.status)}</p>
+      <p><strong>حالة التقطيع:</strong> ${safeText(example.scansionStatus)}</p>
+    `;
+  }
+}
+
+window.startReferenceVerificationWorkspace = startReferenceVerificationWorkspace;
+window.renderReferenceVerificationWorkspace = renderReferenceVerificationWorkspace;
+window.saveReferenceVerificationDraft = saveReferenceVerificationDraft;
+
+// =========================
+// Rajaz Mini Quiz V1
+// تدريب سريع داخل ملف بحر الرجز
+// =========================
+
+function checkRajazMiniQuiz(answer) {
+  const result = document.getElementById("rajazMiniQuizResult");
+  if (!result) return;
+
+  if (answer === "majzoo") {
+    result.innerHTML = `
+      <h4>إجابة صحيحة ✅</h4>
+      <p>
+        هذا <strong>مجزوء الرجز</strong>؛ لأن النمط يحتوي على تفعيلتين فقط:
+        <strong>مستفعلن | مستفعلن</strong>.
+      </p>
+    `;
+    result.classList.remove("wrong");
+    result.classList.add("correct");
+    return;
+  }
+
+  result.innerHTML = `
+    <h4>تحتاج مراجعة ❌</h4>
+    <p>
+      الرجز التام في النموذج التعليمي يكون:
+      <strong>مستفعلن | مستفعلن | مستفعلن</strong>.
+      أما هنا فلدينا تفعيلتان فقط، لذلك هو <strong>مجزوء الرجز</strong>.
+    </p>
+  `;
+  result.classList.remove("correct");
+  result.classList.add("wrong");
+}
+
+window.checkRajazMiniQuiz = checkRajazMiniQuiz;
+
+// =========================
+// Rajaz Accordion Navigation V1
+// تنظيم ملف بحر الرجز
+// =========================
+
+function openRajazAccordion(section) {
+  const panels = {
+    understanding: "rajazAccordionUnderstanding",
+    teacher: "rajazAccordionTeacher",
+    compare: "rajazAccordionCompare",
+    map: "rajazAccordionMap",
+    practice: "rajazAccordionPractice",
+    reference: "rajazAccordionReference"
+  };
+
+  Object.values(panels).forEach(id => {
+    const panel = document.getElementById(id);
+    if (panel) panel.classList.remove("active");
+  });
+
+  const target = document.getElementById(panels[section] || panels.understanding);
+  if (target) target.classList.add("active");
+
+  document.querySelectorAll("#prosodyLab .rajaz-accordion-nav button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  const indexMap = {
+    understanding: 0,
+    teacher: 1,
+    compare: 2,
+    map: 3,
+    practice: 4,
+    reference: 5
+  };
+
+  const activeButton = document.querySelectorAll("#prosodyLab .rajaz-accordion-nav button")[indexMap[section] || 0];
+  if (activeButton) activeButton.classList.add("active");
+}
+
+window.openRajazAccordion = openRajazAccordion;
+
+// =========================
+// Foundations Accordion V1
+// تنظيم باب الأساسيات
+// =========================
+
+function openFoundationsPanel(panelName) {
+  const panels = {
+    intro: "foundationsPanelIntro",
+    moving: "foundationsPanelMoving",
+    writing: "foundationsPanelWriting",
+    shadda: "foundationsPanelShadda",
+    practice: "foundationsPanelPractice"
+  };
+
+  Object.values(panels).forEach(id => {
+    const panel = document.getElementById(id);
+    if (panel) panel.classList.remove("active");
+  });
+
+  const target = document.getElementById(panels[panelName] || panels.intro);
+  if (target) target.classList.add("active");
+
+  document.querySelectorAll("#prosodyLab .foundations-accordion-nav button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  const indexMap = {
+    intro: 0,
+    moving: 1,
+    writing: 2,
+    shadda: 3,
+    practice: 4
+  };
+
+  const activeButton = document.querySelectorAll("#prosodyLab .foundations-accordion-nav button")[indexMap[panelName] || 0];
+  if (activeButton) activeButton.classList.add("active");
+}
+
+window.openFoundationsPanel = openFoundationsPanel;
+
+// =========================
+// Scansion Stepper V1
+// تنظيم باب التقطيع
+// =========================
+
+function openScansionPanel(panelName) {
+  const panels = {
+    letter: "scansionPanelLetter",
+    word: "scansionPanelWord",
+    tafeela: "scansionPanelTafeela",
+    hemistich: "scansionPanelHemistich"
+  };
+
+  Object.values(panels).forEach(id => {
+    const panel = document.getElementById(id);
+    if (panel) panel.classList.remove("active");
+  });
+
+  const target = document.getElementById(panels[panelName] || panels.letter);
+  if (target) target.classList.add("active");
+
+  document.querySelectorAll("#prosodyLab .scansion-stepper-nav button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  const indexMap = {
+    letter: 0,
+    word: 1,
+    tafeela: 2,
+    hemistich: 3
+  };
+
+  const activeButton = document.querySelectorAll("#prosodyLab .scansion-stepper-nav button")[indexMap[panelName] || 0];
+  if (activeButton) activeButton.classList.add("active");
+}
+
+window.openScansionPanel = openScansionPanel;
+
+// =========================
+// Meter Profile Selector V1
+// تنظيم باب البحور
+// =========================
+
+function openMeterProfile(meterId) {
+  const comingTitles = {
+    ramal: "بحر الرمل قيد التنظيم",
+    mutadarak: "بحر المتدارك / المحدث قيد التنظيم",
+    baseet: "بحر البسيط قيد التنظيم",
+    kamel: "بحر الكامل قيد التنظيم",
+    taweel: "بحر الطويل قيد التنظيم"
+  };
+
+  document.querySelectorAll("#prosodyLab .meters-selector-grid button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  const buttonIndex = {
+    rajaz: 0,
+    ramal: 1,
+    mutadarak: 2,
+    baseet: 3,
+    kamel: 4,
+    taweel: 5
+  };
+
+  const activeButton = document.querySelectorAll("#prosodyLab .meters-selector-grid button")[buttonIndex[meterId] || 0];
+  if (activeButton) activeButton.classList.add("active");
+
+  const rajazPanel = document.getElementById("meterProfileRajaz");
+  const comingPanel = document.getElementById("meterProfileComingSoon");
+
+  if (rajazPanel) rajazPanel.classList.remove("active");
+  if (comingPanel) comingPanel.classList.remove("active");
+
+  if (meterId === "rajaz") {
+    if (rajazPanel) rajazPanel.classList.add("active");
+
+    const rajazMaster = document.querySelector("#prosodyLab .rajaz-master-panel");
+    if (rajazMaster) {
+      setTimeout(() => {
+        rajazMaster.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+    return;
+  }
+
+  const title = document.getElementById("comingMeterTitle");
+  if (title) {
+    title.textContent = comingTitles[meterId] || "هذا البحر قيد التنظيم";
+  }
+
+  if (comingPanel) comingPanel.classList.add("active");
+}
+
+window.openMeterProfile = openMeterProfile;
+
+// =========================
+// Rajaz Detail Visibility V1
+// تقليل زحمة ملف بحر الرجز
+// =========================
+
+function showRajazDetail(section) {
+  const panel = document.querySelector("#prosodyLab .rajaz-master-panel");
+  if (!panel) return;
+
+  const classes = [
+    "show-rajaz-understanding",
+    "show-rajaz-teacher",
+    "show-rajaz-compare",
+    "show-rajaz-map"
+  ];
+
+  classes.forEach(cls => panel.classList.remove(cls));
+
+  const map = {
+    understanding: {
+      className: "show-rajaz-understanding",
+      selector: ".rajaz-core-board"
+    },
+    teacher: {
+      className: "show-rajaz-teacher",
+      selector: ".rajaz-teacher-lesson"
+    },
+    compare: {
+      className: "show-rajaz-compare",
+      selector: ".rajaz-compare-board"
+    },
+    map: {
+      className: "show-rajaz-map",
+      selector: ".rajaz-learning-map"
+    }
+  };
+
+  const item = map[section] || map.understanding;
+  panel.classList.add(item.className);
+
+  const target = panel.querySelector(item.selector);
+  if (target) {
+    setTimeout(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
+  }
+}
+
+function hideRajazDetails() {
+  const panel = document.querySelector("#prosodyLab .rajaz-master-panel");
+  if (!panel) return;
+
+  panel.classList.remove(
+    "show-rajaz-understanding",
+    "show-rajaz-teacher",
+    "show-rajaz-compare",
+    "show-rajaz-map"
+  );
+}
+
+window.showRajazDetail = showRajazDetail;
+window.hideRajazDetails = hideRajazDetails;
+
+// =========================
+// Prosody Reference Viewer Toggle V1
+// فتح وإغلاق بنك المرجع
+// =========================
+
+function toggleProsodyReferenceViewer() {
+  const viewer = document.getElementById("prosodyReferenceViewer");
+  if (!viewer) return;
+
+  viewer.classList.toggle("is-open");
+
+  if (
+    viewer.classList.contains("is-open") &&
+    typeof renderProsodyReferenceViewer === "function"
+  ) {
+    renderProsodyReferenceViewer();
+  }
+}
+
+function openProsodyReferenceViewer() {
+  const viewer = document.getElementById("prosodyReferenceViewer");
+  if (!viewer) return;
+
+  viewer.classList.add("is-open");
+
+  if (typeof renderProsodyReferenceViewer === "function") {
+    renderProsodyReferenceViewer();
+  }
+}
+
+function closeProsodyReferenceViewer() {
+  const viewer = document.getElementById("prosodyReferenceViewer");
+  if (!viewer) return;
+
+  viewer.classList.remove("is-open");
+}
+function openProsodyLearningWindow(groupId, windowName) {
+  const group = document.getElementById(groupId);
+  if (!group) return;
+
+  group.querySelectorAll(".prosody-learning-tab").forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  group.querySelectorAll(".prosody-learning-window").forEach(panel => {
+    panel.classList.remove("active");
+  });
+
+  const activeBtn = group.querySelector(`[data-prosody-tab="${windowName}"]`);
+  const activePanel = group.querySelector(`[data-prosody-window="${windowName}"]`);
+
+  if (activeBtn) activeBtn.classList.add("active");
+  if (activePanel) activePanel.classList.add("active");
+}
+
+window.openProsodyLearningWindow = openProsodyLearningWindow;
+window.toggleProsodyReferenceViewer = toggleProsodyReferenceViewer;
+window.openProsodyReferenceViewer = openProsodyReferenceViewer;
+window.closeProsodyReferenceViewer = closeProsodyReferenceViewer;
+
+

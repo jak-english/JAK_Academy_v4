@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JAK Academy v4 Enhanced</title>
 <link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 <header>
@@ -2101,6 +2104,7 @@
         </div>
       </section>
 
+
     </main>
 
     <footer class="writing-v3-footer">
@@ -2110,6 +2114,7 @@
 
   </div>
 </section>
+
 <section id="planner" class="page">
   <div id="plannerSystemContext"></div>
   <div class="card planner-modern">
@@ -2383,8 +2388,1453 @@
     </div>
   </div>
 </section>
+<section id="prosodyLab" class="page" dir="rtl">
+  <div class="prosody-shell">
+    <div class="prosody-hero">
+      <div class="prosody-hero-content">
+        <span class="prosody-kicker">أكاديمية العَروض</span>
+        <h1>مدرّب العَروض الذكي</h1>
+        <p>
+          تعلّم التقطيع العروضي خطوة بخطوة، وافهم الكتابة العروضية، وتدرّب على التفعيلات،
+          ثم انتقل تدريجيًا إلى تمييز البحر الشعري بطريقة واضحة ومنظمة.
+        </p>
+
+        <div class="prosody-hero-actions">
+          <button onclick="showProsodyScreen('learn')">ابدأ التعلّم</button>
+          <button class="secondary" onclick="showProsodyScreen('cut')">ابدأ التقطيع</button>
+          <button class="secondary" onclick="goDashboard()">العودة للوحة التحكم</button>
+        </div>
+      </div>
+
+      <div class="prosody-hero-side">
+        <div class="prosody-hero-card">
+          <div class="prosody-hero-icon">◈</div>
+          <h3>مسار التعلّم</h3>
+          <p>النطق ← الكتابة العروضية ← المتحرك والساكن ← التفعيلات ← البحر</p>
+        </div>
+      </div>
+    </div>
+<div class="prosody-method-card">
+  <div class="prosody-method-icon">۞</div>
+
+  <div>
+    <h2>منهجية مدرّب العَروض</h2>
+    <p>
+      يعتمد هذا المدرّب على القاعدة العروضية الأساسية:
+      <strong>ما يُنطق يُكتب، وما لا يُنطق لا يُعتدّ به في التقطيع.</strong>
+    </p>
+
+    <ul>
+      <li>لا يقدّم النظام اسم البحر قبل المرور بالكتابة العروضية والتقطيع.</li>
+      <li>يتم التعامل مع الشدة على أنها حرفان: الأول ساكن والثاني متحرك.</li>
+      <li>يتم التنبيه إلى أثر التنوين والمدود وأل الشمسية والقمرية في النطق.</li>
+      <li>إذا كان النص غير مشكول، فقد يعرض النظام توجيهًا تعليميًا لا حكمًا نهائيًا.</li>
+      <li>الهدف هو تدريب الطالب على التفكير العروضي، لا إعطاؤه جوابًا يحفظه فقط.</li>
+    </ul>
+
+    <div class="prosody-method-warning">
+      ملاحظة للطالب: للحصول على نتيجة أدق، حاول إدخال البيت مضبوطًا بالشكل، أو اتبع خطوات التدريب قبل طلب اكتشاف البحر.
+    </div>
+  </div>
+</div>
+<div class="prosody-learning-path">
+  <div class="prosody-path-head">
+    <span>طريقك لفهم العَروض</span>
+    <h2>تعلّم العَروض خطوة خطوة، لا بالحفظ السريع</h2>
+    <p>
+      هذا المختبر لا يعطيك اسم البحر مباشرة، بل يدرّبك كما يفعل المعلم:
+      تسمع، تلاحظ، تقطع، تخطئ، تصحح، ثم تفهم.
+    </p>
+  </div>
+
+  <div class="prosody-path-grid">
+    <button class="prosody-path-card ready" onclick="showProsodyScreen('practice');startProsodyMovingPractice()">
+      <span class="path-number">01</span>
+      <strong>أفهم الصوت</strong>
+      <small>المتحرك والساكن</small>
+      <p>ابدأ من أساس العَروض: هل الحرف متحرك أم ساكن؟</p>
+      <em>جاهز للتدريب</em>
+    </button>
+
+    <button class="prosody-path-card ready" onclick="showProsodyScreen('practice');startProsodyWritingPractice()">
+      <span class="path-number">02</span>
+      <strong>أكتب عروضياً</strong>
+      <small>ما يُنطق يُكتب</small>
+      <p>تدرّب على تحويل الكتابة الإملائية إلى كتابة عروضية.</p>
+      <em>جاهز للتدريب</em>
+    </button>
+
+    <button class="prosody-path-card soon" onclick="showProsodyScreen('learn');renderProsodyLesson('writingRules')">
+      <span class="path-number">03</span>
+      <strong>أفك القواعد الصعبة</strong>
+      <small>الشدة، التنوين، المدود</small>
+      <p>تعلم لماذا الشدة حرفان، ولماذا التنوين يؤثر في الوزن.</p>
+      <em>قيد التطوير</em>
+    </button>
+
+    <button class="prosody-path-card soon" onclick="showProsodyScreen('learn');renderProsodyLesson('referencePath')">
+      <span class="path-number">04</span>
+      <strong>أتعرف التفعيلة</strong>
+      <small>وحدة الوزن</small>
+      <p>قبل البحر، افهم كيف تتكوّن التفعيلة ولماذا تتكرر.</p>
+      <em>قريبًا</em>
+    </button>
+
+    <button class="prosody-path-card ready gold" onclick="showProsodyScreen('practice');startRajazJourney()">
+      <span class="path-number">05</span>
+      <strong>أدخل بحر الرجز</strong>
+      <small>رحلة خطوة بخطوة</small>
+      <p>اكتشف مستفعلن، وعدّ التفعيلات، وافهم التام والمجزوء.</p>
+      <em>رحلة جاهزة</em>
+    </button>
+
+    <button class="prosody-path-card ready" onclick="showProsodyScreen('practice');startRajazExampleJourney()">
+      <span class="path-number">06</span>
+      <strong>أطبق على مثال</strong>
+      <small>من الشطر إلى البحر</small>
+      <p>اربط الشطر بالتفعيلات، ثم استنتج نوع الرجز.</p>
+      <em>جاهز للتطبيق</em>
+    </button>
+
+    <button class="prosody-path-card ready" onclick="showProsodyScreen('practice');startRajazPractice()">
+      <span class="path-number">07</span>
+      <strong>أتدرب بسرعة</strong>
+      <small>تام أم مجزوء؟</small>
+      <p>اختبر فهمك للرجز التام ومجزوء الرجز والحشو والعَروض والضرب.</p>
+      <em>تدريب جاهز</em>
+    </button>
+
+    <button class="prosody-path-card locked" onclick="alert('سيتم تفعيل التقويم بعد إضافة بنك تدريبات كافٍ.')">
+      <span class="path-number">08</span>
+      <strong>أختبر نفسي</strong>
+      <small>تقويم توجيهي</small>
+      <p>أسئلة كثيرة ومتدرجة مثل: أقطع، حدد البحر، صحح الخطأ.</p>
+      <em>قريبًا</em>
+    </button>
+  </div>
+</div>
+<div class="prosody-dashboard-clean">
+  <div class="prosody-dashboard-hero">
+    <span>JAK Academy • مختبر العَروض</span>
+    <h2>تعلّم العَروض من الصفر إلى سؤال التقويم</h2>
+    <p>
+      لا تبدأ بحفظ أسماء البحور. ابدأ بفهم الصوت، ثم الرمز، ثم التفعيلة،
+      ثم البحر، ثم التدريب والتقويم.
+    </p>
+  </div>
+
+  <div class="prosody-dashboard-flow">
+    <div>
+      <span>01</span>
+      <strong>أفهم الأساس</strong>
+      <p>المتحرك، الساكن، الكتابة العَروضية.</p>
+    </div>
+
+    <div>
+      <span>02</span>
+      <strong>أتعلم التقطيع</strong>
+      <p>من الحرف إلى التفعيلة.</p>
+    </div>
+
+    <div>
+      <span>03</span>
+      <strong>أدرس البحور</strong>
+      <p>بحور التوجيهي المطلوبة فقط.</p>
+    </div>
+
+    <div>
+      <span>04</span>
+      <strong>أتدرب وأراجع</strong>
+      <p>أخطاء، ملاحظات، وتقويم.</p>
+    </div>
+  </div>
+
+  <div class="prosody-dashboard-actions">
+    <button onclick="openProsodyModule('foundations')">ابدأ من الأساسيات</button>
+    <button class="secondary" onclick="openProsodyModule('scansion')">افتح مختبر التقطيع</button>
+    <button class="secondary" onclick="openProsodyModule('meters')">بحور التوجيهي</button>
+  </div>
+</div>
+<div class="prosody-command-center-v2">
+  <div class="prosody-command-head">
+    <span>مختبر العَروض للتوجيهي</span>
+    <h2>رحلة منظّمة من الفهم إلى التقويم</h2>
+    <p>
+      لا تبدأ من البحر مباشرة. ابدأ من الصوت، ثم الكتابة العَروضية،
+      ثم التقطيع، ثم البحور المطلوبة، ثم أسئلة التقويم.
+    </p>
+  </div>
+
+  <div class="prosody-command-grid">
+    <button class="prosody-command-card active" onclick="openProsodyModule('home')">
+      <span>01</span>
+      <strong>الرئيسية</strong>
+      <small>خريطة الطريق</small>
+      <p>اعرف من أين تبدأ ولماذا كل مرحلة مهمة.</p>
+    </button>
+
+    <button class="prosody-command-card" onclick="openProsodyModule('foundations')">
+      <span>02</span>
+      <strong>الأساسيات</strong>
+      <small>الصوت والكتابة</small>
+      <p>المتحرك، الساكن، الشدة، التنوين، المدود.</p>
+    </button>
+
+    <button class="prosody-command-card" onclick="openProsodyModule('scansion')">
+      <span>03</span>
+      <strong>التقطيع</strong>
+      <small>حرفًا حرفًا</small>
+      <p>ضع رمز المتحرك والساكن، وشاهد التصحيح بالألوان.</p>
+    </button>
+
+    <button class="prosody-command-card" onclick="openProsodyModule('meters')">
+      <span>04</span>
+      <strong>البحور</strong>
+      <small>بحور التوجيهي فقط</small>
+      <p>الرجز، البسيط، الطويل، الكامل، الرمل، المتدارك.</p>
+    </button>
+
+    <button class="prosody-command-card" onclick="openProsodyModule('exam')">
+      <span>05</span>
+      <strong>التقويم</strong>
+      <small>نمط الامتحان</small>
+      <p>قطّع البيت، اذكر التفعيلات والبحر، وحدد العَروض والضرب.</p>
+    </button>
+
+    <button class="prosody-command-card" onclick="openProsodyModule('mistakes')">
+      <span>06</span>
+      <strong>أخطائي</strong>
+      <small>مراجعة ذكية</small>
+      <p>اعرف أين تخطئ، وخذ تدريبًا مخصصًا.</p>
+    </button>
+  </div>
+</div>
+<div class="prosody-module-stage">
+
+  <div id="prosodyModuleHome" class="prosody-module-screen active">
+    <div class="prosody-module-hero-card">
+      <h3>الرئيسية: كيف ستتعلم العَروض؟</h3>
+      <p>
+        هذا المختبر ليس صفحة معلومات. هو مسار تدريبي:
+        تفهم الصوت، تتدرب على الرمز، تقطع، ثم تصل إلى البحر والتقويم.
+      </p>
+    </div>
+
+    <div class="prosody-module-road">
+      <div>
+        <span>1</span>
+        <strong>أفهم الصوت</strong>
+        <p>متحرك أم ساكن؟ هذه أول لبنة.</p>
+      </div>
+      <div>
+        <span>2</span>
+        <strong>أكتب عروضياً</strong>
+        <p>ما يُنطق يُكتب، وما لا يُنطق لا يُعتد به.</p>
+      </div>
+      <div>
+        <span>3</span>
+        <strong>أقطّع حرفيًا</strong>
+        <p>أضع ب أو ـ تحت كل حرف، وأرى التصحيح.</p>
+      </div>
+      <div>
+        <span>4</span>
+        <strong>أتعلم البحر</strong>
+        <p>أفهم التفعيلات قبل اسم البحر.</p>
+      </div>
+      <div>
+        <span>5</span>
+        <strong>أحل التقويم</strong>
+        <p>أطبق على أسئلة تشبه المرجع.</p>
+      </div>
+    </div>
+  </div>
+
+<div id="prosodyModuleFoundations" class="prosody-module-screen">
+  <div class="prosody-module-hero-card">
+    <h3>مختبر الأساسيات</h3>
+    <p>
+      هنا نبني الأساس: المتحرك، الساكن، الكتابة العَروضية،
+      الشدة، التنوين، المدود، وما يُنطق وما لا يُنطق.
+    </p>
+  </div>
+
+  <div id="foundationsLearningWindows" class="prosody-learning-windows-system">
+    <div class="prosody-learning-windows-head">
+      <span>أساس العَروض</span>
+      <h4>ابدأ من الصوت قبل البحر</h4>
+      <p>
+        لا يبدأ الطالب بالبحور مباشرة. أولًا يفهم الصوت، ثم الرمز،
+        ثم الكتابة العَروضية، ثم ينتقل إلى التقطيع.
+      </p>
+    </div>
+
+    <div class="prosody-learning-tabs">
+      <button class="prosody-learning-tab active" data-prosody-tab="intro" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'intro')">
+        ١. ما العَروض؟
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="moving" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'moving')">
+        ٢. المتحرك والساكن
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="writing" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'writing')">
+        ٣. الكتابة العَروضية
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="shadda" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'shadda')">
+        ٤. الشدة والتنوين
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="practice" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'practice')">
+        ٥. تدريب
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="next" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'next')">
+        ٦. الخطوة التالية
+      </button>
+    </div>
+
+    <div class="prosody-learning-stage">
+      <div class="prosody-learning-window active" data-prosody-window="intro">
+        <h4>١. ما علم العَروض؟</h4>
+        <p>
+          علم العَروض يساعدنا على معرفة وزن الشعر وإيقاعه. في هذا المختبر
+          لا نبدأ بالحفظ، بل نفهم كيف يتحول الصوت إلى رمز، ثم إلى تفعيلة، ثم إلى بحر.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('learn'); renderProsodyLesson('intro')">
+            افتح درس ما هو العَروض
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="moving">
+        <h4>٢. المتحرك والساكن</h4>
+        <p>
+          هذه أول مهارة في العَروض. الحرف المتحرك يأخذ رمز <strong>ب</strong>،
+          والحرف الساكن يأخذ رمز <strong>ـ</strong>.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('practice'); startProsodyMovingPractice()">
+            ابدأ تدريب المتحرك والساكن
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="writing">
+        <h4>٣. الكتابة العَروضية</h4>
+        <p>
+          في العَروض نكتب ما نلفظ، ولا نعتد بما لا يُنطق. هذه المرحلة تجهز الطالب
+          قبل تقطيع الكلمات والأشطر.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('practice'); startProsodyWritingPractice()">
+            ابدأ تدريب الكتابة العَروضية
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="shadda">
+        <h4>٤. الشدة والتنوين والمدود</h4>
+        <p>
+          هذه من أكثر النقاط التي تُوقع الطالب في الخطأ. الشدة ليست حرفًا واحدًا في العَروض،
+          والتنوين والمدود تؤثر في الصوت والوزن.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('learn'); renderProsodyLesson('writingRules')">
+            افتح قواعد الكتابة العَروضية
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="practice">
+        <h4>٥. تدريب الأساسيات</h4>
+        <p>
+          بعد فهم القاعدة، ينتقل الطالب إلى التدريب. لا ننتقل إلى البحور قبل إتقان هذه المرحلة.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('practice'); startProsodyMovingPractice()">
+            تدريب المتحرك والساكن
+          </button>
+
+          <button class="secondary" onclick="showProsodyScreen('practice'); startProsodyWritingPractice()">
+            تدريب الكتابة العَروضية
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="next">
+        <h4>٦. ماذا بعد الأساسيات؟</h4>
+        <p>
+          بعد إتقان المتحرك والساكن والكتابة العَروضية، ينتقل الطالب إلى مختبر التقطيع:
+          من الحرف، إلى الكلمة، إلى التفعيلة، إلى الشطر الشعري.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="openProsodyModule('scansion')">
+            انتقل إلى قسم التقطيع
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prosody-module-note">
+    <h4>ملاحظة تنظيمية</h4>
+    <p>
+      هذا القسم أصبح مخصصًا للأساسيات فقط. أما التقطيع التفصيلي فيكون داخل قسم التقطيع.
+    </p>
+  </div>
+</div>
+<div id="prosodyModuleScansion" class="prosody-module-screen">
+  <div class="prosody-module-hero-card">
+    <h3>مختبر التقطيع</h3>
+    <p>
+      لا نبدأ بتقطيع البيت مباشرة. نتدرّج من الحرف، ثم الكلمة، ثم التفعيلة،
+      ثم الشطر الشعري؛ حتى يفهم الطالب لماذا يضع الرمز لا أين يضعه فقط.
+    </p>
+  </div>
+
+  <div id="scansionLearningWindows" class="prosody-learning-windows-system">
+    <div class="prosody-learning-windows-head">
+      <span>مختبر التقطيع التفاعلي</span>
+      <h4>من الحرف إلى الشطر الشعري</h4>
+      <p>
+        هذا القسم يحوّل التقطيع إلى مراحل واضحة. كل زر يفتح نافذة واحدة فقط،
+        حتى لا يتشتت الطالب بين البطاقات.
+      </p>
+    </div>
+
+    <div class="prosody-learning-tabs">
+      <button class="prosody-learning-tab active" data-prosody-tab="letter" onclick="openProsodyLearningWindow('scansionLearningWindows', 'letter')">
+        ١. رمز الحرف
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="word" onclick="openProsodyLearningWindow('scansionLearningWindows', 'word')">
+        ٢. كلمة كاملة
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="tafeela" onclick="openProsodyLearningWindow('scansionLearningWindows', 'tafeela')">
+        ٣. التفعيلة
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="hemistich" onclick="openProsodyLearningWindow('scansionLearningWindows', 'hemistich')">
+        ٤. الشطر الشعري
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="symbols" onclick="openProsodyLearningWindow('scansionLearningWindows', 'symbols')">
+        ٥. رموز التقطيع
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="teacherNote" onclick="openProsodyLearningWindow('scansionLearningWindows', 'teacherNote')">
+        ٦. ملاحظة المعلم
+      </button>
+    </div>
+
+    <div class="prosody-learning-stage">
+      <div class="prosody-learning-window active" data-prosody-window="letter">
+        <h4>١. رمز الحرف</h4>
+        <p>
+          في هذه المرحلة يختار الطالب الرمز المناسب لكل حرف:
+          <strong>ب</strong> للمتحرك و <strong>ـ</strong> للساكن.
+          الصحيح يظهر أخضر، والخطأ يظهر أحمر مع السبب.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('practice'); startLetterScansionLab()">
+            ابدأ تدريب رمز الحرف
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="word">
+        <h4>٢. كلمة كاملة</h4>
+        <p>
+          بعد فهم الحرف، يطبّق الطالب الرموز على كلمة كاملة مثل:
+          مُسْتَفْعِلُنْ، فَاعِلُنْ، فَعُولُنْ.
+          الهدف أن يرى تسلسل الرموز داخل كلمة كاملة.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('practice'); startLetterScansionLab()">
+            ابدأ تدريب الكلمة
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="tafeela">
+        <h4>٣. التفعيلة</h4>
+        <p>
+          هنا ينتقل الطالب من الرموز إلى اسم التفعيلة. مثلًا:
+          <strong>ب ـ ب ـ ب ب ـ</strong> يطابق <strong>مستفعلن</strong>.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="showProsodyScreen('practice'); startTafeelaMatchLab()">
+            ابدأ مطابقة التفعيلة
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="hemistich">
+        <h4>٤. الشطر الشعري</h4>
+        <p>
+          هذه المرحلة ستُبنى على أمثلة موثقة من المرجع. لن نعتمد أي شطر نهائي
+          قبل مراجعة الكتابة العَروضية والرموز.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button class="secondary" onclick="showProsodyScreen('practice'); startReferenceExamplePreview('rajaz', 'rajaz_ref_draft_01')">
+            شاهد مثالًا مرجعيًا قيد المراجعة
+          </button>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="symbols">
+        <h4>٥. رموز التقطيع</h4>
+        <p>
+          هذه الرموز هي لغة التقطيع الأساسية. يجب أن يميز الطالب بينها قبل الانتقال إلى البحور.
+        </p>
+
+        <div class="prosody-symbol-preview scansion-symbol-board">
+          <div><strong>ب</strong><span>حرف متحرك</span></div>
+          <div><strong>ـ</strong><span>حرف ساكن أو امتداد مدّي</span></div>
+          <div><strong>✅</strong><span>اختيار صحيح</span></div>
+          <div><strong>❌</strong><span>اختيار يحتاج تصحيحًا</span></div>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="teacherNote">
+        <h4>٦. ملاحظة المعلم</h4>
+        <p>
+          الطالب الضعيف في العَروض غالبًا لا يعرف أين بدأ الخطأ. لذلك نبدأ من أصغر وحدة:
+          الحرف نفسه. فإذا أخطأ في رمز حرف واحد، نعلّمه السبب فورًا.
+        </p>
+
+        <div class="prosody-window-actions">
+          <button onclick="openProsodyModule('meters')">
+            انتقل إلى البحور
+          </button>
+          <button class="secondary" onclick="openProsodyModule('foundations')">
+            ارجع إلى الأساسيات
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
+<div id="prosodyModuleMeters" class="prosody-module-screen">
+    <div class="prosody-module-hero-card">
+      <h3>مختبر البحور المطلوبة للتوجيهي</h3>
+      <p>
+        نركز فقط على البحور المطلوبة حاليًا، ولا نشتت الطالب ببحور غير مطلوبة.
+      </p>
+    </div>
+<div id="metersLearningWindows" class="prosody-learning-windows-system">
+  <div class="prosody-learning-windows-head">
+    <span>بحور التوجيهي فقط</span>
+    <h4>اختر البحر ثم افتح دروسه خطوة خطوة</h4>
+    <p>
+      هذا القسم لا يعرض كل شيء دفعة واحدة. اختر البحر أولًا، ثم انتقل بين نوافذ الدرس:
+      الفكرة، التفعيلات، العَروض والضرب، المثال، التدريب، والاختبار.
+    </p>
+  </div>
+
+  <div class="prosody-learning-tabs">
+    <button class="prosody-learning-tab active"
+      data-prosody-tab="rajaz"
+      onclick="openProsodyLearningWindow('metersLearningWindows', 'rajaz'); if (typeof showRajazDetail === 'function') showRajazDetail('core');">
+      ١. الرجز
+    </button>
+
+    <button class="prosody-learning-tab"
+      data-prosody-tab="ramal"
+      onclick="openProsodyLearningWindow('metersLearningWindows', 'ramal')">
+      ٢. الرمل
+    </button>
+
+    <button class="prosody-learning-tab"
+      data-prosody-tab="mutadarak"
+      onclick="openProsodyLearningWindow('metersLearningWindows', 'mutadarak')">
+      ٣. المتدارك / المحدث
+    </button>
+
+    <button class="prosody-learning-tab"
+      data-prosody-tab="baseet"
+      onclick="openProsodyLearningWindow('metersLearningWindows', 'baseet')">
+      ٤. البسيط
+    </button>
+
+    <button class="prosody-learning-tab"
+      data-prosody-tab="kamel"
+      onclick="openProsodyLearningWindow('metersLearningWindows', 'kamel')">
+      ٥. الكامل
+    </button>
+
+    <button class="prosody-learning-tab"
+      data-prosody-tab="taweel"
+      onclick="openProsodyLearningWindow('metersLearningWindows', 'taweel')">
+      ٦. الطويل
+    </button>
+  </div>
+
+  <div class="prosody-learning-stage">
+    <div class="prosody-learning-window active" data-prosody-window="rajaz">
+      <h4>بحر الرجز</h4>
+      <p>
+        الرجز هو النموذج الأول الذي نبني عليه بقية البحور. افتح كل نافذة من نوافذ الدرس
+        بالتدريج حتى يفهم الطالب البحر لا أن يحفظه فقط.
+      </p>
+
+      <div class="prosody-learning-tabs">
+        <button class="prosody-learning-tab active"
+          onclick="if (typeof showRajazDetail === 'function') showRajazDetail('core')">
+          ١. الفكرة الأساسية
+        </button>
+
+        <button class="prosody-learning-tab"
+          onclick="if (typeof showRajazDetail === 'function') showRajazDetail('teacher')">
+          ٢. شرح المعلم
+        </button>
+
+        <button class="prosody-learning-tab"
+          onclick="if (typeof showRajazDetail === 'function') showRajazDetail('compare')">
+          ٣. المقارنة
+        </button>
+
+        <button class="prosody-learning-tab"
+          onclick="if (typeof showRajazDetail === 'function') showRajazDetail('map')">
+          ٤. خريطة التعلم
+        </button>
+
+        <button class="prosody-learning-tab"
+          onclick="if (typeof startRajazPractice === 'function') startRajazPractice(); else alert('تدريب الرجز سيُجهّز بعد تثبيت الدرس.')">
+          ٥. تدريب
+        </button>
+
+        <button class="prosody-learning-tab"
+          onclick="if (typeof startRajazDrillBank === 'function') startRajazDrillBank(); else alert('اختبار الرجز سيُجهّز لاحقًا.')">
+          ٦. اختبار
+        </button>
+      </div>
+
+      <div class="prosody-module-note">
+        <h4>ملاحظة</h4>
+        <p>
+          عند الضغط على أزرار الرجز ستفتح تفاصيل الرجز الموجودة أصلًا أسفل هذه النافذة.
+          لم نحذف محتوى الرجز القديم؛ فقط جعلنا الوصول إليه منظمًا.
+        </p>
+      </div>
+    </div>
+
+    <div class="prosody-learning-window" data-prosody-window="ramal">
+      <h4>بحر الرمل</h4>
+      <p>هذا البحر قيد التنظيم. سنبنيه بعد تثبيت نموذج الرجز، وبأمثلة موثقة من المرجع.</p>
+    </div>
+
+    <div class="prosody-learning-window" data-prosody-window="mutadarak">
+      <h4>المتدارك / المحدث</h4>
+      <p>هذا البحر قيد التنظيم. لن نضيف أمثلة نهائية قبل التحقق من المرجع.</p>
+    </div>
+
+    <div class="prosody-learning-window" data-prosody-window="baseet">
+      <h4>بحر البسيط</h4>
+      <p>هذا البحر سيحتاج تقسيمًا تدريجيًا لأن تفعيلاته أطول وأكثر تركيبًا.</p>
+    </div>
+
+    <div class="prosody-learning-window" data-prosody-window="kamel">
+      <h4>بحر الكامل</h4>
+      <p>هذا البحر قيد التنظيم. سنجهزه بعد مراجعة أمثلته وتفعيلاته بدقة.</p>
+    </div>
+
+    <div class="prosody-learning-window" data-prosody-window="taweel">
+      <h4>بحر الطويل</h4>
+      <p>هذا البحر يؤجل حتى يتقن الطالب الأساسيات والتقطيع؛ لأنه يحتاج صبرًا وتدرجًا.</p>
+    </div>
+  </div>
+</div>
+<div class="prosody-reference-toggle-bar">
+  <button onclick="toggleProsodyReferenceViewer()">
+    عرض / إخفاء بنك المرجع
+  </button>
+  <p>
+    افتح بنك المرجع فقط عندما تريد مراجعة البحور والأمثلة وحالة التوثيق.
+  </p>
+</div>
+<div id="prosodyReferenceViewer" class="prosody-reference-viewer">
+  <div class="prosody-result-card">
+    <h3>بحور التوجيهي المعتمدة</h3>
+    <p>
+      سيتم عرض البحور المطلوبة فقط حسب المرجع، مع حالة كل بحر قبل بناء تدريباته.
+    </p>
+  </div>
+</div>
+<div class="rajaz-master-panel">
+  <div class="rajaz-master-head">
+    <span>النموذج الذهبي</span>
+    <h3>بحر الرجز</h3>
+    <p>
+      نبدأ ببحر الرجز لأنه أوضح مدخل لفهم التفعيلة والتكرار.
+      هنا يتعلم الطالب مستفعلن، ثم يميز الرجز التام والمجزوء، ثم يطبق على أمثلة وتدريبات.
+    </p>
+  </div>
+  <div class="rajaz-accordion-nav">
+  <button class="active" onclick="openRajazAccordion('understanding')">
+    <span>01</span>
+    بطاقة الفهم
+  </button>
+
+  <button onclick="openRajazAccordion('teacher')">
+    <span>02</span>
+    شرح الأستاذ
+  </button>
+
+  <button onclick="openRajazAccordion('compare')">
+    <span>03</span>
+    التام والمجزوء
+  </button>
+
+  <button onclick="openRajazAccordion('map')">
+    <span>04</span>
+    خريطة التعلم
+  </button>
+
+  <button onclick="openRajazAccordion('practice')">
+    <span>05</span>
+    التدريبات
+  </button>
+
+  <button onclick="openRajazAccordion('reference')">
+    <span>06</span>
+    المثال المرجعي
+  </button>
+</div>
+
+<div class="rajaz-accordion-stage">
+  <div id="rajazAccordionUnderstanding" class="rajaz-accordion-panel active">
+    <div class="rajaz-accordion-placeholder">
+      <h4>بطاقة الفهم الأساسية</h4>
+      <p>
+        هنا يبدأ الطالب بفهم بحر الرجز: التفعيلة الأساسية، الرجز التام،
+        مجزوء الرجز، والعَروض والضرب.
+      </p>
+       <button onclick="showRajazDetail('understanding')">  افتح بطاقة الفهم </button>
+    </div>
+  </div>
+
+  <div id="rajazAccordionTeacher" class="rajaz-accordion-panel">
+    <div class="rajaz-accordion-placeholder">
+      <h4>شرح الأستاذ</h4>
+      <p>
+        شرح تربوي يوضح للطالب كيف يفكر في بحر الرجز بدل حفظه فقط.
+      </p>
+       <button onclick="showRajazDetail('teacher')">
+  افتح شرح الأستاذ
+</button>
+    </div>
+  </div>
+
+  <div id="rajazAccordionCompare" class="rajaz-accordion-panel">
+    <div class="rajaz-accordion-placeholder">
+      <h4>التام والمجزوء</h4>
+      <p>
+        جدول يوضح الفرق بين الرجز التام ومجزوء الرجز حتى لا يخلط الطالب بينهما.
+      </p>
+       <button onclick="showRajazDetail('compare')">
+  افتح جدول التام والمجزوء
+</button>
+    </div>
+  </div>
+
+  <div id="rajazAccordionMap" class="rajaz-accordion-panel">
+    <div class="rajaz-accordion-placeholder">
+      <h4>خريطة تعلم الرجز</h4>
+      <p>
+        خطوات تعلم الرجز من مستفعلن إلى التدريب والمراجعة.
+      </p>
+       <button onclick="showRajazDetail('map')">
+  افتح خريطة التعلم
+</button>
+    </div>
+  </div>
+
+  <div id="rajazAccordionPractice" class="rajaz-accordion-panel">
+    <div class="rajaz-accordion-placeholder">
+      <h4>تدريبات الرجز</h4>
+      <p>
+        ابدأ التدريبات المتدرجة على الرجز: عدّ التفعيلات، التام والمجزوء،
+        العَروض والضرب، وتصحيح الأخطاء.
+      </p>
+      <div class="rajaz-accordion-actions">
+        <button onclick="showProsodyScreen('practice');startRajazJourney()">رحلة فهم الرجز</button>
+        <button onclick="showProsodyScreen('practice');startRajazDrillBank()">تدريبات الرجز المتدرجة</button>
+        <button onclick="showProsodyScreen('practice');startTafeelaMatchLab()">مطابقة التفعيلة</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rajazAccordionReference" class="rajaz-accordion-panel">
+    <div class="rajaz-accordion-placeholder">
+      <h4>المثال المرجعي</h4>
+      <p>
+        اعرض المثال المأخوذ من المرجع المصوّر، أو افتح شاشة مراجعة المعلم قبل الاعتماد.
+      </p>
+      <div class="rajaz-accordion-actions">
+        <button onclick="showProsodyScreen('practice');startReferenceExamplePreview('rajaz', 'rajaz_ref_draft_01')">
+          عرض المثال المرجعي
+        </button>
+        <button onclick="showProsodyScreen('practice');startReferenceVerificationWorkspace('rajaz', 'rajaz_ref_draft_01')">
+          مراجعة المثال قبل الاعتماد
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="rajaz-core-board">
+  <div class="rajaz-core-title">
+    <span>بطاقة الفهم</span>
+    <h4>كيف أفهم بحر الرجز؟</h4>
+    <p>
+      لا تبدأ بحفظ الاسم. ابدأ بملاحظة التكرار: بحر الرجز يقوم في صورته التعليمية
+      على تكرار تفعيلة <strong>مستفعلن</strong>.
+    </p>
+  </div>
+
+  <div class="rajaz-core-grid">
+    <div class="rajaz-core-item">
+      <span>التفعيلة الأساسية</span>
+      <strong>مستفعلن</strong>
+      <p>هي المفتاح الأول لفهم الرجز.</p>
+    </div>
+
+    <div class="rajaz-core-item">
+      <span>الرجز التام</span>
+      <strong>مستفعلن | مستفعلن | مستفعلن</strong>
+      <p>ثلاث تفعيلات في الشطر في النموذج التعليمي.</p>
+    </div>
+
+    <div class="rajaz-core-item">
+      <span>مجزوء الرجز</span>
+      <strong>مستفعلن | مستفعلن</strong>
+      <p>تفعيلتان في الشطر في النموذج التعليمي.</p>
+    </div>
+
+    <div class="rajaz-core-item">
+      <span>العَروض والضرب</span>
+      <strong>آخر تفعيلة</strong>
+      <p>آخر تفعيلة في الصدر عَروض، وآخر تفعيلة في العجز ضرب.</p>
+    </div>
+  </div>
+
+  <div class="rajaz-core-warning">
+    <h4>تنبيه مهم للطالب</h4>
+    <p>
+      لا يكفي أن ترى كلمة <strong>مستفعلن</strong> لتحكم مباشرة.
+      يجب أن تعدّ التفعيلات أولًا، ثم تحدد: هل هو رجز تام أم مجزوء؟
+    </p>
+  </div>
+</div>
+<div class="rajaz-learning-map">
+  <div class="rajaz-learning-map-head">
+    <span>خريطة التعلم</span>
+    <h4>كيف تتقن بحر الرجز خطوة خطوة؟</h4>
+    <p>
+      لا تنتقل إلى التدريب قبل أن تفهم الطريق. هذه الخريطة توضّح لك كيف تنتقل
+      من معرفة مستفعلن إلى حل سؤال التقويم.
+    </p>
+  </div>
+
+  <div class="rajaz-learning-map-grid">
+    <button onclick="showProsodyScreen('practice');startTafeelaMatchLab()">
+      <span>01</span>
+      <strong>أتعرف مستفعلن</strong>
+      <small>من الرمز إلى التفعيلة</small>
+      <p>أربط بين ب / ـ وبين التفعيلة الأساسية للرجز.</p>
+    </button>
+
+    <button onclick="showProsodyScreen('practice');startRajazJourney()">
+      <span>02</span>
+      <strong>أميز التام والمجزوء</strong>
+      <small>عدد التفعيلات</small>
+      <p>أعرف متى يكون الرجز تامًا ومتى يكون مجزوءًا.</p>
+    </button>
+
+    <button onclick="showProsodyScreen('practice');startRajazExampleJourney()">
+      <span>03</span>
+      <strong>أطبق على مثال</strong>
+      <small>من الشطر إلى البحر</small>
+      <p>أرى كيف ننتقل من النص إلى التفعيلات ثم إلى البحر.</p>
+    </button>
+
+    <button onclick="showProsodyScreen('practice');startRajazDrillBank()">
+      <span>04</span>
+      <strong>أتدرب كثيرًا</strong>
+      <small>أسئلة متدرجة</small>
+      <p>أحل تدريبات على العدّ، النوع، العَروض، الضرب، وتصحيح الأخطاء.</p>
+    </button>
+
+    <button onclick="showProsodyScreen('practice');startReferenceExamplePreview('rajaz', 'rajaz_ref_draft_01')">
+      <span>05</span>
+      <strong>أراجع مثال المرجع</strong>
+      <small>من الكتاب</small>
+      <p>أرى المثال المرجعي قبل تحويله إلى تدريب تقطيع معتمد.</p>
+    </button>
+
+    <button onclick="showProsodyScreen('practice');startReferenceVerificationWorkspace('rajaz', 'rajaz_ref_draft_01')">
+      <span>06</span>
+      <strong>أثبت المثال</strong>
+      <small>مراجعة المعلم</small>
+      <p>مرحلة خاصة بتثبيت الكتابة العَروضية والرموز قبل الاعتماد.</p>
+    </button>
+  </div>
+</div>
+<div class="rajaz-teacher-lesson">
+  <div class="rajaz-teacher-lesson-head">
+    <span>أستاذ الرجز يقول لك</span>
+    <h4>لا تحفظ البحر… افهم طريق الوصول إليه</h4>
+  </div>
+
+  <div class="rajaz-teacher-lesson-body">
+    <div class="rajaz-teacher-avatar">ع</div>
+
+    <div class="rajaz-teacher-speech">
+      <p>
+        عندما ترى بحر الرجز، لا تبدأ بالسؤال: <strong>ما اسم البحر؟</strong>
+        ابدأ بسؤال أسهل: هل ألاحظ تكرارًا في الإيقاع؟
+      </p>
+
+      <p>
+        إذا وجدت التفعيلة <strong>مستفعلن</strong> تتكرر، لا تستعجل الحكم.
+        عدّ التفعيلات أولًا: هل هي ثلاث تفعيلات في الشطر أم تفعيلتان؟
+      </p>
+
+      <p>
+        إذا كان الشطر على صورة:
+        <strong>مستفعلن | مستفعلن | مستفعلن</strong>
+        فهذا رجز تام في النموذج التعليمي.
+      </p>
+
+      <p>
+        وإذا كان على صورة:
+        <strong>مستفعلن | مستفعلن</strong>
+        فهذا مجزوء الرجز في النموذج التعليمي.
+      </p>
+
+      <p>
+        ثم انتبه لآخر تفعيلة: آخر تفعيلة في الصدر هي <strong>العَروض</strong>،
+        وآخر تفعيلة في العجز هي <strong>الضرب</strong>، وما قبل ذلك يسمى <strong>حشوًا</strong>.
+      </p>
+    </div>
+  </div>
+
+  <div class="rajaz-teacher-rules">
+    <div>
+      <span>1</span>
+      <strong>لاحظ التكرار</strong>
+      <p>هل تتكرر مستفعلن؟</p>
+    </div>
+
+    <div>
+      <span>2</span>
+      <strong>عدّ التفعيلات</strong>
+      <p>ثلاث أم اثنتان؟</p>
+    </div>
+
+    <div>
+      <span>3</span>
+      <strong>حدد النوع</strong>
+      <p>تام أم مجزوء؟</p>
+    </div>
+
+    <div>
+      <span>4</span>
+      <strong>انظر للنهاية</strong>
+      <p>العَروض والضرب في آخر الشطر.</p>
+    </div>
+  </div>
+</div>
+<div class="rajaz-compare-board">
+  <div class="rajaz-compare-head">
+    <span>قارن وافهم</span>
+    <h4>الفرق بين الرجز التام ومجزوء الرجز</h4>
+    <p>
+      أكثر خطأ يقع فيه الطالب أنه يحكم على البحر من اسم التفعيلة فقط.
+      الصواب أن تنظر إلى عدد التفعيلات في الشطر.
+    </p>
+  </div>
+
+  <div class="rajaz-compare-table">
+    <div class="rajaz-compare-row header">
+      <div>النوع</div>
+      <div>الصورة التعليمية</div>
+      <div>عدد التفعيلات</div>
+      <div>كيف أميّزه؟</div>
+      <div>خطأ شائع</div>
+    </div>
+
+    <div class="rajaz-compare-row">
+      <div>
+        <strong>الرجز التام</strong>
+      </div>
+      <div>
+        <span class="rajaz-pattern-pill">مستفعلن | مستفعلن | مستفعلن</span>
+      </div>
+      <div>
+        <strong>3</strong>
+      </div>
+      <div>
+        إذا وجدت ثلاث تفعيلات في الشطر في النموذج التعليمي.
+      </div>
+      <div>
+        أن يظن الطالب أن أي رجز هو مجزوء لأنه رأى تفعيلتين فقط في مثال آخر.
+      </div>
+    </div>
+
+    <div class="rajaz-compare-row">
+      <div>
+        <strong>مجزوء الرجز</strong>
+      </div>
+      <div>
+        <span class="rajaz-pattern-pill">مستفعلن | مستفعلن</span>
+      </div>
+      <div>
+        <strong>2</strong>
+      </div>
+      <div>
+        إذا كان الشطر مكوّنًا من تفعيلتين في النموذج التعليمي.
+      </div>
+      <div>
+        أن يحكم الطالب أنه رجز تام فقط لأن التفعيلة مستفعلن.
+      </div>
+    </div>
+  </div>
+
+  <div class="rajaz-compare-teacher-tip">
+    <h4>قاعدة ذهبية</h4>
+    <p>
+      لا تقل: هذا رجز تام لأنني رأيت <strong>مستفعلن</strong>.
+      بل قل: سأعدّ التفعيلات أولًا، ثم أحكم: تام أم مجزوء.
+    </p>
+  </div>
+</div>
+<div class="rajaz-mini-quiz">
+  <div class="rajaz-mini-quiz-head">
+    <span>تأكد من فهمك</span>
+    <h4>هل تميّز الرجز التام من المجزوء؟</h4>
+    <p>
+      قبل أن تدخل التدريبات الطويلة، جرّب هذا السؤال السريع.
+    </p>
+  </div>
+
+  <div class="rajaz-mini-quiz-pattern">
+    <span>النمط</span>
+    <strong>مستفعلن | مستفعلن</strong>
+  </div>
+
+  <div class="rajaz-mini-quiz-question">
+    <h4>هذا النمط يمثل:</h4>
+    <div class="rajaz-mini-quiz-options">
+      <button onclick="checkRajazMiniQuiz('complete')">رجز تام</button>
+      <button onclick="checkRajazMiniQuiz('majzoo')">مجزوء الرجز</button>
+    </div>
+  </div>
+
+  <div id="rajazMiniQuizResult" class="rajaz-mini-quiz-result">
+    <h4>إرشاد</h4>
+    <p>عدّ التفعيلات أولًا، ثم اختر الإجابة.</p>
+  </div>
+</div>
+  <div class="rajaz-master-steps">
+    <button onclick="showProsodyScreen('practice');startRajazJourney()">
+      <span>01</span>
+      <strong>رحلة فهم الرجز</strong>
+      <small>اكتشاف مستفعلن خطوة بخطوة</small>
+    </button>
+
+    <button onclick="showProsodyScreen('practice');startTafeelaMatchLab()">
+      <span>02</span>
+      <strong>مطابقة التفعيلة</strong>
+      <small>من ب / ـ إلى مستفعلن</small>
+    </button>
+
+    <button onclick="showProsodyScreen('practice');startRajazExampleJourney()">
+      <span>03</span>
+      <strong>مثال تطبيقي</strong>
+      <small>من الشطر إلى البحر</small>
+    </button>
+
+    <button onclick="showProsodyScreen('practice');startRajazDrillBank()">
+      <span>04</span>
+      <strong>تدريبات الرجز</strong>
+      <small>تام، مجزوء، حشو، عروض، ضرب</small>
+    </button>
+
+    <button onclick="showProsodyScreen('practice');startReferenceExamplePreview('rajaz', 'rajaz_ref_draft_01')">
+      <span>05</span>
+      <strong>مثال من المرجع</strong>
+      <small>عرض المثال قبل الاعتماد</small>
+    </button>
+
+    <button onclick="showProsodyScreen('practice');startReferenceVerificationWorkspace('rajaz', 'rajaz_ref_draft_01')">
+      <span>06</span>
+      <strong>مراجعة المعلم</strong>
+      <small>تثبيت المثال قبل تحويله لتدريب</small>
+    </button>
+  </div>
+
+  <div class="rajaz-master-note">
+    <h4>قاعدة العمل في بحر الرجز</h4>
+    <p>
+      لن ننتقل لبناء بحر جديد قبل أن يصبح الرجز نموذجًا كاملًا:
+      شرح، مثال مرجعي، تقطيع، تدريبات كثيرة، تحليل أخطاء، وتقويم.
+    </p>
+  </div>
+</div>
+    <div class="prosody-meter-module-grid">
+      <button class="ready" onclick="showProsodyScreen('practice');startRajazJourney()">
+        <span>جاهز</span>
+        <strong>بحر الرجز</strong>
+        <p>رحلة، مثال، تدريبات، أخطاء.</p>
+      </button>
+
+      <button class="soon" onclick="alert('سيتم بناؤه بعد تثبيت نموذج الرجز.')">
+        <span>قريبًا</span>
+        <strong>بحر الرمل</strong>
+        <p>سيُبنى بنفس قالب الرجز.</p>
+      </button>
+
+      <button class="soon" onclick="alert('سيتم بناؤه لاحقًا حسب المرجع.')">
+        <span>قريبًا</span>
+        <strong>بحر المتدارك / المحدث</strong>
+        <p>أمثلة المرجع أولًا.</p>
+      </button>
+
+      <button class="soon" onclick="alert('سيتم بناؤه لاحقًا حسب المرجع.')">
+        <span>قريبًا</span>
+        <strong>بحر البسيط</strong>
+        <p>تفعيلات مركبة وتدريب تدريجي.</p>
+      </button>
+
+      <button class="soon" onclick="alert('سيتم بناؤه لاحقًا حسب المرجع.')">
+        <span>قريبًا</span>
+        <strong>بحر الكامل</strong>
+        <p>سيحتاج أمثلة كثيرة وصور التفعيلة.</p>
+      </button>
+
+      <button class="soon" onclick="alert('سيتم بناؤه لاحقًا حسب المرجع.')">
+        <span>قريبًا</span>
+        <strong>بحر الطويل</strong>
+        <p>يؤجل حتى يثبت الطالب الأساس.</p>
+      </button>
+    </div>
+
+    <div class="prosody-module-actions">
+      <button onclick="showProsodyScreen('practice');startRajazJourney()">رحلة الرجز</button>
+      <button class="secondary" onclick="showProsodyScreen('practice');startRajazExampleJourney()">مثال الرجز</button>
+      <button class="secondary" onclick="showProsodyScreen('practice');startRajazDrillBank()">تدريبات الرجز</button>
+    </div>
+  </div>
+
+  <div id="prosodyModuleExam" class="prosody-module-screen">
+    <div class="prosody-module-hero-card">
+      <h3>وضع التقويم</h3>
+      <p>
+        هنا سنبني نمط الأسئلة مثل المرجع: قطّع البيت، اذكر التفعيلات والبحر،
+        وحدد العَروض والضرب.
+      </p>
+    </div>
+
+    <div class="prosody-exam-preview-card">
+      <span>نمط السؤال القادم</span>
+      <h4>قطّع البيت الشعري الآتي، واذكر تفعيلاته وبحره.</h4>
+      <p>ثم: حدّد تفعيلتي العَروض والضرب.</p>
+    </div>
+
+    <div class="prosody-module-note">
+      <h4>قيد البناء</h4>
+      <p>لن نضيف أسئلة تقويم نهائية قبل تثبيت الأبيات من المرجع أو مصادر موثوقة.</p>
+    </div>
+  </div>
+
+  <div id="prosodyModuleMistakes" class="prosody-module-screen">
+    <div class="prosody-module-hero-card">
+      <h3>أخطائي ومراجعتي</h3>
+      <p>
+        هذا القسم سيجمع أخطاء الطالب: عدّ التفعيلات، الحشو والعَروض،
+        الشدة، التنوين، أو اختيار البحر.
+      </p>
+    </div>
+
+    <div class="prosody-module-actions">
+      <button onclick="showProsodyScreen('practice');startRajazDrillBank()">ابدأ تدريبات الرجز مع تحليل الأخطاء</button>
+    </div>
+
+    <div class="prosody-module-note">
+      <h4>الهدف</h4>
+      <p>بعد كل تدريب، لا نكتفي بالعلامة. نقول للطالب أين ضعفه وماذا يراجع.</p>
+    </div>
+  </div>
+
+</div>
+    <div class="prosody-tabs">
+      <button class="prosody-tab-btn active" data-screen="learn" onclick="showProsodyScreen('learn')">التعلّم</button>
+      <button class="prosody-tab-btn" data-screen="practice" onclick="showProsodyScreen('practice')">التدريب</button>
+      <button class="prosody-tab-btn" data-screen="cut" onclick="showProsodyScreen('cut')">التقطيع</button>
+      <button class="prosody-tab-btn" data-screen="detect" onclick="showProsodyScreen('detect')">اكتشاف البحر</button>
+      <button class="prosody-tab-btn" data-screen="mistakes" onclick="showProsodyScreen('mistakes')">أخطائي</button>
+    </div>
+
+    <div class="prosody-body">
+
+      <!-- Screen: Learn -->
+      <div id="prosodyScreenLearn" class="prosody-screen active">
+        <div class="prosody-grid">
+          <div class="box prosody-panel">
+            <h2>دروس مدرّب العَروض</h2>
+            <p>ابدأ من الأساسيات، ثم تقدّم تدريجيًا إلى التفعيلات والبحور.</p>
+
+            <div class="prosody-lesson-list">
+              <button onclick="renderProsodyLesson('intro')">ما هو علم العَروض؟</button>
+              <button onclick="renderProsodyLesson('writing')">الكتابة العروضية</button>
+              <button onclick="renderProsodyLesson('writingRules')">قواعد الكتابة العَروضية</button>
+              <button onclick="renderProsodyLesson('referencePath')">خريطة منهج العَروض</button>
+              <button onclick="renderProsodyLesson('moving')">المتحرك والساكن</button>
+              <button onclick="renderProsodyLesson('shadda')">الشدة والتنوين</button>
+              <button onclick="renderProsodyLesson('tafeela')">التفعيلات</button>
+              <button onclick="renderProsodyLesson('meters')">البحور الأساسية</button>
+              <button onclick="renderProsodyLesson('rajazMeter')">بحر الرجز</button>
+              <button onclick="renderProsodyLesson('basitMeter')">بحر البسيط</button>
+              <button onclick="renderProsodyLesson('tawilMeter')">بحر الطويل</button>
+              <button onclick="renderProsodyLesson('kamilMeter')">بحر الكامل</button>
+              <button onclick="renderProsodyLesson('ramlMeter')">بحر الرمل</button>
+              <button onclick="renderProsodyLesson('mutadarrikMeter')">بحر المتدارك</button>
+              <button class="gold" onclick="startLetterScansionLab()">مختبر التقطيع الحرفي</button>
+            </div>
+          </div>
+
+          <div class="box prosody-panel" id="prosodyLessonViewer">
+            <h2>مرحبًا بك في مختبر العَروض</h2>
+            <p>اختر درسًا من الجهة اليمنى لعرض الشرح.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen: Practice -->
+      <div id="prosodyScreenPractice" class="prosody-screen">
+        <div class="prosody-grid">
+          <div class="box prosody-panel">
+            <h2>التدريب السريع</h2>
+            <p>هذه المرحلة ستكون قاعدة تدريباتنا التفاعلية لاحقًا.</p>
+            <div class="prosody-teaching-card">
+  <div class="prosody-teaching-icon">۞</div>
+
+  <div>
+    <h3>قبل أن تبدأ: ما معنى متحرك وساكن؟</h3>
+
+    <p>
+      <strong>الحرف المتحرك</strong> هو الحرف الذي عليه حركة: فتحة، ضمة، أو كسرة.
+      مثل: <span class="prosody-example">قَ</span>، <span class="prosody-example">بُ</span>، <span class="prosody-example">لِ</span>.
+    </p>
+
+    <p>
+      <strong>الحرف الساكن</strong> هو الحرف الذي عليه سكون أو يُنطق بلا حركة.
+      مثل: <span class="prosody-example">مْ</span>، <span class="prosody-example">نْ</span>، <span class="prosody-example">لْ</span>.
+    </p>
+
+    <div class="prosody-rule-box">
+      <strong>قاعدة ذهبية:</strong>
+      في العَروض نسمع الكلمة أولًا، ثم نحدد: هل الحرف متحرك أم ساكن؟
+      لأن التفعيلات والبحور مبنية على ترتيب المتحركات والسواكن.
+    </div>
+  </div>
+</div>
+ <div class="prosody-practice-launch">
+  <button onclick="startProsodyMovingPractice()">ابدأ تدريب المتحرك والساكن</button>
+  <button class="secondary" onclick="startProsodyWritingPractice()">ابدأ تدريب الكتابة العَروضية</button>
+  <button class="secondary" onclick="startRajazPractice()">ابدأ تدريب بحر الرجز</button>
+  <button class="gold" onclick="startRajazJourney()">رحلة بحر الرجز</button>
+  <button class="secondary" onclick="startRajazExampleJourney()">مثال تطبيقي على الرجز</button>
+  <button class="gold" onclick="startRajazDrillBank()">تدريبات الرجز المتدرجة</button>
+  <button class="secondary" onclick="startTafeelaMatchLab()">مطابقة التفعيلة</button>
+  <button class="gold" onclick="startReferenceExamplePreview('rajaz', 'rajaz_ref_draft_01')">  مثال مرجعي من الكتاب</button>
+  <button class="secondary" onclick="startReferenceVerificationWorkspace('rajaz', 'rajaz_ref_draft_01')">  مراجعة المثال قبل الاعتماد</button>
+</div>
+
+<div id="prosodyMovingPracticeBox" class="prosody-moving-practice-box">
+  <div class="prosody-result-card">
+    <h3>تدريب المتحرك والساكن</h3>
+    <p>اضغط زر البدء لعرض أول تدريب تفاعلي.</p>
+  </div>
+</div>
+<div id="prosodyWritingPracticeBox" class="prosody-writing-practice-box">
+  <div class="prosody-result-card">
+    <h3>تدريب الكتابة العَروضية</h3>
+    <p>اضغط زر البدء لتتدرّب على تحويل الكتابة الإملائية إلى كتابة عروضية.</p>
+  </div>
+</div>
+<div id="rajazPracticeBox" class="prosody-rajaz-practice-box">
+  <div class="prosody-result-card">
+    <h3>تدريب بحر الرجز</h3>
+    <p>اضغط زر البدء لتتدرّب على تمييز الرجز التام والمجزوء، ثم تحديد الحشو والعَروض والضرب.</p>
+  </div>
+</div>
+<div id="rajazJourneyBox" class="prosody-rajaz-journey-box">
+  <div class="prosody-result-card">
+    <h3>رحلة بحر الرجز</h3>
+    <p>اضغط زر الرحلة لتتعلّم بحر الرجز خطوة بخطوة كما يشرح المعلم.</p>
+  </div>
+</div>
+<div id="rajazExampleJourneyBox" class="prosody-rajaz-example-box">
+  <div class="prosody-result-card">
+    <h3>مثال تطبيقي على بحر الرجز</h3>
+    <p>اضغط زر المثال لتتعلم كيف ننتقل من شطر شعري إلى التفعيلات ثم إلى البحر.</p>
+  </div>
+</div>
+<div id="rajazDrillBankBox" class="prosody-rajaz-drill-bank-box">
+  <div class="prosody-result-card">
+    <h3>تدريبات الرجز المتدرجة</h3>
+    <p>اضغط زر التدريبات لتتدرّب على العدّ، التام والمجزوء، العَروض والضرب، وتصحيح الأخطاء.</p>
+  </div>
+</div>
+<div id="letterScansionLabBox" class="prosody-letter-scansion-box">
+  <div class="prosody-result-card">
+    <h3>مختبر التقطيع الحرفي</h3>
+    <p>اضغط زر البدء لتتدرب على وضع رمز المتحرك والساكن تحت كل حرف.</p>
+  </div>
+</div>
+<div id="tafeelaMatchLabBox" class="prosody-tafeela-match-box">
+  <div class="prosody-result-card">
+    <h3>مطابقة التفعيلة</h3>
+    <p>اضغط زر البدء لتتعلم كيف تتحول الرموز العَروضية إلى تفعيلة.</p>
+  </div>
+</div>
+<div id="referenceExamplePreviewBox" class="prosody-reference-example-preview-box">
+  <div class="prosody-result-card">
+    <h3>مثال مرجعي من الكتاب</h3>
+    <p>اختر مثالًا مرجعيًا لعرضه قبل تحويله إلى تدريب تقطيع تفاعلي.</p>
+  </div>
+</div>
+<div id="referenceVerificationBox" class="prosody-reference-verification-box">
+  <div class="prosody-result-card">
+    <h3>مراجعة المثال قبل الاعتماد</h3>
+    <p>هذه شاشة خاصة بالمعلم لتثبيت الكتابة العَروضية والرموز قبل تحويل المثال إلى تدريب للطلاب.</p>
+  </div>
+</div>
+
+            <div class="prosody-training-cards">
+              <div class="prosody-mini-card">
+                <h3>تمييز المتحرك والساكن</h3>
+                <p>سيتدرّب الطالب على تحديد طبيعة الحروف في الكلمات.</p>
+             </div>
+
+              <div class="prosody-mini-card">
+                <h3>الكتابة العروضية</h3>
+                <p>تحويل الكلمات من الكتابة الإملائية إلى الكتابة العروضية.</p>
+              </div>
+
+              <div class="prosody-mini-card">
+                <h3>مطابقة التفعيلة</h3>
+                <p>مطابقة المقاطع مع التفعيلات المناسبة بطريقة بصرية.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="box prosody-panel">
+            <h2>أهداف الطالب</h2>
+            <ul class="prosody-list">
+              <li>فهم أن العَروض يعتمد على النطق لا الرسم فقط.</li>
+              <li>التمييز بين المتحرك والساكن.</li>
+              <li>معرفة أثر الشدة والتنوين والمد.</li>
+              <li>فهم التفعيلات قبل محاولة تحديد البحر.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen: Cut -->
+      <div id="prosodyScreenCut" class="prosody-screen">
+        <div class="box prosody-panel">
+          <h2>التقطيع خطوة بخطوة</h2>
+          <p>اكتب شطرًا أو بيتًا، وسنبدأ معه المسار التعليمي الأولي.</p>
+
+          <textarea id="prosodyInput" class="prosody-textarea" placeholder="اكتب البيت أو الشطر هنا... مثال: قفا نبك من ذكرى حبيب ومنزل"></textarea>
+
+          <div class="prosody-action-row">
+            <button onclick="runProsodyGuidedCut()">ابدأ التقطيع</button>
+            <button class="secondary" onclick="clearProsodyInput()">مسح</button>
+          </div>
+        </div>
+
+        <div id="prosodyCutOutput" class="box prosody-panel">
+          <h2>نتيجة التقطيع</h2>
+          <p>ستظهر هنا الخطوات التعليمية الخاصة بالنص الذي تدخله.</p>
+        </div>
+      </div>
+
+      <!-- Screen: Detect -->
+      <div id="prosodyScreenDetect" class="prosody-screen">
+        <div class="box prosody-panel">
+          <h2>اكتشاف البحر</h2>
+          <p>
+            في النسخة الأولى سنبني هذا القسم تعليميًا. الهدف ليس إعطاء اسم البحر فقط،
+            بل توضيح سبب الاختيار ومسار الوصول إليه.
+          </p>
+
+          <textarea id="prosodyDetectInput" class="prosody-textarea" placeholder="اكتب البيت أو الشطر هنا لتحصل على توجيه أولي..."></textarea>
+
+          <div class="prosody-action-row">
+            <button onclick="runProsodyMeterHint()">تحليل أولي</button>
+          </div>
+        </div>
+
+        <div id="prosodyMeterOutput" class="box prosody-panel">
+          <h2>موجّه البحر</h2>
+          <p>سيظهر هنا التوجيه الأولي للطالب مع ملاحظات تعليمية.</p>
+        </div>
+      </div>
+
+      <!-- Screen: Mistakes -->
+      <div id="prosodyScreenMistakes" class="prosody-screen">
+        <div class="prosody-grid">
+          <div class="box prosody-panel">
+            <h2>أكثر الأخطاء الشائعة</h2>
+            <ul class="prosody-list" id="prosodyMistakesList">
+              <li>الخلط بين الكتابة الإملائية والكتابة العروضية.</li>
+              <li>عدم فك الشدة إلى حرفين.</li>
+              <li>نسيان أثر التنوين في التقطيع.</li>
+              <li>الانتقال إلى البحر قبل فهم التفعيلة.</li>
+            </ul>
+          </div>
+
+          <div class="box prosody-panel">
+            <h2>خطة التحسين</h2>
+            <div class="prosody-mini-card">
+              <h3>المرحلة 1</h3>
+              <p>إتقان المتحرك والساكن.</p>
+            </div>
+            <div class="prosody-mini-card">
+              <h3>المرحلة 2</h3>
+              <p>إتقان الكتابة العروضية.</p>
+            </div>
+            <div class="prosody-mini-card">
+              <h3>المرحلة 3</h3>
+              <p>ربط المقاطع بالتفعيلات ثم البحور.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 </body></html>
+
