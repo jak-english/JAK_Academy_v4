@@ -63,10 +63,16 @@ async function showPage(id) {
 
   target.classList.add("active");
   target.style.display = "block";
-if (id !== "examSolver") {
-  const retryControls = document.getElementById("retryPracticeControls");
-  if (retryControls) retryControls.remove();
+try {
+  localStorage.setItem("jakLastActivePage", id);
+} catch (error) {
+  console.warn("Could not save last active page:", error);
 }
+  if (id !== "examSolver") {
+    const retryControls = document.getElementById("retryPracticeControls");
+    if (retryControls) retryControls.remove();
+  }
+
   // Premium gate for AI Center
   if (id === "aiCenter" && typeof isCurrentUserPremium === "function") {
     storePremiumGateOriginalContent("aiCenter");
@@ -98,6 +104,11 @@ if (id !== "examSolver") {
     protectPremiumAdminTools();
   }
 
+  // English Lesson Journey safe init
+  if (id === "englishLessonJourney" && typeof initEnglishLessonJourney === "function") {
+    initEnglishLessonJourney();
+  }
+
   setTimeout(() => {
     target.scrollIntoView({
       behavior: "smooth",
@@ -107,7 +118,7 @@ if (id !== "examSolver") {
 
   console.log("Showing page:", id);
 }
-   
+ window.showPage = showPage;
 async function getCurrentUser() {
   const { data } = await client.auth.getUser();
   return data.user || null;
@@ -3865,19 +3876,35 @@ async function bootStableApp() {
       return;
     }
 
-    if (!user) {
-      showPage("home");
-      return;
-    }
+  const savedActivePage = localStorage.getItem("jakLastActivePage");
+const safeDefaultPage = "home";
 
-    showPage("home");
+const pageToOpen =
+  savedActivePage && document.getElementById(savedActivePage)
+    ? savedActivePage
+    : safeDefaultPage;
 
-  } catch (err) {
-    console.error("Boot error:", err);
-    showPage("home");
-  }
+if (!user) {
+  await showPage(pageToOpen);
+  return;
 }
 
+await showPage(pageToOpen);
+
+} catch (err) {
+  console.error("Boot error:", err);
+
+  const savedActivePage = localStorage.getItem("jakLastActivePage");
+  const safeDefaultPage = "home";
+
+  const pageToOpen =
+    savedActivePage && document.getElementById(savedActivePage)
+      ? savedActivePage
+      : safeDefaultPage;
+
+  await showPage(pageToOpen);
+}
+}
 function renderGamesHome() {
   if (!$('gameArea')) return;
   gameArea.innerHTML = `<div class="box"><h3>Choose a game above.</h3><p>اختر لعبة من الأعلى للتدريب.</p></div>`;
@@ -11714,6 +11741,12 @@ function getNavButtonKey(button) {
   const text = (button.innerText || "").trim().toLowerCase();
   const onclick = button.getAttribute("onclick") || "";
 
+  if ( button.getAttribute("data-nav-key") === "englishLessonJourney" ||
+  button.textContent.includes("دروس الإنجليزي") ||
+  button.textContent.includes("English Lesson")
+) {
+  return "englishLessonJourney";
+}
   if (onclick.includes("showPage('home')")) return "home";
   if (onclick.includes("teachersPage")) return "teachers";
   if (onclick.includes("goDashboard")) return "dashboard";
@@ -11771,6 +11804,7 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
       "games",
       "dictionaries",
       "premium",
+      "englishLessonJourney",
       "leaderboard",
       "logout"
     ];
@@ -11790,6 +11824,7 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
       "games",
       "dictionaries",
       "premium",
+      "englishLessonJourney",
       "leaderboard",
       "logout"
     ];
@@ -11805,6 +11840,7 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
       "studySystem",
       "writing",
       "assistant",
+      "englishLessonJourney",
       "games",
       "dictionaries",
       "premium",
@@ -13452,23 +13488,23 @@ window.nextVerbQuestMission = nextVerbQuestMission;
 const prosodyMovingPracticeBank = [
   {
     word: "قَلَم",
-    display: "قَلَم",
+    display: "قَلَمْ",
     letters: [
       { ch: "قَ", answer: "moving", note: "القاف متحركة بالفتحة." },
       { ch: "لَ", answer: "moving", note: "اللام متحركة بالفتحة." },
-      { ch: "مْ", answer: "silent", note: "الميم ساكنة لأنها منتهية بالسكون." }
+      { ch: "مْ", answer: "silent", note: "الميم ساكنة عند الوقف." }
     ],
-    explanation: "كلمة قَلَم تتكوّن من حروف متحركة ثم حرف ساكن في النهاية."
+    explanation: "كلمة قَلَمْ في التدريب تُعرض مع سكون الوقف لتوضيح أن آخر حرف ساكن عند الوقف."
   },
   {
     word: "بَيْت",
-    display: "بَيْت",
+    display: "بَيْتْ",
     letters: [
       { ch: "بَ", answer: "moving", note: "الباء متحركة بالفتحة." },
-      { ch: "يْ", answer: "silent", note: "الياء ساكنة لأنها جزء من صوت المد/اللّين." },
+      { ch: "يْ", answer: "silent", note: "الياء ساكنة لأنها حرف لين في بَيْت." },
       { ch: "تْ", answer: "silent", note: "التاء ساكنة عند الوقف." }
     ],
-    explanation: "في بَيْت نلاحظ وجود حرف متحرك ثم حروف ساكنة."
+    explanation: "في بَيْتْ نلاحظ حرفًا متحركًا، ثم ياءً ساكنة، ثم تاءً ساكنة عند الوقف."
   },
   {
     word: "كَتَبَ",
@@ -13478,17 +13514,17 @@ const prosodyMovingPracticeBank = [
       { ch: "تَ", answer: "moving", note: "التاء متحركة بالفتحة." },
       { ch: "بَ", answer: "moving", note: "الباء متحركة بالفتحة." }
     ],
-    explanation: "كل حروف كَتَبَ هنا متحركة."
+    explanation: "كل حروف كَتَبَ هنا متحركة؛ لذلك لا يظهر فيها حرف ساكن في هذا التدريب."
   },
   {
     word: "عِلْم",
-    display: "عِلْم",
+    display: "عِلْمْ",
     letters: [
       { ch: "عِ", answer: "moving", note: "العين متحركة بالكسرة." },
       { ch: "لْ", answer: "silent", note: "اللام ساكنة." },
       { ch: "مْ", answer: "silent", note: "الميم ساكنة عند الوقف." }
     ],
-    explanation: "كلمة عِلْم تساعد الطالب على رؤية الساكن بوضوح."
+    explanation: "كلمة عِلْمْ توضّح اجتماع السواكن، وتساعد الطالب على رؤية الساكن بوضوح."
   }
 ];
 
@@ -13648,7 +13684,7 @@ window.nextProsodyMovingPractice = nextProsodyMovingPractice;
 // Prosodic Writing Training
 // =========================
 
-const prosodyWritingPracticeBank = [
+ const prosodyWritingPracticeBank = [
   {
     original: "هذا",
     expected: "هاذا",
@@ -13675,15 +13711,15 @@ const prosodyWritingPracticeBank = [
   },
   {
     original: "كتابٌ",
-    expected: "كتابنْ",
+    expected: "كتابُنْ",
     rule: "التنوين نون ساكنة",
-    explanation: "التنوين يُنطق نونًا ساكنة، لذلك يظهر في الكتابة العَروضية."
+    explanation: "التنوين في كتابٌ يُنطق نونًا ساكنة بعد ضمة الباء: كتابُنْ."
   },
   {
     original: "رجلٍ",
-    expected: "رجلنْ",
+    expected: "رجلِنْ",
     rule: "التنوين نون ساكنة",
-    explanation: "عند النطق يظهر التنوين نونًا ساكنة، وهذا يؤثر في التقطيع."
+    explanation: "التنوين في رجلٍ يُنطق نونًا ساكنة بعد كسرة اللام: رجلِنْ."
   }
 ];
 
@@ -15804,11 +15840,84 @@ function openProsodyModule(moduleName) {
     renderProsodyReferenceViewer();
   }
 
-  // ✅ Auto-open Rajaz first section when opening Meters module
-  if (moduleName === "meters" && typeof showRajazDetail === "function") {
-    showRajazDetail("core");
+  // Prosody Safety Gate: do not auto-open any meter as approved.
+  // All meters remain under scientific review until verified.
+  if (moduleName === "meters" && typeof applyProsodyMetersSafetyGate === "function") {
+    setTimeout(applyProsodyMetersSafetyGate, 80);
   }
 }
+// =========================
+// Prosody Meters Safety Gate
+// بوابة أمان البحور قبل الاعتماد العلمي
+// =========================
+
+function applyProsodyMetersSafetyGate() {
+  const metersModule = document.getElementById("prosodyModuleMeters");
+  if (!metersModule) return;
+
+  // Add one warning banner only
+  if (!document.getElementById("prosodyMetersSafetyGateBanner")) {
+    const banner = document.createElement("div");
+    banner.id = "prosodyMetersSafetyGateBanner";
+    banner.className = "prosody-meters-safety-gate";
+    banner.innerHTML = `
+      <span class="prosody-status-badge prosody-status-review">قيد المراجعة العلمية 🟡</span>
+      <h3>باب البحور تحت المراجعة العلمية</h3>
+      <p>
+        تم ضبط قسم التأسيس أولًا. أما البحور مثل الرجز، البسيط، الطويل، الكامل،
+        الرمل، والمتدارك/المحدث فلن تُعرض كدروس معتمدة حتى تتم مراجعتها بحرًا بحرًا
+        وفق مرجع المنهاج.
+      </p>
+      <p>
+        المسموح حاليًا: الاطلاع التنظيمي فقط، وليس اعتماد القواعد أو التدريبات.
+      </p>
+    `;
+
+    metersModule.prepend(banner);
+  }
+
+  // Replace any "ready" label inside the meters module
+  metersModule.querySelectorAll("span, small, strong, p").forEach(el => {
+    const text = (el.textContent || "").trim();
+
+    if (text === "جاهز" || text === "موثق" || text === "جاهز للتدريب") {
+      el.textContent = "قيد المراجعة العلمية 🟡";
+    }
+  });
+
+  // Mark meter cards/buttons visually as under review
+  metersModule
+    .querySelectorAll(
+      ".prosody-meter-card, .meter-profile-panel, .prosody-learning-window, .rajaz-master-panel, .prosody-meter-module-grid button, .meters-selector-grid button"
+    )
+    .forEach(el => {
+      el.classList.add("prosody-meter-under-review");
+    });
+
+  // Disable direct Rajaz practice launch buttons inside meters only
+  metersModule.querySelectorAll("button").forEach(btn => {
+    const onclickText = btn.getAttribute("onclick") || "";
+
+    if (
+      onclickText.includes("startRajazJourney") ||
+      onclickText.includes("startRajazExampleJourney") ||
+      onclickText.includes("startRajazDrillBank") ||
+      onclickText.includes("openRajazLessonWindow('quiz") ||
+      onclickText.includes('openRajazLessonWindow("quiz')
+    ) {
+      btn.dataset.oldOnclick = onclickText;
+      btn.removeAttribute("onclick");
+      btn.classList.add("prosody-meter-disabled-action");
+      btn.onclick = () => {
+        alert("هذا التدريب قيد المراجعة العلمية الآن. سنفعّله بعد اعتماد البحر ومراجعة أمثلته.");
+      };
+    }
+  });
+
+  console.log("✅ Prosody meters safety gate applied");
+}
+
+window.applyProsodyMetersSafetyGate = applyProsodyMetersSafetyGate;
 
 window.openProsodyModule = openProsodyModule;
 
@@ -17460,10 +17569,1172 @@ function openProsodyLearningWindow(groupId, windowName) {
   if (activeBtn) activeBtn.classList.add("active");
   if (activePanel) activePanel.classList.add("active");
 }
+ function openRajazLessonWindow(lessonName) {
+  const map = {
+    core: ".rajaz-core-board",
+    teacher: ".rajaz-teacher-lesson",
+    compare: ".rajaz-compare-board",
+    map: ".rajaz-learning-map",
+    quiz: ".rajaz-mini-quiz"
+  };
 
+  Object.values(map).forEach(selector => {
+    const section = document.querySelector(`#prosodyLab ${selector}`);
+    if (section) section.classList.remove("rajaz-active-section");
+  });
+
+  const target = document.querySelector(`#prosodyLab ${map[lessonName] || map.core}`);
+
+  document.querySelectorAll("#rajazLessonTabs .prosody-learning-tab").forEach(btn => {
+    btn.classList.remove("rajaz-lesson-tab-active");
+  });
+
+  const activeBtn = document.querySelector(`#rajazLessonTabs [data-rajaz-tab="${lessonName}"]`);
+  if (activeBtn) activeBtn.classList.add("rajaz-lesson-tab-active");
+
+  if (target) {
+    target.classList.add("rajaz-active-section");
+
+    // Strong scroll fix for sticky headers / long page
+    setTimeout(() => {
+      const y = target.getBoundingClientRect().top + window.scrollY - 220;
+      window.scrollTo({
+        top: y,
+        behavior: "smooth"
+      });
+    }, 150);
+  }
+}
+
+window.openRajazLessonWindow = openRajazLessonWindow;
 window.openProsodyLearningWindow = openProsodyLearningWindow;
 window.toggleProsodyReferenceViewer = toggleProsodyReferenceViewer;
 window.openProsodyReferenceViewer = openProsodyReferenceViewer;
 window.closeProsodyReferenceViewer = closeProsodyReferenceViewer;
 
+/* =========================================================
+   JAK Academy English Lesson Journey - Question Tags
+   Safe JS Patch
+========================================================= */
+
+const JAK_ENGLISH_LESSON_PROGRESS_KEY = "jakEnglishLessonProgressV1";
+const JAK_ENGLISH_LESSON_BADGES_KEY = "jakEnglishLessonBadgesV1";
+
+const questionTagStages = [
+  {
+    id: "introduction",
+    icon: "👋",
+    title: "Introduction",
+    desc: "Understand the mission and see what question tags are used for."
+  },
+  {
+    id: "discovery",
+    icon: "🔍",
+    title: "Rule Discovery",
+    desc: "Look at examples first and discover the rule before explanation."
+  },
+  {
+    id: "explanation",
+    icon: "🧠",
+    title: "Rule Explanation",
+    desc: "Learn structure, meaning, usage, and special cases visually."
+  },
+  {
+    id: "guided",
+    icon: "🎯",
+    title: "Guided Practice",
+    desc: "Practice step by step with instant feedback."
+  },
+  {
+    id: "mistakes",
+    icon: "🕵️",
+    title: "Error Detection",
+    desc: "Become the teacher and detect wrong question tags."
+  },
+  {
+    id: "challenge",
+    icon: "⚡",
+    title: "Mini Challenge",
+    desc: "Answer quickly, build combos, and gain XP."
+  },
+  {
+    id: "exam",
+    icon: "📝",
+    title: "Exam Mode",
+    desc: "Train with Tawjihi-style questions and official exam feel."
+  },
+  {
+    id: "summary",
+    icon: "🏆",
+    title: "Summary",
+    desc: "Review your strengths, weaknesses, badges, and next step."
+  }
+];
+
+const questionTagBadges = [
+  { id: "lesson_completed", title: "Lesson Completed", icon: "✅" },
+  { id: "perfect_score", title: "Perfect Score", icon: "💯" },
+  { id: "grammar_master", title: "Grammar Master", icon: "🧠" },
+  { id: "fast_learner", title: "Fast Learner", icon: "⚡" },
+  { id: "question_tag_expert", title: "Question Tag Expert", icon: "🏅" },
+  { id: "error_detective", title: "Error Detective", icon: "🕵️" },
+  { id: "tawjihi_ready", title: "Tawjihi Ready", icon: "📝" }
+];
+
+const guidedPracticeQuestions = [
+  {
+    id: "g1",
+    type: "mcq",
+    prompt: "She is a doctor, ____?",
+    options: ["is she", "isn’t she", "does she", "doesn’t she"],
+    answer: "isn’t she",
+    explanation: "The main sentence is positive with verb to be, so the tag is negative: isn’t she?"
+  },
+  {
+    id: "g2",
+    type: "fill",
+    prompt: "They don’t like tea, ______?",
+    answer: "do they",
+    explanation: "The main sentence is negative, so the tag is positive: do they?"
+  },
+  {
+    id: "g3",
+    type: "mcq",
+    prompt: "You can swim, ____?",
+    options: ["don’t you", "can you", "can’t you", "are you"],
+    answer: "can’t you",
+    explanation: "With modal verbs, use the same modal in the tag: can → can’t."
+  },
+  {
+    id: "g4",
+    type: "fill",
+    prompt: "He played well, ______?",
+    answer: "didn’t he",
+    explanation: "Past simple uses did/didn’t in the tag."
+  }
+];
+
+const mistakeDetectorQuestions = [
+  {
+    id: "m1",
+    sentence: "She is tired, isn’t she?",
+    correct: true,
+    explanation: "Correct. Positive sentence + negative tag."
+  },
+  {
+    id: "m2",
+    sentence: "He plays football, isn’t he?",
+    correct: false,
+    explanation: "Incorrect. Present simple main verb needs does/doesn’t: He plays football, doesn’t he?"
+  },
+  {
+    id: "m3",
+    sentence: "They can swim, don’t they?",
+    correct: false,
+    explanation: "Incorrect. Modal can uses can/can’t: They can swim, can’t they?"
+  },
+  {
+    id: "m4",
+    sentence: "Let’s begin, shall we?",
+    correct: true,
+    explanation: "Correct. Let’s uses shall we?"
+  },
+  {
+    id: "m5",
+    sentence: "I am late, amn’t I?",
+    correct: false,
+    explanation: "Incorrect. The correct special tag is: aren’t I?"
+  }
+];
+
+const examTrainingQuestions = [
+  {
+    id: "e1",
+    type: "mcq",
+    prompt: "He rarely visits us, ______?",
+    options: ["does he", "doesn’t he", "is he", "isn’t he"],
+    answer: "does he",
+    explanation: "Rarely has a negative meaning, so the tag is positive."
+  },
+  {
+    id: "e2",
+    type: "fill",
+    prompt: "He is not ready, ______?",
+    answer: "is he",
+    explanation: "Negative sentence + positive tag."
+  },
+  {
+    id: "e3",
+    type: "correction",
+    prompt: "Correct the mistake: She has finished her homework, doesn’t she?",
+    answer: "She has finished her homework, hasn’t she?",
+    explanation: "Present perfect uses has/have in the tag."
+  },
+  {
+    id: "e4",
+    type: "transformation",
+    prompt: "Transform with a question tag: They should study.",
+    answer: "They should study, shouldn’t they?",
+    explanation: "Modal should uses shouldn’t in the negative tag."
+  }
+];
+
+let speedChallengeState = {
+  active: false,
+  time: 30,
+  index: 0,
+  score: 0,
+  combo: 0,
+  timer: null,
+  questions: []
+};
+
+function getEnglishLessonProgress() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(JAK_ENGLISH_LESSON_PROGRESS_KEY));
+    if (saved && Array.isArray(saved.completedStages)) return saved;
+  } catch (error) {
+    console.warn("Could not read lesson progress", error);
+  }
+
+  return {
+    started: false,
+    completedStages: [],
+    currentStage: "introduction",
+    progress: 0,
+    xp: 0,
+    observations: [],
+    guidedCorrect: 0,
+    mistakeCorrect: 0,
+    examScore: 0
+  };
+}
+
+function saveEnglishLessonProgress(progress) {
+  localStorage.setItem(JAK_ENGLISH_LESSON_PROGRESS_KEY, JSON.stringify(progress));
+}
+
+function getEnglishLessonBadges() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(JAK_ENGLISH_LESSON_BADGES_KEY));
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveEnglishLessonBadges(badges) {
+  localStorage.setItem(JAK_ENGLISH_LESSON_BADGES_KEY, JSON.stringify(badges));
+}
+
+function initEnglishLessonJourney() {
+  renderEnglishLessonMap();
+  updateEnglishLessonProgress();
+}
+
+function startQuestionTagsLesson() {
+  const progress = getEnglishLessonProgress();
+  progress.started = true;
+  progress.currentStage = "introduction";
+  saveEnglishLessonProgress(progress);
+  renderEnglishLessonMap();
+  updateEnglishLessonProgress();
+  openLessonStage("introduction");
+
+  const map = document.getElementById("englishLessonMap");
+  if (map) {
+    map.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function isLessonStageAvailable(stageId) {
+  const progress = getEnglishLessonProgress();
+  const stageIndex = questionTagStages.findIndex(stage => stage.id === stageId);
+
+  if (stageIndex === 0) return progress.started === true;
+  const previousStage = questionTagStages[stageIndex - 1];
+  return progress.completedStages.includes(previousStage.id);
+}
+
+function renderEnglishLessonMap() {
+  const map = document.getElementById("englishLessonMap");
+  if (!map) return;
+
+  const progress = getEnglishLessonProgress();
+
+  map.innerHTML = questionTagStages.map((stage, index) => {
+    const completed = progress.completedStages.includes(stage.id);
+    const available = isLessonStageAvailable(stage.id);
+    const status = completed ? "completed" : available ? "available" : "locked";
+    const statusText = completed ? "Completed" : available ? "Available" : "Locked";
+
+    return `
+      <div class="jak-lesson-path-card ${status}">
+        <div class="jak-lesson-stage-num">${completed ? "✓" : index + 1}</div>
+        <div class="jak-lesson-path-body">
+          <h3>${stage.icon} ${stage.title}</h3>
+          <p>${stage.desc}</p>
+          <div class="jak-lesson-card-actions">
+            <span class="jak-lesson-status ${status}">${statusText}</span>
+            <button
+              class="jak-lesson-secondary-btn"
+              onclick="openLessonStage('${stage.id}')"
+              ${available || completed ? "" : "disabled"}
+            >
+              ${completed ? "Review Stage" : "Open Stage"}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function openLessonStage(stageId) {
+  if (!isLessonStageAvailable(stageId) && !getEnglishLessonProgress().completedStages.includes(stageId)) {
+    alert("Complete the previous stage first 🔒");
+    return;
+  }
+
+  const area = document.getElementById("englishLessonStageArea");
+  if (!area) return;
+
+  const renderers = {
+    introduction: renderLessonIntroduction,
+    discovery: renderDiscoverRule,
+    explanation: renderRuleExplanation,
+    guided: renderGuidedPractice,
+    mistakes: renderMistakeDetector,
+    challenge: renderSpeedChallengeIntro,
+    exam: renderExamTrainingMode,
+    summary: renderLessonSummary
+  };
+
+  const renderer = renderers[stageId] || renderLessonIntroduction;
+  area.innerHTML = renderer();
+
+  area.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function completeLessonStage(stageId) {
+  const progress = getEnglishLessonProgress();
+
+  if (!progress.completedStages.includes(stageId)) {
+    progress.completedStages.push(stageId);
+    progress.xp += 50;
+  }
+
+  const currentIndex = questionTagStages.findIndex(stage => stage.id === stageId);
+  const nextStage = questionTagStages[currentIndex + 1];
+  if (nextStage) progress.currentStage = nextStage.id;
+
+  if (stageId === "summary") {
+    unlockLessonBadge("lesson_completed");
+  }
+
+  saveEnglishLessonProgress(progress);
+  renderEnglishLessonMap();
+  updateEnglishLessonProgress();
+
+  if (nextStage) {
+    openLessonStage(nextStage.id);
+  } else {
+    openLessonStage("summary");
+  }
+}
+
+function updateEnglishLessonProgress() {
+  const progress = getEnglishLessonProgress();
+  const percent = Math.round((progress.completedStages.length / questionTagStages.length) * 100);
+  progress.progress = percent;
+  saveEnglishLessonProgress(progress);
+
+  const bar = document.getElementById("englishLessonProgressBar");
+  const text = document.getElementById("englishLessonProgressText");
+  const xpText = document.getElementById("englishLessonXpText");
+
+  if (bar) bar.style.width = `${percent}%`;
+  if (text) text.textContent = `${percent}%`;
+  if (xpText) xpText.textContent = `${progress.xp} XP`;
+}
+
+function renderStageShell(title, chip, body, stageId) {
+  return `
+    <div class="jak-lesson-stage-card">
+      <div class="jak-lesson-stage-title">
+        <div>
+          <span class="jak-lesson-chip">${chip}</span>
+          <h2>${title}</h2>
+        </div>
+        <button class="jak-lesson-primary-btn" onclick="completeLessonStage('${stageId}')">
+          Complete Stage ✓
+        </button>
+      </div>
+      ${body}
+    </div>
+  `;
+}
+
+function renderLessonIntroduction() {
+  return renderStageShell(
+    "Welcome to Question Tags",
+    "Stage 1",
+    `
+      <div class="jak-lesson-grid">
+        <div class="jak-lesson-panel">
+          <h3>🎯 Lesson Goal</h3>
+          <p>By the end of this journey, you will be able to form question tags, avoid common exam traps, and answer Tawjihi-style questions confidently.</p>
+        </div>
+
+        <div class="jak-lesson-panel">
+          <h3>🧭 Learning Method</h3>
+          <p>You will not memorize rules blindly. First, you will notice examples, discover patterns, practice, detect mistakes, and finally take an exam simulation.</p>
+        </div>
+      </div>
+    `,
+    "introduction"
+  );
+}
+
+function renderDiscoverRule() {
+  return renderStageShell(
+    "Discover the Rule",
+    "Stage 2",
+    `
+      <div class="jak-lesson-grid">
+        <div class="jak-lesson-panel">
+          <h3>Look at these examples first</h3>
+          <div class="jak-lesson-examples">
+            <div class="jak-lesson-example">You are Jordanian, aren’t you?</div>
+            <div class="jak-lesson-example">She doesn’t like coffee, does she?</div>
+            <div class="jak-lesson-example">They can swim, can’t they?</div>
+            <div class="jak-lesson-example">He went to school, didn’t he?</div>
+            <div class="jak-lesson-example">Let’s start, shall we?</div>
+            <div class="jak-lesson-example">I am late, aren’t I?</div>
+          </div>
+        </div>
+
+        <div class="jak-lesson-panel">
+          <h3>What do you notice?</h3>
+          <div class="jak-lesson-options">
+            <button class="jak-lesson-option-btn" onclick="selectRuleObservation(this, 'opposite')">The tag is usually opposite.</button>
+            <button class="jak-lesson-option-btn" onclick="selectRuleObservation(this, 'auxiliary')">The auxiliary changes.</button>
+            <button class="jak-lesson-option-btn" onclick="selectRuleObservation(this, 'confirmation')">The meaning is confirmation.</button>
+            <button class="jak-lesson-option-btn" onclick="selectRuleObservation(this, 'special')">I am has a special tag.</button>
+          </div>
+
+          <button class="jak-lesson-primary-btn" style="margin-top:14px;" onclick="revealQuestionTagRule()">
+            Reveal Rule ✨
+          </button>
+
+          <div id="questionTagRuleReveal" class="jak-lesson-feedback">
+            Choose what you notice, then reveal the rule.
+          </div>
+        </div>
+      </div>
+    `,
+    "discovery"
+  );
+}
+
+function selectRuleObservation(button, observation) {
+  button.classList.toggle("selected");
+
+  const progress = getEnglishLessonProgress();
+  if (!progress.observations) progress.observations = [];
+
+  if (progress.observations.includes(observation)) {
+    progress.observations = progress.observations.filter(item => item !== observation);
+  } else {
+    progress.observations.push(observation);
+  }
+
+  saveEnglishLessonProgress(progress);
+}
+
+function revealQuestionTagRule() {
+  const box = document.getElementById("questionTagRuleReveal");
+  if (!box) return;
+
+  box.className = "jak-lesson-feedback good";
+  box.innerHTML = `
+    <strong>Great discovery!</strong><br>
+    The basic rule is:<br><br>
+    <span class="jak-lesson-tag-blue">Positive sentence</span>
+    →
+    <span class="jak-lesson-tag-gold">Negative tag</span><br>
+    <span class="jak-lesson-tag-blue">Negative sentence</span>
+    →
+    <span class="jak-lesson-tag-gold">Positive tag</span><br><br>
+    Example: <strong>You are ready, aren’t you?</strong>
+  `;
+}
+
+function renderRuleExplanation() {
+  return renderStageShell(
+    "Rule Explanation",
+    "Stage 3",
+    `
+      <div class="jak-lesson-grid">
+        <div class="jak-lesson-panel">
+          <h3>Structure</h3>
+          <p><span class="jak-lesson-tag-blue">Main sentence</span> + comma + <span class="jak-lesson-tag-gold">question tag</span> + ?</p>
+          <p>You are ready, aren’t you?</p>
+          <p>She doesn’t play tennis, does she?</p>
+        </div>
+
+        <div class="jak-lesson-panel">
+          <h3>Meaning</h3>
+          <p>Question tags are used to confirm information or ask for agreement.</p>
+        </div>
+
+        <div class="jak-lesson-panel">
+          <h3>Usage</h3>
+          <p>Use them in speaking, informal writing, and grammar exam questions.</p>
+        </div>
+
+        <div class="jak-lesson-panel">
+          <h3>Common Mistakes</h3>
+          <ul>
+            <li>Using the same polarity.</li>
+            <li>Choosing the wrong auxiliary.</li>
+            <li>Forgetting special cases.</li>
+            <li>Confusing main verbs with auxiliaries.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="jak-lesson-panel" style="margin-top:16px;">
+        <h3>Visual Rule Table</h3>
+        <table class="jak-lesson-table">
+          <thead>
+            <tr>
+              <th>Sentence Type</th>
+              <th>Question Tag</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Positive sentence</td>
+              <td>Negative tag</td>
+            </tr>
+            <tr>
+              <td>Negative sentence</td>
+              <td>Positive tag</td>
+            </tr>
+            <tr>
+              <td>Verb to be</td>
+              <td>Use the same be form</td>
+            </tr>
+            <tr>
+              <td>Modal verb</td>
+              <td>Use the same modal</td>
+            </tr>
+            <tr>
+              <td>Present simple</td>
+              <td>do / does</td>
+            </tr>
+            <tr>
+              <td>Past simple</td>
+              <td>did</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      ${renderMemoryBoardHTML()}
+      ${renderCommonExamTrapsHTML()}
+    `,
+    "explanation"
+  );
+}
+
+function renderMemoryBoardHTML() {
+  const cards = [
+    ["Positive → Negative Tag", "He is smart, isn’t he?"],
+    ["Negative → Positive Tag", "She isn’t here, is she?"],
+    ["Present Simple", "He plays football, doesn’t he?"],
+    ["Past Simple", "They visited Amman, didn’t they?"],
+    ["Modal Verbs", "You can help, can’t you?"],
+    ["Special Case: Let’s", "Let’s go, shall we?"],
+    ["Special Case: I am", "I am right, aren’t I?"]
+  ];
+
+  return `
+    <div class="jak-lesson-panel" style="margin-top:16px;">
+      <h3>Visual Memory Board</h3>
+      <div class="jak-lesson-memory-wall">
+        ${cards.map(card => `
+          <div class="jak-lesson-memory-card">
+            <strong>${card[0]}</strong>
+            <p>${card[1]}</p>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderCommonExamTrapsHTML() {
+  const traps = [
+    ["I am → aren’t I", "Wrong: I am late, amn’t I?", "Correct: I am late, aren’t I?"],
+    ["Let’s → shall we", "Wrong: Let’s go, will we?", "Correct: Let’s go, shall we?"],
+    ["Present Simple Main Verb", "Wrong: He plays, isn’t he?", "Correct: He plays, doesn’t he?"],
+    ["Negative Words", "He never lies, does he?", "Never makes the sentence negative."],
+    ["Modals", "They should study, shouldn’t they?", "Use the same modal in the tag."]
+  ];
+
+  return `
+    <div class="jak-lesson-panel" style="margin-top:16px;">
+      <h3>Common Exam Traps ⚠️</h3>
+      <div class="jak-lesson-traps">
+        ${traps.map(trap => `
+          <div class="jak-lesson-trap-card">
+            <strong>${trap[0]}</strong>
+            <p>${trap[1]}</p>
+            <p>${trap[2]}</p>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderGuidedPractice() {
+  return renderStageShell(
+    "Guided Practice",
+    "Stage 4",
+    `
+      <div class="jak-lesson-grid">
+        ${guidedPracticeQuestions.map((q, index) => renderGuidedQuestionHTML(q, index)).join("")}
+      </div>
+    `,
+    "guided"
+  );
+}
+
+function renderGuidedQuestionHTML(q, index) {
+  if (q.type === "mcq") {
+    return `
+      <div class="jak-lesson-panel">
+        <h3>Question ${index + 1}</h3>
+        <p>${q.prompt}</p>
+        <div class="jak-lesson-options">
+          ${q.options.map(option => `
+            <button class="jak-lesson-option-btn" onclick="checkQuestionTagAnswer('${q.id}', '${escapeLessonText(option)}', this)">
+              ${option}
+            </button>
+          `).join("")}
+        </div>
+        <div id="feedback-${q.id}" class="jak-lesson-feedback"></div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="jak-lesson-panel">
+      <h3>Question ${index + 1}</h3>
+      <p>${q.prompt}</p>
+      <input id="input-${q.id}" class="jak-lesson-input" placeholder="Type your answer here...">
+      <button class="jak-lesson-primary-btn" style="margin-top:10px;" onclick="checkQuestionTagAnswer('${q.id}', document.getElementById('input-${q.id}').value, null)">
+        Check Answer
+      </button>
+      <div id="feedback-${q.id}" class="jak-lesson-feedback"></div>
+    </div>
+  `;
+}
+
+function escapeLessonText(text) {
+  return String(text).replace(/'/g, "\\'");
+}
+
+function checkQuestionTagAnswer(questionId, studentAnswer, button) {
+  const allQuestions = [
+    ...guidedPracticeQuestions,
+    ...examTrainingQuestions
+  ];
+
+  const question = allQuestions.find(q => q.id === questionId);
+  if (!question) return;
+
+  const normalizedStudent = normalizeLessonAnswer(studentAnswer);
+  const normalizedCorrect = normalizeLessonAnswer(question.answer);
+  const isCorrect = normalizedStudent === normalizedCorrect;
+
+  if (button) {
+    const siblings = button.parentElement.querySelectorAll(".jak-lesson-option-btn");
+    siblings.forEach(btn => btn.classList.remove("correct", "wrong"));
+    button.classList.add(isCorrect ? "correct" : "wrong");
+  }
+
+  showLessonFeedback(questionId, isCorrect, question.explanation, question.answer);
+
+  const progress = getEnglishLessonProgress();
+  if (isCorrect) {
+    progress.guidedCorrect = (progress.guidedCorrect || 0) + 1;
+    progress.xp += 10;
+    if (progress.guidedCorrect >= 3) unlockLessonBadge("grammar_master");
+  }
+  saveEnglishLessonProgress(progress);
+  updateEnglishLessonProgress();
+}
+
+function normalizeLessonAnswer(answer) {
+  return String(answer || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[؟?!.]/g, "")
+    .replace(/\s+/g, " ");
+}
+
+function showLessonFeedback(questionId, isCorrect, explanation, answer) {
+  const box = document.getElementById(`feedback-${questionId}`);
+  if (!box) return;
+
+  box.className = `jak-lesson-feedback ${isCorrect ? "good" : "bad"}`;
+  box.innerHTML = isCorrect
+    ? `Correct ✓<br>${explanation}`
+    : `Wrong ✗<br>Correct answer: <strong>${answer}</strong><br>${explanation}`;
+}
+
+function renderMistakeDetector() {
+  return renderStageShell(
+    "Mistake Detector",
+    "Stage 5",
+    `
+      <div class="jak-lesson-grid">
+        ${mistakeDetectorQuestions.map((q, index) => `
+          <div class="jak-lesson-panel">
+            <h3>Sentence ${index + 1}</h3>
+            <p><strong>${q.sentence}</strong></p>
+            <div class="jak-lesson-options">
+              <button class="jak-lesson-option-btn" onclick="checkMistakeDetector('${q.id}', true, this)">Correct</button>
+              <button class="jak-lesson-option-btn" onclick="checkMistakeDetector('${q.id}', false, this)">Incorrect</button>
+            </div>
+            <div id="mistake-feedback-${q.id}" class="jak-lesson-feedback"></div>
+          </div>
+        `).join("")}
+      </div>
+    `,
+    "mistakes"
+  );
+}
+
+function checkMistakeDetector(questionId, answer, button) {
+  const question = mistakeDetectorQuestions.find(q => q.id === questionId);
+  if (!question) return;
+
+  const isCorrect = question.correct === answer;
+
+  const siblings = button.parentElement.querySelectorAll(".jak-lesson-option-btn");
+  siblings.forEach(btn => btn.classList.remove("correct", "wrong"));
+  button.classList.add(isCorrect ? "correct" : "wrong");
+
+  const box = document.getElementById(`mistake-feedback-${questionId}`);
+  if (box) {
+    box.className = `jak-lesson-feedback ${isCorrect ? "good" : "bad"}`;
+    box.innerHTML = `${isCorrect ? "Correct ✓" : "Wrong ✗"}<br>${question.explanation}`;
+  }
+
+  const progress = getEnglishLessonProgress();
+  if (isCorrect) {
+    progress.mistakeCorrect = (progress.mistakeCorrect || 0) + 1;
+    progress.xp += 12;
+    if (progress.mistakeCorrect >= 4) unlockLessonBadge("error_detective");
+  }
+  saveEnglishLessonProgress(progress);
+  updateEnglishLessonProgress();
+}
+
+function renderSpeedChallengeIntro() {
+  return renderStageShell(
+    "Speed Challenge",
+    "Stage 6",
+    `
+      <div class="jak-lesson-speed-box">
+        <h3>⚡ 30 Seconds — 10 Questions</h3>
+        <p>Answer fast. Build combo. Earn XP.</p>
+        <div class="jak-lesson-speed-stats">
+          <div><strong id="speedTimeText">30</strong><br>Seconds</div>
+          <div><strong id="speedScoreText">0</strong><br>Score</div>
+          <div><strong id="speedComboText">0</strong><br>Combo</div>
+          <div><strong id="speedXpText">0</strong><br>XP</div>
+        </div>
+        <div id="speedQuestionArea" class="jak-lesson-panel">
+          Press Start Challenge to begin.
+        </div>
+        <button class="jak-lesson-primary-btn" onclick="startSpeedChallenge()">Start Challenge ⚡</button>
+      </div>
+    `,
+    "challenge"
+  );
+}
+
+function startSpeedChallenge() {
+  const baseQuestions = [
+    ...guidedPracticeQuestions,
+    ...examTrainingQuestions,
+    {
+      id: "s1",
+      type: "mcq",
+      prompt: "Let’s study, ____?",
+      options: ["will we", "shall we", "do we", "aren’t we"],
+      answer: "shall we",
+      explanation: "Let’s uses shall we."
+    },
+    {
+      id: "s2",
+      type: "mcq",
+      prompt: "I am correct, ____?",
+      options: ["am I", "amn’t I", "aren’t I", "do I"],
+      answer: "aren’t I",
+      explanation: "I am has the special tag aren’t I."
+    }
+  ];
+
+  speedChallengeState = {
+    active: true,
+    time: 30,
+    index: 0,
+    score: 0,
+    combo: 0,
+    timer: null,
+    questions: shuffleLessonArray(baseQuestions).slice(0, 10)
+  };
+
+  renderSpeedQuestion();
+
+  speedChallengeState.timer = setInterval(() => {
+    speedChallengeState.time -= 1;
+    updateSpeedStats();
+
+    if (speedChallengeState.time <= 0) {
+      endSpeedChallenge();
+    }
+  }, 1000);
+
+  updateSpeedStats();
+}
+
+function renderSpeedQuestion() {
+  const area = document.getElementById("speedQuestionArea");
+  if (!area) return;
+
+  const q = speedChallengeState.questions[speedChallengeState.index];
+
+  if (!q) {
+    endSpeedChallenge();
+    return;
+  }
+
+  const options = q.options || ["does he", "doesn’t he", "is he", "isn’t he"];
+
+  area.innerHTML = `
+    <h3>Question ${speedChallengeState.index + 1}</h3>
+    <p>${q.prompt}</p>
+    <div class="jak-lesson-options">
+      ${options.map(option => `
+        <button class="jak-lesson-option-btn" onclick="answerSpeedQuestion('${escapeLessonText(option)}')">
+          ${option}
+        </button>
+      `).join("")}
+    </div>
+  `;
+}
+
+function answerSpeedQuestion(answer) {
+  const q = speedChallengeState.questions[speedChallengeState.index];
+  if (!q) return;
+
+  if (normalizeLessonAnswer(answer) === normalizeLessonAnswer(q.answer)) {
+    speedChallengeState.combo += 1;
+    speedChallengeState.score += 10 + speedChallengeState.combo * 2;
+  } else {
+    speedChallengeState.combo = 0;
+  }
+
+  speedChallengeState.index += 1;
+  updateSpeedStats();
+
+  if (speedChallengeState.index >= speedChallengeState.questions.length) {
+    endSpeedChallenge();
+  } else {
+    renderSpeedQuestion();
+  }
+}
+
+function updateSpeedStats() {
+  const timeText = document.getElementById("speedTimeText");
+  const scoreText = document.getElementById("speedScoreText");
+  const comboText = document.getElementById("speedComboText");
+  const xpText = document.getElementById("speedXpText");
+
+  const xp = Math.floor(speedChallengeState.score / 2);
+
+  if (timeText) timeText.textContent = speedChallengeState.time;
+  if (scoreText) scoreText.textContent = speedChallengeState.score;
+  if (comboText) comboText.textContent = speedChallengeState.combo;
+  if (xpText) xpText.textContent = xp;
+}
+
+function endSpeedChallenge() {
+  if (speedChallengeState.timer) {
+    clearInterval(speedChallengeState.timer);
+  }
+
+  const xp = Math.floor(speedChallengeState.score / 2);
+  const area = document.getElementById("speedQuestionArea");
+
+  if (area) {
+    area.innerHTML = `
+      <h3>Challenge Finished 🏁</h3>
+      <p>Score: <strong>${speedChallengeState.score}</strong></p>
+      <p>XP earned: <strong>${xp}</strong></p>
+      <p>Best combo: <strong>${speedChallengeState.combo}</strong></p>
+    `;
+  }
+
+  const progress = getEnglishLessonProgress();
+  progress.xp += xp;
+  saveEnglishLessonProgress(progress);
+
+  if (speedChallengeState.score >= 80) {
+    unlockLessonBadge("fast_learner");
+  }
+
+  updateEnglishLessonProgress();
+}
+
+function shuffleLessonArray(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
+
+function renderExamTrainingMode() {
+  return renderStageShell(
+    "Real Exam Simulator",
+    "Stage 7",
+    `
+      <div class="jak-lesson-exam-paper">
+        <h3>JAK Academy Official-Style Grammar Exam</h3>
+        <p><strong>Topic:</strong> Question Tags</p>
+        <p><strong>Instructions:</strong> Answer all questions. No hints are shown during the exam.</p>
+
+        ${examTrainingQuestions.map((q, index) => `
+          <div class="jak-lesson-exam-question">
+            <p><strong>${index + 1}.</strong> ${q.prompt}</p>
+            ${
+              q.type === "mcq"
+                ? q.options.map(option => `
+                    <label>
+                      <input type="radio" name="exam-${q.id}" value="${option}">
+                      ${option}
+                    </label><br>
+                  `).join("")
+                : `<input class="jak-lesson-input" id="exam-input-${q.id}" placeholder="Write your answer...">`
+            }
+          </div>
+        `).join("")}
+
+        <button class="jak-lesson-primary-btn" style="margin-top:16px;" onclick="submitRealExamSimulator()">
+          Submit Exam
+        </button>
+
+        <div id="realExamResult" class="jak-lesson-feedback"></div>
+      </div>
+    `,
+    "exam"
+  );
+}
+
+function submitRealExamSimulator() {
+  let score = 0;
+  let feedback = "";
+
+  examTrainingQuestions.forEach((q, index) => {
+    let studentAnswer = "";
+
+    if (q.type === "mcq") {
+      const selected = document.querySelector(`input[name="exam-${q.id}"]:checked`);
+      studentAnswer = selected ? selected.value : "";
+    } else {
+      const input = document.getElementById(`exam-input-${q.id}`);
+      studentAnswer = input ? input.value : "";
+    }
+
+    const isCorrect = normalizeLessonAnswer(studentAnswer) === normalizeLessonAnswer(q.answer);
+    if (isCorrect) score += 1;
+
+    feedback += `
+      <p>
+        <strong>Q${index + 1}:</strong>
+        ${isCorrect ? "Correct ✓" : "Wrong ✗"}<br>
+        Correct answer: <strong>${q.answer}</strong><br>
+        ${q.explanation}
+      </p>
+    `;
+  });
+
+  const percentage = Math.round((score / examTrainingQuestions.length) * 100);
+  const result = document.getElementById("realExamResult");
+
+  if (result) {
+    result.className = `jak-lesson-feedback ${percentage >= 70 ? "good" : "bad"}`;
+    result.innerHTML = `
+      <h3>Final Score: ${score}/${examTrainingQuestions.length} — ${percentage}%</h3>
+      ${feedback}
+    `;
+  }
+
+  const progress = getEnglishLessonProgress();
+  progress.examScore = percentage;
+  progress.xp += percentage >= 70 ? 80 : 35;
+  saveEnglishLessonProgress(progress);
+
+  if (percentage === 100) unlockLessonBadge("perfect_score");
+  if (percentage >= 80) unlockLessonBadge("tawjihi_ready");
+  if (percentage >= 70) unlockLessonBadge("question_tag_expert");
+
+  updateEnglishLessonProgress();
+}
+
+function renderLessonSummary() {
+  const progress = getEnglishLessonProgress();
+  const badges = getEnglishLessonBadges();
+
+  const strengths = [];
+  const weaknesses = [];
+
+  if ((progress.guidedCorrect || 0) >= 3) strengths.push("You understand basic question tag patterns.");
+  else weaknesses.push("You need more guided practice with basic patterns.");
+
+  if ((progress.mistakeCorrect || 0) >= 4) strengths.push("You are good at detecting common mistakes.");
+  else weaknesses.push("Practice error detection more.");
+
+  if ((progress.examScore || 0) >= 80) strengths.push("You are close to Tawjihi exam readiness.");
+  else weaknesses.push("Review special cases: Let’s, I am, never/rarely, and modals.");
+
+  return renderStageShell(
+    "Lesson Summary",
+    "Stage 8",
+    `
+      <div class="jak-lesson-grid">
+        <div class="jak-lesson-panel">
+          <h3>Rules Learned</h3>
+          <ul>
+            <li>Positive sentence → negative tag.</li>
+            <li>Negative sentence → positive tag.</li>
+            <li>Use the auxiliary or modal in the tag.</li>
+            <li>Special cases: Let’s → shall we / I am → aren’t I.</li>
+          </ul>
+        </div>
+
+        <div class="jak-lesson-panel">
+          <h3>Your Smart Feedback</h3>
+          <p><strong>XP:</strong> ${progress.xp}</p>
+          <p><strong>Exam Score:</strong> ${progress.examScore || 0}%</p>
+          <p><strong>Recommendation:</strong> ${
+            (progress.examScore || 0) >= 80
+              ? "Move to mixed grammar exam practice."
+              : "Repeat the exam traps and guided practice before moving on."
+          }</p>
+        </div>
+
+        <div class="jak-lesson-panel">
+          <h3>Strengths</h3>
+          <ul>${strengths.length ? strengths.map(item => `<li>${item}</li>`).join("") : "<li>Complete more activities to see strengths.</li>"}</ul>
+        </div>
+
+        <div class="jak-lesson-panel">
+          <h3>Weaknesses</h3>
+          <ul>${weaknesses.length ? weaknesses.map(item => `<li>${item}</li>`).join("") : "<li>No major weakness detected.</li>"}</ul>
+        </div>
+      </div>
+
+      <div class="jak-lesson-panel" style="margin-top:16px;">
+        <h3>Achievements</h3>
+        <div class="jak-lesson-badges-grid">
+          ${questionTagBadges.map(badge => `
+            <div class="jak-lesson-badge-card ${badges.includes(badge.id) ? "unlocked" : "locked"}">
+              <h3>${badge.icon} ${badge.title}</h3>
+              <p>${badges.includes(badge.id) ? "Unlocked" : "Locked"}</p>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `,
+    "summary"
+  );
+}
+
+function unlockLessonBadge(badgeId) {
+  const badges = getEnglishLessonBadges();
+  if (!badges.includes(badgeId)) {
+    badges.push(badgeId);
+    saveEnglishLessonBadges(badges);
+  }
+}
+
+function toggleAITeacherPanel() {
+  const panel = document.getElementById("jakLessonAiPanel");
+  if (!panel) return;
+  panel.classList.toggle("active");
+}
+
+function askLocalQuestionTagAI(type) {
+  const responses = {
+    wrong: "A question tag may be wrong because the auxiliary does not match the main sentence, or because the polarity is not opposite.",
+    simple: "Simple rule: positive sentence takes a negative tag. Negative sentence takes a positive tag.",
+    easy: "Easy examples: You are ready, aren’t you? / She isn’t here, is she? / They can swim, can’t they?",
+    hard: "Harder examples: He rarely speaks, does he? / I am right, aren’t I? / Let’s begin, shall we?",
+    arabic: "القاعدة ببساطة: إذا كانت الجملة مثبتة نضع tag منفي، وإذا كانت الجملة منفية نضع tag مثبت. مثال: He is ready, isn’t he?",
+    practice: "Practice: 1) She likes tea, ____? 2) They weren’t late, ____? 3) Let’s go, ____? 4) I am correct, ____?"
+  };
+
+  const messages = document.getElementById("jakLessonAiMessages");
+  if (!messages) return;
+
+  const userText = {
+    wrong: "Why is this answer wrong?",
+    simple: "Explain again simply.",
+    easy: "Give me easier examples.",
+    hard: "Give me harder examples.",
+    arabic: "Explain in Arabic.",
+    practice: "Generate more practice."
+  }[type];
+
+  messages.innerHTML += `<div class="jak-lesson-ai-msg user">${userText}</div>`;
+  messages.innerHTML += `<div class="jak-lesson-ai-msg bot">${responses[type]}</div>`;
+  messages.scrollTop = messages.scrollHeight;
+}
+
+/* Safe window bindings */
+window.initEnglishLessonJourney = initEnglishLessonJourney;
+window.startQuestionTagsLesson = startQuestionTagsLesson;
+window.openLessonStage = openLessonStage;
+window.completeLessonStage = completeLessonStage;
+window.updateEnglishLessonProgress = updateEnglishLessonProgress;
+window.renderEnglishLessonMap = renderEnglishLessonMap;
+window.checkQuestionTagAnswer = checkQuestionTagAnswer;
+window.renderGuidedPractice = renderGuidedPractice;
+window.renderMistakeDetector = renderMistakeDetector;
+window.startSpeedChallenge = startSpeedChallenge;
+window.submitRealExamSimulator = submitRealExamSimulator;
+window.toggleAITeacherPanel = toggleAITeacherPanel;
+window.unlockLessonBadge = unlockLessonBadge;
+window.selectRuleObservation = selectRuleObservation;
+window.revealQuestionTagRule = revealQuestionTagRule;
+window.checkMistakeDetector = checkMistakeDetector;
+window.askLocalQuestionTagAI = askLocalQuestionTagAI;
+
+/* Auto-init safely when page exists */
+document.addEventListener("DOMContentLoaded", function () {
+  const lessonPage = document.getElementById("englishLessonJourney");
+
+  if (
+    lessonPage &&
+    typeof window.initEnglishLessonJourney === "function"
+  ) {
+    window.initEnglishLessonJourney();
+  } 
+});
 

@@ -23832,3 +23832,1117 @@ main > section#prosodyLab.page.active .prosody-screen.active {
     width: 100%;
   }
 }
+/* =====================================================
+   Prosody Lab - Rajaz Content Cleanup
+   Safe visual organization without deleting old content
+===================================================== */
+
+/* Keep main Rajaz learning parts clean */
+#prosodyLab .rajaz-core-board,
+#prosodyLab .rajaz-teacher-lesson,
+#prosodyLab .rajaz-compare-board,
+#prosodyLab .rajaz-learning-map,
+#prosodyLab .rajaz-mini-quiz {
+  max-width: 1100px;
+  margin: 22px auto !important;
+}
+
+/* Hide old duplicated Rajaz action blocks for now */
+#prosodyLab .rajaz-master-steps,
+#prosodyLab .rajaz-master-note,
+#prosodyLab .prosody-meter-module-grid {
+  display: none !important;
+}
+
+/* Make Rajaz mini quiz match the new learning windows style */
+#prosodyLab .rajaz-mini-quiz {
+  padding: 22px;
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.035));
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.20);
+}
+
+/* Better spacing for Rajaz inner sections */
+#prosodyLab .rajaz-core-grid,
+#prosodyLab .rajaz-learning-map-grid,
+#prosodyLab .rajaz-teacher-rules {
+  gap: 14px !important;
+}
+
+/* Make comparison table easier to read */
+#prosodyLab .rajaz-compare-table {
+  overflow-x: auto;
+}
+
+#prosodyLab .rajaz-compare-row {
+  min-width: 780px;
+}
+
+/* Mobile safety */
+@media (max-width: 768px) {
+  #prosodyLab .rajaz-core-board,
+  #prosodyLab .rajaz-teacher-lesson,
+  #prosodyLab .rajaz-compare-board,
+  #prosodyLab .rajaz-learning-map,
+  #prosodyLab .rajaz-mini-quiz {
+    padding: 16px !important;
+    border-radius: 18px !important;
+  }
+
+  #prosodyLab .rajaz-compare-row {
+    min-width: 700px;
+  }
+}
+/* =====================================================
+   Prosody Lab - Rajaz Focus Windows
+   Show one Rajaz lesson part at a time
+===================================================== */
+
+#prosodyLab .rajaz-core-board,
+#prosodyLab .rajaz-teacher-lesson,
+#prosodyLab .rajaz-compare-board,
+#prosodyLab .rajaz-learning-map,
+#prosodyLab .rajaz-mini-quiz {
+  display: none;
+  max-width: 1100px;
+  margin: 22px auto !important;
+}
+
+#prosodyLab .rajaz-core-board.rajaz-active-section,
+#prosodyLab .rajaz-teacher-lesson.rajaz-active-section,
+#prosodyLab .rajaz-compare-board.rajaz-active-section,
+#prosodyLab .rajaz-learning-map.rajaz-active-section,
+#prosodyLab .rajaz-mini-quiz.rajaz-active-section {
+  display: block !important;
+}
+
+/* Hide old duplicate Rajaz blocks */
+#prosodyLab .rajaz-master-steps,
+#prosodyLab .rajaz-master-note,
+#prosodyLab .prosody-meter-module-grid {
+  display: none !important;
+}
+
+/* Mini quiz styling */
+#prosodyLab .rajaz-mini-quiz {
+  padding: 22px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.035));
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.20);
+}
+
+/* Rajaz button active state */
+#prosodyLab .rajaz-lesson-tab-active {
+  background: linear-gradient(135deg, rgba(255,214,102,0.30), rgba(148,102,255,0.20)) !important;
+  border-color: rgba(255,214,102,0.45) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+}
+/* =====================================================
+   Prosody Foundations 2009 Scientific Safety Patch
+   Scoped only under #prosodyLab
+===================================================== */
+
+#prosodyLab .prosody-foundation-approved-hero {
+  border: 2px solid rgba(15, 87, 65, 0.18) !important;
+}
+
+#prosodyLab .prosody-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 0.82rem;
+  margin: 6px 0 10px;
+}
+
+#prosodyLab .prosody-status-approved {
+  background: rgba(22, 163, 74, 0.12);
+  color: #0f5741;
+  border: 1px solid rgba(22, 163, 74, 0.28);
+}
+
+#prosodyLab .prosody-status-review {
+  background: rgba(251, 191, 36, 0.16);
+  color: #7a4f00;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+#prosodyLab .prosody-review-warning {
+  margin: 14px 0;
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: rgba(251, 191, 36, 0.14);
+  border: 1px solid rgba(184, 138, 34, 0.24);
+  color: #17382f;
+  font-weight: 800;
+  line-height: 1.9;
+}
+
+#prosodyLab .prosody-2009-foundations {
+  margin-top: 18px;
+}
+
+#prosodyLab .prosody-foundation-rule,
+#prosodyLab .prosody-foundation-example,
+#prosodyLab .prosody-foundation-note,
+#prosodyLab .prosody-common-mistake {
+  margin: 14px 0;
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 250, 240, 0.76);
+  border: 1px solid rgba(15, 87, 65, 0.12);
+  box-shadow: 0 10px 26px rgba(11, 61, 46, 0.06);
+}
+
+#prosodyLab .prosody-foundation-rule strong,
+#prosodyLab .prosody-foundation-example strong,
+#prosodyLab .prosody-foundation-note strong,
+#prosodyLab .prosody-common-mistake strong {
+  display: block;
+  color: #0f5741;
+  margin-bottom: 6px;
+  font-weight: 950;
+}
+
+#prosodyLab .prosody-common-mistake {
+  background: rgba(155, 28, 28, 0.07);
+  border-color: rgba(155, 28, 28, 0.18);
+}
+
+#prosodyLab .prosody-common-mistake strong {
+  color: #8a1c1c;
+}
+
+#prosodyLab .prosody-foundation-table {
+  margin: 16px 0;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 87, 65, 0.16);
+  background: rgba(255, 253, 247, 0.9);
+}
+
+#prosodyLab .prosody-foundation-table > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.4fr;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(15, 87, 65, 0.10);
+}
+
+#prosodyLab .prosody-foundation-table > div:first-child {
+  background: rgba(15, 87, 65, 0.10);
+  color: #0f5741;
+}
+
+#prosodyLab .prosody-foundation-table > div:last-child {
+  border-bottom: none;
+}
+
+#prosodyLab .prosody-foundation-table span,
+#prosodyLab .prosody-foundation-table strong {
+  line-height: 1.8;
+}
+
+@media (max-width: 700px) {
+  #prosodyLab .prosody-foundation-table > div {
+    grid-template-columns: 1fr;
+  }
+
+  #prosodyLab .prosody-learning-tabs {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* =====================================================
+   Prosody Meters Safety Gate
+   Scoped only under #prosodyLab
+===================================================== */
+
+#prosodyLab .prosody-meters-safety-gate {
+  margin: 0 0 18px;
+  padding: 20px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(251, 191, 36, 0.18), transparent 35%),
+    linear-gradient(135deg, rgba(255, 250, 235, 0.96), rgba(255, 247, 214, 0.88));
+  border: 1px solid rgba(184, 138, 34, 0.35);
+  color: #17382f;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.12);
+}
+
+#prosodyLab .prosody-meters-safety-gate h3 {
+  margin: 6px 0 8px;
+  color: #7a4f00;
+  font-family: "Amiri", "Cairo", serif;
+  font-size: 30px;
+}
+
+#prosodyLab .prosody-meters-safety-gate p {
+  margin: 8px 0;
+  color: #17382f !important;
+  font-weight: 800;
+  line-height: 1.9;
+}
+
+#prosodyLab .prosody-meter-under-review {
+  position: relative;
+}
+
+#prosodyLab .prosody-meter-under-review::after {
+  content: "قيد المراجعة العلمية 🟡";
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.16);
+  border: 1px solid rgba(251, 191, 36, 0.36);
+  color: #7a4f00;
+  font-weight: 950;
+  font-size: 0.78rem;
+}
+
+#prosodyLab .prosody-meter-disabled-action {
+  opacity: 0.68;
+  filter: grayscale(0.35);
+  cursor: not-allowed !important;
+}
+.hn-lesson-shell {
+  display: grid;
+  grid-template-columns: 230px 1fr 210px;
+  gap: 20px;
+  padding: 24px;
+  background: #07111f;
+  color: white;
+  min-height: 100vh;
+}
+
+.hn-sidebar,
+.hn-progress,
+.hn-main-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 24px;
+  padding: 20px;
+}
+
+.hn-sidebar button,
+.hn-progress button,
+.quick-check button {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+}
+
+.hn-sidebar .active,
+.hn-progress .done {
+  background: #1d9bf0;
+  color: white;
+}
+
+.hn-top {
+  display: flex;
+  justify-content: space-between;
+  opacity: 0.8;
+}
+
+.arabic-explain {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #dbeafe;
+}
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.form-box {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+}
+
+.example {
+  margin-top: 12px;
+  padding: 14px;
+  background: #0f172a;
+  border-radius: 14px;
+  font-size: 1.2rem;
+}
+
+.subject {
+  background: #2563eb;
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+
+.verb {
+  background: #16a34a;
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+
+.aux {
+  background: #ca8a04;
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+
+.feedback {
+  margin-top: 15px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.5);
+}
+
+.correct {
+  background: #16a34a;
+  color: white;
+}
+
+/* =========================================================
+   JAK Academy English Lesson Journey - Question Tags
+   Safe scoped CSS only
+========================================================= */
+
+body {
+  overflow-x: hidden;
+}
+
+.jak-lesson-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 28px 16px 120px;
+  background:
+    radial-gradient(circle at top left, rgba(245, 197, 66, 0.16), transparent 30%),
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.14), transparent 28%),
+    linear-gradient(135deg, #06111f 0%, #071827 45%, #020617 100%);
+  color: #f8fafc;
+  overflow: hidden;
+}
+
+.jak-lesson-bg-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(250, 204, 21, 0.13), transparent 26%),
+    radial-gradient(circle at 80% 30%, rgba(14, 165, 233, 0.13), transparent 28%);
+  filter: blur(2px);
+}
+
+.jak-lesson-page * {
+  box-sizing: border-box;
+}
+
+.jak-lesson-hero,
+.jak-lesson-section,
+.jak-lesson-stage-area {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.jak-lesson-hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  padding: 26px;
+  border: 1px solid rgba(245, 197, 66, 0.22);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(8, 20, 38, 0.78)),
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.15), transparent 34%);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45), 0 0 45px rgba(245, 197, 66, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.jak-lesson-kicker,
+.jak-lesson-chip {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(245, 197, 66, 0.12);
+  color: #facc15;
+  border: 1px solid rgba(245, 197, 66, 0.28);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.jak-lesson-hero h1 {
+  margin: 16px 0 10px;
+  font-size: clamp(2.2rem, 7vw, 5.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+  color: #ffffff;
+  text-shadow: 0 0 35px rgba(250, 204, 21, 0.18);
+}
+
+.jak-lesson-subtitle {
+  max-width: 760px;
+  color: #cbd5e1;
+  font-size: clamp(1rem, 2vw, 1.18rem);
+  line-height: 1.8;
+}
+
+.jak-lesson-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 22px 0;
+}
+
+.jak-lesson-meta span,
+.jak-lesson-xp-pill,
+.jak-lesson-status {
+  padding: 10px 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.07);
+  color: #e2e8f0;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.jak-lesson-progress-wrap {
+  max-width: 680px;
+  margin: 20px 0;
+}
+
+.jak-lesson-progress-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #e5e7eb;
+}
+
+.jak-lesson-progress-track {
+  height: 14px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(245, 197, 66, 0.24);
+  overflow: hidden;
+}
+
+.jak-lesson-progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #facc15, #f59e0b, #22c55e);
+  box-shadow: 0 0 24px rgba(250, 204, 21, 0.35);
+  transition: width 0.45s ease;
+}
+
+.jak-lesson-primary-btn,
+.jak-lesson-secondary-btn,
+.jak-lesson-option-btn,
+.jak-lesson-small-btn {
+  border: 0;
+  cursor: pointer;
+  font-weight: 900;
+  border-radius: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.jak-lesson-primary-btn {
+  padding: 15px 22px;
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f59e0b);
+  box-shadow: 0 14px 35px rgba(245, 158, 11, 0.28);
+}
+
+.jak-lesson-secondary-btn {
+  padding: 12px 17px;
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.jak-lesson-primary-btn:hover,
+.jak-lesson-secondary-btn:hover,
+.jak-lesson-option-btn:hover,
+.jak-lesson-small-btn:hover {
+  transform: translateY(-2px);
+}
+
+.jak-lesson-hero-card {
+  padding: 24px;
+  border-radius: 26px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+}
+
+.jak-lesson-orb {
+  width: 90px;
+  height: 90px;
+  display: grid;
+  place-items: center;
+  border-radius: 28px;
+  font-size: 3rem;
+  font-weight: 950;
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f97316);
+  box-shadow: 0 0 50px rgba(250, 204, 21, 0.28);
+  animation: jakLessonFloat 3s ease-in-out infinite;
+}
+
+@keyframes jakLessonFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.jak-lesson-section {
+  margin-top: 34px;
+}
+
+.jak-lesson-section-head {
+  margin-bottom: 20px;
+}
+
+.jak-lesson-section-head h2 {
+  margin: 12px 0 8px;
+  font-size: clamp(1.7rem, 4vw, 3rem);
+  letter-spacing: -0.04em;
+}
+
+.jak-lesson-section-head p {
+  color: #cbd5e1;
+}
+
+.jak-lesson-map {
+  position: relative;
+  display: grid;
+  gap: 16px;
+}
+
+.jak-lesson-map::before {
+  content: "";
+  position: absolute;
+  left: 25px;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(#facc15, rgba(148, 163, 184, 0.12));
+}
+
+.jak-lesson-path-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.24);
+}
+
+.jak-lesson-path-card.locked {
+  opacity: 0.52;
+  filter: grayscale(0.25);
+}
+
+.jak-lesson-path-card.completed {
+  border-color: rgba(34, 197, 94, 0.38);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.08);
+}
+
+.jak-lesson-stage-num {
+  position: relative;
+  z-index: 2;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f59e0b);
+  font-weight: 950;
+}
+
+.jak-lesson-path-card.locked .jak-lesson-stage-num {
+  background: #334155;
+  color: #cbd5e1;
+}
+
+.jak-lesson-path-body h3 {
+  margin: 0 0 7px;
+  font-size: 1.15rem;
+}
+
+.jak-lesson-path-body p {
+  margin: 0 0 13px;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.jak-lesson-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.jak-lesson-status.completed {
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.jak-lesson-status.available {
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.3);
+}
+
+.jak-lesson-status.locked {
+  color: #cbd5e1;
+}
+
+.jak-lesson-stage-area {
+  margin-top: 32px;
+}
+
+.jak-lesson-empty-state,
+.jak-lesson-stage-card,
+.jak-lesson-panel,
+.jak-lesson-memory-card,
+.jak-lesson-trap-card,
+.jak-lesson-badge-card {
+  border-radius: 26px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.76);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.25);
+}
+
+.jak-lesson-empty-state {
+  padding: 34px;
+  text-align: center;
+  color: #cbd5e1;
+}
+
+.jak-lesson-stage-card {
+  padding: 22px;
+}
+
+.jak-lesson-stage-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.jak-lesson-stage-title h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.jak-lesson-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.jak-lesson-panel {
+  padding: 18px;
+}
+
+.jak-lesson-panel h3 {
+  margin-top: 0;
+  color: #f8fafc;
+}
+
+.jak-lesson-panel p,
+.jak-lesson-panel li {
+  color: #dbeafe;
+  line-height: 1.75;
+}
+
+.jak-lesson-examples {
+  display: grid;
+  gap: 12px;
+}
+
+.jak-lesson-example {
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(250, 204, 21, 0.18);
+  background: rgba(250, 204, 21, 0.08);
+  color: #fef9c3;
+  font-weight: 800;
+}
+
+.jak-lesson-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.jak-lesson-option-btn {
+  padding: 12px 14px;
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.jak-lesson-option-btn.selected {
+  background: rgba(250, 204, 21, 0.16);
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.45);
+}
+
+.jak-lesson-option-btn.correct {
+  background: rgba(34, 197, 94, 0.16);
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.45);
+}
+
+.jak-lesson-option-btn.wrong {
+  background: rgba(239, 68, 68, 0.16);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+.jak-lesson-feedback {
+  margin-top: 12px;
+  padding: 13px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  color: #e2e8f0;
+  min-height: 48px;
+}
+
+.jak-lesson-feedback.good {
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #86efac;
+}
+
+.jak-lesson-feedback.bad {
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fecaca;
+}
+
+.jak-lesson-memory-wall,
+.jak-lesson-traps,
+.jak-lesson-badges-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.jak-lesson-memory-card,
+.jak-lesson-trap-card,
+.jak-lesson-badge-card {
+  padding: 18px;
+}
+
+.jak-lesson-memory-card strong,
+.jak-lesson-trap-card strong {
+  color: #facc15;
+}
+
+.jak-lesson-tag-blue {
+  color: #7dd3fc;
+  font-weight: 900;
+}
+
+.jak-lesson-tag-gold {
+  color: #facc15;
+  font-weight: 900;
+}
+
+.jak-lesson-tag-purple {
+  color: #c4b5fd;
+  font-weight: 900;
+}
+
+.jak-lesson-tag-cyan {
+  color: #67e8f9;
+  font-weight: 900;
+}
+
+.jak-lesson-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.jak-lesson-table th,
+.jak-lesson-table td {
+  padding: 13px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  color: #e2e8f0;
+  text-align: left;
+}
+
+.jak-lesson-table th {
+  background: rgba(250, 204, 21, 0.12);
+  color: #facc15;
+}
+
+.jak-lesson-input {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(2, 6, 23, 0.55);
+  color: #f8fafc;
+  outline: none;
+}
+
+.jak-lesson-input:focus {
+  border-color: rgba(250, 204, 21, 0.6);
+  box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.08);
+}
+
+.jak-lesson-speed-box {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(250, 204, 21, 0.12), rgba(14, 165, 233, 0.08));
+  border: 1px solid rgba(250, 204, 21, 0.26);
+}
+
+.jak-lesson-speed-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.jak-lesson-speed-stats div {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(2, 6, 23, 0.5);
+  text-align: center;
+}
+
+.jak-lesson-exam-paper {
+  padding: 20px;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+}
+
+.jak-lesson-exam-paper h3,
+.jak-lesson-exam-paper p,
+.jak-lesson-exam-paper label {
+  color: #111827;
+}
+
+.jak-lesson-exam-question {
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.jak-lesson-ai-float {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 90;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 999px;
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f97316);
+  box-shadow: 0 16px 40px rgba(250, 204, 21, 0.28);
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.jak-lesson-ai-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 78px;
+  z-index: 91;
+  width: min(360px, calc(100vw - 32px));
+  max-height: 70vh;
+  display: none;
+  flex-direction: column;
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(250, 204, 21, 0.24);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  backdrop-filter: blur(18px);
+}
+
+.jak-lesson-ai-panel.active {
+  display: flex;
+}
+
+.jak-lesson-ai-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  background: rgba(250, 204, 21, 0.12);
+}
+
+.jak-lesson-ai-head small {
+  display: block;
+  color: #cbd5e1;
+}
+
+.jak-lesson-ai-head button {
+  border: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.jak-lesson-ai-messages {
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.jak-lesson-ai-msg {
+  padding: 11px 12px;
+  border-radius: 16px;
+  line-height: 1.55;
+  color: #e2e8f0;
+}
+
+.jak-lesson-ai-msg.bot {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.jak-lesson-ai-msg.user {
+  background: rgba(250, 204, 21, 0.16);
+  color: #fef9c3;
+}
+
+.jak-lesson-ai-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.jak-lesson-ai-prompts button {
+  padding: 9px 10px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+
+.jak-lesson-badge-card.locked {
+  opacity: 0.45;
+}
+
+.jak-lesson-badge-card.unlocked {
+  border-color: rgba(250, 204, 21, 0.45);
+  box-shadow: 0 0 30px rgba(250, 204, 21, 0.08);
+}
+
+@media (min-width: 760px) {
+  .jak-lesson-page {
+    padding: 38px 28px 130px;
+  }
+
+  .jak-lesson-hero {
+    grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.75fr);
+    padding: 38px;
+  }
+
+  .jak-lesson-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .jak-lesson-memory-wall,
+  .jak-lesson-traps,
+  .jak-lesson-badges-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .jak-lesson-speed-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1040px) {
+  .jak-lesson-memory-wall,
+  .jak-lesson-badges-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+#englishLessonJourney.page:not(.active) {
+  display: none;
+}
+#englishLessonJourney.page:not(.active) {
+  display: none !important;
+}
+
+#englishLessonJourney.page.active {
+  display: block;
+}
+/* =====================================================
+   English Lesson page visibility fix
+   Fix header/nav overlay issue safely
+===================================================== */
+
+#englishLessonJourney.page.active {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 5 !important;
+  min-height: 100vh !important;
+  padding-top: 190px !important;
+  background: #06111f !important;
+  color: #ffffff !important;
+}
+
+/* Give the lesson real space under sticky/fixed header */
+body:has(#englishLessonJourney.active) main {
+  padding-top: 0 !important;
+}
+
+/* Keep lesson content above normal page layers but below navbar */
+#englishLessonJourney .jak-lesson-hero,
+#englishLessonJourney .jak-lesson-section,
+#englishLessonJourney .jak-lesson-stage-area {
+  position: relative !important;
+  z-index: 6 !important;
+}
+
+/* Mobile adjustment */
+@media (max-width: 768px) {
+  #englishLessonJourney.page.active {
+    padding-top: 230px !important;
+  }
+}
+

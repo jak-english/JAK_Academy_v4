@@ -29,6 +29,12 @@
   <button onclick="showPage('teachersPage')">Teachers</button>
   <button onclick="goDashboard()">Dashboard</button>
   <button onclick="window.location.href='login.html'">Login / Sign in</button>
+ <button
+  data-nav-key="englishLessonJourney"
+  onclick="showPage('englishLessonJourney'); initEnglishLessonJourney();"
+>
+  دروس الإنجليزي التفاعلية ✨
+</button>
   <button onclick="showPage('studentExams')">Exams</button>
   <button onclick="openPlanner()">Planner</button>
   <button onclick="showPage('studySystem')">Study System</button>
@@ -2650,148 +2656,280 @@
   </div>
 
 <div id="prosodyModuleFoundations" class="prosody-module-screen">
-  <div class="prosody-module-hero-card">
-    <h3>مختبر الأساسيات</h3>
+  <div class="prosody-module-hero-card prosody-foundation-approved-hero">
+    <span class="prosody-status-badge prosody-status-approved">معتمد علميًا ✅</span>
+    <h3>التأسيس العَروضي — جيل 2009</h3>
     <p>
-      هنا نبني الأساس: المتحرك، الساكن، الكتابة العَروضية،
-      الشدة، التنوين، المدود، وما يُنطق وما لا يُنطق.
+      هذا القسم أُعيد تنظيمه وفق مرجع جيل 2009. نبدأ من القاعدة الأساسية:
+      <strong>ما يُنطق يُكتب، وما لا يُنطق لا يُكتب.</strong>
+      لا ننتقل إلى البحور قبل ضبط الكتابة العروضية والمقاطع.
     </p>
   </div>
 
-  <div id="foundationsLearningWindows" class="prosody-learning-windows-system">
+  <div class="prosody-review-warning">
+    <strong>تنبيه مهم:</strong>
+    أدوات التقطيع الآلي والتدريبات القديمة داخل مختبر العَروض ما زالت
+    <span class="prosody-status-badge prosody-status-review">قيد المراجعة العلمية 🟡</span>
+    حتى تُفحَص أمثلتها واحدًا واحدًا.
+  </div>
+
+  <div id="foundationsLearningWindows" class="prosody-learning-windows-system prosody-2009-foundations">
     <div class="prosody-learning-windows-head">
-      <span>أساس العَروض</span>
-      <h4>ابدأ من الصوت قبل البحر</h4>
+      <span>أساس العَروض — جيل 2009</span>
+      <h4>نبدأ من النطق، لا من اسم البحر</h4>
       <p>
-        لا يبدأ الطالب بالبحور مباشرة. أولًا يفهم الصوت، ثم الرمز،
-        ثم الكتابة العَروضية، ثم ينتقل إلى التقطيع.
+        الهدف هنا أن يفهم الطالب كيف تتحول الكلمة من كتابة إملائية إلى كتابة عروضية،
+        ثم كيف تُقرأ المقاطع: طويل وقصير.
       </p>
     </div>
 
     <div class="prosody-learning-tabs">
       <button class="prosody-learning-tab active" data-prosody-tab="intro" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'intro')">
-        ١. ما العَروض؟
-      </button>
-
-      <button class="prosody-learning-tab" data-prosody-tab="moving" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'moving')">
-        ٢. المتحرك والساكن
+        ١. الفكرة العامة
       </button>
 
       <button class="prosody-learning-tab" data-prosody-tab="writing" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'writing')">
-        ٣. الكتابة العَروضية
+        ٢. الكتابة العروضية
       </button>
 
-      <button class="prosody-learning-tab" data-prosody-tab="shadda" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'shadda')">
-        ٤. الشدة والتنوين
+      <button class="prosody-learning-tab" data-prosody-tab="symbols" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'symbols')">
+        ٣. المقاطع
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="tanweenShadda" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'tanweenShadda')">
+        ٤. التنوين والشدة
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="alRules" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'alRules')">
+        ٥. أل الشمسية والقمرية
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="waslMadd" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'waslMadd')">
+        ٦. همزة الوصل والمد
+      </button>
+
+      <button class="prosody-learning-tab" data-prosody-tab="saturation" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'saturation')">
+        ٧. الإشباع والهاء
       </button>
 
       <button class="prosody-learning-tab" data-prosody-tab="practice" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'practice')">
-        ٥. تدريب
-      </button>
-
-      <button class="prosody-learning-tab" data-prosody-tab="next" onclick="openProsodyLearningWindow('foundationsLearningWindows', 'next')">
-        ٦. الخطوة التالية
+        ٨. تدريب آمن
       </button>
     </div>
 
     <div class="prosody-learning-stage">
+
       <div class="prosody-learning-window active" data-prosody-window="intro">
-        <h4>١. ما علم العَروض؟</h4>
+        <span class="prosody-status-badge prosody-status-approved">معتمد علميًا ✅</span>
+        <h4>١. الفكرة العامة في التأسيس</h4>
         <p>
-          علم العَروض يساعدنا على معرفة وزن الشعر وإيقاعه. في هذا المختبر
-          لا نبدأ بالحفظ، بل نفهم كيف يتحول الصوت إلى رمز، ثم إلى تفعيلة، ثم إلى بحر.
+          في العَروض لا نعتمد على شكل الكلمة المكتوب فقط، بل نعتمد على ما يُلفظ.
+          لذلك القاعدة الأولى:
         </p>
 
-        <div class="prosody-window-actions">
-          <button onclick="showProsodyScreen('learn'); renderProsodyLesson('intro')">
-            افتح درس ما هو العَروض
-          </button>
+        <div class="prosody-foundation-rule">
+          <strong>القاعدة:</strong>
+          <p>ما يُنطق يُكتب، وما لا يُنطق لا يُكتب.</p>
         </div>
-      </div>
 
-      <div class="prosody-learning-window" data-prosody-window="moving">
-        <h4>٢. المتحرك والساكن</h4>
-        <p>
-          هذه أول مهارة في العَروض. الحرف المتحرك يأخذ رمز <strong>ب</strong>،
-          والحرف الساكن يأخذ رمز <strong>ـ</strong>.
-        </p>
+        <div class="prosody-foundation-example">
+          <strong>مثال من المرجع:</strong>
+          <p><b>لكن</b> تُكتب عروضياً: <b>لاكن</b></p>
+          <p><b>هذا</b> تُكتب عروضياً: <b>هاذا</b></p>
+        </div>
 
-        <div class="prosody-window-actions">
-          <button onclick="showProsodyScreen('practice'); startProsodyMovingPractice()">
-            ابدأ تدريب المتحرك والساكن
-          </button>
+        <div class="prosody-common-mistake">
+          <strong>خطأ شائع:</strong>
+          <p>أن يقطع الطالب الكلمة كما تُكتب إملائيًا، لا كما تُنطق.</p>
         </div>
       </div>
 
       <div class="prosody-learning-window" data-prosody-window="writing">
-        <h4>٣. الكتابة العَروضية</h4>
-        <p>
-          في العَروض نكتب ما نلفظ، ولا نعتد بما لا يُنطق. هذه المرحلة تجهز الطالب
-          قبل تقطيع الكلمات والأشطر.
-        </p>
+        <span class="prosody-status-badge prosody-status-approved">معتمد علميًا ✅</span>
+        <h4>٢. الكتابة العَروضية</h4>
 
-        <div class="prosody-window-actions">
-          <button onclick="showProsodyScreen('practice'); startProsodyWritingPractice()">
-            ابدأ تدريب الكتابة العَروضية
-          </button>
+        <div class="prosody-foundation-rule">
+          <strong>القاعدة:</strong>
+          <p>نكتب الحروف التي نلفظها، ونحذف الحروف التي لا تُلفظ.</p>
+        </div>
+
+        <div class="prosody-foundation-example">
+          <strong>مثال:</strong>
+         <p><b>ذهبوا</b> تُكتب عروضياً دون ألف الجماعة غير المنطوقة: <b>ذهبو</b>.</p>
+        </div>
+
+        <div class="prosody-foundation-table">
+          <div><strong>الكلمة</strong><strong>الكتابة العروضية</strong><strong>السبب</strong></div>
+          <div><span>لكن</span><span>لاكن</span><span>نكتب ما يُنطق</span></div>
+          <div><span>هذا</span><span>هاذا</span><span>الألف المنطوقة تُكتب</span></div>
+          <div><span>ذهبوا</span><span>ذهبو</span><span>الألف غير المنطوقة تُحذف</span></div>
+        </div>
+
+        <div class="prosody-common-mistake">
+          <strong>خطأ شائع:</strong>
+          <p>عدم حذف الحرف غير المنطوق، أو عدم كتابة الحرف المنطوق.</p>
         </div>
       </div>
 
-      <div class="prosody-learning-window" data-prosody-window="shadda">
-        <h4>٤. الشدة والتنوين والمدود</h4>
-        <p>
-          هذه من أكثر النقاط التي تُوقع الطالب في الخطأ. الشدة ليست حرفًا واحدًا في العَروض،
-          والتنوين والمدود تؤثر في الصوت والوزن.
-        </p>
+      <div class="prosody-learning-window" data-prosody-window="symbols">
+        <span class="prosody-status-badge prosody-status-approved">معتمد علميًا ✅</span>
+        <h4>٣. المقطع الطويل والمقطع القصير</h4>
 
-        <div class="prosody-window-actions">
-          <button onclick="showProsodyScreen('learn'); renderProsodyLesson('writingRules')">
-            افتح قواعد الكتابة العَروضية
-          </button>
+        <div class="prosody-foundation-rule">
+          <strong>القاعدة:</strong>
+          <p>حركة + سكون = مقطع طويل، ويُرمز له بـ <b>ــ</b>.</p>
+          <p>حركة وحدها دون ساكن بعدها = مقطع قصير، ويُرمز له بـ <b>ٮ</b>.</p>
+        </div>
+
+        <div class="prosody-foundation-example">
+          <strong>مثال:</strong>
+          <p><b>قلْ</b> = حركة + سكون = <b>ــ</b></p>
+          <p><b>وَ</b> وحدها = حركة فقط = <b>ٮ</b></p>
+        </div>
+
+        <div class="prosody-foundation-note">
+          <strong>ملاحظة:</strong>
+          <p>هذه المرحلة هي أصل التقطيع؛ إذا أخطأ الطالب هنا سيخطئ في البحر كله.</p>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="tanweenShadda">
+        <span class="prosody-status-badge prosody-status-approved">معتمد علميًا ✅</span>
+        <h4>٤. التنوين والشدة</h4>
+
+        <div class="prosody-foundation-rule">
+          <strong>التنوين:</strong>
+          <p>إذا كان الحرف منونًا، يُكتب التنوين نونًا ساكنة.</p>
+        </div>
+
+        <div class="prosody-foundation-rule">
+          <strong>الشدة:</strong>
+          <p>الحرف المشدد يُفك إلى حرفين: الأول ساكن، والثاني متحرك.</p>
+        </div>
+
+        <div class="prosody-foundation-example">
+          <strong>مثال:</strong>
+          <p><b>شدَّ</b> تُعامل عروضياً على أنها: <b>شَدْدَ</b></p>
+        </div>
+
+        <div class="prosody-common-mistake">
+          <strong>خطأ شائع:</strong>
+          <p>أن يعدّ الطالب الحرف المشدد حرفًا واحدًا فقط.</p>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="alRules">
+        <span class="prosody-status-badge prosody-status-approved">معتمد علميًا ✅</span>
+        <h4>٥. اللام القمرية واللام الشمسية</h4>
+
+        <div class="prosody-foundation-rule">
+          <strong>اللام القمرية:</strong>
+          <p>تُثبت اللام القمرية في النطق، وتُوصل بما قبلها عند التقطيع.</p>
+        </div>
+
+        <div class="prosody-foundation-example">
+          <strong>مثال:</strong>
+        <p><b>والخيل</b>: اللام هنا قمرية، فتثبت في النطق، وتدخل في التقطيع لأنها ملفوظة.</p>
+        </div>
+
+        <div class="prosody-foundation-rule">
+          <strong>اللام الشمسية:</strong>
+          <p>تُحذف أل التعريف في النطق، ويُضعّف الحرف الأول بعدها.</p>
+        </div>
+
+        <div class="prosody-foundation-example">
+          <strong>مثال:</strong>
+        <p><b>من الشعب</b>: اللام هنا شمسية، فلا تُنطق، ويُشدَّد الحرف الشمسي بعدها عند النطق والتقطيع.</p>
+        </div>
+
+        <div class="prosody-common-mistake">
+          <strong>خطأ شائع:</strong>
+          <p>معاملة اللام الشمسية مثل اللام القمرية في التقطيع.</p>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="waslMadd">
+        <span class="prosody-status-badge prosody-status-approved">معتمد علميًا ✅</span>
+        <h4>٦. همزة الوصل وحروف المد</h4>
+
+        <div class="prosody-foundation-rule">
+          <strong>همزة الوصل:</strong>
+          <p>تثبت إذا جاءت في بداية البيت، وتُحذف في وسط الكلام عند الوصل.</p>
+        </div>
+
+        <div class="prosody-foundation-example">
+          <strong>مثال:</strong>
+           <p><b>الخيل</b>: إذا جاءت في بداية البيت تُنطق همزة الوصل.</p>
+         <p><b>والبيداء</b>: إذا جاءت في وسط الكلام لا تُنطق همزة الوصل عند الوصل.</p>
+        </div>
+
+        <div class="prosody-foundation-rule">
+          <strong>حروف المد:</strong>
+          <p>حرف المد يُرمز له بالمقطع الطويل <b>ــ</b>.</p>
+        </div>
+
+        <div class="prosody-foundation-example">
+          <strong>مثال:</strong>
+          <p><b>يا</b> = <b>ــ</b></p>
+          <p><b>هادي</b> = <b>ها دي</b> = <b>ــ ــ</b></p>
+        </div>
+      </div>
+
+      <div class="prosody-learning-window" data-prosody-window="saturation">
+        <span class="prosody-status-badge prosody-status-approved">معتمد علميًا ✅</span>
+        <h4>٧. الإشباع وهاء الضمير</h4>
+
+        <div class="prosody-foundation-rule">
+          <strong>إشباع آخر حرف متحرك:</strong>
+          <p>آخر حرف متحرك في كل شطر يُشبع غالبًا.</p>
+        </div>
+
+        <div class="prosody-foundation-rule">
+          <strong>هاء الضمير المتحرك:</strong>
+          <p>تُشبع هاء الضمير المتحرك بشرط أن يأتي قبلها وبعدها حرف متحرك.</p>
+        </div>
+
+        <div class="prosody-foundation-note">
+          <strong>تنبيه:</strong>
+          <p>
+            هذه القاعدة تحتاج انتباهًا؛ لأنها تؤثر مباشرة في عدد المقاطع
+            وفي نهاية الشطر الشعري.
+          </p>
+        </div>
+
+        <div class="prosody-common-mistake">
+          <strong>خطأ شائع:</strong>
+          <p>إشباع الهاء دائمًا دون النظر إلى ما قبلها وما بعدها.</p>
         </div>
       </div>
 
       <div class="prosody-learning-window" data-prosody-window="practice">
-        <h4>٥. تدريب الأساسيات</h4>
+        <span class="prosody-status-badge prosody-status-review">قيد المراجعة العلمية 🟡</span>
+        <h4>٨. التدريب الحالي</h4>
         <p>
-          بعد فهم القاعدة، ينتقل الطالب إلى التدريب. لا ننتقل إلى البحور قبل إتقان هذه المرحلة.
+          التدريبات التفاعلية القديمة موجودة، لكنها لن تُعدّ معتمدة علميًا حتى نراجع أمثلتها
+          ونطابقها مع مرجع جيل 2009.
         </p>
 
-        <div class="prosody-window-actions">
-          <button onclick="showProsodyScreen('practice'); startProsodyMovingPractice()">
-            تدريب المتحرك والساكن
+        <div class="prosody-practice-launch">
+          <button onclick="showProsodyScreen('practice');startProsodyMovingPractice()">
+            تدريب المتحرك والساكن 🟡
           </button>
 
-          <button class="secondary" onclick="showProsodyScreen('practice'); startProsodyWritingPractice()">
-            تدريب الكتابة العَروضية
+          <button class="secondary" onclick="showProsodyScreen('practice');startProsodyWritingPractice()">
+            تدريب الكتابة العروضية 🟡
           </button>
+        </div>
+
+        <div class="prosody-review-warning">
+          هذه التدريبات للتجربة فقط الآن. لا نضع عليها علامة معتمد علميًا حتى تتم مراجعة بنك الأسئلة.
         </div>
       </div>
 
-      <div class="prosody-learning-window" data-prosody-window="next">
-        <h4>٦. ماذا بعد الأساسيات؟</h4>
-        <p>
-          بعد إتقان المتحرك والساكن والكتابة العَروضية، ينتقل الطالب إلى مختبر التقطيع:
-          من الحرف، إلى الكلمة، إلى التفعيلة، إلى الشطر الشعري.
-        </p>
-
-        <div class="prosody-window-actions">
-          <button onclick="openProsodyModule('scansion')">
-            انتقل إلى قسم التقطيع
-          </button>
-        </div>
-      </div>
     </div>
   </div>
-
-  <div class="prosody-module-note">
-    <h4>ملاحظة تنظيمية</h4>
-    <p>
-      هذا القسم أصبح مخصصًا للأساسيات فقط. أما التقطيع التفصيلي فيكون داخل قسم التقطيع.
-    </p>
-  </div>
 </div>
-<div id="prosodyModuleScansion" class="prosody-module-screen">
+  <div id="prosodyModuleScansion" class="prosody-module-screen">
   <div class="prosody-module-hero-card">
     <h3>مختبر التقطيع</h3>
     <p>
@@ -2991,38 +3129,43 @@
         بالتدريج حتى يفهم الطالب البحر لا أن يحفظه فقط.
       </p>
 
-      <div class="prosody-learning-tabs">
-        <button class="prosody-learning-tab active"
-          onclick="if (typeof showRajazDetail === 'function') showRajazDetail('core')">
-          ١. الفكرة الأساسية
-        </button>
+ <div id="rajazLessonTabs" class="prosody-learning-tabs">
+  <button class="prosody-learning-tab rajaz-lesson-tab-active"
+    data-rajaz-tab="core"
+    onclick="openRajazLessonWindow('core')">
+    ١. الفكرة الأساسية
+  </button>
 
-        <button class="prosody-learning-tab"
-          onclick="if (typeof showRajazDetail === 'function') showRajazDetail('teacher')">
-          ٢. شرح المعلم
-        </button>
+  <button class="prosody-learning-tab"
+    data-rajaz-tab="teacher"
+    onclick="openRajazLessonWindow('teacher')">
+    ٢. شرح المعلم
+  </button>
 
-        <button class="prosody-learning-tab"
-          onclick="if (typeof showRajazDetail === 'function') showRajazDetail('compare')">
-          ٣. المقارنة
-        </button>
+  <button class="prosody-learning-tab"
+    data-rajaz-tab="compare"
+    onclick="openRajazLessonWindow('compare')">
+    ٣. المقارنة
+  </button>
 
-        <button class="prosody-learning-tab"
-          onclick="if (typeof showRajazDetail === 'function') showRajazDetail('map')">
-          ٤. خريطة التعلم
-        </button>
+  <button class="prosody-learning-tab"
+    data-rajaz-tab="map"
+    onclick="openRajazLessonWindow('map')">
+    ٤. خريطة التعلم
+  </button>
 
-        <button class="prosody-learning-tab"
-          onclick="if (typeof startRajazPractice === 'function') startRajazPractice(); else alert('تدريب الرجز سيُجهّز بعد تثبيت الدرس.')">
-          ٥. تدريب
-        </button>
+  <button class="prosody-learning-tab"
+    data-rajaz-tab="practice"
+    onclick="showProsodyScreen('practice'); startRajazDrillBank()">
+    ٥. تدريب
+  </button>
 
-        <button class="prosody-learning-tab"
-          onclick="if (typeof startRajazDrillBank === 'function') startRajazDrillBank(); else alert('اختبار الرجز سيُجهّز لاحقًا.')">
-          ٦. اختبار
-        </button>
-      </div>
-
+  <button class="prosody-learning-tab"
+    data-rajaz-tab="quiz"
+    onclick="openRajazLessonWindow('quiz')">
+    ٦. اختبار
+  </button>
+</div>
       <div class="prosody-module-note">
         <h4>ملاحظة</h4>
         <p>
@@ -4090,6 +4233,100 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</section>
+<section id="englishLessonJourney" class="page jak-lesson-page" style="display: none;">
+    <div class="jak-lesson-bg-glow"></div>
+
+  <!-- SECTION 1: LESSON HEADER -->
+  <div class="jak-lesson-hero">
+    <div class="jak-lesson-hero-content">
+      <div class="jak-lesson-kicker">UNIT 1</div>
+      <h1>Question Tags</h1>
+      <p class="jak-lesson-subtitle">
+        Learn question tags step by step through discovery, practice, exam training, and smart feedback.
+      </p>
+
+      <div class="jak-lesson-meta">
+        <span>📘 Grammar Topic</span>
+        <span>⭐ B1 Level</span>
+        <span>⏱️ 25 Minutes</span>
+        <span>🏆 XP Journey</span>
+      </div>
+
+      <div class="jak-lesson-progress-wrap">
+        <div class="jak-lesson-progress-top">
+          <strong>Lesson Progress</strong>
+          <span id="englishLessonProgressText">0%</span>
+        </div>
+        <div class="jak-lesson-progress-track">
+          <div id="englishLessonProgressBar" class="jak-lesson-progress-fill"></div>
+        </div>
+      </div>
+
+      <button class="jak-lesson-primary-btn" onclick="startQuestionTagsLesson()">
+        Start Lesson 🚀
+      </button>
+    </div>
+
+    <div class="jak-lesson-hero-card">
+      <div class="jak-lesson-orb">?</div>
+      <h3>Today’s Mission</h3>
+      <p>Master question tags and avoid the most common Tawjihi exam traps.</p>
+      <div class="jak-lesson-xp-pill">
+        <span>Current XP</span>
+        <strong id="englishLessonXpText">0 XP</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: LEARNING MAP -->
+  <div class="jak-lesson-section">
+    <div class="jak-lesson-section-head">
+      <span class="jak-lesson-chip">Learning Path</span>
+      <h2>Your Vertical Learning Journey</h2>
+      <p>Complete each stage to unlock the next one.</p>
+    </div>
+
+    <div id="englishLessonMap" class="jak-lesson-map"></div>
+  </div>
+
+  <!-- Dynamic Stage Area -->
+  <div id="englishLessonStageArea" class="jak-lesson-stage-area">
+    <div class="jak-lesson-empty-state">
+      <h3>Start your lesson journey ✨</h3>
+      <p>Click Start Lesson, then open the first stage.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 14: AI TEACHER -->
+  <button class="jak-lesson-ai-float" onclick="toggleAITeacherPanel()">
+    AI Teacher 🤖
+  </button>
+
+  <div id="jakLessonAiPanel" class="jak-lesson-ai-panel">
+    <div class="jak-lesson-ai-head">
+      <div>
+        <strong>AI Teacher</strong>
+        <small>Question Tags Helper</small>
+      </div>
+      <button onclick="toggleAITeacherPanel()">×</button>
+    </div>
+
+    <div id="jakLessonAiMessages" class="jak-lesson-ai-messages">
+      <div class="jak-lesson-ai-msg bot">
+        Hi! Ask me about question tags. I can explain in English or Arabic.
+      </div>
+    </div>
+
+    <div class="jak-lesson-ai-prompts">
+      <button onclick="askLocalQuestionTagAI('wrong')">Why is this wrong?</button>
+      <button onclick="askLocalQuestionTagAI('simple')">Explain simply</button>
+      <button onclick="askLocalQuestionTagAI('easy')">Easier examples</button>
+      <button onclick="askLocalQuestionTagAI('hard')">Harder examples</button>
+      <button onclick="askLocalQuestionTagAI('arabic')">Explain in Arabic</button>
+      <button onclick="askLocalQuestionTagAI('practice')">Generate practice</button>
     </div>
   </div>
 </section>
