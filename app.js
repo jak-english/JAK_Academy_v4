@@ -131,7 +131,9 @@ async function showPage(id) {
       block: "start"
     });
   }, 100);
-
+if (typeof hideProsodyLaunchElements === "function") {
+  setTimeout(hideProsodyLaunchElements, 100);
+}
   console.log("Showing page:", id);
 }
 
@@ -21497,3 +21499,72 @@ function selectEqw4PracticeCircle(questionId, selectedAnswer, button) {
 
 window.getEqw4PracticeOptions = getEqw4PracticeOptions;
 window.selectEqw4PracticeCircle = selectEqw4PracticeCircle;
+
+/* =====================================================
+   Launch Mode: Hide Prosody internal elements by text
+   Temporary hiding, not deleting
+===================================================== */
+
+ function hideProsodyLaunchElements() {
+  const blockedWords = [
+    "عروض",
+    "عروضياً",
+    "عروضي",
+    "العروضية",
+    "الكتابة العروضية",
+    "الرجز",
+    "بحر الرجز",
+    "مستفعلن",
+    "تفعيلات",
+    "التفعيلات",
+    "التقطيع",
+    "التقطيع العروضي",
+    "تام أم مجزوء",
+    "مجزوء الرجز"
+  ];
+
+  const elements = [...document.querySelectorAll("button, a, .card, div, section, article")]
+    .filter(el => {
+      const text = String(el.textContent || "").trim();
+      if (!text) return false;
+
+      return blockedWords.some(word => text.includes(word));
+    });
+
+  elements.forEach(el => {
+    // Hide the exact element first
+    el.style.display = "none";
+    el.setAttribute("data-launch-hidden", "prosody");
+
+    // Then hide the nearest visual card/container if found
+    const closestCard =
+      el.closest(".prosody-card") ||
+      el.closest(".prosody-section") ||
+      el.closest(".prosody-module-card") ||
+      el.closest(".prosody-window") ||
+      el.closest(".prosody-training-card") ||
+      el.closest(".prosody-writing-card") ||
+      el.closest(".prosody-rajaz-card") ||
+      el.closest(".rajaz-core-board") ||
+      el.closest(".rajaz-teacher-lesson") ||
+      el.closest(".rajaz-compare-board") ||
+      el.closest(".rajaz-learning-map") ||
+      el.closest(".feature-card") ||
+      el.closest(".dashboard-card") ||
+      el.closest(".game-card") ||
+      el.closest(".card");
+
+    if (closestCard) {
+      closestCard.style.display = "none";
+      closestCard.setAttribute("data-launch-hidden", "prosody");
+    }
+  });
+
+  console.log("✅ Prosody launch elements hidden:", elements.length);
+}
+
+ window.hideProsodyLaunchElements = hideProsodyLaunchElements;
+
+document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(hideProsodyLaunchElements, 500);
+});

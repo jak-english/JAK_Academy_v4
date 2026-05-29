@@ -27518,4 +27518,26 @@ button[data-nav-key="prosodyLab"],
 .rajaz-learning-map {
   display: none !important;
 }
+/* =====================================================
+   Launch Mode: Hide Prosody internal cards/buttons
+   Temporary hiding, not deleting
+===================================================== */
+
+.rajaz-core-board,
+.rajaz-teacher-lesson,
+.rajaz-compare-board,
+.rajaz-learning-map,
+.prosody-lab,
+.prosody-section,
+.prosody-card,
+.prosody-module-card,
+.prosody-window,
+.prosody-training-card,
+.prosody-writing-card,
+.prosody-rajaz-card,
+[id*="prosody"],
+[class*="prosody"],
+[class*="rajaz"] {
+  display: none !important;
+}
 
