@@ -49,12 +49,25 @@ function scrollToActivePageBelowHeader() {
 window.scrollToActivePageBelowHeader = scrollToActivePageBelowHeader;
 
 async function showPage(id) {
+  const launchHiddenPages = [
+    "englishLessonJourney",
+    "prosodyLab",
+    "prosody",
+    "arabicProsody",
+    "prosodySection"
+  ];
+
+  if (launchHiddenPages.includes(id)) {
+    alert("هذا القسم قيد التطوير وسيعود قريبًا بإصدار أقوى.");
+    id = "home";
+  }
+
   document.querySelectorAll(".page").forEach(page => {
     page.classList.remove("active");
     page.style.display = "none";
   });
 
-  const target = document.getElementById(id);
+  let target = document.getElementById(id);
 
   if (!target) {
     console.log("Page not found:", id);
@@ -63,11 +76,13 @@ async function showPage(id) {
 
   target.classList.add("active");
   target.style.display = "block";
-try {
-  localStorage.setItem("jakLastActivePage", id);
-} catch (error) {
-  console.warn("Could not save last active page:", error);
-}
+
+  try {
+    localStorage.setItem("jakLastActivePage", id);
+  } catch (error) {
+    console.warn("Could not save last active page:", error);
+  }
+
   if (id !== "examSolver") {
     const retryControls = document.getElementById("retryPracticeControls");
     if (retryControls) retryControls.remove();
@@ -105,6 +120,7 @@ try {
   }
 
   // English Lesson Journey safe init
+  // Temporarily disabled for launch because englishLessonJourney is hidden above.
   if (id === "englishLessonJourney" && typeof initEnglishLessonJourney === "function") {
     initEnglishLessonJourney();
   }
@@ -118,7 +134,9 @@ try {
 
   console.log("Showing page:", id);
 }
- window.showPage = showPage;
+
+window.showPage = showPage;
+
 async function getCurrentUser() {
   const { data } = await client.auth.getUser();
   return data.user || null;
@@ -11789,7 +11807,7 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
     return ["home", "teachers", "login"];
   }
 
-  // Admin / Super Admin should see all main platform sections
+  // Admin / Super Admin should see all stable launch sections
   if (normalizedRole.includes("super_admin") || normalizedRole.includes("admin")) {
     return [
       "home",
@@ -11804,7 +11822,6 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
       "games",
       "dictionaries",
       "premium",
-      "englishLessonJourney",
       "leaderboard",
       "logout"
     ];
@@ -11824,7 +11841,6 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
       "games",
       "dictionaries",
       "premium",
-      "englishLessonJourney",
       "leaderboard",
       "logout"
     ];
@@ -11840,7 +11856,6 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
       "studySystem",
       "writing",
       "assistant",
-      "englishLessonJourney",
       "games",
       "dictionaries",
       "premium",
@@ -11859,6 +11874,7 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
     "logout"
   ];
 }
+
 
 async function getCurrentNavigationRoleSafe() {
   try {
@@ -17828,9 +17844,29 @@ function saveEnglishLessonBadges(badges) {
 }
 
 function initEnglishLessonJourney() {
-  renderEnglishLessonMap();
-  updateEnglishLessonProgress();
+  if (typeof initEnglishQuestHubV3 === "function") {
+    initEnglishQuestHubV3();
+    return;
+  }
+
+  if (typeof initEnglishLearningHubV2 === "function") {
+    initEnglishLearningHubV2();
+    return;
+  }
+
+  if (typeof updateEnglishLessonFilters === "function") {
+    updateEnglishLessonFilters();
+  }
+
+  if (typeof renderEnglishLessonMap === "function") {
+    renderEnglishLessonMap();
+  }
+
+  if (typeof updateEnglishLessonProgress === "function") {
+    updateEnglishLessonProgress();
+  }
 }
+
 
 function startQuestionTagsLesson() {
   const progress = getEnglishLessonProgress();
@@ -18738,3 +18774,2726 @@ document.addEventListener("DOMContentLoaded", function () {
   } 
 });
 
+/* =====================================================
+   English Lesson Center Filters
+===================================================== */
+
+window.englishLessonCategoryLabels = window.englishLessonCategoryLabels || {
+  grammar: "GRAMMAR / القواعد",
+  vocabulary: "VOCABULARY / المفردات",
+  texts: "TEXTS / القطع",
+  function: "FUNCTION / الوظائف اللغوية",
+  phonetics: "PHONETICS / الصوتيات",
+  writingSkills: "WRITING SKILLS / مهارات الكتابة",
+  misc: "متفرقات / Mixed Skills"
+};
+
+window.englishLessonUnitLabels = window.englishLessonUnitLabels || {
+  unit1: "UNIT ONE",
+  unit2: "UNIT TWO",
+  unit3: "UNIT THREE"
+};
+
+
+function getSelectedEnglishLessonPath() {
+  return {
+    generation: document.getElementById("englishLessonGeneration")?.value || "2009",
+    unit: document.getElementById("englishLessonUnit")?.value || "unit1",
+    category: document.getElementById("englishLessonCategory")?.value || "grammar",
+    topic: document.getElementById("englishLessonTopic")?.value || ""
+  };
+}
+
+function buildDefaultEnglishLessonTitle(generation, unit, category) {
+  return `${ window.englishLessonCategoryLabels[category] || category} — ${window.englishLessonUnitLabels[unit] || unit} — جيل ${generation}`;
+}
+
+function updateEnglishLessonFilters() {
+  const { generation, unit, category } = getSelectedEnglishLessonPath();
+
+  const topicSelect = document.getElementById("englishLessonTopic");
+  const titleBox = document.getElementById("englishLessonCurrentTitle");
+  const descBox = document.getElementById("englishLessonCurrentDescription");
+
+  if (!topicSelect) return;
+
+  const lessonTitle = buildDefaultEnglishLessonTitle(generation, unit, category);
+
+  topicSelect.innerHTML = `
+    <option value="${generation}-${unit}-${category}">
+      ${lessonTitle}
+    </option>
+  `;
+
+  if (titleBox) {
+    titleBox.textContent = `جيل ${generation} — ${window.englishLessonCategoryLabels[unit]} — ${window.englishLessonCategoryLabels[category]}`;
+  }
+
+  if (descBox) {
+    descBox.textContent =
+      "هذا القسم جاهز تنظيميًا. أرسل ملف الدرس وسنحوّله إلى شرح عربي، أمثلة إنجليزية، تدريبات، أخطاء شائعة، وأسئلة امتحانية.";
+  }
+}
+
+function loadSelectedEnglishLesson() {
+  const { generation, unit, category, topic } = getSelectedEnglishLessonPath();
+
+  localStorage.setItem("jakCurrentEnglishLessonPath", JSON.stringify({
+    generation,
+    unit,
+    category,
+    topic
+  }));
+
+  const stageArea = document.getElementById("englishLessonStageArea");
+  const heroTitle = document.querySelector("#englishLessonJourney .jak-lesson-hero h1");
+  const heroSubtitle = document.querySelector("#englishLessonJourney .jak-lesson-subtitle");
+
+  const lessonTitle = buildDefaultEnglishLessonTitle(generation, unit, category);
+
+  if (
+    generation === "2009" &&
+    unit === "unit1" &&
+    category === "grammar" &&
+    typeof renderQuestionTagsArabicLesson === "function"
+  ) {
+    if (heroTitle) {
+      heroTitle.textContent = questionTagsArabicLessonData.title;
+    }
+
+    if (heroSubtitle) {
+      heroSubtitle.textContent =
+        "درس السؤال الذيلي مبني من ملفك: شرح عربي، أمثلة إنجليزية، ملاحظات توجيهي، وتدريبات تفاعلية.";
+    }
+
+    renderQuestionTagsArabicLesson();
+    return;
+  }
+
+  if (heroTitle) {
+    heroTitle.textContent = lessonTitle;
+  }
+
+  if (heroSubtitle) {
+    heroSubtitle.textContent =
+      "سيتم بناء هذا الدرس اعتمادًا على ملفك: شرح عربي، أمثلة من المصدر، تدريبات تفاعلية، ونمط امتحاني.";
+  }
+
+  if (stageArea) {
+    stageArea.innerHTML = `
+      <div class="jak-lesson-stage-card">
+        <div class="jak-lesson-stage-title">
+          <div>
+            <span class="jak-lesson-chip">قيد البناء من الملف</span>
+            <h2>${lessonTitle}</h2>
+          </div>
+        </div>
+
+        <div class="jak-lesson-panel">
+          <h3>الخطوة التالية</h3>
+          <p>
+            أرسل ملف الدرس، وسنحوّله إلى رحلة تعليمية تفاعلية كاملة:
+            شرح عربي، أمثلة إنجليزية، تدريبات، أخطاء شائعة، وأسئلة امتحانية.
+          </p>
+
+          <p>
+            <strong>المسار الحالي:</strong>
+            جيل ${generation} — ${window.englishLessonUnitLabels?.[unit] || unit} — ${window.englishLessonCategoryLabels?.[category] || category}
+          </p>
+        </div>
+      </div>
+    `;
+  }
+}
+
+window.updateEnglishLessonFilters = updateEnglishLessonFilters;
+window.loadSelectedEnglishLesson = loadSelectedEnglishLesson;
+window.getSelectedEnglishLessonPath = getSelectedEnglishLessonPath;
+
+document.addEventListener("DOMContentLoaded", function () {
+  if (document.getElementById("englishLessonJourney")) {
+    updateEnglishLessonFilters();
+  }
+});
+/* =====================================================
+   Question Tags Arabic Lesson Data - From uploaded file
+===================================================== */
+
+const questionTagsArabicLessonData = {
+  id: "questionTags",
+  title: "Question Tags / السؤال الذيلي",
+  generation: "2009",
+  unit: "unit1",
+  category: "grammar",
+  level: "B1",
+  time: "25 دقيقة",
+
+  definition: {
+    title: "ما هو السؤال الذيلي؟",
+    text:
+      "السؤال الذيلي هو سؤال يأتي في آخر الجملة، يسبقه فاصلة ويتبعه علامة سؤال. ويتكون غالبًا من جزئين: الفعل المساعد + الضمير المناسب للفاعل.",
+    meaning:
+      "معنى السؤال الذيلي غالبًا: أليس كذلك؟ / صح؟ / أليس كذلك؟"
+  },
+
+  coreRules: [
+    {
+      title: "القاعدة الذهبية",
+      rule: "الجملة المثبتة تأخذ سؤالًا ذيليًا منفيًا، والجملة المنفية تأخذ سؤالًا ذيليًا مثبتًا.",
+      examples: [
+        {
+          sentence: "Hisham can go, can’t he?",
+          ar: "الجملة مثبتة وفيها can، لذلك السؤال الذيلي: can’t he?"
+        },
+        {
+          sentence: "Hani can’t play, can he?",
+          ar: "الجملة منفية بـ can’t، لذلك السؤال الذيلي مثبت: can he?"
+        }
+      ]
+    },
+    {
+      title: "إذا كان في الجملة فعل مساعد",
+      rule: "نستخدم نفس الفعل المساعد في السؤال الذيلي.",
+      examples: [
+        {
+          sentence: "Ali was rich, wasn’t he?",
+          ar: "استعملنا was نفسها لكن بشكل منفي."
+        },
+        {
+          sentence: "Saleem has eaten, hasn’t he?",
+          ar: "لأن has تبعها تصريف ثالث، نستخدم hasn’t."
+        }
+      ]
+    },
+    {
+      title: "إذا لم يوجد فعل مساعد",
+      rule: "نستخدم do / does / did حسب زمن الفعل.",
+      examples: [
+        {
+          sentence: "Hisham helps Salma, doesn’t he?",
+          ar: "الفعل helps مضارع بسيط مع s، لذلك نستخدم doesn’t."
+        },
+        {
+          sentence: "Fadi and Sami play football, don’t they?",
+          ar: "الفعل play مضارع بسيط بدون s، لذلك نستخدم don’t."
+        },
+        {
+          sentence: "Laila ate dinner, didn’t she?",
+          ar: "الفعل ate ماضٍ، لذلك نستخدم didn’t."
+        }
+      ]
+    }
+  ],
+
+  pronounRules: [
+    "فاعل مذكر مفرد → he",
+    "فاعل مؤنث مفرد → she",
+    "جمع عاقل أو غير عاقل → they",
+    "مفرد غير عاقل → it",
+    "Ali and Salma / مثنى أو أكثر → they",
+    "This / That → it",
+    "These / Those → they",
+    "Something / Nothing / Everything / Anything → it",
+    "There تبقى there",
+    "No one / Nobody / Everyone / Everybody → they"
+  ],
+
+  haveRules: [
+    {
+      title: "has / have / had + التصريف الثالث",
+      rule: "إذا جاء بعدها التصريف الثالث، نستخدم نفس الفعل المساعد في السؤال الذيلي.",
+      examples: [
+        "She has seen the accident, hasn’t she?",
+        "I have gone home, haven’t I?",
+        "She had bought a car, hadn’t she?"
+      ]
+    },
+    {
+      title: "has / have / had بدون التصريف الثالث",
+      rule: "إذا لم يأت بعدها التصريف الثالث، نتعامل معها كفعل عادي.",
+      examples: [
+        "She has a mobile, doesn’t she?",
+        "I have to go, don’t I?",
+        "She had a car accident, didn’t she?"
+      ]
+    }
+  ],
+
+  tawjihiTraps: [
+    {
+      title: "I am / I’m",
+      wrong: "I am late, amn’t I?",
+      correct: "I am late, aren’t I?",
+      explanation: "إذا بدأت الجملة بـ I am أو I’m وكان المعنى مثبتًا، يكون السؤال الذيلي: aren’t I?"
+    },
+    {
+      title: "I am not",
+      wrong: "I am not sick, aren’t I?",
+      correct: "I am not sick, am I?",
+      explanation: "إذا كانت الجملة I am not فهي منفية، لذلك نستخدم am I?"
+    },
+    {
+      title: "الكلمات ذات المعنى السلبي",
+      wrong: "She is never late, isn’t she?",
+      correct: "She is never late, is she?",
+      explanation:
+        "كلمات مثل never, seldom, rarely, scarcely, hardly, barely, no one, nothing تجعل الجملة منفية في المعنى، لذلك السؤال الذيلي يكون مثبتًا."
+    },
+    {
+      title: "الأمر",
+      wrong: "Help me, don’t you?",
+      correct: "Help me, will you?",
+      explanation: "الجملة التي تبدأ بفعل أمر أو don’t يكون سؤالها الذيلي غالبًا: will you?"
+    },
+    {
+      title: "Let’s / Let us",
+      wrong: "Let’s go, will we?",
+      correct: "Let’s go, shall we?",
+      explanation: "أي جملة تبدأ بـ Let’s أو Let us يكون سؤالها الذيلي: shall we?"
+    }
+  ],
+
+  functions: [
+    {
+      title: "Request / الطلب",
+      explanation: "يمكن استخدام السؤال الذيلي في الطلب، خاصة مع الجمل التي تبدأ بفعل أمر.",
+      examples: [
+        "Buy me the newspaper, could you?",
+        "Buy me the newspaper, will you?"
+      ]
+    },
+    {
+      title: "Invitation / الدعوة",
+      explanation: "يمكن استخدام will you أو won’t you مع الدعوة.",
+      examples: [
+        "Come to visit us next summer, won’t you?",
+        "Come to visit us next summer, will you?"
+      ]
+    }
+  ],
+
+  practice: [
+    {
+      id: "qt-file-1",
+      question: "He doesn’t come across very well, ______?",
+      answer: "does he",
+      explanation: "الجملة منفية بـ doesn’t، لذلك السؤال الذيلي مثبت: does he?"
+    },
+    {
+      id: "qt-file-2",
+      question: "You can’t let it drop, ______?",
+      answer: "can you",
+      explanation: "الجملة منفية بـ can’t، لذلك السؤال الذيلي مثبت: can you?"
+    },
+    {
+      id: "qt-file-3",
+      question: "You’re going to Amman, ______?",
+      answer: "aren’t you",
+      explanation: "الجملة مثبتة وفيها are، لذلك السؤال الذيلي منفي: aren’t you?"
+    },
+    {
+      id: "qt-file-4",
+      question: "You haven’t seen my mobile, ______?",
+      answer: "have you",
+      explanation: "الجملة منفية بـ haven’t، لذلك السؤال الذيلي مثبت: have you?"
+    },
+    {
+      id: "qt-file-5",
+      question: "Let’s get some ice cream, ______?",
+      answer: "shall we",
+      explanation: "Let’s تأخذ shall we."
+    },
+    {
+      id: "qt-file-6",
+      question: "Come sit with us, ______?",
+      answer: "will you",
+      explanation: "الأمر أو الطلب يأخذ غالبًا will you."
+    },
+    {
+      id: "qt-file-7",
+      question: "Nobody helped her, ______?",
+      answer: "did they",
+      explanation: "Nobody معناها سلبي، وhelped ماضٍ، والضمير المناسب they، لذلك: did they?"
+    },
+    {
+      id: "qt-file-8",
+      question: "I’m having lunch with them, ______?",
+      answer: "aren’t I",
+      explanation: "I’m مثبتة، والسؤال الذيلي الخاص بها: aren’t I?"
+    },
+    {
+      id: "qt-file-9",
+      question: "Don’t go out tonight, ______?",
+      answer: "will you",
+      explanation: "الأمر المنفي بـ Don’t يأخذ will you."
+    }
+  ]
+};
+
+ function renderQuestionTagsArabicLesson() {
+  const stageArea = document.getElementById("englishLessonStageArea");
+  if (!stageArea) return;
+
+  const data = questionTagsArabicLessonData;
+
+  stageArea.innerHTML = `
+    <div class="jak-lesson-stage-card qt-file-lesson">
+
+      <div class="jak-lesson-stage-title">
+        <div>
+          <span class="jak-lesson-chip">درس من ملفك</span>
+          <h2>${data.title}</h2>
+          <p>
+            هذا الدرس مبني على ملف السؤال الذيلي الذي أرسلته:
+            شرح عربي منظم، أمثلة إنجليزية، ضربات توجيهي، ووظائف لغوية وتدريبات.
+          </p>
+        </div>
+      </div>
+
+      <div class="jak-lesson-panel qt-lesson-roadmap">
+        <h3>خطة الدرس</h3>
+        <div class="qt-roadmap-grid">
+          <span>1. ما هو السؤال الذيلي؟</span>
+          <span>2. مكونات السؤال الذيلي</span>
+          <span>3. الضمائر المناسبة للفاعل</span>
+          <span>4. القاعدة الذهبية</span>
+          <span>5. إذا وُجد فعل مساعد</span>
+          <span>6. إذا لم يوجد فعل مساعد</span>
+          <span>7. قاعدة has / have / had</span>
+          <span>8. ضربات توجيهي مهمة</span>
+          <span>9. الطلب والدعوة</span>
+          <span>10. تدريب من الملف</span>
+        </div>
+      </div>
+
+      <div class="jak-lesson-grid">
+        <div class="jak-lesson-panel">
+          <span class="jak-lesson-chip">1</span>
+          <h3>${data.definition.title}</h3>
+          <p>${data.definition.text}</p>
+          <p><strong>المعنى:</strong> ${data.definition.meaning}</p>
+        </div>
+
+        <div class="jak-lesson-panel">
+          <span class="jak-lesson-chip">2</span>
+          <h3>مكونات السؤال الذيلي</h3>
+          <p>
+            يتكون السؤال الذيلي من جزأين أساسيين:
+            <strong>الفعل المساعد + الضمير المناسب للفاعل</strong>.
+          </p>
+
+          <div class="jak-lesson-example">
+            Hisham can go, can’t he?
+          </div>
+
+          <p>
+            في المثال السابق:
+            <strong>can’t</strong> هو الفعل المساعد،
+            و <strong>he</strong> هو الضمير المناسب لـ Hisham.
+          </p>
+        </div>
+      </div>
+
+      <div class="jak-lesson-panel" style="margin-top:16px;">
+        <span class="jak-lesson-chip">3</span>
+        <h3>الضمائر المناسبة للفاعل</h3>
+
+        <div class="qt-pronoun-grid">
+          ${data.pronounRules.map(item => `
+            <div class="qt-mini-rule">${item}</div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="jak-lesson-panel" style="margin-top:16px;">
+        <span class="jak-lesson-chip">4</span>
+        <h3>القواعد الأساسية</h3>
+
+        <div class="jak-lesson-grid">
+          ${data.coreRules.map(rule => `
+            <div class="jak-lesson-memory-card">
+              <strong>${rule.title}</strong>
+              <p>${rule.rule}</p>
+
+              ${rule.examples.map(ex => `
+                <div class="jak-lesson-example">
+                  ${ex.sentence}
+                  <br>
+                  <small>${ex.ar}</small>
+                </div>
+              `).join("")}
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="jak-lesson-panel" style="margin-top:16px;">
+        <span class="jak-lesson-chip">5</span>
+        <h3>قاعدة has / have / had</h3>
+
+        <div class="jak-lesson-grid">
+          ${data.haveRules.map(rule => `
+            <div class="jak-lesson-memory-card">
+              <strong>${rule.title}</strong>
+              <p>${rule.rule}</p>
+
+              ${rule.examples.map(ex => `
+                <div class="jak-lesson-example">${ex}</div>
+              `).join("")}
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="jak-lesson-panel" style="margin-top:16px;">
+        <span class="jak-lesson-chip">6</span>
+        <h3>ضربات توجيهي مهمة ⚠️</h3>
+
+        <div class="jak-lesson-traps">
+          ${data.tawjihiTraps.map(trap => `
+            <div class="jak-lesson-trap-card">
+              <strong>${trap.title}</strong>
+              <p><span class="qt-wrong">Wrong:</span> ${trap.wrong}</p>
+              <p><span class="qt-correct">Correct:</span> ${trap.correct}</p>
+              <p>${trap.explanation}</p>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="jak-lesson-panel" style="margin-top:16px;">
+        <span class="jak-lesson-chip">7</span>
+        <h3>استخدامات السؤال الذيلي: الطلب والدعوة</h3>
+
+        <div class="jak-lesson-grid">
+          ${data.functions.map(fn => `
+            <div class="jak-lesson-memory-card">
+              <strong>${fn.title}</strong>
+              <p>${fn.explanation}</p>
+
+              ${fn.examples.map(ex => `
+                <div class="jak-lesson-example">${ex}</div>
+              `).join("")}
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="jak-lesson-panel" style="margin-top:16px;">
+        <span class="jak-lesson-chip">8</span>
+        <h3>تدريب من الملف</h3>
+        <p>
+          أكمل السؤال الذيلي المناسب، ثم اضغط تحقق من الإجابة.
+        </p>
+
+        <div class="jak-lesson-grid">
+          ${data.practice.map((q, index) => `
+            <div class="jak-lesson-panel qt-practice-card">
+              <h3>Question ${index + 1}</h3>
+              <p>${q.question}</p>
+
+              <input
+                id="qt-file-input-${q.id}"
+                class="jak-lesson-input"
+                placeholder="اكتب السؤال الذيلي هنا..."
+              >
+
+              <button
+                class="jak-lesson-primary-btn"
+                style="margin-top:10px;"
+                onclick="checkQuestionTagsFilePractice('${q.id}')"
+              >
+                تحقق من الإجابة
+              </button>
+
+              <div id="qt-file-feedback-${q.id}" class="jak-lesson-feedback"></div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+function checkQuestionTagsFilePractice(questionId) {
+  const q = questionTagsArabicLessonData.practice.find(item => item.id === questionId);
+  if (!q) return;
+
+  const input = document.getElementById(`qt-file-input-${questionId}`);
+  const feedback = document.getElementById(`qt-file-feedback-${questionId}`);
+  if (!input || !feedback) return;
+
+  const studentAnswer = String(input.value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[؟?!.]/g, "")
+    .replace(/\s+/g, " ");
+
+  const correctAnswer = String(q.answer || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[؟?!.]/g, "")
+    .replace(/\s+/g, " ");
+
+  const isCorrect = studentAnswer === correctAnswer;
+
+  feedback.className = `jak-lesson-feedback ${isCorrect ? "good" : "bad"}`;
+  feedback.innerHTML = isCorrect
+    ? `إجابة صحيحة ✅<br>${q.explanation}`
+    : `إجابة غير صحيحة ❌<br>الإجابة الصحيحة: <strong>${q.answer}</strong><br>${q.explanation}`;
+}
+
+window.renderQuestionTagsArabicLesson = renderQuestionTagsArabicLesson;
+window.checkQuestionTagsFilePractice = checkQuestionTagsFilePractice;
+
+/* =====================================================
+   English Learning Hub V2 - Clean Rebuild
+===================================================== */
+
+window.jakEnglishHubV2State = window.jakEnglishHubV2State || {
+  generation: "2009",
+  unit: "unit1",
+  category: "grammar"
+};
+
+window.jakEnglishHubV2Labels = window.jakEnglishHubV2Labels || {
+  generations: {
+    "2008": {
+      title: "جيل 2008",
+      icon: "🎓",
+      desc: "مسار خاص بدروس وملفات جيل 2008.",
+      meta: "Units + Skills + Exams"
+    },
+    "2009": {
+      title: "جيل 2009",
+      icon: "🚀",
+      desc: "مسار خاص بدروس وملفات جيل 2009.",
+      meta: "Current Learning Journey"
+    }
+  },
+
+  units: {
+    unit1: {
+      title: "UNIT ONE",
+      icon: "①",
+      desc: "دروس الوحدة الأولى حسب الجيل المختار.",
+      meta: "Grammar / Texts / Skills"
+    },
+    unit2: {
+      title: "UNIT TWO",
+      icon: "②",
+      desc: "دروس الوحدة الثانية حسب الجيل المختار.",
+      meta: "Coming from files"
+    },
+    unit3: {
+      title: "UNIT THREE",
+      icon: "③",
+      desc: "دروس الوحدة الثالثة حسب الجيل المختار.",
+      meta: "Coming from files"
+    }
+  },
+
+  categories: {
+    grammar: {
+      title: "GRAMMAR",
+      ar: "القواعد",
+      icon: "🧠",
+      desc: "شرح القواعد من الملفات مع أمثلة وتدريب."
+    },
+    vocabulary: {
+      title: "VOCABULARY",
+      ar: "المفردات",
+      icon: "📚",
+      desc: "معاني، أمثلة، نطق، وتدريبات حفظ."
+    },
+    texts: {
+      title: "TEXTS",
+      ar: "القطع",
+      icon: "📖",
+      desc: "قراءة، ترجمة، ضمائر، وأسئلة فهم."
+    },
+    function: {
+      title: "FUNCTION",
+      ar: "الوظائف اللغوية",
+      icon: "💬",
+      desc: "مواقف، ردود، وظائف، وتدريب شفوي."
+    },
+    phonetics: {
+      title: "PHONETICS",
+      ar: "الصوتيات",
+      icon: "🔊",
+      desc: "نطق، أصوات، stress، وتمييز صوتي."
+    },
+    writingSkills: {
+      title: "WRITING SKILLS",
+      ar: "مهارات الكتابة",
+      icon: "✍️",
+      desc: "جمل، فقرات، روابط، وتنظيم كتابة."
+    },
+    misc: {
+      title: "متفرقات",
+      ar: "Mixed Skills",
+      icon: "🎯",
+      desc: "مراجعات، أخطاء شائعة، وتدريبات مختلطة."
+    }
+  }
+};
+
+function getEnglishHubV2State() {
+  return window.jakEnglishHubV2State || {
+    generation: "2009",
+    unit: "unit1",
+    category: "grammar"
+  };
+}
+
+function saveEnglishHubV2State(nextState) {
+  window.jakEnglishHubV2State = {
+    ...getEnglishHubV2State(),
+    ...nextState
+  };
+
+  try {
+    localStorage.setItem("jakEnglishHubV2State", JSON.stringify(window.jakEnglishHubV2State));
+  } catch (error) {
+    console.warn("Could not save English Hub V2 state:", error);
+  }
+}
+
+function restoreEnglishHubV2State() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("jakEnglishHubV2State") || "null");
+    if (saved && saved.generation && saved.unit && saved.category) {
+      window.jakEnglishHubV2State = saved;
+    }
+  } catch (error) {
+    console.warn("Could not restore English Hub V2 state:", error);
+  }
+}
+
+function getEnglishHubV2LessonList() {
+  const state = getEnglishHubV2State();
+
+  if (
+    state.generation === "2009" &&
+    state.unit === "unit1" &&
+    state.category === "grammar"
+  ) {
+    return [
+      {
+        id: "questionTags",
+        title: "Question Tags / السؤال الذيلي",
+        desc: "درس من ملفك: تعريف، ضمائر، قواعد، ضربات توجيهي، طلب ودعوة، وتدريب.",
+        level: "B1",
+        time: "25 دقيقة",
+        source: "ملف مرفوع"
+      }
+    ];
+  }
+
+  const cat = window.jakEnglishHubV2Labels.categories[state.category];
+
+  return [
+    {
+      id: "placeholder",
+      title: `${cat?.title || state.category} — ${window.jakEnglishHubV2Labels.units[state.unit]?.title || state.unit} — جيل ${state.generation}`,
+      desc: "هذا المسار جاهز. أرسل ملف الدرس وسنحوّله إلى رحلة تعليمية تفاعلية كاملة.",
+      level: "حسب الملف",
+      time: "قيد التحديد",
+      source: "بانتظار ملف"
+    }
+  ];
+}
+
+function renderEnglishHubV2Card(group, key, item, selected, handlerName) {
+  return `
+    <div class="eh-v2-card ${selected ? "active" : ""}" onclick="${handlerName}('${key}')">
+      <div class="eh-v2-card-icon">${item.icon || "✨"}</div>
+      <h3>${item.title}</h3>
+      ${item.ar ? `<p><strong>${item.ar}</strong></p>` : ""}
+      <p>${item.desc}</p>
+      ${item.meta ? `<small>${item.meta}</small>` : ""}
+    </div>
+  `;
+}
+
+function renderEnglishHubV2() {
+  const root = document.getElementById("englishLearningHubV2");
+  if (!root) return;
+
+  const state = getEnglishHubV2State();
+  const labels = window.jakEnglishHubV2Labels;
+  const generationLabel = labels.generations[state.generation];
+  const unitLabel = labels.units[state.unit];
+  const categoryLabel = labels.categories[state.category];
+  const lessons = getEnglishHubV2LessonList();
+
+  root.innerHTML = `
+    <div class="eh-v2-hero">
+      <div class="eh-v2-hero-content">
+        <span class="eh-v2-chip">JAK English Learning Hub</span>
+        <h1>رحلة تعلم الإنجليزي</h1>
+        <p>
+          اختر الجيل، الوحدة، والمهارة. بعدها افتح الدرس المبني من ملفاتك:
+          شرح عربي، أمثلة إنجليزية، تدريب، أخطاء شائعة، ونمط امتحاني.
+        </p>
+
+        <div class="eh-v2-path-summary">
+          <span>${generationLabel?.title || state.generation}</span>
+          <span>${unitLabel?.title || state.unit}</span>
+          <span>${categoryLabel?.title || state.category} / ${categoryLabel?.ar || ""}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="eh-v2-section">
+      <div class="eh-v2-section-head">
+        <div>
+          <span class="eh-v2-chip">Step 1</span>
+          <h2>اختر الجيل</h2>
+          <p>ابدأ بتحديد جيل الطالب حتى تظهر الدروس المناسبة.</p>
+        </div>
+      </div>
+
+      <div class="eh-v2-grid generations">
+        ${Object.entries(labels.generations).map(([key, item]) =>
+          renderEnglishHubV2Card("generations", key, item, state.generation === key, "selectEnglishHubV2Generation")
+        ).join("")}
+      </div>
+    </div>
+
+    <div class="eh-v2-section">
+      <div class="eh-v2-section-head">
+        <div>
+          <span class="eh-v2-chip">Step 2</span>
+          <h2>اختر الوحدة</h2>
+          <p>كل وحدة ستصبح عالمًا تعليميًا مستقلًا.</p>
+        </div>
+      </div>
+
+      <div class="eh-v2-grid units">
+        ${Object.entries(labels.units).map(([key, item]) =>
+          renderEnglishHubV2Card("units", key, item, state.unit === key, "selectEnglishHubV2Unit")
+        ).join("")}
+      </div>
+    </div>
+
+    <div class="eh-v2-section">
+      <div class="eh-v2-section-head">
+        <div>
+          <span class="eh-v2-chip">Step 3</span>
+          <h2>اختر نوع المحتوى</h2>
+          <p>القسم يحدد طريقة عرض الدرس: قواعد، مفردات، قطع، صوتيات، كتابة، أو متفرقات.</p>
+        </div>
+      </div>
+
+      <div class="eh-v2-grid categories">
+        ${Object.entries(labels.categories).map(([key, item]) =>
+          renderEnglishHubV2Card("categories", key, item, state.category === key, "selectEnglishHubV2Category")
+        ).join("")}
+      </div>
+    </div>
+
+    <div class="eh-v2-lesson-panel">
+      <div class="eh-v2-section-head">
+        <div>
+          <span class="eh-v2-chip">Step 4</span>
+          <h2>الدروس المتاحة</h2>
+          <p>اختر الدرس ليفتح في الأسفل داخل رحلة منظمة.</p>
+        </div>
+      </div>
+
+      <div class="eh-v2-lesson-list">
+        ${lessons.map(lesson => `
+          <div class="eh-v2-lesson-card">
+            <div>
+              <h3>${lesson.title}</h3>
+              <p>${lesson.desc}</p>
+              <p>
+                <strong>Level:</strong> ${lesson.level}
+                &nbsp; | &nbsp;
+                <strong>Time:</strong> ${lesson.time}
+                &nbsp; | &nbsp;
+                <strong>Source:</strong> ${lesson.source}
+              </p>
+            </div>
+
+            <button class="eh-v2-btn" onclick="openEnglishHubV2Lesson('${lesson.id}')">
+              Start Lesson 🚀
+            </button>
+          </div>
+        `).join("")}
+      </div>
+
+      <div id="englishLessonStageArea" class="eh-v2-stage-area">
+        <div class="eh-v2-empty">
+          اختر درسًا من الأعلى لعرض محتواه هنا.
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function initEnglishLearningHubV2() {
+  restoreEnglishHubV2State();
+  renderEnglishHubV2();
+}
+
+function selectEnglishHubV2Generation(generation) {
+  saveEnglishHubV2State({ generation });
+  renderEnglishHubV2();
+}
+
+function selectEnglishHubV2Unit(unit) {
+  saveEnglishHubV2State({ unit });
+  renderEnglishHubV2();
+}
+
+function selectEnglishHubV2Category(category) {
+  saveEnglishHubV2State({ category });
+  renderEnglishHubV2();
+}
+
+function openEnglishHubV2Lesson(lessonId) {
+  const state = getEnglishHubV2State();
+
+  if (
+    lessonId === "questionTags" &&
+    state.generation === "2009" &&
+    state.unit === "unit1" &&
+    state.category === "grammar" &&
+    typeof renderQuestionTagsArabicLesson === "function"
+  ) {
+    renderQuestionTagsArabicLesson();
+
+    const stageArea = document.getElementById("englishLessonStageArea");
+    if (stageArea) {
+      stageArea.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    return;
+  }
+
+  const stageArea = document.getElementById("englishLessonStageArea");
+  const labels = window.jakEnglishHubV2Labels;
+  const category = labels.categories[state.category];
+  const unit = labels.units[state.unit];
+
+  if (stageArea) {
+    stageArea.innerHTML = `
+      <div class="jak-lesson-stage-card">
+        <div class="jak-lesson-stage-title">
+          <div>
+            <span class="jak-lesson-chip">بانتظار ملف</span>
+            <h2>${category?.title || state.category} — ${unit?.title || state.unit} — جيل ${state.generation}</h2>
+            <p>
+              هذا القسم جاهز تنظيميًا. أرسل ملف الدرس وسنحوّله إلى درس تفاعلي كامل.
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+window.initEnglishLearningHubV2 = initEnglishLearningHubV2;
+window.renderEnglishHubV2 = renderEnglishHubV2;
+window.selectEnglishHubV2Generation = selectEnglishHubV2Generation;
+window.selectEnglishHubV2Unit = selectEnglishHubV2Unit;
+window.selectEnglishHubV2Category = selectEnglishHubV2Category;
+window.openEnglishHubV2Lesson = openEnglishHubV2Lesson;
+
+/* =====================================================
+   JAK English Quest Hub V3
+   Premium Learning Quest Interface
+===================================================== */
+
+window.jakEnglishQuestV3State = window.jakEnglishQuestV3State || {
+  generation: "2009",
+  unit: "unit1",
+  category: "grammar",
+  xp: 0,
+  level: "B1",
+  streak: 1
+};
+
+window.jakEnglishQuestV3Data = window.jakEnglishQuestV3Data || {
+  generations: {
+    "2008": {
+      title: "Portal 2008",
+      ar: "جيل 2008",
+      icon: "🎓",
+      desc: "ادخل مسار جيل 2008 بدروس منظمة حسب الوحدات والمهارات.",
+      progress: 8,
+      meta: ["3 Units", "7 Skill Gates", "File-Based"]
+    },
+    "2009": {
+      title: "Portal 2009",
+      ar: "جيل 2009",
+      icon: "🚀",
+      desc: "المسار الحالي لدروس جيل 2009 مع شرح عربي وتدريب امتحاني.",
+      progress: 14,
+      meta: ["Active", "Question Tags Ready", "Tawjihi Mode"]
+    }
+  },
+
+  units: {
+    unit1: {
+      title: "UNIT ONE",
+      world: "Grammar Launch World",
+      icon: "①",
+      desc: "ابدأ من الوحدة الأولى وافتح مهارات القواعد والمفردات والقطع.",
+      progress: 18,
+      meta: ["1 Mission Ready", "14 Practice Items", "250 XP"]
+    },
+    unit2: {
+      title: "UNIT TWO",
+      world: "Skills Expansion World",
+      icon: "②",
+      desc: "جاهزة لاستقبال ملفات الوحدة الثانية وتحويلها إلى مهام.",
+      progress: 0,
+      meta: ["Waiting Files", "Locked Content", "Coming Soon"]
+    },
+    unit3: {
+      title: "UNIT THREE",
+      world: "Mastery World",
+      icon: "③",
+      desc: "مسار الوحدة الثالثة سيُبنى من ملفاتك بنفس النظام.",
+      progress: 0,
+      meta: ["Waiting Files", "Mission Builder", "Coming Soon"]
+    }
+  },
+
+  categories: {
+    grammar: {
+      title: "GRAMMAR GATE",
+      ar: "القواعد",
+      icon: "🧠",
+      desc: "بوابة القواعد: شرح، أمثلة، أخطاء شائعة، وتدريب امتحاني.",
+      progress: 22
+    },
+    vocabulary: {
+      title: "VOCABULARY VAULT",
+      ar: "المفردات",
+      icon: "📚",
+      desc: "خزنة المفردات: معاني، أمثلة، حفظ، واختبارات سريعة.",
+      progress: 0
+    },
+    texts: {
+      title: "TEXTS LAB",
+      ar: "القطع",
+      icon: "📖",
+      desc: "مختبر القطع: ترجمة، ضمائر، أسئلة فهم، ومفردات.",
+      progress: 0
+    },
+    function: {
+      title: "FUNCTION ARENA",
+      ar: "الوظائف اللغوية",
+      icon: "💬",
+      desc: "ساحة الوظائف: مواقف، ردود، طلب، دعوة، اقتراح، واعتذار.",
+      progress: 0
+    },
+    phonetics: {
+      title: "PHONETICS STUDIO",
+      ar: "الصوتيات",
+      icon: "🔊",
+      desc: "استوديو الصوتيات: stress، sounds، pronunciation، وتمييز صوتي.",
+      progress: 0
+    },
+    writingSkills: {
+      title: "WRITING WORKSHOP",
+      ar: "مهارات الكتابة",
+      icon: "✍️",
+      desc: "ورشة الكتابة: جمل، فقرات، روابط، وتنظيم أفكار.",
+      progress: 0
+    },
+    misc: {
+      title: "MIXED CHALLENGES",
+      ar: "متفرقات",
+      icon: "🎯",
+      desc: "تحديات مختلطة: مراجعة، أخطاء شائعة، وأسئلة متنوعة.",
+      progress: 0
+    }
+  }
+};
+
+function getEnglishQuestV3State() {
+  return window.jakEnglishQuestV3State || {
+    generation: "2009",
+    unit: "unit1",
+    category: "grammar",
+    xp: 0,
+    level: "B1",
+    streak: 1
+  };
+}
+
+function saveEnglishQuestV3State(nextState) {
+  window.jakEnglishQuestV3State = {
+    ...getEnglishQuestV3State(),
+    ...nextState
+  };
+
+  try {
+    localStorage.setItem("jakEnglishQuestV3State", JSON.stringify(window.jakEnglishQuestV3State));
+  } catch (error) {
+    console.warn("Could not save English Quest V3 state:", error);
+  }
+}
+
+function restoreEnglishQuestV3State() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("jakEnglishQuestV3State") || "null");
+
+    if (saved && saved.generation && saved.unit && saved.category) {
+      window.jakEnglishQuestV3State = {
+        ...getEnglishQuestV3State(),
+        ...saved
+      };
+    }
+  } catch (error) {
+    console.warn("Could not restore English Quest V3 state:", error);
+  }
+}
+
+function getEnglishQuestV3Missions() {
+  const state = getEnglishQuestV3State();
+
+  if (
+    state.generation === "2009" &&
+    state.unit === "unit1" &&
+    state.category === "grammar"
+  ) {
+    return [
+      {
+        id: "questionTags",
+        title: "Mission: Question Tags",
+        ar: "مهمة السؤال الذيلي",
+        desc: "مهمة مبنية من ملفك: تعريف، ضمائر، قواعد، has/have/had، ضربات توجيهي، طلب ودعوة، وتدريب من الملف.",
+        source: "Uploaded Teacher File",
+        level: "B1",
+        time: "25 دقيقة",
+        stages: 10,
+        xp: 250,
+        traps: 5,
+        practice: 14,
+        status: "Ready"
+      }
+    ];
+  }
+
+  const data = window.jakEnglishQuestV3Data;
+  const category = data.categories[state.category];
+  const unit = data.units[state.unit];
+
+  return [
+    {
+      id: "placeholder",
+      title: `${category?.title || state.category}`,
+      ar: `${category?.ar || ""} — ${unit?.title || state.unit} — جيل ${state.generation}`,
+      desc: "هذا المسار جاهز، لكنه يحتاج ملفًا منك حتى يتحول إلى مهمة تعليمية تفاعلية.",
+      source: "Waiting for File",
+      level: "حسب الملف",
+      time: "قيد التحديد",
+      stages: 0,
+      xp: 0,
+      traps: 0,
+      practice: 0,
+      status: "Waiting"
+    }
+  ];
+}
+
+function renderEnglishQuestV3Progress(percent) {
+  const safePercent = Math.max(0, Math.min(100, Number(percent || 0)));
+
+  return `
+    <div class="eq-v3-progress">
+      <div class="eq-v3-progress-track">
+        <div class="eq-v3-progress-fill" style="width:${safePercent}%"></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEnglishQuestV3Card(type, key, item, active, handler) {
+  const className =
+    type === "portal" ? "eq-v3-portal" :
+    type === "world" ? "eq-v3-world" :
+    "eq-v3-gate";
+
+  const meta = Array.isArray(item.meta) ? item.meta : [];
+
+  return `
+    <div class="${className} ${active ? "active" : ""}" onclick="${handler}('${key}')">
+      <div class="eq-v3-card-top">
+        <div class="eq-v3-icon">${item.icon || "✨"}</div>
+        <span class="eq-v3-status">${active ? "ACTIVE" : "OPEN"}</span>
+      </div>
+
+      <h3>${item.title}</h3>
+      ${item.ar ? `<p><strong>${item.ar}</strong></p>` : ""}
+      ${item.world ? `<p><strong>${item.world}</strong></p>` : ""}
+      <p>${item.desc}</p>
+
+      <div class="eq-v3-card-meta">
+        ${meta.map(m => `<span>${m}</span>`).join("")}
+      </div>
+
+      ${renderEnglishQuestV3Progress(item.progress || 0)}
+    </div>
+  `;
+}
+
+function renderEnglishQuestV3() {
+  const root = document.getElementById("englishQuestHubV3");
+  if (!root) return;
+
+  const data = window.jakEnglishQuestV3Data;
+  const state = getEnglishQuestV3State();
+
+  const generation = data.generations[state.generation];
+  const unit = data.units[state.unit];
+  const category = data.categories[state.category];
+  const missions = getEnglishQuestV3Missions();
+
+  const totalProgress =
+    Math.round(((generation?.progress || 0) + (unit?.progress || 0) + (category?.progress || 0)) / 3);
+
+  root.innerHTML = `
+    <div class="eq-v3-hero">
+      <div class="eq-v3-hero-main">
+        <span class="eq-v3-kicker">JAK English Quest</span>
+        <h1>تعلم الإنجليزي كرحلة</h1>
+        <p>
+          اختر بوابتك، ادخل عالم الوحدة، افتح بوابة المهارة، ثم ابدأ المهمة.
+          كل درس هنا يتحول من ملف الأستاذ إلى تجربة تعليمية: شرح عربي، أمثلة إنجليزية،
+          تدريب، أخطاء شائعة، ونتيجة تقدم.
+        </p>
+
+        <div class="eq-v3-path-strip">
+          <span>${generation?.ar || state.generation}</span>
+          <span>${unit?.title || state.unit}</span>
+          <span>${category?.title || state.category}</span>
+          <span>${category?.ar || ""}</span>
+        </div>
+
+        <div class="eq-v3-cta-row">
+          <button class="eq-v3-btn" onclick="scrollEnglishQuestV3ToMission()">Continue Mission 🚀</button>
+          <button class="eq-v3-btn-secondary" onclick="resetEnglishQuestV3View()">Reset Path</button>
+        </div>
+      </div>
+
+      <div class="eq-v3-hero-stats">
+        <div class="eq-v3-rank-card">
+          <div class="eq-v3-rank-orb">JAK</div>
+          <h3>Learning Rank: ${state.level}</h3>
+          <p>Current Quest Progress</p>
+
+          <div class="eq-v3-stat-grid">
+            <div class="eq-v3-stat">
+              <span>XP</span>
+              <strong>${state.xp || 0}/500</strong>
+            </div>
+
+            <div class="eq-v3-stat">
+              <span>Streak</span>
+              <strong>${state.streak || 1} day</strong>
+            </div>
+
+            <div class="eq-v3-stat">
+              <span>Progress</span>
+              <strong>${totalProgress}%</strong>
+            </div>
+
+            <div class="eq-v3-stat">
+              <span>Missions</span>
+              <strong>${missions.length}</strong>
+            </div>
+          </div>
+
+          ${renderEnglishQuestV3Progress(totalProgress)}
+        </div>
+      </div>
+    </div>
+
+    <div class="eq-v3-section">
+      <div class="eq-v3-section-head">
+        <div>
+          <span class="eq-v3-kicker">Step 1</span>
+          <h2>Choose Your Portal</h2>
+          <p>اختر الجيل الذي تريد بناء الدروس عليه.</p>
+        </div>
+      </div>
+
+      <div class="eq-v3-grid portals">
+        ${Object.entries(data.generations).map(([key, item]) =>
+          renderEnglishQuestV3Card("portal", key, item, state.generation === key, "selectEnglishQuestV3Generation")
+        ).join("")}
+      </div>
+    </div>
+
+    <div class="eq-v3-section">
+      <div class="eq-v3-section-head">
+        <div>
+          <span class="eq-v3-kicker">Step 2</span>
+          <h2>Enter Unit World</h2>
+          <p>كل وحدة تصبح عالمًا تعليميًا مستقلًا.</p>
+        </div>
+      </div>
+
+      <div class="eq-v3-grid worlds">
+        ${Object.entries(data.units).map(([key, item]) =>
+          renderEnglishQuestV3Card("world", key, item, state.unit === key, "selectEnglishQuestV3Unit")
+        ).join("")}
+      </div>
+    </div>
+
+    <div class="eq-v3-section">
+      <div class="eq-v3-section-head">
+        <div>
+          <span class="eq-v3-kicker">Step 3</span>
+          <h2>Open Skill Gate</h2>
+          <p>اختر المهارة التي تريد تدريب الطالب عليها.</p>
+        </div>
+      </div>
+
+      <div class="eq-v3-grid gates">
+        ${Object.entries(data.categories).map(([key, item]) =>
+          renderEnglishQuestV3Card("gate", key, item, state.category === key, "selectEnglishQuestV3Category")
+        ).join("")}
+      </div>
+    </div>
+
+    <div id="englishQuestMissionBoard" class="eq-v3-mission-board">
+      <div class="eq-v3-section-head">
+        <div>
+          <span class="eq-v3-kicker">Step 4</span>
+          <h2>Mission Board</h2>
+          <p>المهام المتاحة حسب المسار المختار.</p>
+        </div>
+      </div>
+
+      ${missions.map(mission => `
+        <div class="eq-v3-mission-card">
+          <div>
+            <span class="eq-v3-kicker">${mission.status}</span>
+            <h3>${mission.title}</h3>
+            <p><strong>${mission.ar}</strong></p>
+            <p>${mission.desc}</p>
+
+            <div class="eq-v3-mission-badges">
+              <span>${mission.source}</span>
+              <span>Level: ${mission.level}</span>
+              <span>Time: ${mission.time}</span>
+              <span>Stages: ${mission.stages}</span>
+              <span>XP: ${mission.xp}</span>
+              <span>Traps: ${mission.traps}</span>
+              <span>Practice: ${mission.practice}</span>
+            </div>
+          </div>
+
+          <div class="eq-v3-mission-action">
+            <button class="eq-v3-btn" onclick="openEnglishQuestV3Mission('${mission.id}')">
+              Start Mission 🚀
+            </button>
+          </div>
+        </div>
+      `).join("")}
+
+      <div id="englishLessonStageArea" class="eq-v3-lesson-stage">
+        <div class="eq-v3-empty">
+          اختر مهمة من الأعلى لعرض الدرس هنا.
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function initEnglishQuestHubV3() {
+  restoreEnglishQuestV3State();
+  renderEnglishQuestV3();
+}
+
+function selectEnglishQuestV3Generation(generation) {
+  saveEnglishQuestV3State({ generation });
+  renderEnglishQuestV3();
+}
+
+function selectEnglishQuestV3Unit(unit) {
+  saveEnglishQuestV3State({ unit });
+  renderEnglishQuestV3();
+}
+
+function selectEnglishQuestV3Category(category) {
+  saveEnglishQuestV3State({ category });
+  renderEnglishQuestV3();
+}
+
+function scrollEnglishQuestV3ToMission() {
+  const board = document.getElementById("englishQuestMissionBoard");
+  if (board) {
+    board.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function resetEnglishQuestV3View() {
+  saveEnglishQuestV3State({
+    generation: "2009",
+    unit: "unit1",
+    category: "grammar"
+  });
+
+  renderEnglishQuestV3();
+}
+
+function openEnglishQuestV3Mission(missionId) {
+  const state = getEnglishQuestV3State();
+
+  if (
+    missionId === "questionTags" &&
+    state.generation === "2009" &&
+    state.unit === "unit1" &&
+    state.category === "grammar" &&
+    typeof renderQuestionTagsArabicLesson === "function"
+  ) {
+    renderQuestionTagsArabicLesson();
+
+    const stageArea = document.getElementById("englishLessonStageArea");
+    if (stageArea) {
+      stageArea.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    saveEnglishQuestV3State({
+      xp: Math.max(getEnglishQuestV3State().xp || 0, 50)
+    });
+
+    return;
+  }
+
+  const stageArea = document.getElementById("englishLessonStageArea");
+  const data = window.jakEnglishQuestV3Data;
+  const category = data.categories[state.category];
+  const unit = data.units[state.unit];
+
+  if (stageArea) {
+    stageArea.innerHTML = `
+      <div class="jak-lesson-stage-card">
+        <div class="jak-lesson-stage-title">
+          <div>
+            <span class="jak-lesson-chip">بانتظار الملف</span>
+            <h2>${category?.title || state.category} — ${unit?.title || state.unit} — جيل ${state.generation}</h2>
+            <p>
+              هذا المسار جاهز. أرسل ملف الدرس وسنحوّله إلى مهمة تعليمية تفاعلية:
+              شرح عربي، أمثلة إنجليزية، تدريب، أخطاء شائعة، ونمط امتحاني.
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+window.initEnglishQuestHubV3 = initEnglishQuestHubV3;
+window.renderEnglishQuestV3 = renderEnglishQuestV3;
+window.selectEnglishQuestV3Generation = selectEnglishQuestV3Generation;
+window.selectEnglishQuestV3Unit = selectEnglishQuestV3Unit;
+window.selectEnglishQuestV3Category = selectEnglishQuestV3Category;
+window.openEnglishQuestV3Mission = openEnglishQuestV3Mission;
+window.scrollEnglishQuestV3ToMission = scrollEnglishQuestV3ToMission;
+window.resetEnglishQuestV3View = resetEnglishQuestV3View;
+
+/* =====================================================
+   Question Tags Mission Workspace V1
+===================================================== */
+
+window.qtMissionState = window.qtMissionState || {
+  stage: 0,
+  done: [],
+  score: 0,
+  answered: 0,
+  review: []
+};
+
+function getQtMissionStages() {
+  const data = questionTagsArabicLessonData;
+
+  return [
+    {
+      title: "ما هو السؤال الذيلي؟",
+      type: "learn",
+      difficulty: "Easy",
+      html: `
+        <p>${data.definition.text}</p>
+        <p><strong>المعنى:</strong> ${data.definition.meaning}</p>
+        <div class="qt-stage-example">You are Jordanian, aren’t you?</div>
+        <div class="qt-stage-note">الفكرة الأساسية: نضيف سؤالًا قصيرًا في نهاية الجملة للتأكيد أو طلب الموافقة.</div>
+      `
+    },
+    {
+      title: "مكونات السؤال الذيلي",
+      type: "learn",
+      difficulty: "Easy",
+      html: `
+        <p>يتكون السؤال الذيلي من جزأين:</p>
+        <ul>
+          <li>الفعل المساعد</li>
+          <li>الضمير المناسب للفاعل</li>
+        </ul>
+        <div class="qt-stage-example">Hisham can go, can’t he?</div>
+        <p>في المثال: <strong>can’t</strong> فعل مساعد، و <strong>he</strong> ضمير مناسب لـ Hisham.</p>
+      `
+    },
+    {
+      title: "خريطة الضمائر",
+      type: "learn",
+      difficulty: "Medium",
+      html: `
+        <p>اختيار الضمير مهم جدًا في السؤال الذيلي.</p>
+        <ul>
+          ${data.pronounRules.map(rule => `<li>${rule}</li>`).join("")}
+        </ul>
+      `
+    },
+    {
+      title: "القاعدة الذهبية",
+      type: "learn",
+      difficulty: "Easy",
+      html: `
+        <p><strong>المثبت يصبح منفيًا، والمنفي يصبح مثبتًا.</strong></p>
+        <div class="qt-stage-example">Hisham can go, can’t he?</div>
+        <div class="qt-stage-example">Hani can’t play, can he?</div>
+        <div class="qt-stage-note">هذه أهم قاعدة في السؤال الذيلي.</div>
+      `
+    },
+    {
+      title: "إذا وُجد فعل مساعد",
+      type: "learn",
+      difficulty: "Medium",
+      html: `
+        <p>إذا كان في الجملة فعل مساعد، نستخدم نفس الفعل المساعد في السؤال الذيلي.</p>
+        <div class="qt-stage-example">Ali was rich, wasn’t he?</div>
+        <div class="qt-stage-example">Fadi will arrive, won’t he?</div>
+        <div class="qt-stage-example">Saleem has eaten, hasn’t he?</div>
+      `
+    },
+    {
+      title: "إذا لم يوجد فعل مساعد",
+      type: "learn",
+      difficulty: "Medium",
+      html: `
+        <p>إذا لم يوجد فعل مساعد، نستخدم do / does / did حسب الفعل.</p>
+        <ul>
+          <li>الفعل المضارع مع s/es → doesn’t</li>
+          <li>الفعل المضارع بدون s → don’t</li>
+          <li>الفعل الماضي → didn’t</li>
+        </ul>
+        <div class="qt-stage-example">She cleans the kitchen, doesn’t she?</div>
+        <div class="qt-stage-example">They play football, don’t they?</div>
+        <div class="qt-stage-example">Laila ate dinner, didn’t she?</div>
+      `
+    },
+    {
+      title: "مختبر has / have / had",
+      type: "learn",
+      difficulty: "Hard",
+      html: `
+        <p>هذه من أهم نقاط التمييز.</p>
+        ${data.haveRules.map(rule => `
+          <div class="qt-stage-note">
+            <strong>${rule.title}</strong><br>
+            ${rule.rule}
+          </div>
+          ${rule.examples.map(ex => `<div class="qt-stage-example">${ex}</div>`).join("")}
+        `).join("")}
+      `
+    },
+    {
+      title: "TAWJIHI Danger Zone",
+      type: "learn",
+      difficulty: "Hard",
+      html: `
+        <p>هذه أكثر النقاط التي يقع فيها الطلاب في الامتحان.</p>
+        ${data.tawjihiTraps.map(trap => `
+          <div class="qt-stage-note">
+            <strong>${trap.title}</strong><br>
+            ❌ ${trap.wrong}<br>
+            ✅ ${trap.correct}<br>
+            ${trap.explanation}
+          </div>
+        `).join("")}
+      `
+    },
+    {
+      title: "Function Mode: الطلب والدعوة",
+      type: "learn",
+      difficulty: "Medium",
+      html: `
+        <p>السؤال الذيلي لا يُستخدم فقط كقاعدة، بل أيضًا كوظيفة لغوية.</p>
+        ${data.functions.map(fn => `
+          <div class="qt-stage-note">
+            <strong>${fn.title}</strong><br>
+            ${fn.explanation}
+          </div>
+          ${fn.examples.map(ex => `<div class="qt-stage-example">${ex}</div>`).join("")}
+        `).join("")}
+      `
+    },
+    {
+      title: "Practice Arena من الملف",
+      type: "practice",
+      difficulty: "Exam",
+      html: renderQtMissionPractice()
+    },
+    {
+      title: "Mission Summary",
+      type: "summary",
+      difficulty: "Report",
+      html: `
+        <p>أنهيت مهمة السؤال الذيلي.</p>
+        <div class="qt-stage-note">
+          <strong>ما أتقنته:</strong><br>
+          التعريف، الضمائر، القاعدة الذهبية، الأفعال المساعدة، has/have/had، ضربات التوجيهي، والطلب والدعوة.
+        </div>
+        <div class="qt-stage-note">
+          <strong>الخطوة القادمة:</strong><br>
+          حل المزيد من الأسئلة من الملف، ثم تحويلها إلى Exam Mode كامل.
+        </div>
+      `
+    }
+  ];
+}
+
+function renderQuestionTagsArabicLesson() {
+  window.qtMissionState = window.qtMissionState || {
+    stage: 0,
+    done: [],
+    score: 0,
+    answered: 0,
+    review: []
+  };
+
+  renderQtMissionWorkspace();
+}
+
+function renderQtMissionWorkspace() {
+  const stageArea = document.getElementById("englishLessonStageArea");
+  if (!stageArea) return;
+
+  const stages = getQtMissionStages();
+  const state = window.qtMissionState;
+  const current = stages[state.stage] || stages[0];
+  const progress = Math.round(((state.done.length) / stages.length) * 100);
+
+  stageArea.innerHTML = `
+    <div class="qt-workspace">
+      <div class="qt-workspace-top">
+        <div class="qt-workspace-title">
+          <h2>Question Tags Mission</h2>
+          <p>السؤال الذيلي — درس مبني من ملف الأستاذ</p>
+        </div>
+
+        <div class="qt-workspace-top-stats">
+          <div class="qt-top-stat">
+            <span>Progress</span>
+            <strong>${progress}%</strong>
+          </div>
+          <div class="qt-top-stat">
+            <span>Stage</span>
+            <strong>${state.stage + 1} / ${stages.length}</strong>
+          </div>
+          <div class="qt-top-stat">
+            <span>Score</span>
+            <strong>${state.score}</strong>
+          </div>
+          <div class="qt-top-stat">
+            <span>Answered</span>
+            <strong>${state.answered}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="qt-workspace-body">
+        <div class="qt-side-nav">
+          ${stages.map((stage, index) => `
+            <div class="qt-side-item ${index === state.stage ? "active" : ""}" onclick="goQtMissionStage(${index})">
+              <span>${state.done.includes(index) ? "✅" : index + 1}</span>
+              <span>${stage.title}</span>
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="qt-main-card">
+          <div class="qt-stage-head">
+            <div>
+              <span class="qt-stage-badge">${current.type.toUpperCase()}</span>
+              <h3>${current.title}</h3>
+            </div>
+            <span class="qt-stage-difficulty">${current.difficulty}</span>
+          </div>
+
+          <div class="qt-stage-content">
+            ${current.html}
+          </div>
+
+          <div class="qt-workspace-actions">
+            <button class="qt-work-btn" onclick="prevQtMissionStage()">◀ Previous</button>
+            <button class="qt-work-btn review" onclick="toggleQtMissionReview(${state.stage})">⭐ Mark for Review</button>
+            <button class="qt-work-btn primary" onclick="completeQtMissionStage()">Next ▶</button>
+          </div>
+        </div>
+
+        <div class="qt-right-panel">
+          <div class="qt-panel-box">
+            <h3>Stages</h3>
+            <div class="qt-stage-map">
+              ${stages.map((stage, index) => `
+                <div class="qt-stage-pill ${index === state.stage ? "active" : ""} ${state.done.includes(index) ? "done" : ""}" onclick="goQtMissionStage(${index})">
+                  ${index + 1}
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="qt-panel-box">
+            <h3>Summary</h3>
+            <div class="qt-mini-summary-row"><span>Completed</span><strong>${state.done.length}</strong></div>
+            <div class="qt-mini-summary-row"><span>Remaining</span><strong>${Math.max(0, stages.length - state.done.length)}</strong></div>
+            <div class="qt-mini-summary-row"><span>Review Later</span><strong>${state.review.length}</strong></div>
+          </div>
+
+          <div class="qt-panel-box">
+            <h3>Tip 💡</h3>
+            <p>${getQtMissionTip(state.stage)}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getQtMissionTip(stageIndex) {
+  const tips = [
+    "السؤال الذيلي يعني غالبًا: أليس كذلك؟",
+    "لا تنسَ: الفعل المساعد يأتي قبل الضمير.",
+    "اختيار الضمير مهم مثل اختيار الفعل المساعد.",
+    "المثبت يأخذ tag منفي، والمنفي يأخذ tag مثبت.",
+    "إذا وجدت فعلًا مساعدًا، استخدمه نفسه.",
+    "إذا لم تجد مساعدًا، أنقذ الجملة بـ do / does / did.",
+    "انتبه: has + V3 تختلف عن has + noun.",
+    "never و hardly و rarely تجعل الجملة منفية في المعنى.",
+    "الطلب والدعوة جزء من function وليس grammar فقط.",
+    "حل بهدوء، واكتب الـ tag فقط.",
+    "راجع الأخطاء قبل الانتقال للدرس التالي."
+  ];
+
+  return tips[stageIndex] || tips[0];
+}
+
+function renderQtMissionPractice() {
+  const state = window.qtMissionState || { practiceIndex: 0 };
+  const data = questionTagsArabicLessonData;
+  const index = state.practiceIndex || 0;
+  const q = data.practice[index] || data.practice[0];
+
+  return `
+    <div class="qt-practice-one">
+      <p><strong>Question ${index + 1} of ${data.practice.length}</strong></p>
+      <div class="qt-stage-example">${q.question}</div>
+
+      <input id="qt-mission-practice-input" placeholder="Write the tag here...">
+
+      <div style="display:flex; flex-wrap:wrap; gap:10px;">
+        <button class="qt-work-btn primary" onclick="checkQtMissionPractice()">Check Answer</button>
+        <button class="qt-work-btn" onclick="nextQtMissionPractice()">Next Question</button>
+      </div>
+
+      <div id="qt-mission-practice-feedback" class="qt-practice-feedback">
+        اكتب الإجابة ثم اضغط Check Answer.
+      </div>
+    </div>
+  `;
+}
+
+function checkQtMissionPractice() {
+  const state = window.qtMissionState;
+  const data = questionTagsArabicLessonData;
+  const index = state.practiceIndex || 0;
+  const q = data.practice[index] || data.practice[0];
+
+  const input = document.getElementById("qt-mission-practice-input");
+  const feedback = document.getElementById("qt-mission-practice-feedback");
+  if (!input || !feedback) return;
+
+  const student = String(input.value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[؟?!.]/g, "")
+    .replace(/\s+/g, " ");
+
+  const correct = String(q.answer || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[؟?!.]/g, "")
+    .replace(/\s+/g, " ");
+
+  const ok = student === correct;
+
+  if (ok) {
+    state.score += 10;
+  }
+
+  state.answered += 1;
+
+  feedback.className = `qt-practice-feedback ${ok ? "good" : "bad"}`;
+  feedback.innerHTML = ok
+    ? `Correct ✅<br>${q.explanation}`
+    : `Wrong ❌<br>Correct answer: <strong>${q.answer}</strong><br>${q.explanation}`;
+}
+
+function nextQtMissionPractice() {
+  const state = window.qtMissionState;
+  const total = questionTagsArabicLessonData.practice.length;
+  state.practiceIndex = ((state.practiceIndex || 0) + 1) % total;
+  renderQtMissionWorkspace();
+}
+
+function goQtMissionStage(index) {
+  window.qtMissionState.stage = index;
+  renderQtMissionWorkspace();
+}
+
+function prevQtMissionStage() {
+  const state = window.qtMissionState;
+  state.stage = Math.max(0, state.stage - 1);
+  renderQtMissionWorkspace();
+}
+
+function completeQtMissionStage() {
+  const state = window.qtMissionState;
+  if (!state.done.includes(state.stage)) {
+    state.done.push(state.stage);
+  }
+
+  const stages = getQtMissionStages();
+  state.stage = Math.min(stages.length - 1, state.stage + 1);
+
+  renderQtMissionWorkspace();
+}
+
+function toggleQtMissionReview(index) {
+  const state = window.qtMissionState;
+
+  if (state.review.includes(index)) {
+    state.review = state.review.filter(i => i !== index);
+  } else {
+    state.review.push(index);
+  }
+
+  renderQtMissionWorkspace();
+}
+
+window.renderQuestionTagsArabicLesson = renderQuestionTagsArabicLesson;
+window.renderQtMissionWorkspace = renderQtMissionWorkspace;
+window.goQtMissionStage = goQtMissionStage;
+window.prevQtMissionStage = prevQtMissionStage;
+window.completeQtMissionStage = completeQtMissionStage;
+window.toggleQtMissionReview = toggleQtMissionReview;
+window.checkQtMissionPractice = checkQtMissionPractice;
+window.nextQtMissionPractice = nextQtMissionPractice;
+
+/* =====================================================
+   English Quest Workspace V4 - Question Tags Mission
+===================================================== */
+
+window.eqw4State = window.eqw4State || {
+  stage: 0,
+  done: [],
+  review: [],
+  score: 0,
+  answered: 0,
+  practiceIndex: 0
+};
+
+function getEqw4State() {
+  return window.eqw4State || {
+    stage: 0,
+    done: [],
+    review: [],
+    score: 0,
+    answered: 0,
+    practiceIndex: 0
+  };
+}
+
+function saveEqw4State(nextState) {
+  window.eqw4State = {
+    ...getEqw4State(),
+    ...nextState
+  };
+}
+
+function normalizeEqw4Answer(answer) {
+  return String(answer || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[؟?!.]/g, "")
+    .replace(/\s+/g, " ");
+}
+
+ function getEqw4QuestionTagsStages() {
+  const data = window.questionTagsArabicLessonData || questionTagsArabicLessonData;
+
+  return [
+    {
+      title: "ما هو السؤال الذيلي؟",
+      short: "Overview",
+      type: "Learn",
+      difficulty: "Easy",
+      tip: "السؤال الذيلي معناه غالبًا: أليس كذلك؟",
+      html: `
+        <h3>الفكرة الأساسية</h3>
+        <p>${data.definition.text}</p>
+        <p><strong>المعنى:</strong> ${data.definition.meaning}</p>
+        <div class="eqw4-example">You are Jordanian, aren’t you?</div>
+        <div class="eqw4-note">لاحظ وجود فاصلة قبل السؤال الذيلي، وعلامة سؤال في النهاية.</div>
+      `
+    },
+
+    {
+      title: "مكونات السؤال الذيلي",
+      short: "Structure",
+      type: "Build",
+      difficulty: "Easy",
+      tip: "الفعل المساعد أولًا، ثم الضمير المناسب.",
+      html: `
+        <h3>كيف يُبنى السؤال الذيلي؟</h3>
+        <p>يتكون غالبًا من: <strong>فعل مساعد + ضمير مناسب للفاعل</strong>.</p>
+        <div class="eqw4-example">Hisham can go, can’t he?</div>
+        <div class="eqw4-note">
+          can’t = الفعل المساعد بعد تحويله للنفي<br>
+          he = الضمير المناسب لـ Hisham
+        </div>
+      `
+    },
+
+    {
+      title: "Visual Rule Circles",
+      short: "Circles",
+      type: "Visual",
+      difficulty: "Easy",
+      tip: "احفظ القاعدة بصريًا: كل دائرة تلخص حالة مهمة.",
+      html: `
+        <h3>دوائر حفظ السؤال الذيلي</h3>
+        <p>
+          هذه الدوائر تختصر أهم حالات السؤال الذيلي حتى يرى الطالب القاعدة بسرعة
+          ويتذكرها بصريًا أثناء الحل.
+        </p>
+        ${typeof renderQuestionTagsVisualCircles === "function"
+          ? renderQuestionTagsVisualCircles()
+          : `<div class="eqw4-note">أضف دالة renderQuestionTagsVisualCircles حتى تظهر الدوائر هنا.</div>`
+        }
+      `
+    },
+
+    {
+      title: "Example Bank",
+      short: "Examples",
+      type: "Practice",
+      difficulty: "Medium",
+      tip: "اقرأ المثال ثم اربطه بالسبب. لا تحفظ الجواب فقط.",
+      html: `
+        <h3>بنك أمثلة السؤال الذيلي</h3>
+        <p>
+          أمثلة كثيرة مصنفة حسب نوع القاعدة، حتى يرى الطالب النمط أكثر من مرة
+          قبل الدخول إلى التدريب.
+        </p>
+        ${typeof renderQuestionTagsExtraExampleBank === "function"
+          ? renderQuestionTagsExtraExampleBank()
+          : `<div class="eqw4-note">أضف دالة renderQuestionTagsExtraExampleBank حتى يظهر بنك الأمثلة هنا.</div>`
+        }
+      `
+    },
+
+    {
+      title: "خريطة الضمائر",
+      short: "Pronouns",
+      type: "Map",
+      difficulty: "Medium",
+      tip: "No one و Nobody غالبًا يأخذان they.",
+      html: `
+        <h3>الضمير المناسب للفاعل</h3>
+        <p>اختيار الضمير جزء أساسي من الحل.</p>
+        <ul>
+          ${data.pronounRules.map(rule => `<li>${rule}</li>`).join("")}
+        </ul>
+      `
+    },
+
+    {
+      title: "القاعدة الذهبية",
+      short: "Golden Rule",
+      type: "Rule",
+      difficulty: "Easy",
+      tip: "مثبت → منفي، منفي → مثبت.",
+      html: `
+        <h3>المثبت والمنفي</h3>
+        <p><strong>الجملة المثبتة تأخذ سؤالًا ذيليًا منفيًا، والجملة المنفية تأخذ سؤالًا ذيليًا مثبتًا.</strong></p>
+        <div class="eqw4-example">Hisham can go, can’t he?</div>
+        <div class="eqw4-example">Hani can’t play, can he?</div>
+        <div class="eqw4-note">
+          هذه هي القاعدة الذهبية التي يجب أن يبدأ منها الطالب قبل التفكير في نوع الفعل.
+        </div>
+      `
+    },
+
+    {
+      title: "إذا وُجد فعل مساعد",
+      short: "Auxiliary",
+      type: "Detect",
+      difficulty: "Medium",
+      tip: "إذا وجدت مساعدًا، استخدمه هو نفسه.",
+      html: `
+        <h3>استخدم نفس الفعل المساعد</h3>
+        <p>إذا كان في الجملة فعل مساعد، نستعمله في السؤال الذيلي مع عكس الحالة.</p>
+
+        <div class="eqw4-example">Ali was rich, wasn’t he?</div>
+        <div class="eqw4-example">Fadi will arrive, won’t he?</div>
+        <div class="eqw4-example">Saleem has eaten, hasn’t he?</div>
+        <div class="eqw4-example">They can swim, can’t they?</div>
+        <div class="eqw4-example">She should study, shouldn’t she?</div>
+
+        <div class="eqw4-note">
+          السر هنا: لا تبحث عن do / does / did إذا كان الفعل المساعد موجودًا أصلًا.
+        </div>
+      `
+    },
+
+    {
+      title: "إذا لم يوجد فعل مساعد",
+      short: "No Auxiliary",
+      type: "Rescue",
+      difficulty: "Medium",
+      tip: "helps → doesn’t / play → don’t / ate → didn’t",
+      html: `
+        <h3>Grammar Rescue: do / does / did</h3>
+        <p>إذا لم يوجد فعل مساعد، نستخدم do / does / did حسب الفعل.</p>
+        <ul>
+          <li>الفعل المضارع مع s/es → doesn’t</li>
+          <li>الفعل المضارع بدون s → don’t</li>
+          <li>الفعل الماضي → didn’t</li>
+        </ul>
+
+        <div class="eqw4-example">She cleans the kitchen, doesn’t she?</div>
+        <div class="eqw4-example">They play football, don’t they?</div>
+        <div class="eqw4-example">Laila ate dinner, didn’t she?</div>
+        <div class="eqw4-example">Fadi visited Amman, didn’t he?</div>
+        <div class="eqw4-example">Hisham helps Salma, doesn’t he?</div>
+
+        <div class="eqw4-note">
+          هذه المرحلة مهمة جدًا لأن كثيرًا من الطلاب يخطئون عندما لا يجدون فعلًا مساعدًا ظاهرًا.
+        </div>
+      `
+    },
+
+    {
+      title: "مختبر has / have / had",
+      short: "Have Lab",
+      type: "Lab",
+      difficulty: "Hard",
+      tip: "has + V3 غير has + noun.",
+      html: `
+        <h3>has / have / had Lab</h3>
+        <p>
+          هذه من أخطر نقاط السؤال الذيلي؛ لأن has / have / had أحيانًا تكون أفعالًا مساعدة،
+          وأحيانًا تعامل كأفعال عادية.
+        </p>
+
+        ${data.haveRules.map(rule => `
+          <div class="eqw4-note">
+            <strong>${rule.title}</strong><br>
+            ${rule.rule}
+          </div>
+          ${rule.examples.map(ex => `<div class="eqw4-example">${ex}</div>`).join("")}
+        `).join("")}
+      `
+    },
+
+    {
+      title: "TAWJIHI Danger Zone",
+      short: "Traps",
+      type: "Danger",
+      difficulty: "Hard",
+      tip: "never / hardly / rarely تجعل الجملة منفية في المعنى.",
+      html: `
+        <h3>ضربات توجيهي مهمة</h3>
+        <p>هذه أكثر النقاط التي يقع فيها الطلاب في الامتحان.</p>
+
+        ${data.tawjihiTraps.map(trap => `
+          <div class="eqw4-danger">
+            <strong>${trap.title}</strong><br>
+            ❌ ${trap.wrong}<br>
+            ✅ ${trap.correct}<br>
+            ${trap.explanation}
+          </div>
+        `).join("")}
+      `
+    },
+
+    {
+      title: "Function Mode",
+      short: "Function",
+      type: "Use",
+      difficulty: "Medium",
+      tip: "الطلب والدعوة هنا وظيفة لغوية، وليست قاعدة فقط.",
+      html: `
+        <h3>الطلب والدعوة</h3>
+        <p>
+          السؤال الذيلي لا يُستخدم فقط كقاعدة، بل يمكن أن يظهر كوظيفة لغوية
+          في الطلب والدعوة.
+        </p>
+
+        ${data.functions.map(fn => `
+          <div class="eqw4-note">
+            <strong>${fn.title}</strong><br>
+            ${fn.explanation}
+          </div>
+          ${fn.examples.map(ex => `<div class="eqw4-example">${ex}</div>`).join("")}
+        `).join("")}
+      `
+    },
+
+    {
+      title: "Practice Arena",
+      short: "Practice",
+      type: "Train",
+      difficulty: "Exam",
+      tip: "اكتب الـ tag فقط مثل: does he / aren’t I.",
+      html: renderEqw4Practice()
+    },
+
+    {
+      title: "Mission Report",
+      short: "Summary",
+      type: "Report",
+      difficulty: "Finish",
+      tip: "راجع marked stages قبل الانتقال لدرس جديد.",
+      html: `
+        <h3>تقرير المهمة</h3>
+        <p>أنهيت رحلة السؤال الذيلي داخل Workspace.</p>
+
+        <div class="eqw4-note">
+          <strong>ما تم تغطيته:</strong><br>
+          التعريف، التركيب، دوائر القواعد، بنك الأمثلة، الضمائر، القاعدة الذهبية،
+          الأفعال المساعدة، do/does/did، has/have/had، ضربات التوجيهي،
+          function، والتدريب من الملف.
+        </div>
+
+        <div class="eqw4-note">
+          <strong>الخطوة القادمة:</strong><br>
+          تحويل التدريب إلى Exam Mode كامل مع مؤقت ونتيجة نهائية وتحليل نقاط الضعف.
+        </div>
+      `
+    }
+  ];
+}
+
+ function renderEqw4Practice() {
+  const state = getEqw4State();
+  const data = window.questionTagsArabicLessonData || questionTagsArabicLessonData;
+  const index = state.practiceIndex || 0;
+  const q = data.practice[index] || data.practice[0];
+  const options = getEqw4PracticeOptions(q);
+
+  return `
+    <div class="eqw4-practice">
+      <span class="eqw4-question-counter">
+        Question ${index + 1} of ${data.practice.length}
+      </span>
+
+      <h3>اختر السؤال الذيلي الصحيح</h3>
+
+      <div class="eqw4-example">${q.question}</div>
+
+      <div class="eqw4-choice-grid">
+        ${options.map(option => `
+          <button
+            class="eqw4-choice-circle"
+            onclick="selectEqw4PracticeCircle('${String(q.id).replace(/'/g, "\\'")}', '${String(option).replace(/'/g, "\\'")}', this)"
+          >
+            ${option}
+          </button>
+        `).join("")}
+      </div>
+
+      <div id="eqw4PracticeFeedback" class="eqw4-feedback">
+        اختر الإجابة الصحيحة من الدوائر.
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:12px;">
+        <button class="eqw4-btn" onclick="nextEqw4Practice()">Next Question ▶</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderEnglishQuestWorkspaceV4() {
+  const stageArea = document.getElementById("englishLessonStageArea");
+  if (!stageArea) return;
+
+  const state = getEqw4State();
+  const stages = getEqw4QuestionTagsStages();
+  const current = stages[state.stage] || stages[0];
+
+  const completed = [...new Set(state.done || [])].length;
+  const progress = Math.round((completed / stages.length) * 100);
+  const remaining = Math.max(0, stages.length - completed);
+
+  stageArea.innerHTML = `
+    <div class="eqw4-shell">
+      <div class="eqw4-topbar">
+        <div class="eqw4-brand">
+          <div class="eqw4-logo">JAK</div>
+          <div>
+            <h2>Question Tags Mission</h2>
+            <p>السؤال الذيلي — Workspace Mode</p>
+          </div>
+        </div>
+
+        <div class="eqw4-top-actions">
+          <span class="eqw4-chip">Stage ${state.stage + 1}/${stages.length}</span>
+          <span class="eqw4-chip">Progress ${progress}%</span>
+          <span class="eqw4-chip">Score ${state.score || 0}</span>
+          <button class="eqw4-btn" onclick="renderEnglishQuestV3()">Back to Hub</button>
+        </div>
+      </div>
+
+      <div class="eqw4-layout">
+        <aside class="eqw4-sidebar">
+          <div class="eqw4-side-title">Mission Stages</div>
+          <div class="eqw4-nav">
+            ${stages.map((stage, index) => `
+              <div class="eqw4-nav-item ${index === state.stage ? "active" : ""} ${state.done.includes(index) ? "done" : ""}" onclick="goEqw4Stage(${index})">
+                <div class="eqw4-nav-num">${state.done.includes(index) ? "✓" : index + 1}</div>
+                <div>
+                  <div class="eqw4-nav-label">${stage.short}</div>
+                  <div class="eqw4-nav-tag">${stage.type}</div>
+                </div>
+                <div>${state.review.includes(index) ? "⭐" : ""}</div>
+              </div>
+            `).join("")}
+          </div>
+        </aside>
+
+        <main class="eqw4-main">
+          <div class="eqw4-stage-head">
+            <div>
+              <span class="eqw4-stage-kicker">${current.type}</span>
+              <h1>${current.title}</h1>
+            </div>
+            <span class="eqw4-difficulty">${current.difficulty}</span>
+          </div>
+
+          <div class="eqw4-content">
+            ${current.html}
+          </div>
+
+          <div class="eqw4-actions">
+            <button class="eqw4-btn" onclick="prevEqw4Stage()">◀ Previous</button>
+            <button class="eqw4-btn" onclick="toggleEqw4Review(${state.stage})">⭐ Review Later</button>
+            <button class="eqw4-btn primary" onclick="completeEqw4Stage()">Complete & Next ▶</button>
+          </div>
+        </main>
+
+        <aside class="eqw4-right">
+          <div class="eqw4-panel">
+            <h3>Mission Map</h3>
+            <div class="eqw4-stage-grid">
+              ${stages.map((stage, index) => `
+                <div class="eqw4-stage-dot ${index === state.stage ? "active" : ""} ${state.done.includes(index) ? "done" : ""}" onclick="goEqw4Stage(${index})">
+                  ${index + 1}
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <div class="eqw4-panel">
+            <h3>Progress</h3>
+            <div class="eqw4-progress-track">
+              <div class="eqw4-progress-fill" style="width:${progress}%"></div>
+            </div>
+          </div>
+
+          <div class="eqw4-panel">
+            <h3>Summary</h3>
+            <div class="eqw4-summary-row"><span>Completed</span><strong>${completed}</strong></div>
+            <div class="eqw4-summary-row"><span>Remaining</span><strong>${remaining}</strong></div>
+            <div class="eqw4-summary-row"><span>Review Later</span><strong>${state.review.length}</strong></div>
+            <div class="eqw4-summary-row"><span>Answered</span><strong>${state.answered || 0}</strong></div>
+          </div>
+
+          <div class="eqw4-panel">
+            <h3>Smart Tip 💡</h3>
+            <p>${current.tip}</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  `;
+}
+
+function openEnglishQuestV3Mission(missionId) {
+  const questState = typeof getEnglishQuestV3State === "function"
+    ? getEnglishQuestV3State()
+    : { generation: "2009", unit: "unit1", category: "grammar" };
+
+  if (
+    missionId === "questionTags" &&
+    questState.generation === "2009" &&
+    questState.unit === "unit1" &&
+    questState.category === "grammar"
+  ) {
+    renderEnglishQuestWorkspaceV4();
+
+    const stageArea = document.getElementById("englishLessonStageArea");
+    if (stageArea) {
+      stageArea.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    return;
+  }
+
+  const stageArea = document.getElementById("englishLessonStageArea");
+  if (stageArea) {
+    stageArea.innerHTML = `
+      <div class="eqw4-shell" style="padding:24px;">
+        <h2>بانتظار ملف الدرس</h2>
+        <p>هذا المسار جاهز. أرسل ملف الدرس وسنحوّله إلى Workspace كامل.</p>
+      </div>
+    `;
+  }
+}
+
+function renderQuestionTagsArabicLesson() {
+  renderEnglishQuestWorkspaceV4();
+}
+
+function goEqw4Stage(index) {
+  const stages = getEqw4QuestionTagsStages();
+  const safeIndex = Math.max(0, Math.min(stages.length - 1, Number(index || 0)));
+  saveEqw4State({ stage: safeIndex });
+  renderEnglishQuestWorkspaceV4();
+}
+
+function prevEqw4Stage() {
+  const state = getEqw4State();
+  goEqw4Stage(Math.max(0, state.stage - 1));
+}
+
+function completeEqw4Stage() {
+  const state = getEqw4State();
+  const done = Array.isArray(state.done) ? [...state.done] : [];
+
+  if (!done.includes(state.stage)) {
+    done.push(state.stage);
+  }
+
+  const stages = getEqw4QuestionTagsStages();
+  const nextStage = Math.min(stages.length - 1, state.stage + 1);
+
+  saveEqw4State({
+    done,
+    stage: nextStage
+  });
+
+  renderEnglishQuestWorkspaceV4();
+}
+
+function toggleEqw4Review(index) {
+  const state = getEqw4State();
+  const review = Array.isArray(state.review) ? [...state.review] : [];
+  const safeIndex = Number(index);
+
+  const nextReview = review.includes(safeIndex)
+    ? review.filter(i => i !== safeIndex)
+    : [...review, safeIndex];
+
+  saveEqw4State({ review: nextReview });
+  renderEnglishQuestWorkspaceV4();
+}
+
+function checkEqw4Practice() {
+  const state = getEqw4State();
+  const data = window.questionTagsArabicLessonData || questionTagsArabicLessonData;
+  const index = state.practiceIndex || 0;
+  const q = data.practice[index] || data.practice[0];
+
+  const input = document.getElementById("eqw4PracticeInput");
+  const feedback = document.getElementById("eqw4PracticeFeedback");
+  if (!input || !feedback) return;
+
+  const student = normalizeEqw4Answer(input.value);
+  const correct = normalizeEqw4Answer(q.answer);
+  const isCorrect = student === correct;
+
+  feedback.className = `eqw4-feedback ${isCorrect ? "good" : "bad"}`;
+  feedback.innerHTML = isCorrect
+    ? `Correct ✅<br>${q.explanation}`
+    : `Wrong ❌<br>Correct answer: <strong>${q.answer}</strong><br>${q.explanation}`;
+
+  saveEqw4State({
+    score: (state.score || 0) + (isCorrect ? 10 : 0),
+    answered: (state.answered || 0) + 1
+  });
+}
+
+function nextEqw4Practice() {
+  const state = getEqw4State();
+  const data = window.questionTagsArabicLessonData || questionTagsArabicLessonData;
+  const total = data.practice.length;
+
+  saveEqw4State({
+    practiceIndex: ((state.practiceIndex || 0) + 1) % total
+  });
+
+  renderEnglishQuestWorkspaceV4();
+}
+
+window.renderEnglishQuestWorkspaceV4 = renderEnglishQuestWorkspaceV4;
+window.openEnglishQuestV3Mission = openEnglishQuestV3Mission;
+window.renderQuestionTagsArabicLesson = renderQuestionTagsArabicLesson;
+window.goEqw4Stage = goEqw4Stage;
+window.prevEqw4Stage = prevEqw4Stage;
+window.completeEqw4Stage = completeEqw4Stage;
+window.toggleEqw4Review = toggleEqw4Review;
+window.checkEqw4Practice = checkEqw4Practice;
+window.nextEqw4Practice = nextEqw4Practice;
+
+/* =====================================================
+   Question Tags Extended Visual Examples
+===================================================== */
+
+window.questionTagsVisualCircles = [
+  {
+    title: "Positive Sentence",
+    center: "+",
+    rule: "مثبت",
+    result: "Negative Tag",
+    example: "He is ready, isn’t he?"
+  },
+  {
+    title: "Negative Sentence",
+    center: "−",
+    rule: "منفي",
+    result: "Positive Tag",
+    example: "She isn’t here, is she?"
+  },
+  {
+    title: "Be Verb",
+    center: "BE",
+    rule: "am / is / are / was / were",
+    result: "نستخدم نفس be",
+    example: "Ali was tired, wasn’t he?"
+  },
+  {
+    title: "Modal Verb",
+    center: "M",
+    rule: "can / will / must / should",
+    result: "نستخدم نفس modal",
+    example: "They can swim, can’t they?"
+  },
+  {
+    title: "Present Simple + s",
+    center: "S",
+    rule: "plays / helps / cleans",
+    result: "doesn’t",
+    example: "She cleans the room, doesn’t she?"
+  },
+  {
+    title: "Present Simple Base",
+    center: "DO",
+    rule: "play / help / go",
+    result: "don’t",
+    example: "They play football, don’t they?"
+  },
+  {
+    title: "Past Simple",
+    center: "DID",
+    rule: "went / ate / helped",
+    result: "didn’t",
+    example: "Laila ate dinner, didn’t she?"
+  },
+  {
+    title: "has + V3",
+    center: "V3",
+    rule: "has seen / has eaten",
+    result: "hasn’t",
+    example: "She has seen it, hasn’t she?"
+  },
+  {
+    title: "has + noun",
+    center: "N",
+    rule: "has a car / has a phone",
+    result: "doesn’t",
+    example: "She has a mobile, doesn’t she?"
+  },
+  {
+    title: "I am",
+    center: "I",
+    rule: "I am / I’m",
+    result: "aren’t I",
+    example: "I am late, aren’t I?"
+  },
+  {
+    title: "Let’s",
+    center: "LET",
+    rule: "Let’s / Let us",
+    result: "shall we",
+    example: "Let’s go, shall we?"
+  },
+  {
+    title: "Imperative",
+    center: "!",
+    rule: "فعل أمر / Don’t",
+    result: "will you",
+    example: "Help me, will you?"
+  }
+];
+
+window.questionTagsExtraExamples = {
+  beVerb: [
+    ["He is clever, isn’t he?", "الجملة مثبتة وفيها is، لذلك نستخدم isn’t he."],
+    ["She isn’t ready, is she?", "الجملة منفية بـ isn’t، لذلك نستخدم is she."],
+    ["They are students, aren’t they?", "الجملة مثبتة وفيها are، لذلك نستخدم aren’t they."],
+    ["Ali was absent, wasn’t he?", "الجملة مثبتة وفيها was، لذلك نستخدم wasn’t he."],
+    ["The boys weren’t late, were they?", "الجملة منفية بـ weren’t، لذلك نستخدم were they."]
+  ],
+
+  modals: [
+    ["You can help me, can’t you?", "can مثبتة → can’t you."],
+    ["He can’t drive, can he?", "can’t منفية → can he."],
+    ["They will arrive soon, won’t they?", "will مثبتة → won’t they."],
+    ["She won’t come, will she?", "won’t منفية → will she."],
+    ["We should study, shouldn’t we?", "should مثبتة → shouldn’t we."],
+    ["He mustn’t shout, must he?", "mustn’t منفية → must he."]
+  ],
+
+  noAuxiliary: [
+    ["Hisham helps Salma, doesn’t he?", "helps فيها s → doesn’t he."],
+    ["They play football, don’t they?", "play بدون s → don’t they."],
+    ["Laila ate dinner, didn’t she?", "ate ماضٍ → didn’t she."],
+    ["Fadi visited Amman, didn’t he?", "visited ماضٍ → didn’t he."],
+    ["She cleans the kitchen, doesn’t she?", "cleans فيها s → doesn’t she."]
+  ],
+
+  haveCases: [
+    ["She has seen the accident, hasn’t she?", "has + V3 → hasn’t."],
+    ["She has a mobile, doesn’t she?", "has + noun → doesn’t."],
+    ["I have gone home, haven’t I?", "have + V3 → haven’t."],
+    ["I have to go, don’t I?", "have to بدون V3 → don’t."],
+    ["She had bought a car, hadn’t she?", "had + V3 → hadn’t."],
+    ["She had a car accident, didn’t she?", "had + noun → didn’t."]
+  ],
+
+  negativeWords: [
+    ["She is never late, is she?", "never تجعل الجملة منفية في المعنى."],
+    ["He hardly phones me, does he?", "hardly معناها سلبي، لذلك tag مثبت."],
+    ["We seldom help them, do we?", "seldom معناها سلبي، لذلك do we."],
+    ["Nothing is good, is it?", "Nothing سلبي والضمير it."],
+    ["Nobody helped her, did they?", "Nobody سلبي، helped ماضٍ، والضمير they."]
+  ],
+
+  specialCases: [
+    ["I am right, aren’t I?", "I am مثبتة → aren’t I."],
+    ["I am not wrong, am I?", "I am not منفية → am I."],
+    ["Let’s start, shall we?", "Let’s → shall we."],
+    ["Help me, will you?", "الأمر → will you."],
+    ["Don’t shout, will you?", "الأمر المنفي بـ Don’t → will you."]
+  ],
+
+  functions: [
+    ["Buy me the newspaper, could you?", "Request / طلب."],
+    ["Buy me the newspaper, will you?", "Request / طلب."],
+    ["Come to visit us next summer, won’t you?", "Invitation / دعوة."],
+    ["Come to visit us next summer, will you?", "Invitation / دعوة."]
+  ]
+};
+
+function renderQuestionTagsVisualCircles() {
+  const circles = window.questionTagsVisualCircles || [];
+
+  return `
+    <div class="qt-circle-grid">
+      ${circles.map(circle => `
+        <div class="qt-circle-card">
+          <div class="qt-circle-core">${circle.center}</div>
+          <h4>${circle.title}</h4>
+          <p><strong>القاعدة:</strong> ${circle.rule}</p>
+          <span class="qt-circle-result">${circle.result}</span>
+          <div class="eqw4-example">${circle.example}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderQuestionTagsExtraExampleBank() {
+  const bank = window.questionTagsExtraExamples || {};
+
+  const titles = {
+    beVerb: "1. Verb to be",
+    modals: "2. Modal Verbs",
+    noAuxiliary: "3. No Auxiliary: do / does / did",
+    haveCases: "4. has / have / had",
+    negativeWords: "5. Negative Words",
+    specialCases: "6. Special Cases",
+    functions: "7. Function: Requests & Invitations"
+  };
+
+  return `
+    <div class="qt-example-bank">
+      ${Object.entries(bank).map(([key, examples]) => `
+        <div class="qt-example-section">
+          <h4>${titles[key] || key}</h4>
+          ${examples.map(([sentence, explanation]) => `
+            <div class="qt-example-row">
+              <strong>${sentence}</strong>
+              <span>${explanation}</span>
+            </div>
+          `).join("")}
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+function renderQuestionTagsVisualCircles() {
+  const circles = window.questionTagsVisualCircles || [];
+
+  return `
+    <div class="qt-circle-grid">
+      ${circles.map(circle => `
+        <div class="qt-circle-card">
+          <div class="qt-circle-core">${circle.center}</div>
+          <h4>${circle.title}</h4>
+          <p><strong>القاعدة:</strong> ${circle.rule}</p>
+          <span class="qt-circle-result">${circle.result}</span>
+          <div class="eqw4-example">${circle.example}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderQuestionTagsExtraExampleBank() {
+  const bank = window.questionTagsExtraExamples || {};
+
+  const titles = {
+    beVerb: "1. Verb to be",
+    modals: "2. Modal Verbs",
+    noAuxiliary: "3. No Auxiliary: do / does / did",
+    haveCases: "4. has / have / had",
+    negativeWords: "5. Negative Words",
+    specialCases: "6. Special Cases",
+    functions: "7. Function: Requests & Invitations"
+  };
+
+  return `
+    <div class="qt-example-bank">
+      ${Object.entries(bank).map(([key, examples]) => `
+        <div class="qt-example-section">
+          <h4>${titles[key] || key}</h4>
+          ${examples.map(([sentence, explanation]) => `
+            <div class="qt-example-row">
+              <strong>${sentence}</strong>
+              <span>${explanation}</span>
+            </div>
+          `).join("")}
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+function getEqw4PracticeOptions(question) {
+  const correct = question.answer;
+
+  const commonTags = [
+    "does he",
+    "doesn’t he",
+    "do they",
+    "don’t they",
+    "is he",
+    "isn’t he",
+    "are they",
+    "aren’t they",
+    "can he",
+    "can you",
+    "can’t you",
+    "will she",
+    "won’t she",
+    "have you",
+    "haven’t you",
+    "shall we",
+    "will you",
+    "aren’t I",
+    "am I",
+    "did they",
+    "didn’t they"
+  ];
+
+  const distractors = commonTags
+    .filter(tag => normalizeEqw4Answer(tag) !== normalizeEqw4Answer(correct))
+    .slice(0, 12);
+
+  const selected = [correct];
+
+  for (const tag of distractors) {
+    if (selected.length >= 4) break;
+    selected.push(tag);
+  }
+
+  return shuffleEqw4Options(selected);
+}
+
+function shuffleEqw4Options(options) {
+  return [...options].sort(() => Math.random() - 0.5);
+}
+
+function selectEqw4PracticeCircle(questionId, selectedAnswer, button) {
+  const state = getEqw4State();
+  const data = window.questionTagsArabicLessonData || questionTagsArabicLessonData;
+  const question = data.practice.find(q => String(q.id) === String(questionId));
+  const feedback = document.getElementById("eqw4PracticeFeedback");
+
+  if (!question || !feedback || !button) return;
+
+  const isCorrect =
+    normalizeEqw4Answer(selectedAnswer) === normalizeEqw4Answer(question.answer);
+
+  const allButtons = button.parentElement.querySelectorAll(".eqw4-choice-circle");
+
+  allButtons.forEach(btn => {
+    btn.classList.add("disabled");
+
+    if (normalizeEqw4Answer(btn.textContent) === normalizeEqw4Answer(question.answer)) {
+      btn.classList.add("correct");
+    }
+  });
+
+  if (!isCorrect) {
+    button.classList.add("wrong");
+  }
+
+  feedback.className = `eqw4-feedback ${isCorrect ? "good" : "bad"}`;
+  feedback.innerHTML = isCorrect
+    ? `Correct ✅<br>${question.explanation}`
+    : `Wrong ❌<br>Correct answer: <strong>${question.answer}</strong><br>${question.explanation}`;
+
+  saveEqw4State({
+    score: (state.score || 0) + (isCorrect ? 10 : 0),
+    answered: (state.answered || 0) + 1
+  });
+}
+
+window.getEqw4PracticeOptions = getEqw4PracticeOptions;
+window.selectEqw4PracticeCircle = selectEqw4PracticeCircle;

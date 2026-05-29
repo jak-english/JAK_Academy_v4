@@ -27492,3 +27492,30 @@ body:has(#englishLessonJourney.active) main {
     min-width: 0 !important;
   }
 }
+/* Temporary launch hiding - not deleting */
+button[data-nav-key="prosodyLab"],
+button[data-nav-key="englishLessonJourney"] {
+  display: none !important;
+}
+/* =====================================================
+   Launch Mode: Hide unfinished English + Prosody sections
+   Temporary hiding, not deleting
+===================================================== */
+
+button[data-nav-key="englishLessonJourney"],
+button[data-nav-key="prosodyLab"],
+#englishLessonJourney,
+#prosodyLab,
+#prosody,
+#arabicProsody,
+#prosodySection,
+.prosody-lab,
+.prosody-section,
+.prosody-card,
+.rajaz-core-board,
+.rajaz-teacher-lesson,
+.rajaz-compare-board,
+.rajaz-learning-map {
+  display: none !important;
+}
+
