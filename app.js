@@ -24816,3 +24816,269 @@ window.organizeWritingAcademyScreenV4 = organizeWritingAcademyScreenV4;
 
   console.log("✅ Import Questions To Bank Patch installed successfully.");
 })();
+
+/* =========================================================
+   EXAMS PATCH 5C — PROFESSIONAL BANK EXAM BUILDER MODAL
+   ========================================================= */
+
+(function installBankExamBuilderModalPatch() {
+  if (window.__bankExamBuilderModalPatchInstalled) {
+    console.log("Bank Exam Builder Modal Patch already installed.");
+    return;
+  }
+
+  window.__bankExamBuilderModalPatchInstalled = true;
+
+  function fillBankBuilderSelect(selectId, options, placeholder) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    const current = select.value;
+    select.innerHTML = "";
+
+    const first = document.createElement("option");
+    first.value = "";
+    first.textContent = placeholder;
+    select.appendChild(first);
+
+    options.forEach(item => {
+      const opt = document.createElement("option");
+      opt.value = item;
+      opt.textContent = item;
+      select.appendChild(opt);
+    });
+
+    if ([...select.options].some(o => o.value === current)) {
+      select.value = current;
+    }
+  }
+
+  function setupBankBuilderFields() {
+    fillBankBuilderSelect(
+      "bankBuilderSubject",
+      window.JAK_ACADEMIC_SUBJECTS || ["English", "Arabic", "Math", "Science"],
+      "Select Subject"
+    );
+
+    fillBankBuilderSelect(
+      "bankBuilderGrade",
+      (window.JAK_ACADEMIC_GRADES || ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]).map(String),
+      "Select Grade"
+    );
+
+    fillBankBuilderSelect(
+      "bankBuilderUnit",
+      window.JAK_ACADEMIC_UNITS || ["Unit 1", "Unit 2", "Unit 3"],
+      "Select Unit"
+    );
+  }
+
+  async function getSelectedBankQuestionsFull() {
+    const selectedIds = [...(window.selectedBankQuestions || [])];
+
+    if (!selectedIds.length) return [];
+
+    const { data, error } = await client
+      .from("questions")
+      .select("*")
+      .in("id", selectedIds);
+
+    if (error) {
+      throw error;
+    }
+
+    return data || [];
+  }
+
+  window.openBankExamBuilderModal = async function openBankExamBuilderModal() {
+    const status = document.getElementById("bankBuilderStatus");
+    const modal = document.getElementById("bankExamBuilderModal");
+
+    if (!modal) {
+      alert("Exam builder modal was not found.");
+      return;
+    }
+
+    if (!window.selectedBankQuestions || window.selectedBankQuestions.length === 0) {
+      alert("Please select at least one question first.");
+      return;
+    }
+
+    setupBankBuilderFields();
+
+    const countBox = document.getElementById("bankBuilderSelectedCount");
+    if (countBox) countBox.textContent = String(window.selectedBankQuestions.length);
+
+    if (status) status.textContent = "";
+
+    try {
+      const selectedQuestions = await getSelectedBankQuestionsFull();
+      const first = selectedQuestions[0] || {};
+
+      const titleInput = document.getElementById("bankBuilderExamTitle");
+      const descInput = document.getElementById("bankBuilderDescription");
+      const durationInput = document.getElementById("bankBuilderDuration");
+      const subjectInput = document.getElementById("bankBuilderSubject");
+      const gradeInput = document.getElementById("bankBuilderGrade");
+      const unitInput = document.getElementById("bankBuilderUnit");
+
+      if (titleInput && !titleInput.value) {
+        titleInput.value = `${first.subject || "New"} ${first.unit || ""} Exam`.trim();
+      }
+
+      if (descInput && !descInput.value) {
+        descInput.value = "Created from Question Bank";
+      }
+
+      if (durationInput && !durationInput.value) {
+        durationInput.value = "10";
+      }
+
+      if (subjectInput && first.subject) subjectInput.value = first.subject;
+      if (gradeInput && first.grade_level) gradeInput.value = String(first.grade_level);
+      if (unitInput && first.unit) unitInput.value = first.unit;
+
+      modal.classList.remove("hidden");
+    } catch (error) {
+      console.error("Open bank exam builder modal error:", error);
+      alert(error.message || "Could not open exam builder.");
+    }
+  };
+
+  window.closeBankExamBuilderModal = function closeBankExamBuilderModal() {
+    const modal = document.getElementById("bankExamBuilderModal");
+    if (modal) modal.classList.add("hidden");
+  };
+
+  window.createExamFromSelectedBankQuestions = function createExamFromSelectedBankQuestions() {
+    window.openBankExamBuilderModal();
+  };
+
+  window.confirmCreateExamFromBankModal = async function confirmCreateExamFromBankModal() {
+    const status = document.getElementById("bankBuilderStatus");
+
+    const user = typeof getCurrentUser === "function" ? await getCurrentUser() : null;
+
+    if (!user) {
+      if (status) status.textContent = "Login first.";
+      return;
+    }
+
+    const selectedIds = [...(window.selectedBankQuestions || [])];
+
+    if (!selectedIds.length) {
+      if (status) status.textContent = "Please select at least one question.";
+      return;
+    }
+
+    const title = document.getElementById("bankBuilderExamTitle")?.value.trim() || "";
+    const description = document.getElementById("bankBuilderDescription")?.value.trim() || "Created from Question Bank";
+    const timeLimit = Number(document.getElementById("bankBuilderDuration")?.value || 10);
+    const subject = document.getElementById("bankBuilderSubject")?.value || "";
+    const gradeLevel = document.getElementById("bankBuilderGrade")?.value || "";
+    const unit = document.getElementById("bankBuilderUnit")?.value || "";
+
+    if (!title) {
+      if (status) status.textContent = "Please enter exam title.";
+      return;
+    }
+
+    if (!timeLimit || timeLimit <= 0) {
+      if (status) status.textContent = "Please enter a valid duration.";
+      return;
+    }
+
+    if (!subject || !gradeLevel || !unit) {
+      if (status) status.textContent = "Please select Subject, Grade, and Unit.";
+      return;
+    }
+
+    if (status) status.textContent = "Creating exam from selected questions...";
+
+    try {
+      const selectedQuestions = await getSelectedBankQuestionsFull();
+
+      if (!selectedQuestions.length) {
+        if (status) status.textContent = "Selected questions were not found.";
+        return;
+      }
+
+      const examData = {
+        title,
+        description,
+        time_limit: timeLimit,
+        question_count: selectedQuestions.length,
+        exam_type: "multiple_choice",
+        subject,
+        grade_level: gradeLevel,
+        unit,
+        status: "draft",
+        teacher_id: user.id
+      };
+
+      const { data: newExam, error: examError } = await client
+        .from("exams")
+        .insert([examData])
+        .select()
+        .single();
+
+      if (examError) {
+        console.error("Create exam from bank modal error:", examError);
+        if (status) status.textContent = examError.message;
+        return;
+      }
+
+      const copiedQuestions = selectedQuestions.map(q => ({
+        exam_id: newExam.id,
+        question_text: q.question_text,
+        question_type: q.question_type,
+        explanation: q.explanation || "",
+        option_a: q.option_a,
+        option_b: q.option_b,
+        option_c: q.option_c,
+        option_d: q.option_d,
+        correct_answer: q.correct_answer,
+        subject: q.subject || subject,
+        grade_level: q.grade_level || gradeLevel,
+        unit: q.unit || unit,
+        lesson: q.lesson || "",
+        skill: q.skill || "",
+        difficulty: q.difficulty || ""
+      }));
+
+      const { error: insertQuestionsError } = await client
+        .from("questions")
+        .insert(copiedQuestions);
+
+      if (insertQuestionsError) {
+        console.error("Copy questions from bank modal error:", insertQuestionsError);
+        if (status) status.textContent = insertQuestionsError.message;
+        return;
+      }
+
+      window.selectedBankQuestions = [];
+
+      const countBox = document.getElementById("selectedBankQuestionsCount");
+      if (countBox) countBox.textContent = "0";
+
+      if (status) status.textContent = `Exam created with ${copiedQuestions.length} question(s) ✅`;
+
+      closeBankExamBuilderModal();
+
+      if (typeof loadTeacherExams === "function") {
+        await loadTeacherExams();
+      }
+
+      if (typeof openQuestionManager === "function") {
+        openQuestionManager(newExam.id, newExam.title);
+      }
+    } catch (error) {
+      console.error("Confirm create exam from bank modal failed:", error);
+      if (status) status.textContent = error.message || "Could not create exam.";
+    }
+  };
+
+  setTimeout(setupBankBuilderFields, 500);
+
+  console.log("✅ Bank Exam Builder Modal Patch installed successfully.");
+})();

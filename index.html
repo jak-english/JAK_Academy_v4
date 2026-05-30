@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang= "en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -987,6 +987,69 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
   <div id="questionBankList" class="question-bank-list">
     <p>Click “Load Question Bank” to view your questions.</p>
   </div>
+  <div id="bankExamBuilderModal" class="bank-exam-modal hidden">
+  <div class="bank-exam-modal-card">
+    <div class="bank-exam-modal-header">
+      <div>
+        <h2>Create Exam from Question Bank</h2>
+        <p>Build a draft exam using your selected questions.</p>
+      </div>
+      <button class="bank-exam-modal-close" onclick="closeBankExamBuilderModal()">×</button>
+    </div>
+
+    <div class="bank-exam-modal-summary">
+      <strong>Selected Questions:</strong>
+      <span id="bankBuilderSelectedCount">0</span>
+    </div>
+
+    <div class="question-bank-filter-grid">
+      <div class="academic-field">
+        <label for="bankBuilderExamTitle">Exam Title</label>
+        <input id="bankBuilderExamTitle" class="academic-select" placeholder="Example: Unit 1 Grammar Quiz">
+      </div>
+
+      <div class="academic-field">
+        <label for="bankBuilderDuration">Duration / Minutes</label>
+        <input id="bankBuilderDuration" class="academic-select" type="number" min="1" value="10">
+      </div>
+
+      <div class="academic-field">
+        <label for="bankBuilderSubject">Subject</label>
+        <select id="bankBuilderSubject" class="academic-select">
+          <option value="">Select Subject</option>
+        </select>
+      </div>
+
+      <div class="academic-field">
+        <label for="bankBuilderGrade">Grade</label>
+        <select id="bankBuilderGrade" class="academic-select">
+          <option value="">Select Grade</option>
+        </select>
+      </div>
+
+      <div class="academic-field">
+        <label for="bankBuilderUnit">Unit</label>
+        <select id="bankBuilderUnit" class="academic-select">
+          <option value="">Select Unit</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="academic-field">
+      <label for="bankBuilderDescription">Description</label>
+      <textarea id="bankBuilderDescription" class="question-import-textarea bank-builder-description" placeholder="Short description for students...">Created from Question Bank</textarea>
+    </div>
+
+    <p id="bankBuilderStatus"></p>
+
+    <div class="bank-exam-modal-actions">
+      <button onclick="confirmCreateExamFromBankModal()" class="question-bank-create-btn">
+        Create Draft Exam
+      </button>
+      <button onclick="closeBankExamBuilderModal()">Cancel</button>
+    </div>
+  </div>
+</div>
 </section>
 <section id="questionManager" class="page">
   <div class="card question-manager-modern">
