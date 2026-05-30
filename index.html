@@ -713,7 +713,7 @@
       </div>
 
       <div class="dashboard-quick-actions">
-        <button onclick="showPage('studentDashboard')">Back to Dashboard</button>
+        <button onclick="goDashboard()">Back to Dashboard</button>
         <button class="gold" onclick="showPage('studentExams'); loadStudentExams()">All Exams</button>
       </div>
     </div>
@@ -763,7 +763,7 @@
 
       <div class="dashboard-quick-actions">
         <button onclick="loadStudentExams()">Refresh Exams</button>
-        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+        <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
       </div>
     </div>
 
@@ -817,6 +817,175 @@
 
       <div id="studentExamList" class="grid three"></div>
     </div>
+  </div>
+</section>
+<section id="questionBank" class="page">
+  <div class="dashboard-header">
+    <div>
+      <h1>Question Bank</h1>
+      <p>Browse, filter, and reuse classified questions across exams.</p>
+    </div>
+    <button onclick="showPage('teacherDashboard')">Back to Teacher Dashboard</button>
+  </div>
+
+  <div class="box question-bank-controls">
+    <h2>Filters</h2>
+
+    <div class="question-bank-filter-grid">
+      <div class="academic-field">
+        <label for="bankSubjectFilter">Subject</label>
+        <select id="bankSubjectFilter" class="academic-select">
+          <option value="">All Subjects</option>
+        </select>
+      </div>
+
+      <div class="academic-field">
+        <label for="bankGradeFilter">Grade</label>
+        <select id="bankGradeFilter" class="academic-select">
+          <option value="">All Grades</option>
+        </select>
+      </div>
+
+      <div class="academic-field">
+        <label for="bankUnitFilter">Unit</label>
+        <select id="bankUnitFilter" class="academic-select">
+          <option value="">All Units</option>
+        </select>
+      </div>
+
+      <div class="academic-field">
+        <label for="bankSkillFilter">Skill</label>
+        <select id="bankSkillFilter" class="academic-select">
+          <option value="">All Skills</option>
+          <option value="Grammar">Grammar</option>
+          <option value="Vocabulary">Vocabulary</option>
+          <option value="Reading">Reading</option>
+          <option value="Writing">Writing</option>
+          <option value="Listening">Listening</option>
+          <option value="Speaking">Speaking</option>
+          <option value="Literature">Literature</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+
+      <div class="academic-field">
+        <label for="bankDifficultyFilter">Difficulty</label>
+        <select id="bankDifficultyFilter" class="academic-select">
+          <option value="">All Difficulties</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
+    </div>
+
+     <div class="question-bank-actions">
+  <button onclick="loadQuestionBank()">Load Question Bank</button>
+  <button onclick="clearQuestionBankFilters()">Clear Filters</button>
+  <button onclick="createExamFromSelectedBankQuestions()" class="question-bank-create-btn">
+    Create Exam from Selected Questions
+  </button>
+</div>
+
+<div class="question-bank-selection-summary">
+  <strong>Selected Questions:</strong>
+  <span id="selectedBankQuestionsCount">0</span>
+</div>
+    <p id="questionBankStatus"></p>
+  </div>
+<div class="box question-bank-import-box">
+  <h2>Import Questions to Bank</h2>
+  <p>Paste questions using the simple format below, preview them, then save them to the Question Bank.</p>
+
+  <div class="question-bank-filter-grid">
+    <div class="academic-field">
+      <label for="importQuestionSubject">Subject</label>
+      <select id="importQuestionSubject" class="academic-select">
+        <option value="">Select Subject</option>
+      </select>
+    </div>
+
+    <div class="academic-field">
+      <label for="importQuestionGrade">Grade</label>
+      <select id="importQuestionGrade" class="academic-select">
+        <option value="">Select Grade</option>
+      </select>
+    </div>
+
+    <div class="academic-field">
+      <label for="importQuestionUnit">Unit</label>
+      <select id="importQuestionUnit" class="academic-select">
+        <option value="">Select Unit</option>
+      </select>
+    </div>
+
+    <div class="academic-field">
+      <label for="importQuestionLesson">Lesson</label>
+      <input id="importQuestionLesson" class="academic-select" placeholder="Example: Question Tags">
+    </div>
+
+    <div class="academic-field">
+      <label for="importQuestionSkill">Skill</label>
+      <select id="importQuestionSkill" class="academic-select">
+        <option value="">Select Skill</option>
+        <option value="Grammar">Grammar</option>
+        <option value="Vocabulary">Vocabulary</option>
+        <option value="Reading">Reading</option>
+        <option value="Writing">Writing</option>
+        <option value="Listening">Listening</option>
+        <option value="Speaking">Speaking</option>
+        <option value="Literature">Literature</option>
+        <option value="General">General</option>
+      </select>
+    </div>
+
+    <div class="academic-field">
+      <label for="importQuestionDifficulty">Difficulty</label>
+      <select id="importQuestionDifficulty" class="academic-select">
+        <option value="">Select Difficulty</option>
+        <option value="Easy">Easy</option>
+        <option value="Medium">Medium</option>
+        <option value="Hard">Hard</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="academic-field">
+    <label for="importQuestionsText">Questions Text</label>
+    <textarea id="importQuestionsText" class="question-import-textarea" placeholder="Paste questions here...
+
+Example:
+Q: She is sick, ...............?
+A) is she
+B) isn't she
+C) doesn't she
+D) hasn't she
+Correct: B
+Explanation: We use a negative question tag after an affirmative sentence.
+
+Q: They don't play football, ...............?
+A) do they
+B) don't they
+C) did they
+D) are they
+Correct: A
+Explanation: We use an affirmative tag after a negative sentence."></textarea>
+  </div>
+
+  <div class="question-bank-actions">
+    <button onclick="previewImportedQuestions()">Preview Imported Questions</button>
+    <button onclick="saveImportedQuestionsToBank()" class="question-bank-create-btn">Save to Question Bank</button>
+    <button onclick="clearImportedQuestions()">Clear Import</button>
+  </div>
+
+  <p id="importQuestionsStatus"></p>
+
+  <div id="importQuestionsPreview" class="import-questions-preview">
+    <p>No imported questions preview yet.</p>
+  </div>
+</div>
+  <div id="questionBankList" class="question-bank-list">
+    <p>Click “Load Question Bank” to view your questions.</p>
   </div>
 </section>
 <section id="questionManager" class="page">
@@ -1009,7 +1178,7 @@
 
       <div class="dashboard-quick-actions">
         <button onclick="loadMyResults()">Refresh Results</button>
-        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+        <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
       </div>
     </div>
 
@@ -1039,7 +1208,7 @@
       <div class="dashboard-quick-actions">
         <button onclick="loadLeaderboard('daily')">Daily</button>
         <button class="gold" onclick="loadLeaderboard('weekly')">Weekly</button>
-        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+        <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
       </div>
     </div>
 
@@ -1154,7 +1323,7 @@
       <div class="dashboard-quick-actions">
         <button onclick="window.startIrregularGame()">Irregular Verbs</button>
         <button class="gold" onclick="window.startHangmanGame()">Hangman</button>
-        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+        <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
       </div>
     </div>
 
@@ -1273,7 +1442,7 @@
         <div class="study-hero-actions">
           <button onclick="openPlanner()">Open Planner</button>
           <button class="gold" onclick="showPage('studentExams'); loadStudentExams()">Open Exams</button>
-          <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+          <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
         </div>
       </div>
 
@@ -2134,7 +2303,7 @@
       <div class="dashboard-quick-actions">
         <button class="violet" onclick="generateSmartPlan()">Generate Smart Plan</button>
         <button class="gold" onclick="printPlans()">Print</button>
-        <button class="secondary" onclick="showPage('studentDashboard')">Back to Dashboard</button>
+        <button class="secondary" onclick="goDashboard()">Back to Dashboard</button>
       </div>
     </div>
 
@@ -4236,98 +4405,9 @@
     </div>
   </div>
 </section>
-<section id="englishLessonJourney" class="page jak-lesson-page" style="display: none;">
-    <div class="jak-lesson-bg-glow"></div>
-
-  <!-- SECTION 1: LESSON HEADER -->
-  <div class="jak-lesson-hero">
-    <div class="jak-lesson-hero-content">
-      <div class="jak-lesson-kicker">UNIT 1</div>
-      <h1>Question Tags</h1>
-      <p class="jak-lesson-subtitle">
-        Learn question tags step by step through discovery, practice, exam training, and smart feedback.
-      </p>
-
-      <div class="jak-lesson-meta">
-        <span>📘 Grammar Topic</span>
-        <span>⭐ B1 Level</span>
-        <span>⏱️ 25 Minutes</span>
-        <span>🏆 XP Journey</span>
-      </div>
-
-      <div class="jak-lesson-progress-wrap">
-        <div class="jak-lesson-progress-top">
-          <strong>Lesson Progress</strong>
-          <span id="englishLessonProgressText">0%</span>
-        </div>
-        <div class="jak-lesson-progress-track">
-          <div id="englishLessonProgressBar" class="jak-lesson-progress-fill"></div>
-        </div>
-      </div>
-
-      <button class="jak-lesson-primary-btn" onclick="startQuestionTagsLesson()">
-        Start Lesson 🚀
-      </button>
-    </div>
-
-    <div class="jak-lesson-hero-card">
-      <div class="jak-lesson-orb">?</div>
-      <h3>Today’s Mission</h3>
-      <p>Master question tags and avoid the most common Tawjihi exam traps.</p>
-      <div class="jak-lesson-xp-pill">
-        <span>Current XP</span>
-        <strong id="englishLessonXpText">0 XP</strong>
-      </div>
-    </div>
-  </div>
-
-  <!-- SECTION 2: LEARNING MAP -->
-  <div class="jak-lesson-section">
-    <div class="jak-lesson-section-head">
-      <span class="jak-lesson-chip">Learning Path</span>
-      <h2>Your Vertical Learning Journey</h2>
-      <p>Complete each stage to unlock the next one.</p>
-    </div>
-
-    <div id="englishLessonMap" class="jak-lesson-map"></div>
-  </div>
-
-  <!-- Dynamic Stage Area -->
-  <div id="englishLessonStageArea" class="jak-lesson-stage-area">
-    <div class="jak-lesson-empty-state">
-      <h3>Start your lesson journey ✨</h3>
-      <p>Click Start Lesson, then open the first stage.</p>
-    </div>
-  </div>
-
-  <!-- SECTION 14: AI TEACHER -->
-  <button class="jak-lesson-ai-float" onclick="toggleAITeacherPanel()">
-    AI Teacher 🤖
-  </button>
-
-  <div id="jakLessonAiPanel" class="jak-lesson-ai-panel">
-    <div class="jak-lesson-ai-head">
-      <div>
-        <strong>AI Teacher</strong>
-        <small>Question Tags Helper</small>
-      </div>
-      <button onclick="toggleAITeacherPanel()">×</button>
-    </div>
-
-    <div id="jakLessonAiMessages" class="jak-lesson-ai-messages">
-      <div class="jak-lesson-ai-msg bot">
-        Hi! Ask me about question tags. I can explain in English or Arabic.
-      </div>
-    </div>
-
-    <div class="jak-lesson-ai-prompts">
-      <button onclick="askLocalQuestionTagAI('wrong')">Why is this wrong?</button>
-      <button onclick="askLocalQuestionTagAI('simple')">Explain simply</button>
-      <button onclick="askLocalQuestionTagAI('easy')">Easier examples</button>
-      <button onclick="askLocalQuestionTagAI('hard')">Harder examples</button>
-      <button onclick="askLocalQuestionTagAI('arabic')">Explain in Arabic</button>
-      <button onclick="askLocalQuestionTagAI('practice')">Generate practice</button>
-    </div>
+ <section id="englishLessonJourney" class="page jak-lesson-page" style="display: none;">
+  <div id="englishQuestHubV3" class="english-quest-v3">
+    <!-- English Quest Hub V3 renders here -->
   </div>
 </section>
 </main>
@@ -4335,4 +4415,3 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 </body></html>
-

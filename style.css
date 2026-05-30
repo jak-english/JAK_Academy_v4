@@ -27540,4 +27540,3751 @@ button[data-nav-key="prosodyLab"],
 [class*="rajaz"] {
   display: none !important;
 }
+/* =====================================================
+   JAK Smart Planner Command Center V2
+   Launch Upgrade - Real data from jakPlansV5
+===================================================== */
+
+.planner-command-v2 {
+  margin: 22px 0 26px;
+  padding: 24px;
+  border-radius: 30px;
+  color: #f8fafc;
+  background:
+    radial-gradient(circle at top left, rgba(250, 204, 21, 0.14), transparent 34%),
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.96), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+}
+
+.planner-command-v2 * {
+  box-sizing: border-box;
+}
+
+.planner-command-hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.planner-command-kicker {
+  display: inline-flex;
+  width: fit-content;
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.11);
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.planner-command-title {
+  margin: 10px 0 8px;
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  color: #ffffff;
+  letter-spacing: -0.045em;
+}
+
+.planner-command-subtitle {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.75;
+}
+
+.planner-command-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.planner-command-btn {
+  border: 0;
+  cursor: pointer;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-weight: 950;
+  color: #f8fafc;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.planner-command-btn.gold {
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f97316);
+  border-color: rgba(250, 204, 21, 0.3);
+}
+
+.planner-command-btn.blue {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.planner-command-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.planner-command-card {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  min-height: 118px;
+}
+
+.planner-command-card span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.planner-command-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #ffffff;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.planner-command-card small {
+  display: block;
+  margin-top: 10px;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.planner-progress-track-v2 {
+  margin-top: 14px;
+  height: 11px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  overflow: hidden;
+}
+
+.planner-progress-fill-v2 {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #facc15, #22c55e);
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.22);
+}
+
+.planner-command-wide {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.planner-command-panel {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(2, 6, 23, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.planner-command-panel h3 {
+  margin: 0 0 12px;
+  color: #ffffff;
+}
+
+.planner-command-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  color: #dbeafe;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.planner-command-row strong {
+  color: #22c55e;
+}
+
+.planner-command-empty {
+  padding: 22px;
+  border-radius: 22px;
+  background: rgba(250, 204, 21, 0.08);
+  border: 1px dashed rgba(250, 204, 21, 0.32);
+  color: #fef3c7;
+  line-height: 1.8;
+}
+
+.planner-command-recommendation {
+  padding: 16px;
+  border-radius: 20px;
+  color: #dbeafe;
+  background: rgba(37, 99, 235, 0.14);
+  border: 1px solid rgba(96, 165, 250, 0.24);
+  line-height: 1.8;
+}
+
+@media (min-width: 760px) {
+  .planner-command-hero {
+    grid-template-columns: 1fr auto;
+  }
+
+  .planner-command-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .planner-command-wide {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .planner-command-v2 {
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  .planner-command-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .planner-command-btn {
+    width: 100%;
+  }
+
+  .planner-command-card strong {
+    font-size: 1.45rem;
+  }
+}
+
+/* =====================================================
+   Planner Professional Organization Phase 1
+   Preserve old planner logic, reduce visual clutter
+===================================================== */
+
+#planner .planner-modern {
+  margin-top: 28px;
+  padding: 24px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 35%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.92), rgba(15, 23, 42, 0.86));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+#planner .planner-modern::before {
+  content: "Advanced Planner Workspace";
+  display: block;
+  width: fit-content;
+  margin-bottom: 16px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.1);
+  border: 1px solid rgba(250, 204, 21, 0.24);
+  font-weight: 950;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Reduce duplicate command buttons from old planner area */
+#planner .planner-modern button[onclick="generateSmartPlan()"]:first-of-type,
+#planner .planner-modern button[onclick="printPlans()"]:first-of-type,
+#planner .planner-modern button[onclick="window.renderStudyAnalytics()"] {
+  display: none !important;
+}
+
+/* Make remaining planner tools look organized */
+#planner .planner-modern button {
+  border-radius: 14px;
+  min-height: 42px;
+  font-weight: 850;
+}
+
+#planner #plannerStats,
+#planner #todayTasks,
+#planner #plansList,
+#planner #studyMethodExplanation,
+#planner #studySystemSchedule,
+#planner #studySystemDashboard,
+#planner #studySystemTimeline {
+  max-width: 100%;
+}
+
+/* Turn planner internal grids into cleaner responsive blocks */
+#planner .planner-modern .grid,
+#planner .planner-modern .grid.three,
+#planner .planner-modern .grid.two {
+  display: grid;
+  gap: 14px;
+}
+
+@media (max-width: 760px) {
+  #planner .planner-modern {
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  #planner .planner-modern button {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+/* =====================================================
+   Planner Study OS Tabs - Professional Organization
+   Preserves existing planner logic and sections
+===================================================== */
+
+#planner[data-planner-study-os="true"] .planner-modern {
+  position: relative;
+  margin-top: 26px;
+  padding: 24px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.10), transparent 34%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.96), rgba(15, 23, 42, 0.90));
+  border: 1px solid rgba(148, 163, 184, 0.20);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
+  overflow: hidden;
+}
+
+#planner[data-planner-study-os="true"] .planner-modern::before {
+  content: "Study OS Workspace";
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 16px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f97316);
+  font-weight: 950;
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 0 30px rgba(250, 204, 21, 0.22);
+}
+
+.planner-study-os-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 20px;
+  padding: 12px;
+  border-radius: 24px;
+  background: rgba(2, 6, 23, 0.62);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.planner-study-os-tab {
+  border: 0;
+  cursor: pointer;
+  min-height: 46px;
+  padding: 11px 15px;
+  border-radius: 16px;
+  color: #dbeafe;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  font-weight: 950;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.planner-study-os-tab:hover {
+  transform: translateY(-2px);
+  border-color: rgba(250, 204, 21, 0.38);
+}
+
+.planner-study-os-tab.active {
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f97316);
+  border-color: rgba(250, 204, 21, 0.34);
+  box-shadow: 0 14px 34px rgba(250, 204, 21, 0.18);
+}
+
+#planner[data-planner-study-os="true"] .dashboard-header {
+  display: none !important;
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section] {
+  display: none;
+  animation: plannerOsFadeIn 0.22s ease both;
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section].active {
+  display: block;
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section]::before {
+  display: block;
+  margin-bottom: 14px;
+  color: #facc15;
+  font-size: 0.84rem;
+  font-weight: 950;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="overview"]::before {
+  content: "Overview / Progress";
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="systems"]::before {
+  content: "Study Systems / Smart Methods";
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="analytics"]::before {
+  content: "Analytics / Performance";
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"]::before {
+  content: "Plan Builder / Calendar / Tasks";
+}
+
+/* Section premium surface */
+#planner[data-planner-study-os="true"] #plannerStats,
+#planner[data-planner-study-os="true"] .study-system-panel,
+#planner[data-planner-study-os="true"] .study-analytics-panel,
+#planner[data-planner-study-os="true"] .planner-layout {
+  border-radius: 28px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* Make old planner actions feel less random */
+#planner[data-planner-study-os="true"] .planner-modern button {
+  border-radius: 15px;
+  min-height: 43px;
+  font-weight: 900;
+}
+
+/* Avoid the old area looking like scattered blocks */
+#planner[data-planner-study-os="true"] .planner-modern .box {
+  margin-bottom: 16px;
+}
+
+/* Builder area should breathe */
+#planner[data-planner-study-os="true"] .planner-layout {
+  padding: 18px;
+  gap: 18px;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+  #planner[data-planner-study-os="true"] .planner-modern {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .planner-study-os-tabs {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .planner-study-os-tab {
+    width: 100%;
+  }
+
+  #planner[data-planner-study-os="true"] #plannerStats,
+  #planner[data-planner-study-os="true"] .study-system-panel,
+  #planner[data-planner-study-os="true"] .study-analytics-panel,
+  #planner[data-planner-study-os="true"] .planner-layout {
+    border-radius: 20px;
+  }
+}
+
+@keyframes plannerOsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* =====================================================
+   Planner Overview Pro V3
+   Professional dashboard inside Overview tab
+===================================================== */
+
+.planner-overview-pro {
+  display: grid;
+  gap: 18px;
+  color: #f8fafc;
+}
+
+.planner-overview-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(250, 204, 21, 0.18), transparent 34%),
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.20), transparent 36%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.96), rgba(15, 23, 42, 0.88));
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+}
+
+.planner-overview-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 38px 38px;
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+.planner-overview-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.planner-overview-kicker {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 13px;
+  border-radius: 999px;
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f97316);
+  font-weight: 950;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.planner-overview-title {
+  margin: 14px 0 8px;
+  font-size: clamp(1.8rem, 4vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: -0.055em;
+  color: #ffffff;
+}
+
+.planner-overview-subtitle {
+  max-width: 820px;
+  margin: 0;
+  color: #dbeafe;
+  line-height: 1.8;
+}
+
+.planner-overview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.planner-overview-btn {
+  border: 0;
+  cursor: pointer;
+  min-height: 46px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  font-weight: 950;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.planner-overview-btn:hover {
+  transform: translateY(-2px);
+}
+
+.planner-overview-btn.gold {
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f97316);
+  box-shadow: 0 14px 34px rgba(250, 204, 21, 0.18);
+}
+
+.planner-overview-btn.blue {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.18);
+}
+
+.planner-kpi-grid-pro {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.planner-kpi-pro {
+  position: relative;
+  overflow: hidden;
+  min-height: 145px;
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.12), transparent 36%),
+    linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.22);
+}
+
+.planner-kpi-pro span {
+  display: block;
+  color: #bfdbfe;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.planner-kpi-pro strong {
+  display: block;
+  margin-top: 12px;
+  color: #ffffff;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.planner-kpi-pro small {
+  display: block;
+  margin-top: 10px;
+  color: #cbd5e1;
+  line-height: 1.55;
+}
+
+.planner-overview-grid-pro {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.planner-overview-panel-pro {
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.88), rgba(2, 6, 23, 0.72));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.20);
+}
+
+.planner-overview-panel-pro h3 {
+  margin: 0 0 14px;
+  color: #ffffff;
+  font-size: 1.2rem;
+}
+
+.planner-overview-row-pro {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  color: #dbeafe;
+}
+
+.planner-overview-row-pro:last-child {
+  border-bottom: 0;
+}
+
+.planner-overview-row-pro strong {
+  color: #facc15;
+}
+
+.planner-overview-progress {
+  height: 14px;
+  margin: 14px 0;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.78);
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.planner-overview-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ef4444, #facc15, #22c55e);
+  box-shadow: 0 0 24px rgba(250, 204, 21, 0.25);
+}
+
+.planner-subject-bar {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.planner-subject-bar-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #dbeafe;
+  font-size: 0.92rem;
+}
+
+.planner-subject-bar-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.75);
+  overflow: hidden;
+}
+
+.planner-subject-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #0ea5e9, #facc15);
+}
+
+.planner-recommendation-pro {
+  position: relative;
+  padding: 18px 18px 18px 62px;
+  border-radius: 22px;
+  color: #dbeafe;
+  line-height: 1.8;
+  background:
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.18), transparent 34%),
+    rgba(37, 99, 235, 0.14);
+  border: 1px solid rgba(96, 165, 250, 0.26);
+}
+
+.planner-recommendation-pro::before {
+  content: "AI";
+  position: absolute;
+  left: 16px;
+  top: 18px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  font-weight: 950;
+  font-size: 0.78rem;
+}
+
+.planner-empty-pro {
+  padding: 20px;
+  border-radius: 22px;
+  color: #fef3c7;
+  background:
+    radial-gradient(circle at left, rgba(250, 204, 21, 0.16), transparent 35%),
+    rgba(250, 204, 21, 0.08);
+  border: 1px dashed rgba(250, 204, 21, 0.34);
+  line-height: 1.8;
+}
+
+@media (min-width: 760px) {
+  .planner-kpi-grid-pro {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .planner-overview-grid-pro {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .planner-overview-hero,
+  .planner-overview-panel-pro,
+  .planner-kpi-pro {
+    border-radius: 20px;
+    padding: 16px;
+  }
+
+  .planner-overview-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .planner-overview-btn {
+    width: 100%;
+  }
+}
+/* =====================================================
+   Planner Today Focus Timeline V3
+   Professional today tab connected to real planner tasks
+===================================================== */
+
+.planner-today-v3 {
+  display: grid;
+  gap: 18px;
+  color: #f8fafc;
+}
+
+.planner-today-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.18), transparent 34%),
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.16), transparent 36%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.96), rgba(15, 23, 42, 0.88));
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.30);
+}
+
+.planner-today-kicker {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 13px;
+  border-radius: 999px;
+  color: #052e16;
+  background: linear-gradient(135deg, #bbf7d0, #22c55e);
+  font-weight: 950;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.planner-today-title {
+  margin: 14px 0 8px;
+  font-size: clamp(1.8rem, 4vw, 3.4rem);
+  line-height: 1;
+  color: #ffffff;
+  letter-spacing: -0.055em;
+}
+
+.planner-today-subtitle {
+  max-width: 820px;
+  margin: 0;
+  color: #dbeafe;
+  line-height: 1.8;
+}
+
+.planner-today-summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.planner-today-pill {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.planner-today-pill span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.planner-today-pill strong {
+  display: block;
+  margin-top: 7px;
+  color: #ffffff;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.planner-today-empty {
+  padding: 22px;
+  border-radius: 24px;
+  color: #fef3c7;
+  background:
+    radial-gradient(circle at left, rgba(250, 204, 21, 0.16), transparent 35%),
+    rgba(250, 204, 21, 0.08);
+  border: 1px dashed rgba(250, 204, 21, 0.34);
+  line-height: 1.8;
+}
+
+.planner-today-empty strong {
+  color: #ffffff;
+}
+
+.planner-today-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.planner-today-btn {
+  border: 0;
+  cursor: pointer;
+  min-height: 44px;
+  padding: 11px 15px;
+  border-radius: 15px;
+  color: #f8fafc;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  font-weight: 950;
+}
+
+.planner-today-btn.gold {
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f97316);
+}
+
+.planner-today-btn.green {
+  color: #052e16;
+  background: linear-gradient(135deg, #bbf7d0, #22c55e);
+}
+
+.planner-today-timeline {
+  position: relative;
+  display: grid;
+  gap: 14px;
+}
+
+.planner-today-task {
+  position: relative;
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.20);
+}
+
+.planner-today-time {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: 86px;
+  border-radius: 20px;
+  color: #facc15;
+  background: rgba(2, 6, 23, 0.62);
+  border: 1px solid rgba(250, 204, 21, 0.20);
+  font-weight: 950;
+  text-align: center;
+}
+
+.planner-today-time small {
+  display: block;
+  margin-top: 5px;
+  color: #94a3b8;
+  font-size: 0.72rem;
+}
+
+.planner-today-body h3 {
+  margin: 0 0 7px;
+  color: #ffffff;
+  font-size: 1.12rem;
+}
+
+.planner-today-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.planner-today-tag {
+  display: inline-flex;
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: #dbeafe;
+  background: rgba(37, 99, 235, 0.14);
+  border: 1px solid rgba(96, 165, 250, 0.20);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.planner-today-tag.status-done {
+  color: #bbf7d0;
+  background: rgba(22, 163, 74, 0.16);
+  border-color: rgba(34, 197, 94, 0.24);
+}
+
+.planner-today-tag.status-in_progress {
+  color: #fef3c7;
+  background: rgba(250, 204, 21, 0.14);
+  border-color: rgba(250, 204, 21, 0.24);
+}
+
+.planner-today-tag.status-not_started {
+  color: #dbeafe;
+}
+
+.planner-today-task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.planner-today-action {
+  border: 0;
+  cursor: pointer;
+  padding: 9px 12px;
+  border-radius: 13px;
+  color: #f8fafc;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(148,163,184,0.18);
+  font-weight: 900;
+}
+
+.planner-today-action.start {
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f97316);
+}
+
+.planner-today-action.done {
+  color: #052e16;
+  background: linear-gradient(135deg, #bbf7d0, #22c55e);
+}
+
+.planner-today-action.reset {
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.10);
+  border-color: rgba(239, 68, 68, 0.22);
+}
+
+@media (min-width: 760px) {
+  .planner-today-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .planner-today-hero,
+  .planner-today-task {
+    border-radius: 20px;
+    padding: 16px;
+  }
+
+  .planner-today-task {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-today-time {
+    min-height: 64px;
+  }
+
+  .planner-today-actions,
+  .planner-today-task-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .planner-today-btn,
+  .planner-today-action {
+    width: 100%;
+  }
+}
+/* Planner Study OS - Today Tab Label */
+#planner[data-planner-study-os="true"] [data-planner-os-section="today"]::before {
+  content: "Today Focus / Daily Execution";
+}
+
+/* =====================================================
+   Planner Builder Pro V3
+   Professional organization for Builder tab
+===================================================== */
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] {
+  display: none;
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"].active {
+  display: grid;
+  gap: 18px;
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] .box,
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] > div {
+  position: relative;
+}
+
+#planner[data-planner-study-os="true"] .planner-layout {
+  background:
+    radial-gradient(circle at top left, rgba(250, 204, 21, 0.12), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.13), transparent 34%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.94), rgba(15, 23, 42, 0.88));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 30px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.30);
+}
+
+/* Make each builder card feel like a product module */
+#planner[data-planner-study-os="true"] .planner-layout .box {
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow:
+    0 18px 50px rgba(0,0,0,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* Headings inside builder boxes */
+#planner[data-planner-study-os="true"] .planner-layout .box h3,
+#planner[data-planner-study-os="true"] .planner-layout .box h2 {
+  color: #ffffff;
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+}
+
+#planner[data-planner-study-os="true"] .planner-layout .box p {
+  color: #cbd5e1;
+  line-height: 1.7;
+}
+
+/* Inputs/selects/textarea become premium form controls */
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] input,
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] select,
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] textarea {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 15px;
+  padding: 11px 13px;
+  color: #f8fafc;
+  background: rgba(2, 6, 23, 0.58);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] input:focus,
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] select:focus,
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] textarea:focus {
+  border-color: rgba(250, 204, 21, 0.55);
+  box-shadow:
+    0 0 0 3px rgba(250, 204, 21, 0.10),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* Labels */
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] label {
+  display: block;
+  margin: 12px 0 7px;
+  color: #bfdbfe;
+  font-weight: 900;
+  font-size: 0.88rem;
+}
+
+/* Buttons inside builder */
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] button {
+  min-height: 46px;
+  border-radius: 16px;
+  font-weight: 950;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] button:not(.danger) {
+  background: linear-gradient(135deg, #facc15, #f97316);
+  color: #07111f;
+}
+
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] button.danger {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.30);
+  color: #fecaca;
+}
+
+/* Today’s Tasks old block inside Builder should look secondary,
+   because Today now has its own tab */
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] #todayTasks,
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] .todayTasks {
+  opacity: 0.82;
+}
+
+/* Plans list and filter area */
+#planner[data-planner-study-os="true"] #plansList {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+/* Color input should not look broken */
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] input[type="color"] {
+  min-height: 48px;
+  padding: 5px;
+}
+
+/* Responsive builder */
+@media (max-width: 760px) {
+  #planner[data-planner-study-os="true"] .planner-layout {
+    padding: 12px;
+    border-radius: 22px;
+  }
+
+  #planner[data-planner-study-os="true"] .planner-layout .box {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  #planner[data-planner-study-os="true"] [data-planner-os-section="builder"] button {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+/* Builder: force the real Generate Smart Plan button visible inside Builder */
+#planner[data-planner-study-os="true"] [data-planner-os-section="builder"] .builder-smart-plan-btn {
+  display: block !important;
+  width: fit-content;
+  margin-top: 12px;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9) !important;
+  color: #ffffff !important;
+  border-color: rgba(96, 165, 250, 0.35) !important;
+}
+
+/* =====================================================
+   Planner Analytics Pro V3
+   Professional analytics from real planner data
+===================================================== */
+
+.planner-analytics-pro-v3 {
+  display: grid;
+  gap: 18px;
+  color: #f8fafc;
+}
+
+.planner-analytics-hero-v3 {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(124, 58, 237, 0.18), transparent 34%),
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.18), transparent 36%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.96), rgba(15, 23, 42, 0.88));
+  border: 1px solid rgba(96, 165, 250, 0.24);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.30);
+}
+
+.planner-analytics-kicker-v3 {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 13px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #7c3aed, #0ea5e9);
+  font-weight: 950;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.planner-analytics-title-v3 {
+  margin: 14px 0 8px;
+  font-size: clamp(1.8rem, 4vw, 3.4rem);
+  line-height: 1;
+  color: #ffffff;
+  letter-spacing: -0.055em;
+}
+
+.planner-analytics-subtitle-v3 {
+  max-width: 820px;
+  margin: 0;
+  color: #dbeafe;
+  line-height: 1.8;
+}
+
+.planner-analytics-kpi-grid-v3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.planner-analytics-kpi-v3 {
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 36%),
+    linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.22);
+}
+
+.planner-analytics-kpi-v3 span {
+  display: block;
+  color: #bfdbfe;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.planner-analytics-kpi-v3 strong {
+  display: block;
+  margin-top: 12px;
+  color: #ffffff;
+  font-size: clamp(2rem, 5vw, 3.1rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.planner-analytics-kpi-v3 small {
+  display: block;
+  margin-top: 10px;
+  color: #cbd5e1;
+  line-height: 1.55;
+}
+
+.planner-analytics-grid-v3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.planner-analytics-panel-v3 {
+  padding: 20px;
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.88), rgba(2, 6, 23, 0.72));
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.20);
+}
+
+.planner-analytics-panel-v3 h3 {
+  margin: 0 0 14px;
+  color: #ffffff;
+  font-size: 1.2rem;
+}
+
+.planner-analytics-row-v3 {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  color: #dbeafe;
+}
+
+.planner-analytics-row-v3:last-child {
+  border-bottom: 0;
+}
+
+.planner-analytics-row-v3 strong {
+  color: #facc15;
+}
+
+.planner-analytics-track-v3 {
+  height: 13px;
+  margin: 10px 0 14px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.78);
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.planner-analytics-fill-v3 {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ef4444, #facc15, #22c55e);
+}
+
+.planner-analytics-subject-v3 {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.planner-analytics-subject-top-v3 {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #dbeafe;
+  font-size: 0.92rem;
+}
+
+.planner-analytics-subject-track-v3 {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.75);
+  overflow: hidden;
+}
+
+.planner-analytics-subject-fill-v3 {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7c3aed, #0ea5e9, #facc15);
+}
+
+.planner-analytics-insight-v3 {
+  position: relative;
+  padding: 18px 18px 18px 62px;
+  border-radius: 22px;
+  color: #dbeafe;
+  line-height: 1.8;
+  background:
+    radial-gradient(circle at top right, rgba(124, 58, 237, 0.18), transparent 34%),
+    rgba(37, 99, 235, 0.14);
+  border: 1px solid rgba(96, 165, 250, 0.26);
+}
+
+.planner-analytics-insight-v3::before {
+  content: "AI";
+  position: absolute;
+  left: 16px;
+  top: 18px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #7c3aed, #0ea5e9);
+  font-weight: 950;
+  font-size: 0.78rem;
+}
+
+@media (min-width: 760px) {
+  .planner-analytics-kpi-grid-v3 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .planner-analytics-grid-v3 {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .planner-analytics-hero-v3,
+  .planner-analytics-panel-v3,
+  .planner-analytics-kpi-v3 {
+    padding: 16px;
+    border-radius: 20px;
+  }
+}
+/* =====================================================
+   JAK Premium Study OS Visual Upgrade
+   Planner + Study System
+   CSS-only polish - no logic changes
+===================================================== */
+
+/* ---------- Shared premium background ---------- */
+
+#planner.page.active,
+#studySystem.page.active {
+  position: relative;
+  overflow-x: hidden;
+  padding-top: 22px;
+}
+
+#planner.page.active::before,
+#studySystem.page.active::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(250, 204, 21, 0.16), transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(37, 99, 235, 0.18), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgba(124, 58, 237, 0.14), transparent 38%),
+    linear-gradient(135deg, #020617, #0f172a 48%, #111827);
+}
+
+#planner.page.active::after,
+#studySystem.page.active::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+  opacity: 0.28;
+}
+
+/* ---------- Planner main shell ---------- */
+
+#planner .planner-modern,
+#planner #plannerCommandCenterV2 .planner-command-v2,
+#studySystem .card,
+#studySystem .study-system-dashboard,
+#studySystem .study-system-timeline {
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* Planner command center stronger hero */
+#plannerCommandCenterV2 .planner-command-v2 {
+  border-radius: 38px !important;
+  border: 1px solid rgba(250, 204, 21, 0.34) !important;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(250, 204, 21, 0.22), transparent 30%),
+    radial-gradient(circle at 90% 15%, rgba(14, 165, 233, 0.20), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgba(168, 85, 247, 0.16), transparent 36%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.98), rgba(15, 23, 42, 0.92)) !important;
+  box-shadow:
+    0 34px 110px rgba(0, 0, 0, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+#plannerCommandCenterV2 .planner-command-title {
+  font-size: clamp(2.4rem, 6vw, 5rem) !important;
+  letter-spacing: -0.07em !important;
+  text-shadow:
+    0 0 34px rgba(250, 204, 21, 0.18),
+    0 0 70px rgba(14, 165, 233, 0.12);
+}
+
+#plannerCommandCenterV2 .planner-command-subtitle {
+  font-size: 1.05rem;
+  max-width: 860px;
+}
+
+/* ---------- Planner Study OS tabs ---------- */
+
+#plannerStudyOSTabs.planner-study-os-tabs {
+  position: sticky;
+  top: 86px;
+  z-index: 20;
+  padding: 12px;
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(2, 6, 23, 0.82), rgba(15, 23, 42, 0.72));
+  border: 1px solid rgba(250, 204, 21, 0.18);
+  box-shadow:
+    0 18px 50px rgba(0,0,0,0.34),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+#plannerStudyOSTabs .planner-study-os-tab {
+  position: relative;
+  overflow: hidden;
+  min-height: 50px;
+  padding: 12px 18px;
+  border-radius: 18px;
+  color: #e5e7eb;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+#plannerStudyOSTabs .planner-study-os-tab.active {
+  color: #07111f;
+  background: linear-gradient(135deg, #facc15, #f97316);
+  box-shadow:
+    0 18px 42px rgba(250, 204, 21, 0.24),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
+#plannerStudyOSTabs .planner-study-os-tab:hover {
+  transform: translateY(-3px);
+}
+
+/* ---------- Planner cards unified premium look ---------- */
+
+#planner .planner-overview-hero,
+#planner .planner-today-hero,
+#planner .planner-analytics-hero-v3,
+#planner .planner-overview-panel-pro,
+#planner .planner-today-task,
+#planner .planner-analytics-panel-v3,
+#planner .planner-layout .box,
+#planner .planner-kpi-pro,
+#planner .planner-analytics-kpi-v3 {
+  border: 1px solid rgba(255,255,255,0.13) !important;
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.10), transparent 34%),
+    linear-gradient(145deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04)) !important;
+  box-shadow:
+    0 22px 60px rgba(0,0,0,0.28),
+    inset 0 1px 0 rgba(255,255,255,0.07) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Big KPI numbers */
+#planner .planner-kpi-pro strong,
+#planner .planner-analytics-kpi-v3 strong,
+#planner .planner-today-pill strong {
+  background: linear-gradient(135deg, #ffffff, #facc15);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+
+/* Buttons look like product actions */
+#planner .planner-overview-btn,
+#planner .planner-today-btn,
+#planner .planner-today-action,
+#planner .planner-command-btn,
+#studySystem button,
+#planner [data-planner-os-section="builder"] button {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    filter 0.18s ease;
+}
+
+#planner .planner-overview-btn:hover,
+#planner .planner-today-btn:hover,
+#planner .planner-today-action:hover,
+#planner .planner-command-btn:hover,
+#studySystem button:hover,
+#planner [data-planner-os-section="builder"] button:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+  box-shadow: 0 20px 46px rgba(0,0,0,0.28);
+}
+
+/* Builder forms cleaner */
+#planner [data-planner-os-section="builder"] input,
+#planner [data-planner-os-section="builder"] select,
+#planner [data-planner-os-section="builder"] textarea,
+#studySystem input,
+#studySystem select,
+#studySystem textarea {
+  background: rgba(2, 6, 23, 0.66) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  color: #f8fafc !important;
+  border-radius: 17px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 10px 24px rgba(0,0,0,0.14);
+}
+
+#planner [data-planner-os-section="builder"] input:focus,
+#planner [data-planner-os-section="builder"] select:focus,
+#planner [data-planner-os-section="builder"] textarea:focus,
+#studySystem input:focus,
+#studySystem select:focus,
+#studySystem textarea:focus {
+  border-color: rgba(250, 204, 21, 0.62) !important;
+  box-shadow:
+    0 0 0 4px rgba(250, 204, 21, 0.12),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* ---------- Study System premium redesign ---------- */
+
+#studySystem .dashboard-header,
+#studySystem .study-system-hero,
+#studySystem .study-system-header {
+  border-radius: 34px;
+  padding: 26px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(250, 204, 21, 0.18), transparent 30%),
+    radial-gradient(circle at 90% 12%, rgba(37, 99, 235, 0.18), transparent 32%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.96), rgba(15, 23, 42, 0.88));
+  border: 1px solid rgba(250, 204, 21, 0.24);
+  box-shadow:
+    0 28px 85px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+#studySystem h1,
+#studySystem h2 {
+  letter-spacing: -0.045em;
+}
+
+/* Study system method cards */
+#studySystem .study-system-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 170px;
+  padding: 22px !important;
+  border-radius: 28px !important;
+  text-align: left;
+  color: #f8fafc !important;
+  background:
+    radial-gradient(circle at top right, rgba(250, 204, 21, 0.13), transparent 34%),
+    linear-gradient(145deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04)) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  box-shadow:
+    0 22px 60px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+}
+
+#studySystem .study-system-card::before {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  right: -38px;
+  top: -38px;
+  border-radius: 50%;
+  background: rgba(250, 204, 21, 0.11);
+  filter: blur(2px);
+}
+
+#studySystem .study-system-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(250, 204, 21, 0.42) !important;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.34),
+    0 0 36px rgba(250, 204, 21, 0.10);
+}
+
+#studySystem .study-system-card.active,
+#studySystem .study-system-card.selected {
+  border-color: rgba(250, 204, 21, 0.62) !important;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.34),
+    0 0 44px rgba(250, 204, 21, 0.18);
+}
+
+/* Study system panels */
+#studySystem .box,
+#studySystem .card,
+#studySystem .study-system-panel,
+#studySystem .study-method-explanation,
+#studySystem .study-system-dashboard,
+#studySystem .study-system-timeline {
+  border-radius: 28px !important;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035)) !important;
+  border: 1px solid rgba(148, 163, 184, 0.17) !important;
+  box-shadow:
+    0 22px 60px rgba(0,0,0,0.24),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* Current system dashboard looks like SaaS KPIs */
+#studySystem .study-system-dashboard {
+  display: grid;
+  gap: 14px;
+}
+
+#studySystem .study-system-dashboard > * {
+  border-radius: 20px;
+}
+
+/* ---------- Mobile polish ---------- */
+
+@media (max-width: 760px) {
+  #plannerCommandCenterV2 .planner-command-v2,
+  #planner .planner-modern,
+  #studySystem .dashboard-header,
+  #studySystem .study-system-hero,
+  #studySystem .study-system-header {
+    border-radius: 24px !important;
+    padding: 16px !important;
+  }
+
+  #plannerStudyOSTabs.planner-study-os-tabs {
+    position: relative;
+    top: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    border-radius: 20px;
+  }
+
+  #plannerStudyOSTabs .planner-study-os-tab {
+    width: 100%;
+  }
+
+  #studySystem .study-system-card {
+    min-height: 140px;
+    border-radius: 22px !important;
+  }
+}
+
+/* =====================================================
+   Premium Study UI Fix
+   Fix Pomodoro overflow + calmer professional colors
+===================================================== */
+
+/* Prevent any text from escaping cards */
+#planner *,
+#studySystem * {
+  box-sizing: border-box;
+}
+
+#planner .planner-command-card,
+#planner .planner-kpi-pro,
+#planner .planner-analytics-kpi-v3,
+#planner .planner-today-pill,
+#studySystem .study-system-card,
+#studySystem .study-system-dashboard,
+#studySystem .study-system-dashboard *,
+#studySystem .box,
+#studySystem .card {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Fix huge current-system words like Pomodoro */
+#studySystem .study-system-dashboard strong,
+#studySystem .study-system-dashboard h2,
+#studySystem .study-system-dashboard h3,
+#studySystem .study-system-dashboard p,
+#planner .planner-analytics-kpi-v3 strong,
+#planner .planner-kpi-pro strong {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.05;
+}
+
+/* Make Current System value responsive instead of oversized */
+#studySystem .study-system-dashboard strong,
+#studySystem .study-system-dashboard .big-number,
+#studySystem .study-system-dashboard .stat-number {
+  font-size: clamp(1.45rem, 4vw, 2.5rem) !important;
+  letter-spacing: -0.04em;
+}
+
+/* Calm down the overall colors: dark navy + gold + blue, less rainbow */
+#planner.page.active::before,
+#studySystem.page.active::before {
+  background:
+    radial-gradient(circle at 14% 8%, rgba(245, 158, 11, 0.13), transparent 30%),
+    radial-gradient(circle at 88% 14%, rgba(59, 130, 246, 0.14), transparent 34%),
+    radial-gradient(circle at 50% 100%, rgba(30, 64, 175, 0.12), transparent 40%),
+    linear-gradient(135deg, #020617, #0b1120 48%, #111827) !important;
+}
+
+/* More premium, less bright surfaces */
+#plannerCommandCenterV2 .planner-command-v2,
+#planner .planner-modern,
+#studySystem .dashboard-header,
+#studySystem .study-system-hero,
+#studySystem .study-system-header {
+  background:
+    radial-gradient(circle at 12% 12%, rgba(245, 158, 11, 0.15), transparent 32%),
+    radial-gradient(circle at 90% 18%, rgba(37, 99, 235, 0.14), transparent 34%),
+    linear-gradient(135deg, rgba(2, 6, 23, 0.98), rgba(15, 23, 42, 0.94)) !important;
+  border-color: rgba(245, 158, 11, 0.22) !important;
+}
+
+/* Better study system cards */
+#studySystem .study-system-card {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  white-space: normal !important;
+  line-height: 1.45;
+  background:
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.10), transparent 34%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.78)) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+/* Keep method names readable inside cards */
+#studySystem .study-system-card h3,
+#studySystem .study-system-card strong,
+#studySystem .study-system-card b,
+#studySystem .study-system-card span {
+  max-width: 100%;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+/* Softer selected card */
+#studySystem .study-system-card.active,
+#studySystem .study-system-card.selected {
+  background:
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.16), transparent 34%),
+    linear-gradient(145deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.88)) !important;
+  border-color: rgba(245, 158, 11, 0.42) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.34),
+    0 0 26px rgba(245, 158, 11, 0.10) !important;
+}
+
+/* Softer buttons */
+#planner .planner-overview-btn.gold,
+#planner .planner-command-btn.gold,
+#planner [data-planner-os-section="builder"] button:not(.danger),
+#studySystem button.gold,
+#studySystem button.violet,
+#studySystem button:not(.study-system-card):not(.secondary):not(.danger) {
+  background: linear-gradient(135deg, #d97706, #f59e0b) !important;
+  color: #07111f !important;
+  border-color: rgba(245, 158, 11, 0.28) !important;
+}
+
+#planner .planner-overview-btn.blue,
+#planner .planner-command-btn.blue,
+#studySystem button.secondary {
+  background: linear-gradient(135deg, #1d4ed8, #0284c7) !important;
+  color: #ffffff !important;
+  border-color: rgba(96, 165, 250, 0.26) !important;
+}
+
+/* KPI gradient text calmer */
+#planner .planner-kpi-pro strong,
+#planner .planner-analytics-kpi-v3 strong,
+#planner .planner-today-pill strong {
+  background: linear-gradient(135deg, #f8fafc, #f59e0b) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+/* Mobile extra protection */
+@media (max-width: 760px) {
+  #studySystem .study-system-dashboard strong,
+  #planner .planner-analytics-kpi-v3 strong,
+  #planner .planner-kpi-pro strong {
+    font-size: clamp(1.35rem, 9vw, 2rem) !important;
+  }
+
+  #studySystem .study-system-card {
+    min-height: auto !important;
+  }
+}
+/* =====================================================
+   JAK Academy Clean Premium Theme
+   Planner + Study System
+   Final unified colors - CSS only
+===================================================== */
+
+:root {
+  --jak-bg-1: #020617;
+  --jak-bg-2: #0f172a;
+  --jak-panel: rgba(15, 23, 42, 0.92);
+  --jak-panel-soft: rgba(30, 41, 59, 0.72);
+  --jak-border: rgba(148, 163, 184, 0.18);
+  --jak-border-strong: rgba(245, 158, 11, 0.32);
+
+  --jak-text: #f8fafc;
+  --jak-muted: #cbd5e1;
+  --jak-soft: #94a3b8;
+
+  --jak-gold: #f59e0b;
+  --jak-gold-2: #fbbf24;
+  --jak-blue: #2563eb;
+  --jak-blue-2: #0ea5e9;
+
+  --jak-danger: #ef4444;
+  --jak-success: #22c55e;
+
+  --jak-radius-xl: 30px;
+  --jak-radius-lg: 22px;
+  --jak-shadow: 0 22px 60px rgba(0, 0, 0, 0.32);
+  --jak-shadow-soft: 0 14px 38px rgba(0, 0, 0, 0.22);
+}
+
+/* Page background: clean, not noisy */
+#planner.page.active,
+#studySystem.page.active {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(245, 158, 11, 0.10), transparent 28%),
+    radial-gradient(circle at 90% 5%, rgba(37, 99, 235, 0.10), transparent 30%),
+    linear-gradient(135deg, var(--jak-bg-1), var(--jak-bg-2)) !important;
+  color: var(--jak-text);
+  overflow-x: hidden;
+}
+
+/* Remove noisy grid overlays from previous patches */
+#planner.page.active::after,
+#studySystem.page.active::after {
+  opacity: 0 !important;
+}
+
+/* Main shells */
+#planner .planner-modern,
+#plannerCommandCenterV2 .planner-command-v2,
+#studySystem .card,
+#studySystem .dashboard-header,
+#studySystem .study-system-hero,
+#studySystem .study-system-header,
+#studySystem .study-system-dashboard,
+#studySystem .study-system-timeline,
+#studySystem .box,
+#studySystem .study-system-panel,
+#studySystem .study-method-explanation {
+  background: linear-gradient(145deg, var(--jak-panel), rgba(2, 6, 23, 0.88)) !important;
+  border: 1px solid var(--jak-border) !important;
+  border-radius: var(--jak-radius-xl) !important;
+  box-shadow: var(--jak-shadow) !important;
+  color: var(--jak-text) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Remove excessive colorful card backgrounds */
+#planner .planner-overview-hero,
+#planner .planner-today-hero,
+#planner .planner-analytics-hero-v3,
+#planner .planner-overview-panel-pro,
+#planner .planner-today-task,
+#planner .planner-analytics-panel-v3,
+#planner .planner-layout .box,
+#planner .planner-kpi-pro,
+#planner .planner-analytics-kpi-v3,
+#planner .planner-today-pill,
+#planner .planner-command-card,
+#studySystem .study-system-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.86), rgba(15, 23, 42, 0.86)) !important;
+  border: 1px solid var(--jak-border) !important;
+  border-radius: var(--jak-radius-lg) !important;
+  box-shadow: var(--jak-shadow-soft) !important;
+  color: var(--jak-text) !important;
+}
+
+/* Hero sections with one elegant accent */
+#plannerCommandCenterV2 .planner-command-v2,
+#planner .planner-overview-hero,
+#planner .planner-today-hero,
+#planner .planner-analytics-hero-v3,
+#studySystem .dashboard-header,
+#studySystem .study-system-hero,
+#studySystem .study-system-header {
+  background:
+    linear-gradient(135deg, rgba(245, 158, 11, 0.10), transparent 42%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.94)) !important;
+  border: 1px solid rgba(245, 158, 11, 0.22) !important;
+}
+
+/* Titles */
+#planner h1,
+#planner h2,
+#planner h3,
+#studySystem h1,
+#studySystem h2,
+#studySystem h3 {
+  color: var(--jak-text) !important;
+  letter-spacing: -0.035em;
+}
+
+#planner p,
+#planner small,
+#studySystem p,
+#studySystem small {
+  color: var(--jak-muted) !important;
+}
+
+/* Kicker labels */
+.planner-command-kicker,
+.planner-overview-kicker,
+.planner-today-kicker,
+.planner-analytics-kicker-v3,
+#planner .planner-command-v2::before,
+#planner .planner-modern::before {
+  background: rgba(245, 158, 11, 0.13) !important;
+  color: var(--jak-gold-2) !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+  box-shadow: none !important;
+}
+
+/* Tabs: clean segmented control */
+#plannerStudyOSTabs.planner-study-os-tabs {
+  position: sticky;
+  top: 84px;
+  z-index: 20;
+  background: rgba(2, 6, 23, 0.82) !important;
+  border: 1px solid var(--jak-border) !important;
+  border-radius: 24px !important;
+  box-shadow: var(--jak-shadow-soft) !important;
+  padding: 10px !important;
+}
+
+#plannerStudyOSTabs .planner-study-os-tab {
+  background: transparent !important;
+  color: var(--jak-muted) !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  border-radius: 16px !important;
+}
+
+#plannerStudyOSTabs .planner-study-os-tab:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: var(--jak-border) !important;
+  transform: translateY(-1px);
+}
+
+#plannerStudyOSTabs .planner-study-os-tab.active {
+  background: linear-gradient(135deg, var(--jak-gold), var(--jak-gold-2)) !important;
+  color: #111827 !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  box-shadow: 0 12px 28px rgba(245, 158, 11, 0.18) !important;
+}
+
+/* KPI numbers: no rainbow text, clear white/gold */
+#planner .planner-kpi-pro strong,
+#planner .planner-analytics-kpi-v3 strong,
+#planner .planner-today-pill strong,
+#plannerCommandCenterV2 .planner-command-card strong,
+#studySystem .study-system-dashboard strong {
+  color: var(--jak-text) !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#planner .planner-kpi-pro span,
+#planner .planner-analytics-kpi-v3 span,
+#planner .planner-today-pill span,
+#plannerCommandCenterV2 .planner-command-card span {
+  color: var(--jak-soft) !important;
+}
+
+/* Progress bars */
+.planner-overview-progress,
+.planner-analytics-track-v3,
+.planner-progress-track-v2,
+.planner-subject-bar-track,
+.planner-analytics-subject-track-v3 {
+  background: rgba(2, 6, 23, 0.78) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+.planner-overview-progress-fill,
+.planner-analytics-fill-v3,
+.planner-progress-fill-v2,
+.planner-subject-bar-fill,
+.planner-analytics-subject-fill-v3 {
+  background: linear-gradient(90deg, var(--jak-blue), var(--jak-gold)) !important;
+  box-shadow: none !important;
+}
+
+/* Insight cards */
+.planner-recommendation-pro,
+.planner-analytics-insight-v3,
+.planner-command-recommendation {
+  background: rgba(37, 99, 235, 0.10) !important;
+  border: 1px solid rgba(96, 165, 250, 0.20) !important;
+  color: var(--jak-muted) !important;
+}
+
+.planner-recommendation-pro::before,
+.planner-analytics-insight-v3::before {
+  background: var(--jak-blue) !important;
+}
+
+/* Buttons unified */
+#planner button,
+#studySystem button {
+  border-radius: 15px !important;
+  font-weight: 900 !important;
+  transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+#planner button:hover,
+#studySystem button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+}
+
+#planner button:not(.secondary):not(.danger):not(.study-system-card),
+#studySystem button:not(.secondary):not(.danger):not(.study-system-card) {
+  background: linear-gradient(135deg, var(--jak-gold), var(--jak-gold-2)) !important;
+  color: #111827 !important;
+  border: 1px solid rgba(245, 158, 11, 0.28) !important;
+  box-shadow: 0 12px 28px rgba(245, 158, 11, 0.14) !important;
+}
+
+#planner button.secondary,
+#studySystem button.secondary,
+#planner .planner-command-btn.blue,
+#planner .planner-overview-btn.blue {
+  background: rgba(37, 99, 235, 0.18) !important;
+  color: var(--jak-text) !important;
+  border: 1px solid rgba(96, 165, 250, 0.24) !important;
+  box-shadow: none !important;
+}
+
+#planner button.danger,
+#studySystem button.danger {
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #fecaca !important;
+  border: 1px solid rgba(239, 68, 68, 0.24) !important;
+}
+
+/* Study System method cards: elegant, consistent */
+#studySystem .study-system-card {
+  min-height: 160px;
+  text-align: left;
+  line-height: 1.45;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#studySystem .study-system-card:hover {
+  border-color: rgba(245, 158, 11, 0.32) !important;
+  transform: translateY(-4px);
+}
+
+#studySystem .study-system-card.active,
+#studySystem .study-system-card.selected {
+  border-color: rgba(245, 158, 11, 0.48) !important;
+  background:
+    linear-gradient(145deg, rgba(245, 158, 11, 0.12), rgba(15, 23, 42, 0.90)) !important;
+}
+
+/* Fix Pomodoro or any long value escaping */
+#studySystem *,
+#planner * {
+  min-width: 0;
+}
+
+#studySystem .study-system-dashboard,
+#studySystem .study-system-dashboard *,
+#studySystem .study-system-card,
+#studySystem .study-system-card *,
+#planner .planner-analytics-kpi-v3,
+#planner .planner-analytics-kpi-v3 *,
+#planner .planner-kpi-pro,
+#planner .planner-kpi-pro * {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Form controls */
+#planner input,
+#planner select,
+#planner textarea,
+#studySystem input,
+#studySystem select,
+#studySystem textarea {
+  background: rgba(2, 6, 23, 0.68) !important;
+  color: var(--jak-text) !important;
+  border: 1px solid rgba(148, 163, 184, 0.24) !important;
+  border-radius: 15px !important;
+}
+
+#planner input:focus,
+#planner select:focus,
+#planner textarea:focus,
+#studySystem input:focus,
+#studySystem select:focus,
+#studySystem textarea:focus {
+  border-color: rgba(245, 158, 11, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.10) !important;
+  outline: none !important;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+  #plannerStudyOSTabs.planner-study-os-tabs {
+    position: relative;
+    top: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #plannerCommandCenterV2 .planner-command-v2,
+  #planner .planner-modern,
+  #studySystem .dashboard-header,
+  #studySystem .study-system-hero,
+  #studySystem .study-system-header {
+    border-radius: 22px !important;
+    padding: 16px !important;
+  }
+
+  #studySystem .study-system-card {
+    min-height: auto;
+  }
+}
+/* Study System internal overflow final fix */
+#studySystem,
+#studySystem * {
+  box-sizing: border-box;
+}
+
+#studySystem .study-system-card,
+#studySystem .study-system-card *,
+#studySystem .study-system-dashboard,
+#studySystem .study-system-dashboard *,
+#studySystem .box,
+#studySystem .box *,
+#studySystem .card,
+#studySystem .card * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+}
+
+#studySystem .study-system-card {
+  overflow: hidden !important;
+}
+
+#studySystem .study-system-card * {
+  line-height: 1.45;
+}
+
+#studySystem .study-system-dashboard strong,
+#studySystem .study-system-dashboard h2,
+#studySystem .study-system-dashboard h3 {
+  font-size: clamp(1.25rem, 3.5vw, 2rem) !important;
+  line-height: 1.15 !important;
+}
+/* =====================================================
+   Study System Card Alignment + Internal Overflow Fix
+   Final focused patch
+===================================================== */
+
+/* Hero panel containment */
+#studySystem .study-hero-panel,
+#studySystem .dashboard-header,
+#studySystem .study-system-hero,
+#studySystem .study-system-header {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Method cards: stop text/emoji overflow and make layout consistent */
+#studySystem .study-system-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  white-space: normal !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+  line-height: 1.45 !important;
+}
+
+/* All inner text inside method cards */
+#studySystem .study-system-card,
+#studySystem .study-system-card * {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  text-overflow: clip !important;
+}
+
+/* Avoid button default inline text measuring issues */
+#studySystem button.study-system-card {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* Cleaner card typography */
+#studySystem .study-system-card {
+  font-size: 0.95rem !important;
+}
+
+#studySystem .study-system-card strong,
+#studySystem .study-system-card b,
+#studySystem .study-system-card h3 {
+  font-size: 1.18rem !important;
+  line-height: 1.2 !important;
+  color: #f8fafc !important;
+}
+
+/* Keep cards equal and calmer */
+#studySystem .study-system-card {
+  min-height: 155px !important;
+  padding: 20px !important;
+}
+
+/* If the study cards are inside a grid, force safe columns */
+#studySystem .study-system-grid,
+#studySystem .study-method-grid,
+#studySystem .systems-grid,
+#studySystem .grid {
+  min-width: 0 !important;
+}
+
+/* Mobile: reduce height and padding */
+@media (max-width: 760px) {
+  #studySystem .study-system-card {
+    min-height: auto !important;
+    padding: 16px !important;
+  }
+}
+/* =====================================================
+   Study System Clean Layout Final Fix
+   Removes internal decorative overflow and aligns cards
+===================================================== */
+
+/* Kill old decorative pseudo elements causing scrollWidth */
+#studySystem .study-system-card::before,
+#studySystem .study-system-card::after,
+#studySystem .study-hero-panel::before,
+#studySystem .study-hero-panel::after,
+#studySystem .dashboard-header::before,
+#studySystem .dashboard-header::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Hero panel safe layout */
+#studySystem .study-hero-panel,
+#studySystem .dashboard-header,
+#studySystem .study-system-hero,
+#studySystem .study-system-header {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Everything inside hero must stay inside */
+#studySystem .study-hero-panel *,
+#studySystem .dashboard-header *,
+#studySystem .study-system-hero *,
+#studySystem .study-system-header * {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Study method cards: clean modern cards without internal overflow */
+#studySystem button.study-system-card,
+#studySystem .study-system-card {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+
+  padding: 20px !important;
+  min-height: 150px !important;
+
+  text-align: left !important;
+  white-space: normal !important;
+  line-height: 1.45 !important;
+
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.88), rgba(15, 23, 42, 0.92)) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* Text inside cards */
+#studySystem .study-system-card * {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  text-overflow: clip !important;
+}
+
+/* Card hover: calm, not flashy */
+#studySystem .study-system-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(245, 158, 11, 0.34) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28) !important;
+}
+
+/* Selected card */
+#studySystem .study-system-card.active,
+#studySystem .study-system-card.selected {
+  border-color: rgba(245, 158, 11, 0.50) !important;
+  background: linear-gradient(145deg, rgba(245, 158, 11, 0.10), rgba(15, 23, 42, 0.94)) !important;
+}
+
+/* Method grid safety */
+#studySystem .study-system-grid,
+#studySystem .study-method-grid,
+#studySystem .systems-grid,
+#studySystem .grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+  #studySystem button.study-system-card,
+  #studySystem .study-system-card {
+    min-height: auto !important;
+    padding: 16px !important;
+  }
+}
+
+/* =====================================================
+   Study System Final Containment Patch
+   Fix internal scrollWidth in hero + method cards
+===================================================== */
+
+/* 1) Force Study System section to contain everything */
+#studySystem,
+#studySystem * {
+  box-sizing: border-box !important;
+}
+
+/* 2) Hero: prevent wide internal actions/text from expanding scrollWidth */
+#studySystem .study-hero-panel,
+#studySystem .dashboard-header,
+#studySystem .study-system-hero,
+#studySystem .study-system-header {
+  inline-size: 100% !important;
+  max-inline-size: 100% !important;
+  min-inline-size: 0 !important;
+  overflow: clip !important;
+  contain: layout paint !important;
+}
+
+#studySystem .study-hero-panel *,
+#studySystem .dashboard-header *,
+#studySystem .study-system-hero *,
+#studySystem .study-system-header * {
+  max-inline-size: 100% !important;
+  min-inline-size: 0 !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+}
+
+/* Any action/button rows inside the hero must wrap */
+#studySystem .study-hero-panel .actions,
+#studySystem .study-hero-panel .hero-actions,
+#studySystem .study-hero-panel .dashboard-actions,
+#studySystem .dashboard-header .actions,
+#studySystem .dashboard-header .hero-actions,
+#studySystem .dashboard-header .dashboard-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  max-inline-size: 100% !important;
+  overflow: hidden !important;
+}
+
+/* 3) Kill decorative pseudo-elements that may increase scrollWidth */
+#studySystem .study-system-card::before,
+#studySystem .study-system-card::after,
+#studySystem .study-hero-panel::before,
+#studySystem .study-hero-panel::after,
+#studySystem .dashboard-header::before,
+#studySystem .dashboard-header::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* 4) Force method cards to fit their grid column exactly */
+#studySystem button.study-system-card,
+#studySystem .study-system-card {
+  inline-size: 100% !important;
+  max-inline-size: 100% !important;
+  min-inline-size: 0 !important;
+
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  justify-items: start !important;
+  align-content: start !important;
+  gap: 8px !important;
+
+  overflow: clip !important;
+  contain: layout paint !important;
+
+  padding: 18px !important;
+  border-radius: 22px !important;
+  white-space: normal !important;
+  text-align: left !important;
+}
+
+/* 5) Text inside cards must never force width */
+#studySystem .study-system-card *,
+#studySystem button.study-system-card * {
+  max-inline-size: 100% !important;
+  min-inline-size: 0 !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  white-space: normal !important;
+}
+
+/* 6) Clean consistent colors */
+#studySystem button.study-system-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.94)) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22) !important;
+  color: #f8fafc !important;
+}
+
+#studySystem button.study-system-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28) !important;
+}
+
+#studySystem button.study-system-card.active,
+#studySystem button.study-system-card.selected {
+  background: linear-gradient(145deg, rgba(245, 158, 11, 0.12), rgba(15, 23, 42, 0.96)) !important;
+  border-color: rgba(245, 158, 11, 0.48) !important;
+}
+
+/* 7) Grid containers must use minmax(0, 1fr) */
+#studySystem .grid,
+#studySystem .study-system-grid,
+#studySystem .study-method-grid,
+#studySystem .systems-grid {
+  inline-size: 100% !important;
+  max-inline-size: 100% !important;
+  min-inline-size: 0 !important;
+  overflow: hidden !important;
+}
+
+@media (min-width: 760px) {
+  #studySystem .grid,
+  #studySystem .study-system-grid,
+  #studySystem .study-method-grid,
+  #studySystem .systems-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  #studySystem button.study-system-card,
+  #studySystem .study-system-card {
+    padding: 16px !important;
+    min-height: auto !important;
+  }
+}
+
+/* =====================================================
+   Writing Academy UX Organizer V4
+   Premium polish + reduced clutter feel
+   CSS only - preserves all existing functions
+===================================================== */
+
+#writingAcademy.page.active {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(245, 158, 11, 0.10), transparent 30%),
+    radial-gradient(circle at 90% 5%, rgba(37, 99, 235, 0.10), transparent 32%),
+    linear-gradient(135deg, #020617, #0f172a) !important;
+  color: #f8fafc;
+  overflow-x: hidden;
+}
+
+#writingAcademy,
+#writingAcademy * {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* Main page surfaces */
+#writingAcademy .writing-v3-shell,
+#writingAcademy .writing-v3-layout,
+#writingAcademy .writing-v3-card,
+#writingAcademy .writing-v3-panel,
+#writingAcademy .writing-v3-section,
+#writingAcademy .writing-v3-feedback-box,
+#writingAcademy .writing-progress-summary,
+#writingAcademy .box,
+#writingAcademy .card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.88), rgba(15, 23, 42, 0.92)) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.26) !important;
+  color: #f8fafc !important;
+}
+
+/* Hero / command area */
+#writingAcademy .dashboard-header,
+#writingAcademy .writing-v3-hero,
+#writingAcademy .writing-hero,
+#writingAcademy .writing-command-center,
+#writingAcademy .writing-command-lab {
+  background:
+    linear-gradient(135deg, rgba(245, 158, 11, 0.10), transparent 42%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.94)) !important;
+  border: 1px solid rgba(245, 158, 11, 0.22) !important;
+  border-radius: 30px !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34) !important;
+  overflow: hidden !important;
+}
+
+/* Top navigation tabs */
+#writingAcademy .writing-v3-tabs,
+#writingAcademy .writing-tabs,
+#writingAcademy .tab-buttons {
+  position: sticky;
+  top: 84px;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 22px;
+  background: rgba(2, 6, 23, 0.84) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.24) !important;
+}
+
+/* Top nav buttons only */
+#writingAcademy .writing-v3-tabs > button,
+#writingAcademy .writing-tabs > button,
+#writingAcademy .tab-buttons > button {
+  border-radius: 15px !important;
+  background: transparent !important;
+  color: #cbd5e1 !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  font-weight: 900 !important;
+  min-height: 42px;
+}
+
+#writingAcademy .writing-v3-tabs > button:hover,
+#writingAcademy .writing-tabs > button:hover,
+#writingAcademy .tab-buttons > button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+#writingAcademy .writing-v3-tabs > button.active,
+#writingAcademy .writing-tabs > button.active,
+#writingAcademy .tab-buttons > button.active {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
+  color: #111827 !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  box-shadow: 0 12px 28px rgba(245, 158, 11, 0.16) !important;
+}
+
+/* Forms */
+#writingAcademy input,
+#writingAcademy select,
+#writingAcademy textarea {
+  width: 100%;
+  max-width: 100%;
+  background: rgba(2, 6, 23, 0.68) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(148, 163, 184, 0.24) !important;
+  border-radius: 15px !important;
+  padding: 11px 13px !important;
+  outline: none !important;
+}
+
+#writingAcademy input:focus,
+#writingAcademy select:focus,
+#writingAcademy textarea:focus {
+  border-color: rgba(245, 158, 11, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.10) !important;
+}
+
+/* Main editor should feel like a real writing studio */
+#studentWritingInput {
+  min-height: 280px !important;
+  line-height: 1.85 !important;
+  font-size: 1rem !important;
+  resize: vertical !important;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.84), rgba(15, 23, 42, 0.86)) !important;
+}
+
+/* Important action: Analyze Writing */
+#writingAcademy button[onclick="analyzeWritingLocally()"],
+#writingAcademy button[onclick="analyzeWriting()"] {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
+  color: #111827 !important;
+  border: 1px solid rgba(245, 158, 11, 0.32) !important;
+  box-shadow: 0 14px 34px rgba(245, 158, 11, 0.18) !important;
+  min-height: 48px;
+  font-weight: 950 !important;
+}
+
+/* General buttons */
+#writingAcademy button {
+  border-radius: 14px !important;
+  font-weight: 900 !important;
+  transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+#writingAcademy button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+}
+
+#writingAcademy button:not(.secondary):not(.ghost):not(.danger):not(.active) {
+  background: rgba(245, 158, 11, 0.13) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(245, 158, 11, 0.22) !important;
+}
+
+#writingAcademy button.secondary {
+  background: rgba(37, 99, 235, 0.18) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(96, 165, 250, 0.24) !important;
+}
+
+#writingAcademy button.ghost {
+  background: transparent !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+}
+
+/* Tiny toolbar buttons B/I/U should stay small */
+#writingAcademy button:nth-of-type(19),
+#writingAcademy button:nth-of-type(20),
+#writingAcademy button:nth-of-type(21) {
+  min-width: 42px !important;
+  width: auto !important;
+  padding: 8px 10px !important;
+}
+
+/* Feedback box as a report panel */
+#writingFeedbackBox {
+  min-height: 180px !important;
+  line-height: 1.75 !important;
+  color: #cbd5e1 !important;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.86)) !important;
+  border: 1px solid rgba(96, 165, 250, 0.22) !important;
+}
+
+/* Progress summary */
+#writingProgressSummary,
+#writingAcademy .writing-progress-summary {
+  display: grid !important;
+  gap: 14px !important;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.86)) !important;
+  border: 1px solid rgba(245, 158, 11, 0.18) !important;
+}
+
+/* Keep report numbers readable */
+#writingFeedbackBox strong,
+#writingProgressSummary strong,
+#writingAcademy .writing-progress-summary strong {
+  color: #fbbf24 !important;
+}
+
+/* Reduce visual noise from many inner action groups */
+#writingAcademy .writing-actions,
+#writingAcademy .writing-v3-actions,
+#writingAcademy .toolbar,
+#writingAcademy .editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 18px;
+  background: rgba(2, 6, 23, 0.40);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+/* Prevent internal overflow */
+#writingAcademy * {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+  #writingAcademy .writing-v3-tabs,
+  #writingAcademy .writing-tabs,
+  #writingAcademy .tab-buttons {
+    position: relative;
+    top: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  #writingAcademy .dashboard-header,
+  #writingAcademy .writing-v3-hero,
+  #writingAcademy .writing-hero {
+    border-radius: 22px !important;
+    padding: 16px !important;
+  }
+
+  #studentWritingInput {
+    min-height: 220px !important;
+  }
+}
+/* =====================================================
+   Writing Academy Final Premium Polish
+   Toolbar + cards + report readability
+   CSS only - no logic changes
+===================================================== */
+
+/* Stronger page containment */
+#writingAcademy,
+#writingAcademy * {
+  box-sizing: border-box !important;
+}
+
+/* Make Writing Academy feel like a premium workspace */
+#writingAcademy.page.active {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(245, 158, 11, 0.10), transparent 28%),
+    radial-gradient(circle at 92% 8%, rgba(37, 99, 235, 0.10), transparent 30%),
+    linear-gradient(135deg, #020617, #0f172a) !important;
+  color: #f8fafc !important;
+  overflow-x: hidden !important;
+}
+
+/* Main command header / hero */
+#writingAcademy .writing-v3-hero,
+#writingAcademy .writing-command-lab,
+#writingAcademy .writing-command-center,
+#writingAcademy .dashboard-header {
+  position: relative;
+  overflow: hidden !important;
+  border-radius: 32px !important;
+  background:
+    linear-gradient(135deg, rgba(245, 158, 11, 0.10), transparent 42%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.94)) !important;
+  border: 1px solid rgba(245, 158, 11, 0.22) !important;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.36) !important;
+}
+
+/* Hero text */
+#writingAcademy h1,
+#writingAcademy h2,
+#writingAcademy h3 {
+  color: #f8fafc !important;
+  letter-spacing: -0.035em;
+}
+
+#writingAcademy p,
+#writingAcademy small {
+  color: #cbd5e1 !important;
+}
+
+/* Top metric cards: Mode / Type / Focus / Score / Next Step */
+#writingAcademy .writing-command-card,
+#writingAcademy .writing-v3-stat,
+#writingAcademy .writing-stat,
+#writingAcademy .writing-v3-summary-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.88), rgba(15, 23, 42, 0.92)) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Writing tabs: cleaner and less noisy */
+#writingAcademy .writing-v3-tabs {
+  position: sticky;
+  top: 84px;
+  z-index: 20;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  padding: 10px !important;
+  border-radius: 24px !important;
+  background: rgba(2, 6, 23, 0.86) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.26) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+#writingAcademy .writing-v3-tabs > button {
+  flex: 1 1 145px;
+  min-height: 44px;
+  border-radius: 16px !important;
+  background: transparent !important;
+  color: #cbd5e1 !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  font-weight: 900 !important;
+  white-space: normal !important;
+}
+
+#writingAcademy .writing-v3-tabs > button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+  transform: translateY(-1px);
+}
+
+#writingAcademy .writing-v3-tabs > button.active {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
+  color: #111827 !important;
+  border-color: rgba(245, 158, 11, 0.36) !important;
+  box-shadow: 0 14px 32px rgba(245, 158, 11, 0.18) !important;
+}
+
+/* General panels */
+#writingAcademy .writing-v3-card,
+#writingAcademy .writing-v3-panel,
+#writingAcademy .writing-v3-section,
+#writingAcademy .writing-v3-screen,
+#writingAcademy .box,
+#writingAcademy .card {
+  background:
+    linear-gradient(145deg, rgba(30, 41, 59, 0.88), rgba(15, 23, 42, 0.92)) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.24) !important;
+  color: #f8fafc !important;
+}
+
+/* Inputs and selects */
+#writingAcademy input,
+#writingAcademy select,
+#writingAcademy textarea {
+  background: rgba(2, 6, 23, 0.72) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(148, 163, 184, 0.24) !important;
+  border-radius: 15px !important;
+  padding: 12px 14px !important;
+  outline: none !important;
+}
+
+#writingAcademy input:focus,
+#writingAcademy select:focus,
+#writingAcademy textarea:focus {
+  border-color: rgba(245, 158, 11, 0.58) !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.10) !important;
+}
+
+/* Main editor: make it the star */
+#studentWritingInput {
+  min-height: 300px !important;
+  line-height: 1.85 !important;
+  font-size: 1.03rem !important;
+  resize: vertical !important;
+  background:
+    linear-gradient(145deg, rgba(2, 6, 23, 0.88), rgba(15, 23, 42, 0.88)) !important;
+  border: 1px solid rgba(96, 165, 250, 0.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 40px rgba(0, 0, 0, 0.20) !important;
+}
+
+/* Editor toolbar: make B/I/U/Grammar/Connectors/Style subtle */
+#writingAcademy .writing-v3-editor-toolbar {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  padding: 9px !important;
+  border-radius: 18px !important;
+  background: rgba(2, 6, 23, 0.42) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+#writingAcademy .writing-v3-editor-toolbar button {
+  min-height: 34px !important;
+  padding: 7px 11px !important;
+  border-radius: 12px !important;
+  background: rgba(15, 23, 42, 0.92) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  box-shadow: none !important;
+  font-size: 0.86rem !important;
+}
+
+/* Main analysis button should stand out */
+#writingAcademy button[onclick="analyzeWritingLocally()"],
+#writingAcademy button[onclick="analyzeWriting()"] {
+  min-height: 50px !important;
+  padding: 12px 18px !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24) !important;
+  color: #111827 !important;
+  border: 1px solid rgba(245, 158, 11, 0.34) !important;
+  box-shadow: 0 16px 38px rgba(245, 158, 11, 0.18) !important;
+  font-weight: 950 !important;
+}
+
+/* Action groups */
+#writingAcademy .writing-v3-actions,
+#writingAcademy .writing-v3-step-row,
+#writingAcademy .writing-v3-lesson-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 10px;
+  border-radius: 18px;
+  background: rgba(2, 6, 23, 0.36);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+/* General action buttons */
+#writingAcademy button {
+  border-radius: 14px !important;
+  font-weight: 900 !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+#writingAcademy button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+}
+
+#writingAcademy button:not(.secondary):not(.ghost):not(.danger):not(.active) {
+  background: rgba(245, 158, 11, 0.13) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(245, 158, 11, 0.22) !important;
+}
+
+#writingAcademy button.secondary {
+  background: rgba(37, 99, 235, 0.18) !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(96, 165, 250, 0.24) !important;
+}
+
+#writingAcademy button.ghost {
+  background: transparent !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+}
+
+/* Feedback report */
+#writingFeedbackBox {
+  min-height: 190px !important;
+  line-height: 1.75 !important;
+  color: #cbd5e1 !important;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.88)) !important;
+  border: 1px solid rgba(96, 165, 250, 0.24) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Progress summary */
+#writingProgressSummary,
+#writingAcademy .writing-progress-summary {
+  display: grid !important;
+  gap: 14px !important;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.88)) !important;
+  border: 1px solid rgba(245, 158, 11, 0.18) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Important numbers */
+#writingFeedbackBox strong,
+#writingProgressSummary strong,
+#writingAcademy .writing-progress-summary strong {
+  color: #fbbf24 !important;
+}
+
+/* Enforce organizer hidden groups */
+#writingAcademy [data-writing-organized="hidden"] {
+  display: none !important;
+}
+
+/* Prevent internal overflow */
+#writingAcademy * {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+  #writingAcademy .writing-v3-tabs {
+    position: relative;
+    top: auto;
+    display: grid !important;
+    grid-template-columns: 1fr;
+  }
+
+  #writingAcademy .writing-v3-hero,
+  #writingAcademy .writing-command-lab,
+  #writingAcademy .dashboard-header {
+    border-radius: 22px !important;
+    padding: 16px !important;
+  }
+
+  #studentWritingInput {
+    min-height: 230px !important;
+  }
+}
+ 
+/* =====================================================
+   JAK Layout Stabilizer
+   Fix overlapping layers in Planner + Writing Academy
+   CSS-only safety override
+===================================================== */
+
+/* ---------- Global page safety ---------- */
+
+.page {
+  position: relative !important;
+  overflow-x: hidden !important;
+}
+
+.page:not(.active) {
+  display: none !important;
+}
+
+.page.active {
+  display: block !important;
+}
+
+/* Prevent huge cards from escaping their containers */
+#planner,
+#planner *,
+#writingAcademy,
+#writingAcademy *,
+#studySystem,
+#studySystem * {
+  box-sizing: border-box !important;
+  max-width: 100%;
+}
+
+/* ---------- Navbar safety ---------- */
+
+header,
+nav,
+.navbar,
+.main-nav {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+nav,
+.navbar,
+.nav-buttons {
+  flex-wrap: wrap !important;
+}
+
+/* ---------- Planner: stop page-over-page effect ---------- */
+
+/* Main Planner containers must be normal flow, not overlay */
+#planner #plannerCommandCenterV2,
+#planner #plannerCommandCenterV2 *,
+#planner .planner-command-v2,
+#planner .planner-modern,
+#planner .planner-overview-pro,
+#planner .planner-today-v3,
+#planner .planner-analytics-pro-v3,
+#planner [data-planner-os-section] {
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+}
+
+/* Command center should not float above other content */
+#planner #plannerCommandCenterV2 {
+  z-index: 1 !important;
+  width: 100% !important;
+  max-width: 1180px !important;
+  margin: 24px auto !important;
+}
+
+#planner #plannerCommandCenterV2 .planner-command-v2,
+#planner .planner-command-v2 {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  overflow: hidden !important;
+  z-index: 1 !important;
+}
+
+/* Planner internal sections: only active tab content should show */
+#planner [data-planner-os-section] {
+  display: none !important;
+  width: 100% !important;
+  max-width: 1180px !important;
+  margin: 20px auto !important;
+  z-index: 1 !important;
+}
+
+#planner [data-planner-os-section].active {
+  display: block !important;
+}
+
+/* Keep Study OS tabs above content, but not over content */
+#plannerStudyOSTabs {
+  position: sticky !important;
+  top: 82px !important;
+  z-index: 10 !important;
+  max-width: 1180px !important;
+  margin: 16px auto !important;
+}
+
+/* Planner hero titles must not be absurdly huge */
+#planner .planner-command-title,
+#planner .planner-overview-title,
+#planner .planner-today-title,
+#planner .planner-analytics-title-v3 {
+  font-size: clamp(2rem, 6vw, 4.2rem) !important;
+  line-height: 0.98 !important;
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Planner KPI cards: fix pomodoro and long values */
+#planner .planner-analytics-kpi-grid-v3,
+#planner .planner-overview-kpis,
+#planner .planner-command-grid,
+#planner .planner-today-stats {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+
+#planner .planner-analytics-kpi-v3,
+#planner .planner-kpi-pro,
+#planner .planner-command-card,
+#planner .planner-today-pill {
+  overflow: hidden !important;
+  min-width: 0 !important;
+}
+
+#planner .planner-analytics-kpi-v3 strong,
+#planner .planner-kpi-pro strong,
+#planner .planner-command-card strong,
+#planner .planner-today-pill strong {
+  font-size: clamp(1.8rem, 4vw, 3rem) !important;
+  line-height: 1.05 !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  white-space: normal !important;
+}
+
+/* Specific fix for current system value like pomodoro */
+#planner .planner-analytics-kpi-v3 strong,
+#planner .planner-kpi-pro strong {
+  text-transform: none !important;
+}
+
+#planner .planner-analytics-kpi-v3 strong {
+  font-size: clamp(1.55rem, 3.5vw, 2.45rem) !important;
+}
+
+/* Planner panels should not overlap each other */
+#planner .planner-analytics-grid-v3,
+#planner .planner-overview-grid,
+#planner .planner-today-grid,
+#planner .planner-layout {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 18px !important;
+  width: 100% !important;
+  max-width: 1180px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* On smaller screens, force one column */
+@media (max-width: 900px) {
+  #planner .planner-analytics-grid-v3,
+  #planner .planner-overview-grid,
+  #planner .planner-today-grid,
+  #planner .planner-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  #plannerStudyOSTabs {
+    position: relative !important;
+    top: auto !important;
+  }
+}
+
+/* ---------- Writing Academy: fix horizontal cut cards ---------- */
+
+/* Writing Academy page content should stay centered */
+#writingAcademy > * {
+  max-width: 1180px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Hero/stat cards should wrap instead of sliding horizontally */
+#writingAcademy .writing-v3-hero,
+#writingAcademy .writing-command-lab,
+#writingAcademy .writing-command-center,
+#writingAcademy .dashboard-header {
+  width: 100% !important;
+  max-width: 1180px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+  z-index: 1 !important;
+}
+
+/* Any stat row inside Writing Academy must wrap */
+#writingAcademy .writing-v3-hero > *,
+#writingAcademy .writing-command-lab > *,
+#writingAcademy .writing-command-center > *,
+#writingAcademy .dashboard-header > * {
+  max-width: 100% !important;
+}
+
+/* Common grids inside Writing Academy */
+#writingAcademy .grid,
+#writingAcademy .writing-v3-grid,
+#writingAcademy .writing-v3-stats,
+#writingAcademy .writing-stats,
+#writingAcademy .writing-command-grid,
+#writingAcademy .writing-v3-summary,
+#writingAcademy .writing-progress-summary {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important;
+  gap: 14px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Individual cards must not overflow */
+#writingAcademy .writing-command-card,
+#writingAcademy .writing-v3-stat,
+#writingAcademy .writing-stat,
+#writingAcademy .writing-v3-summary-card,
+#writingAcademy .writing-progress-summary > *,
+#writingAcademy .writing-v3-card,
+#writingAcademy .writing-v3-panel,
+#writingAcademy .writing-v3-section {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Fix long values inside cards */
+#writingAcademy .writing-command-card *,
+#writingAcademy .writing-v3-stat *,
+#writingAcademy .writing-stat *,
+#writingAcademy .writing-v3-summary-card *,
+#writingAcademy .writing-progress-summary * {
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  white-space: normal !important;
+}
+
+/* Writing tabs should not force the page wide */
+#writingAcademy .writing-v3-tabs {
+  width: 100% !important;
+  max-width: 1180px !important;
+  margin: 16px auto !important;
+  overflow: hidden !important;
+  position: sticky !important;
+  top: 82px !important;
+  z-index: 10 !important;
+}
+
+/* Writing screen content normal flow */
+#writingAcademy .writing-v3-screen,
+#writingAcademy .writing-v3-card,
+#writingAcademy .writing-v3-panel {
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+  z-index: 1 !important;
+}
+
+/* Enforce organizer hidden groups */
+#writingAcademy [data-writing-organized="hidden"] {
+  display: none !important;
+}
+
+/* ---------- Desktop-width safety ---------- */
+
+@media (max-width: 760px) {
+  #writingAcademy > *,
+  #planner #plannerCommandCenterV2,
+  #planner [data-planner-os-section],
+  #plannerStudyOSTabs {
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  #writingAcademy .writing-v3-tabs {
+    position: relative !important;
+    top: auto !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  #writingAcademy .grid,
+  #writingAcademy .writing-v3-grid,
+  #writingAcademy .writing-v3-stats,
+  #writingAcademy .writing-stats,
+  #writingAcademy .writing-command-grid,
+  #writingAcademy .writing-v3-summary,
+  #writingAcademy .writing-progress-summary {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* =========================================================
+   EXAMS PATCH 1 — EMPTY STATES + REFRESH BUTTONS
+   ========================================================= */
+
+.exam-empty-state {
+  margin: 18px 0;
+  padding: 22px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  text-align: center;
+  color: #334155;
+}
+
+.exam-empty-state .exam-empty-icon {
+  font-size: 34px;
+  margin-bottom: 8px;
+}
+
+.exam-empty-state h3 {
+  margin: 8px 0 14px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.exam-refresh-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 700;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: white;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+}
+
+.exam-refresh-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.32);
+}
+/* =========================================================
+   EXAMS PATCH 2 — ACADEMIC CLASSIFICATION UI
+   ========================================================= */
+
+.academic-field {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.academic-field label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #334155;
+}
+
+.academic-select,
+.academic-field select {
+  width: 100%;
+  padding: 11px 13px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 700;
+  outline: none;
+}
+
+.academic-select:focus,
+.academic-field select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+/* =========================================================
+   EXAMS PATCH 4A — QUESTION METADATA UI
+   ========================================================= */
+
+.question-metadata-box {
+  margin: 16px 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.question-metadata-title {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.question-metadata-subtitle {
+  grid-column: 1 / -1;
+  margin: -6px 0 4px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.question-meta-field {
+  margin: 0;
+}
+
+@media (max-width: 800px) {
+  .question-metadata-box {
+    grid-template-columns: 1fr;
+  }
+}
+/* =========================================================
+   EXAMS PATCH 5A — QUESTION BANK UI
+   ========================================================= */
+
+.question-bank-controls {
+  margin-bottom: 18px;
+}
+
+.question-bank-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.question-bank-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.question-bank-list {
+  display: grid;
+  gap: 14px;
+}
+
+.question-bank-card {
+  border-left: 5px solid rgba(37, 99, 235, 0.75);
+}
+
+.question-bank-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.question-bank-options {
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.question-bank-options p {
+  margin: 6px 0;
+}
+
+@media (max-width: 1000px) {
+  .question-bank-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .question-bank-filter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* =========================================================
+   EXAMS PATCH 5B — QUESTION BANK SELECTION UI
+   ========================================================= */
+
+.question-bank-selection-summary {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.question-bank-create-btn {
+  background: linear-gradient(135deg, #16a34a, #2563eb);
+  color: white;
+  font-weight: 800;
+}
+
+.bank-question-select-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.1);
+  border: 1px solid rgba(22, 163, 74, 0.25);
+  color: #166534;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.bank-question-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* =========================================================
+   EXAMS PATCH 6A — IMPORT QUESTIONS UI
+   ========================================================= */
+
+.question-bank-import-box {
+  margin: 18px 0;
+  border-left: 5px solid rgba(22, 163, 74, 0.75);
+}
+
+.question-import-textarea {
+  width: 100%;
+  min-height: 260px;
+  resize: vertical;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: #ffffff;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  outline: none;
+}
+
+.question-import-textarea:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.14);
+}
+
+.import-questions-preview {
+  margin-top: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.import-question-card {
+  border-left: 4px solid rgba(22, 163, 74, 0.65);
+}
+
+.import-question-error {
+  border-left-color: rgba(220, 38, 38, 0.75);
+  background: rgba(254, 242, 242, 0.75);
+}
+
+.import-errors {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(220, 38, 38, 0.08);
+  color: #991b1b;
+  font-weight: 700;
+}
 

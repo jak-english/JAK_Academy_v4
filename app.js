@@ -134,6 +134,18 @@ async function showPage(id) {
 if (typeof hideProsodyLaunchElements === "function") {
   setTimeout(hideProsodyLaunchElements, 100);
 }
+if (id === "home" && typeof hideHomeLoginCTAIfLoggedIn === "function") {
+  setTimeout(hideHomeLoginCTAIfLoggedIn, 150);
+}
+if (id === "planner" && typeof renderPlannerCommandCenterV2 === "function") {
+  setTimeout(renderPlannerCommandCenterV2, 150);
+}
+if (id === "planner" && typeof organizePlannerForLaunch === "function") {
+  setTimeout(organizePlannerForLaunch, 250);
+}
+if (id === "planner" && typeof setupPlannerStudyOSTabs === "function") {
+  setTimeout(setupPlannerStudyOSTabs, 350);
+}
   console.log("Showing page:", id);
 }
 
@@ -203,6 +215,7 @@ let demoQuestions = [];
 
 function addDemoQuestion(questionData) {
   demoQuestions.push(questionData);
+  
   console.log("Question Added:", questionData);
 }
 
@@ -241,7 +254,9 @@ async function createExam() {
   const timeLimit = Number($("examTime")?.value || 10);
   const questionCount = Number($("examQuestionCount")?.value || 0);
   const examType = $("examType")?.value || "multiple_choice";
-  const gradeLevel = $("examGrade")?.value.trim();
+  const subject = $("examSubject")?.value || "";
+  const gradeLevel = $("examGrade")?.value || "";
+  const unit = $("examUnit")?.value || "";
 
   const msg = $("examMsg");
 
@@ -254,7 +269,20 @@ async function createExam() {
     if (msg) msg.textContent = "Please enter a valid exam duration.";
     return;
   }
+if (!subject) {
+  if (msg) msg.textContent = "Please select a subject.";
+  return;
+}
 
+if (!gradeLevel) {
+  if (msg) msg.textContent = "Please select a grade.";
+  return;
+}
+
+if (!unit) {
+  if (msg) msg.textContent = "Please select a unit.";
+  return;
+}
   const user = await getCurrentUser();
 
   if (!user) {
@@ -272,11 +300,13 @@ async function createExam() {
   time_limit: timeLimit,
   question_count: questionCount,
   exam_type: examType,
+  subject,
   grade_level: gradeLevel,
+  unit,
   teacher_id: user.id
 };
 
-if (!editingExamId) {
+ if (!editingExamId) {
   examData.status = "draft";
 }
 
@@ -327,7 +357,9 @@ if (!editingExamId) {
   if ($("examTime")) $("examTime").value = 10;
   if ($("examQuestionCount")) $("examQuestionCount").value = "";
   if ($("examType")) $("examType").value = "multiple_choice";
+  if ($("examSubject")) $("examSubject").value = "";
   if ($("examGrade")) $("examGrade").value = "";
+  if ($("examUnit")) $("examUnit").value = "";
 
   await loadTeacherExams();
 
@@ -339,8 +371,9 @@ if (!editingExamId) {
 async function loadTeacherExams() {
   const list = document.getElementById("teacherExamList");
   const status = document.getElementById("teacherExamFilterStatus");
-  const filterInput = document.getElementById("teacherExamGradeFilter");
-
+ const gradeFilterInput = document.getElementById("teacherExamGradeFilter");
+ const subjectFilterInput = document.getElementById("teacherExamSubjectFilter");
+ const unitFilterInput = document.getElementById("teacherExamUnitFilter");
   if (!list) return;
 
   list.innerHTML = "Loading...";
@@ -384,21 +417,34 @@ async function loadTeacherExams() {
     });
   }
 
-  // 3) Filter by grade/class if needed
-  const filterValue = filterInput?.value.trim().toLowerCase() || "";
+  // 3) Filter by subject / grade / unit if needed
+const subjectFilter = subjectFilterInput?.value || "";
+const gradeFilter = gradeFilterInput?.value || "";
+const unitFilter = unitFilterInput?.value || "";
 
-  if (filterValue) {
-    rows = rows.filter(exam => {
-      const grade = String(exam.grade_level || "").toLowerCase();
-      return grade.includes(filterValue);
-    });
-  }
+if (subjectFilter) {
+  rows = rows.filter(exam => String(exam.subject || "") === subjectFilter);
+}
 
-  if (status) {
-    status.textContent = filterValue
-      ? `Showing exams for: ${filterInput.value.trim()}`
-      : "Showing all exams";
-  }
+if (gradeFilter) {
+  rows = rows.filter(exam => String(exam.grade_level || "") === gradeFilter);
+}
+
+if (unitFilter) {
+  rows = rows.filter(exam => String(exam.unit || "") === unitFilter);
+}
+
+if (status) {
+  const activeFilters = [];
+
+  if (subjectFilter) activeFilters.push(`Subject: ${subjectFilter}`);
+  if (gradeFilter) activeFilters.push(`Grade: ${gradeFilter}`);
+  if (unitFilter) activeFilters.push(unitFilter);
+
+  status.textContent = activeFilters.length
+    ? `Showing exams for ${activeFilters.join(" / ")}`
+    : "Showing all exams";
+}
 
   list.innerHTML = rows.length ? "" : "No exams found";
 
@@ -427,8 +473,9 @@ async function loadTeacherExams() {
         }
       </p>
 
-      <p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
-
+     <p><strong>Subject:</strong> ${safeText(exam.subject || "Not specified")}</p>
+     <p><strong>Grade / Class:</strong> ${safeText(exam.grade_level ? `Grade ${exam.grade_level}` : "Not specified")}</p>
+      <p><strong>Unit:</strong> ${safeText(exam.unit || "Not specified")}</p>
       <p>
         <strong>Questions:</strong>
         ${
@@ -513,14 +560,46 @@ async function addQuestion() {
       return;
     }
 
-    const type = questionType.value;
-    const text = questionText.value.trim();
-    const explanation = questionExplanation.value.trim();
+     const type = questionType.value;
+const text = questionText.value.trim();
+const explanation = questionExplanation.value.trim();
+
+const questionSubject = document.getElementById("questionSubject")?.value || "";
+const questionGradeRaw = document.getElementById("questionGrade")?.value || "";
+const questionGrade = questionGradeRaw.replace("Grade ", "");
+const questionUnit = document.getElementById("questionUnit")?.value || "";
+const questionLesson = document.getElementById("questionLesson")?.value.trim() || "";
+const questionSkill = document.getElementById("questionSkill")?.value || "";
+const questionDifficulty = document.getElementById("questionDifficulty")?.value || "";
 
     if (!text) {
       questionMsg.textContent = "Enter question";
       return;
     }
+if (!questionSubject) {
+  questionMsg.textContent = "Select question subject.";
+  return;
+}
+
+if (!questionGrade) {
+  questionMsg.textContent = "Select question grade.";
+  return;
+}
+
+if (!questionUnit) {
+  questionMsg.textContent = "Select question unit.";
+  return;
+}
+
+if (!questionSkill) {
+  questionMsg.textContent = "Select question skill.";
+  return;
+}
+
+if (!questionDifficulty) {
+  questionMsg.textContent = "Select question difficulty.";
+  return;
+}
 
     questionMsg.textContent = editingQuestionId
       ? "Updating question..."
@@ -551,12 +630,18 @@ async function addQuestion() {
       return;
     }
 
-    let row = {
-      exam_id: currentExamId,
-      question_text: text,
-      question_type: type,
-      explanation
-    };
+     let row = {
+  exam_id: currentExamId,
+  question_text: text,
+  question_type: type,
+  explanation,
+  subject: questionSubject,
+  grade_level: questionGrade,
+  unit: questionUnit,
+  lesson: questionLesson,
+  skill: questionSkill,
+  difficulty: questionDifficulty
+};
 
     if (type === "mcq") {
       if (
@@ -619,7 +704,9 @@ async function addQuestion() {
     optionC.value = "";
     optionD.value = "";
     questionExplanation.value = "";
-
+    if (document.getElementById("questionLesson")) {
+  document.getElementById("questionLesson").value = "";
+  }
     await loadQuestions();
 
   } finally {
@@ -680,10 +767,21 @@ async function loadQuestions() {
 
     box.innerHTML = `
       <div>
-        <span class="badge">Question ${i + 1}</span>
-        <span class="badge">${safeText(typeLabel)}</span>
-      </div>
+ <div>
+  <span class="badge">Question ${i + 1}</span>
+  <span class="badge">${safeText(typeLabel)}</span>
+  ${q.subject ? `<span class="badge">${safeText(q.subject)}</span>` : ""}
+  ${q.grade_level ? `<span class="badge">Grade ${safeText(q.grade_level)}</span>` : ""}
+  ${q.unit ? `<span class="badge">${safeText(q.unit)}</span>` : ""}
+  ${q.skill ? `<span class="badge">${safeText(q.skill)}</span>` : ""}
+  ${q.difficulty ? `<span class="badge">${safeText(q.difficulty)}</span>` : ""}
+</div>
 
+${
+  q.lesson
+    ? `<p><strong>Lesson:</strong> ${safeText(q.lesson)}</p>`
+    : ""
+}
       <h3>${safeText(q.question_text)}</h3>
 
       ${optionsHtml}
@@ -735,8 +833,9 @@ async function deleteQuestion(questionId) {
 async function loadStudentExams() {
   const list = document.getElementById("studentExamList");
   const status = document.getElementById("studentExamFilterStatus");
-  const filterInput = document.getElementById("studentExamGradeFilter");
-
+ const gradeFilterInput = document.getElementById("studentExamGradeFilter");
+const subjectFilterInput = document.getElementById("studentExamSubjectFilter");
+const unitFilterInput = document.getElementById("studentExamUnitFilter");
   if (!list) return;
 
   list.innerHTML = "Loading exams...";
@@ -786,22 +885,34 @@ async function loadStudentExams() {
     return realQuestionCount > 0;
   });
 
-  // 4) Filter by grade/class
-  const filterValue = filterInput?.value.trim().toLowerCase() || "";
+   // 4) Filter by subject / grade / unit
+const subjectFilter = subjectFilterInput?.value || "";
+const gradeFilter = gradeFilterInput?.value || "";
+const unitFilter = unitFilterInput?.value || "";
 
-  if (filterValue) {
-    exams = exams.filter(exam => {
-      const grade = String(exam.grade_level || "").toLowerCase();
-      return grade.includes(filterValue);
-    });
-  }
+if (subjectFilter) {
+  exams = exams.filter(exam => String(exam.subject || "") === subjectFilter);
+}
 
-  if (status) {
-    status.textContent = filterValue
-      ? `Showing ready exams for: ${filterInput.value.trim()}`
-      : "Showing ready published exams only";
-  }
+if (gradeFilter) {
+  exams = exams.filter(exam => String(exam.grade_level || "") === gradeFilter);
+}
 
+if (unitFilter) {
+  exams = exams.filter(exam => String(exam.unit || "") === unitFilter);
+}
+
+if (status) {
+  const activeFilters = [];
+
+  if (subjectFilter) activeFilters.push(`Subject: ${subjectFilter}`);
+  if (gradeFilter) activeFilters.push(`Grade: ${gradeFilter}`);
+  if (unitFilter) activeFilters.push(unitFilter);
+
+  status.textContent = activeFilters.length
+    ? `Showing ready exams for ${activeFilters.join(" / ")}`
+    : "Showing ready published exams only";
+}
   list.innerHTML = exams.length ? "" : "No ready exams found";
 
   // 5) Render student exam cards
@@ -822,8 +933,7 @@ async function loadStudentExams() {
         <span class="badge published">🟢 Published</span>
       </p>
 
-      <p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
-
+<p><strong>Grade / Class:</strong> ${safeText(exam.grade_level || "Not specified")}</p>
       <p><strong>Questions:</strong> ${safeText(realQuestionCount)}</p>
 
       <p><strong>Time:</strong> ⏱ ${safeText(exam.time_limit || 10)} min</p>
@@ -12110,18 +12220,27 @@ async function protectPremiumAdminTools() {
         ? await getCurrentNavigationRoleSafe()
         : { isLoggedIn: false, role: null };
 
-    const role = String(navAuth.role || "").toLowerCase();
-    const isAdmin = role.includes("admin") || role.includes("super_admin");
+    const role = String(navAuth.role || "").toLowerCase().trim();
+
+    // Premium manager tools must be visible ONLY to Super Admin.
+    // Students, teachers, and normal admins see payment/plans only.
+    const isSuperAdmin =
+      role === "super_admin" ||
+      role === "super admin" ||
+      role.split(",").map(r => r.trim()).includes("super_admin") ||
+      role.split(",").map(r => r.trim()).includes("super admin");
 
     const premium = document.getElementById("premium");
     if (!premium) return;
 
-    // 1) Hide admin-only buttons anywhere inside Premium
+    premium.classList.toggle("premium-super-admin-unlocked", isSuperAdmin);
+
+    // 1) Hide super-admin-only buttons anywhere inside Premium
     [...premium.querySelectorAll("button")].forEach((btn) => {
       const text = btn.innerText.trim();
       const onclick = btn.getAttribute("onclick") || "";
 
-      const isAdminButton =
+      const isSuperAdminButton =
         text.includes("Load Users") ||
         text.includes("Make Teacher") ||
         text.includes("Make Student") ||
@@ -12140,13 +12259,13 @@ async function protectPremiumAdminTools() {
         onclick.includes("approvePremiumRequest") ||
         onclick.includes("rejectPremiumRequest");
 
-      if (isAdminButton) {
-        btn.style.display = isAdmin ? "" : "none";
-        btn.setAttribute("aria-hidden", isAdmin ? "false" : "true");
+      if (isSuperAdminButton) {
+        btn.style.display = isSuperAdmin ? "" : "none";
+        btn.setAttribute("aria-hidden", isSuperAdmin ? "false" : "true");
       }
     });
 
-    // 2) Hide full admin panels/tables from non-admin users
+    // 2) Hide full super-admin panels/tables from everyone except Super Admin
     [
       ".premium-users-panel",
       ".premium-admin-panel",
@@ -12158,14 +12277,14 @@ async function protectPremiumAdminTools() {
       "#adminOverview"
     ].forEach((selector) => {
       premium.querySelectorAll(selector).forEach((el) => {
-        el.style.display = isAdmin ? "" : "none";
-        el.setAttribute("aria-hidden", isAdmin ? "false" : "true");
+        el.style.display = isSuperAdmin ? "" : "none";
+        el.setAttribute("aria-hidden", isSuperAdmin ? "false" : "true");
       });
     });
 
-    console.log("Premium admin tools protected:", {
+    console.log("Premium super admin tools protected:", {
       role,
-      isAdmin
+      isSuperAdmin
     });
   } catch (err) {
     console.warn("Premium protection failed:", err);
@@ -21568,3 +21687,3132 @@ window.selectEqw4PracticeCircle = selectEqw4PracticeCircle;
 document.addEventListener("DOMContentLoaded", function () {
   setTimeout(hideProsodyLaunchElements, 500);
 });
+
+/* =====================================================
+   Launch Polish: Hide Home Login CTA when user is logged in
+===================================================== */
+
+async function hideHomeLoginCTAIfLoggedIn() {
+  try {
+    const user = typeof getCurrentUser === "function"
+      ? await getCurrentUser()
+      : null;
+
+    if (!user) return;
+
+    [...document.querySelectorAll("#home button")]
+      .filter(btn =>
+        btn.textContent.includes("Login") ||
+        btn.textContent.includes("Sign in") ||
+        btn.textContent.includes("تسجيل")
+      )
+      .forEach(btn => {
+        btn.style.display = "none";
+        btn.setAttribute("data-launch-hidden", "logged-in-login-cta");
+      });
+
+  } catch (error) {
+    console.warn("Could not hide home login CTA:", error);
+  }
+}
+
+window.hideHomeLoginCTAIfLoggedIn = hideHomeLoginCTAIfLoggedIn;
+
+/* =====================================================
+   JAK Smart Planner Command Center V2
+   Real analytics from getPlannerData()
+===================================================== */
+
+function plannerV2NormalizeStatus(status) {
+  const value = String(status || "").toLowerCase();
+
+  if (["done", "completed", "complete"].includes(value)) return "done";
+  if (["in_progress", "in-progress", "progress"].includes(value)) return "in_progress";
+  return "not_started";
+}
+
+function plannerV2Minutes(plan) {
+  if (typeof calculatePlanMinutes === "function") {
+    const value = Number(calculatePlanMinutes(plan));
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  const start = plan.startTime || plan.start;
+  const end = plan.endTime || plan.end;
+
+  if (!start || !end || !String(start).includes(":") || !String(end).includes(":")) return 0;
+
+  const [sh, sm] = String(start).split(":").map(Number);
+  const [eh, em] = String(end).split(":").map(Number);
+
+  if (![sh, sm, eh, em].every(Number.isFinite)) return 0;
+
+  return Math.max(0, (eh * 60 + em) - (sh * 60 + sm));
+}
+
+function plannerV2TodayString() {
+  if (typeof getTodayDateString === "function") return getTodayDateString();
+
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function plannerV2FormatHours(minutes) {
+  const safe = Math.max(0, Number(minutes || 0));
+  const h = Math.floor(safe / 60);
+  const m = safe % 60;
+
+  if (h <= 0) return `${m} min`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+}
+
+function plannerV2GetStats() {
+  const plans = typeof getPlannerData === "function" ? getPlannerData() : [];
+  const today = plannerV2TodayString();
+
+  const total = plans.length;
+  const done = plans.filter(p => plannerV2NormalizeStatus(p.status) === "done").length;
+  const inProgress = plans.filter(p => plannerV2NormalizeStatus(p.status) === "in_progress").length;
+  const notStarted = plans.filter(p => plannerV2NormalizeStatus(p.status) === "not_started").length;
+  const completionRate = total ? Math.round((done / total) * 100) : 0;
+
+  const totalMinutes = plans.reduce((sum, p) => sum + plannerV2Minutes(p), 0);
+
+  const todayTasks = plans.filter(p => String(p.date || "") === today);
+  const overdueTasks = plans.filter(p => {
+    const status = plannerV2NormalizeStatus(p.status);
+    return p.date && String(p.date) < today && status !== "done";
+  });
+
+  const subjectMap = {};
+  plans.forEach(p => {
+    const subject = p.subject || "General";
+    subjectMap[subject] = (subjectMap[subject] || 0) + plannerV2Minutes(p);
+  });
+
+  const topSubjects = Object.entries(subjectMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  return {
+    plans,
+    today,
+    total,
+    done,
+    inProgress,
+    notStarted,
+    completionRate,
+    totalMinutes,
+    todayTasks,
+    overdueTasks,
+    topSubjects
+  };
+}
+
+function plannerV2Recommendation(stats) {
+  if (!stats.total) {
+    return "ابدأ بخطة واحدة فقط اليوم. اختر مادة واحدة، جلسة قصيرة 25 دقيقة، ثم اضغط Done عند الانتهاء.";
+  }
+
+  if (stats.overdueTasks.length >= 3) {
+    return `لديك ${stats.overdueTasks.length} مهام متأخرة. قلّل الحمل اليوم وابدأ بأسهل مهمة حتى ترجع للإيقاع.`;
+  }
+
+  if (stats.completionRate < 35) {
+    return "نسبة الإنجاز منخفضة. استخدم Pomodoro واحد فقط الآن: 25 دقيقة دراسة + 5 دقائق راحة.";
+  }
+
+  if (stats.todayTasks.length === 0) {
+    return "لا توجد مهام اليوم. أضف مهمة صغيرة أو ولّد جدولًا ذكيًا من Study System.";
+  }
+
+  if (stats.completionRate >= 80) {
+    return "ممتاز. حافظ على الاستمرارية وأضف مراجعة قصيرة بدل زيادة الحمل.";
+  }
+
+  return "خطتك تعمل. ركّز على إنهاء مهام اليوم قبل إضافة مهام جديدة.";
+}
+
+function renderPlannerCommandCenterV2() {
+  const plannerPage = document.getElementById("planner");
+  if (!plannerPage) return;
+
+  let root = document.getElementById("plannerCommandCenterV2");
+
+  if (!root) {
+    root = document.createElement("div");
+    root.id = "plannerCommandCenterV2";
+
+    const firstHeading = plannerPage.querySelector("h1, h2");
+    if (firstHeading && firstHeading.parentElement) {
+      firstHeading.parentElement.insertAdjacentElement("afterend", root);
+    } else {
+      plannerPage.prepend(root);
+    }
+  }
+
+  const stats = plannerV2GetStats();
+  const progress = Math.max(0, Math.min(100, stats.completionRate));
+  const recommendation = plannerV2Recommendation(stats);
+
+  root.innerHTML = `
+    <section class="planner-command-v2">
+      <div class="planner-command-hero">
+        <div>
+          <span class="planner-command-kicker">JAK Smart Planner V2</span>
+          <h2 class="planner-command-title">Study Command Center</h2>
+          <p class="planner-command-subtitle">
+            خطتك الدراسية هنا ليست تقويمًا فقط؛ إنها نظام متابعة: مهام، إنجاز، وقت دراسة، توصيات، وتحليل.
+          </p>
+        </div>
+
+        <div class="planner-command-actions">
+          <button class="planner-command-btn gold" onclick="setCurrentStudySystem?.('manual'); document.getElementById('planner')?.scrollIntoView({behavior:'smooth'});">
+            Create Manual Plan ✍️
+          </button>
+          <button class="planner-command-btn blue" onclick="showPage('studySystem')">
+            Generate Smart Schedule 🚀
+          </button>
+          <button class="planner-command-btn" onclick="renderPlannerCommandCenterV2(); renderTodayTasks?.(); renderCalendar?.(); renderStudyAnalytics?.();">
+            Refresh Analytics 🔄
+          </button>
+        </div>
+      </div>
+
+      ${stats.total === 0 ? `
+        <div class="planner-command-empty">
+          <strong>لا توجد خطط بعد.</strong><br>
+          ابدأ بخطة واحدة بسيطة أو انتقل إلى Study System لتوليد جدول ذكي. بعد إضافة أول خطة ستظهر هنا العدادات، الإنجاز، الوقت، والتوصيات.
+        </div>
+      ` : ""}
+
+      <div class="planner-command-grid">
+        <div class="planner-command-card">
+          <span>Total Tasks</span>
+          <strong>${stats.total}</strong>
+          <small>كل المهام المسجلة في Planner.</small>
+        </div>
+
+        <div class="planner-command-card">
+          <span>Done</span>
+          <strong>${stats.done}</strong>
+          <small>المهام التي أنهيتها.</small>
+        </div>
+
+        <div class="planner-command-card">
+          <span>In Progress</span>
+          <strong>${stats.inProgress}</strong>
+          <small>مهام بدأت بها ولم تنهِها بعد.</small>
+        </div>
+
+        <div class="planner-command-card">
+          <span>Study Time</span>
+          <strong>${plannerV2FormatHours(stats.totalMinutes)}</strong>
+          <small>إجمالي وقت الدراسة المخطط.</small>
+        </div>
+      </div>
+
+      <div class="planner-command-wide">
+        <div class="planner-command-panel">
+          <h3>Progress Overview</h3>
+          <div class="planner-command-row"><span>Completion Rate</span><strong>${stats.completionRate}%</strong></div>
+          <div class="planner-progress-track-v2">
+            <div class="planner-progress-fill-v2" style="width:${progress}%"></div>
+          </div>
+          <div class="planner-command-row"><span>Not Started</span><strong>${stats.notStarted}</strong></div>
+          <div class="planner-command-row"><span>Today Tasks</span><strong>${stats.todayTasks.length}</strong></div>
+          <div class="planner-command-row"><span>Overdue Tasks</span><strong>${stats.overdueTasks.length}</strong></div>
+        </div>
+
+        <div class="planner-command-panel">
+          <h3>Smart Recommendation</h3>
+          <div class="planner-command-recommendation">${recommendation}</div>
+        </div>
+      </div>
+
+      <div class="planner-command-wide">
+        <div class="planner-command-panel">
+          <h3>Top Subjects by Planned Time</h3>
+          ${
+            stats.topSubjects.length
+              ? stats.topSubjects.map(([subject, minutes]) => `
+                  <div class="planner-command-row">
+                    <span>${subject}</span>
+                    <strong>${plannerV2FormatHours(minutes)}</strong>
+                  </div>
+                `).join("")
+              : `<div class="planner-command-row"><span>No subject data yet</span><strong>0</strong></div>`
+          }
+        </div>
+
+        <div class="planner-command-panel">
+          <h3>Today Focus</h3>
+          ${
+            stats.todayTasks.length
+              ? stats.todayTasks.slice(0, 4).map(task => `
+                  <div class="planner-command-row">
+                    <span>${task.subject || "General"} — ${(task.task || task.type || "Study task").slice(0, 32)}</span>
+                    <strong>${plannerV2NormalizeStatus(task.status).replace("_", " ")}</strong>
+                  </div>
+                `).join("")
+              : `<div class="planner-command-row"><span>No tasks today</span><strong>Plan now</strong></div>`
+          }
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+window.renderPlannerCommandCenterV2 = renderPlannerCommandCenterV2;
+window.plannerV2GetStats = plannerV2GetStats;
+
+/* =====================================================
+   Planner Launch Organizer
+   Preserve old functions, reduce clutter
+===================================================== */
+
+function organizePlannerForLaunch() {
+  const planner = document.getElementById("planner");
+  if (!planner) return;
+
+  planner.setAttribute("data-planner-organized", "true");
+
+  const buttons = [...planner.querySelectorAll("button")];
+
+  let smartPlanSeen = 0;
+  let printSeen = 0;
+
+  buttons.forEach(btn => {
+    const onclick = btn.getAttribute("onclick") || "";
+
+     if (onclick === "generateSmartPlan()") {
+  smartPlanSeen += 1;
+
+  const isInsideBuilder =
+    btn.closest("[data-planner-os-section='builder']") ||
+    btn.closest(".planner-layout");
+
+  if (!isInsideBuilder || smartPlanSeen > 1) {
+    btn.style.display = "none";
+    btn.setAttribute("data-launch-hidden", "duplicate-smart-plan");
+  } else {
+    btn.style.display = "";
+    btn.removeAttribute("data-launch-hidden");
+  }
+}
+
+    if (onclick === "printPlans()") {
+      printSeen += 1;
+      if (printSeen > 1) {
+        btn.style.display = "none";
+        btn.setAttribute("data-launch-hidden", "duplicate-print");
+      }
+    }
+
+    if (onclick === "window.renderStudyAnalytics()") {
+      btn.style.display = "none";
+      btn.setAttribute("data-launch-hidden", "analytics-refresh-duplicate");
+    }
+  });
+
+  console.log("✅ Planner organized for launch");
+}
+
+window.organizePlannerForLaunch = organizePlannerForLaunch;
+
+/* =====================================================
+   Planner Study OS Tabs
+   Organizes existing planner sections without deleting logic
+===================================================== */
+
+function setupPlannerStudyOSTabs() {
+  const planner = document.getElementById("planner");
+  const modern = document.querySelector("#planner .planner-modern");
+
+  if (!planner || !modern) return;
+
+  planner.setAttribute("data-planner-study-os", "true");
+
+  const dashboardHeader = modern.querySelector(".dashboard-header");
+  const stats = document.getElementById("plannerStats");
+  const systems = modern.querySelector(".study-system-panel");
+  const analytics = modern.querySelector(".study-analytics-panel");
+  const builder = modern.querySelector(".planner-layout");
+  const today = document.getElementById("todayTasks");
+
+  if (dashboardHeader) dashboardHeader.setAttribute("data-planner-os-header", "true");
+  if (stats) stats.setAttribute("data-planner-os-section", "overview");
+  if (today) today.setAttribute("data-planner-os-section", "today");
+  if (systems) systems.setAttribute("data-planner-os-section", "systems");
+  if (analytics) analytics.setAttribute("data-planner-os-section", "analytics");
+  if (builder) builder.setAttribute("data-planner-os-section", "builder");
+
+  let tabs = document.getElementById("plannerStudyOSTabs");
+
+  if (!tabs) {
+    tabs = document.createElement("div");
+    tabs.id = "plannerStudyOSTabs";
+    tabs.className = "planner-study-os-tabs";
+
+    tabs.innerHTML = `
+      <button class="planner-study-os-tab active" data-planner-tab="overview" onclick="showPlannerStudyOSTab('overview')">
+  Overview 📊
+</button>
+<button class="planner-study-os-tab" data-planner-tab="today" onclick="showPlannerStudyOSTab('today')">
+  Today 🎯
+</button>
+<button class="planner-study-os-tab" data-planner-tab="systems" onclick="showPlannerStudyOSTab('systems')">
+  Study Systems 🌍
+</button>
+      <button class="planner-study-os-tab" data-planner-tab="analytics" onclick="showPlannerStudyOSTab('analytics')">
+        Analytics 📈
+      </button>
+      <button class="planner-study-os-tab" data-planner-tab="builder" onclick="showPlannerStudyOSTab('builder')">
+        Builder & Calendar 🗓️
+      </button>
+    `;
+
+    modern.insertBefore(tabs, modern.children[1] || modern.firstChild);
+  }
+
+  const savedTab = localStorage.getItem("jakPlannerStudyOSTab") || "overview";
+  showPlannerStudyOSTab(savedTab);
+}
+
+function showPlannerStudyOSTab(tabName) {
+  const planner = document.getElementById("planner");
+  if (!planner) return;
+
+  const allowedTabs = ["overview", "today", "systems", "analytics", "builder"];
+  const tab = allowedTabs.includes(tabName) ? tabName : "overview";
+
+  localStorage.setItem("jakPlannerStudyOSTab", tab);
+
+  document.querySelectorAll("#planner [data-planner-os-section]").forEach(section => {
+    section.classList.toggle(
+      "active",
+      section.getAttribute("data-planner-os-section") === tab
+    );
+  });
+
+  document.querySelectorAll("#planner .planner-study-os-tab").forEach(btn => {
+    btn.classList.toggle(
+      "active",
+      btn.getAttribute("data-planner-tab") === tab
+    );
+  });
+
+  if (tab === "overview") {
+    if (typeof updatePlannerStats === "function") {
+      updatePlannerStats();
+    }
+
+    if (typeof renderPlannerCommandCenterV2 === "function") {
+      renderPlannerCommandCenterV2();
+    }
+
+    if (typeof renderPlannerOverviewProV3 === "function") {
+      setTimeout(renderPlannerOverviewProV3, 80);
+    }
+  }
+
+  if (tab === "today") {
+    setTimeout(() => {
+      if (typeof renderPlannerTodayFocusV3 === "function") {
+        renderPlannerTodayFocusV3();
+      } else if (typeof renderTodayTasks === "function") {
+        renderTodayTasks();
+      }
+    }, 150);
+
+    setTimeout(() => {
+      const activeSection = document.querySelector("#planner [data-planner-os-section].active");
+      const isStillToday =
+        activeSection?.getAttribute("data-planner-os-section") === "today";
+
+      if (isStillToday && typeof renderPlannerTodayFocusV3 === "function") {
+        renderPlannerTodayFocusV3();
+      }
+    }, 700);
+  }
+
+  if (tab === "systems") {
+    if (typeof renderPlannerSystemContext === "function") {
+      renderPlannerSystemContext();
+    }
+
+    if (typeof renderStudyMethodExplanation === "function") {
+      renderStudyMethodExplanation();
+    }
+  }
+
+    if (tab === "analytics") {
+  if (typeof renderPlannerAnalyticsProV3 === "function") {
+    setTimeout(renderPlannerAnalyticsProV3, 120);
+  }
+}
+
+
+  if (tab === "builder") {
+  if (typeof renderTodayTasks === "function") {
+    renderTodayTasks();
+  }
+
+  if (typeof renderCalendar === "function") {
+    renderCalendar();
+  }
+
+  if (typeof organizePlannerBuilderProV3 === "function") {
+    setTimeout(organizePlannerBuilderProV3, 120);
+  }
+}
+
+  console.log("✅ Planner Study OS tab:", tab);
+}
+
+window.showPlannerStudyOSTab = showPlannerStudyOSTab;
+
+
+window.setupPlannerStudyOSTabs = setupPlannerStudyOSTabs;
+ 
+/* =====================================================
+   Planner Overview Pro V3
+   Uses real planner data; preserves existing planner logic
+===================================================== */
+
+function plannerOverviewV3SafeText(value, fallback = "General") {
+  return String(value || fallback)
+    .replace(/[<>&]/g, char => ({
+      "<": "&lt;",
+      ">": "&gt;",
+      "&": "&amp;"
+    }[char]));
+}
+
+function plannerOverviewV3GetWeekStats(plans) {
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(today.getDate() - today.getDay());
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(start);
+  end.setDate(start.getDate() + 7);
+
+  const weekPlans = plans.filter(plan => {
+    if (!plan.date) return false;
+    const d = new Date(`${plan.date}T00:00:00`);
+    return d >= start && d < end;
+  });
+
+  const weekMinutes = weekPlans.reduce((sum, plan) => sum + plannerV2Minutes(plan), 0);
+  const weekDone = weekPlans.filter(plan => plannerV2NormalizeStatus(plan.status) === "done").length;
+  const weekRate = weekPlans.length ? Math.round((weekDone / weekPlans.length) * 100) : 0;
+
+  return {
+    weekPlans,
+    weekMinutes,
+    weekDone,
+    weekRate
+  };
+}
+
+function plannerOverviewV3NextTask(plans) {
+  const today = plannerV2TodayString();
+
+  return plans
+    .filter(plan => plannerV2NormalizeStatus(plan.status) !== "done")
+    .sort((a, b) => {
+      const ad = `${a.date || "9999-12-31"} ${a.startTime || a.start || "99:99"}`;
+      const bd = `${b.date || "9999-12-31"} ${b.startTime || b.start || "99:99"}`;
+      return ad.localeCompare(bd);
+    })
+    .find(plan => String(plan.date || "") >= today) || null;
+}
+
+function renderPlannerOverviewProV3() {
+  const target = document.getElementById("plannerStats");
+  if (!target) return;
+
+  const stats = typeof plannerV2GetStats === "function"
+    ? plannerV2GetStats()
+    : {
+        plans: [],
+        total: 0,
+        done: 0,
+        inProgress: 0,
+        notStarted: 0,
+        completionRate: 0,
+        totalMinutes: 0,
+        todayTasks: [],
+        overdueTasks: [],
+        topSubjects: []
+      };
+
+  const week = plannerOverviewV3GetWeekStats(stats.plans || []);
+  const nextTask = plannerOverviewV3NextTask(stats.plans || []);
+  const progress = Math.max(0, Math.min(100, stats.completionRate || 0));
+  const recommendation = typeof plannerV2Recommendation === "function"
+    ? plannerV2Recommendation(stats)
+    : "ابدأ بخطة صغيرة اليوم، ثم تابع الإنجاز من لوحة Planner.";
+
+  const maxSubjectMinutes = Math.max(
+    1,
+    ...((stats.topSubjects || []).map(item => Number(item[1]) || 0))
+  );
+
+  target.innerHTML = `
+    <div class="planner-overview-pro">
+      <section class="planner-overview-hero">
+        <span class="planner-overview-kicker">Study OS Overview</span>
+        <h2 class="planner-overview-title">Your Study Mission</h2>
+        <p class="planner-overview-subtitle">
+          هذه الواجهة تقرأ خططك الحقيقية وتحوّلها إلى أرقام واضحة: إنجاز، وقت، مهام اليوم، مهام متأخرة، وتوصية ذكية.
+        </p>
+
+        <div class="planner-overview-actions">
+          <button class="planner-overview-btn gold" onclick="showPlannerStudyOSTab('builder')">
+            Build Today’s Plan ✍️
+          </button>
+          <button class="planner-overview-btn blue" onclick="showPlannerStudyOSTab('systems')">
+            Choose Study Method 🌍
+          </button>
+          <button class="planner-overview-btn" onclick="renderPlannerOverviewProV3()">
+            Refresh Overview 🔄
+          </button>
+        </div>
+      </section>
+
+      ${stats.total === 0 ? `
+        <div class="planner-empty-pro">
+          <strong>لا توجد خطط بعد.</strong><br>
+          Planner سيصبح قويًا عندما تضيف أول خطة. ابدأ من Builder أو اختر Study Method لتوليد جدول ذكي.
+        </div>
+      ` : ""}
+
+      <section class="planner-kpi-grid-pro">
+        <div class="planner-kpi-pro">
+          <span>Completion Rate</span>
+          <strong>${stats.completionRate || 0}%</strong>
+          <small>${stats.done || 0} done out of ${stats.total || 0} tasks.</small>
+        </div>
+
+        <div class="planner-kpi-pro">
+          <span>Today Tasks</span>
+          <strong>${stats.todayTasks?.length || 0}</strong>
+          <small>Tasks scheduled for today.</small>
+        </div>
+
+        <div class="planner-kpi-pro">
+          <span>Study Time</span>
+          <strong>${plannerV2FormatHours(stats.totalMinutes || 0)}</strong>
+          <small>Total planned study time.</small>
+        </div>
+
+        <div class="planner-kpi-pro">
+          <span>Overdue</span>
+          <strong>${stats.overdueTasks?.length || 0}</strong>
+          <small>Unfinished tasks before today.</small>
+        </div>
+      </section>
+
+      <section class="planner-overview-grid-pro">
+        <div class="planner-overview-panel-pro">
+          <h3>Progress Pulse</h3>
+
+          <div class="planner-overview-row-pro">
+            <span>Overall Completion</span>
+            <strong>${stats.completionRate || 0}%</strong>
+          </div>
+
+          <div class="planner-overview-progress">
+            <div class="planner-overview-progress-fill" style="width:${progress}%"></div>
+          </div>
+
+          <div class="planner-overview-row-pro">
+            <span>This Week Tasks</span>
+            <strong>${week.weekPlans.length}</strong>
+          </div>
+
+          <div class="planner-overview-row-pro">
+            <span>This Week Study Time</span>
+            <strong>${plannerV2FormatHours(week.weekMinutes)}</strong>
+          </div>
+
+          <div class="planner-overview-row-pro">
+            <span>This Week Completion</span>
+            <strong>${week.weekRate}%</strong>
+          </div>
+
+          <div class="planner-overview-row-pro">
+            <span>Next Task</span>
+            <strong>${
+              nextTask
+                ? `${plannerOverviewV3SafeText(nextTask.subject)}`
+                : "No task"
+            }</strong>
+          </div>
+        </div>
+
+        <div class="planner-overview-panel-pro">
+          <h3>Smart Recommendation</h3>
+          <div class="planner-recommendation-pro">${recommendation}</div>
+        </div>
+      </section>
+
+      <section class="planner-overview-grid-pro">
+        <div class="planner-overview-panel-pro">
+          <h3>Subject Distribution</h3>
+          ${
+            stats.topSubjects && stats.topSubjects.length
+              ? stats.topSubjects.map(([subject, minutes]) => {
+                  const width = Math.round((Number(minutes || 0) / maxSubjectMinutes) * 100);
+
+                  return `
+                    <div class="planner-subject-bar">
+                      <div class="planner-subject-bar-top">
+                        <span>${plannerOverviewV3SafeText(subject)}</span>
+                        <strong>${plannerV2FormatHours(minutes)}</strong>
+                      </div>
+                      <div class="planner-subject-bar-track">
+                        <div class="planner-subject-bar-fill" style="width:${width}%"></div>
+                      </div>
+                    </div>
+                  `;
+                }).join("")
+              : `<div class="planner-empty-pro">No subject data yet. Add a plan with a subject to see distribution.</div>`
+          }
+        </div>
+
+        <div class="planner-overview-panel-pro">
+          <h3>Today Focus</h3>
+          ${
+            stats.todayTasks && stats.todayTasks.length
+              ? stats.todayTasks.slice(0, 5).map(task => `
+                  <div class="planner-overview-row-pro">
+                    <span>${plannerOverviewV3SafeText(task.subject)} — ${plannerOverviewV3SafeText(task.task || task.type || "Study task").slice(0, 34)}</span>
+                    <strong>${plannerV2NormalizeStatus(task.status).replace("_", " ")}</strong>
+                  </div>
+                `).join("")
+              : `<div class="planner-empty-pro">No tasks today. Open Builder and create one realistic task.</div>`
+          }
+        </div>
+      </section>
+    </div>
+  `;
+}
+window.renderPlannerOverviewProV3 = renderPlannerOverviewProV3;
+
+/* =====================================================
+   Planner Today Focus Timeline V3
+   Real tasks from getPlannerData()
+===================================================== */
+
+function plannerTodayV3StatusLabel(status) {
+  const normalized = plannerV2NormalizeStatus(status);
+
+  if (normalized === "done") return "Done ✅";
+  if (normalized === "in_progress") return "In Progress 🟡";
+  return "Not Started ⏳";
+}
+
+function plannerTodayV3TaskTime(task) {
+  const start = task.startTime || task.start || "";
+  const end = task.endTime || task.end || "";
+
+  if (start && end) return `${start} - ${end}`;
+  if (start) return start;
+  return "Any time";
+}
+
+function plannerTodayV3TaskTitle(task) {
+  return task.task || task.title || task.type || "Study task";
+}
+
+ function plannerTodayV3UpdateStatus(taskId, newStatus) {
+  if (!taskId) return;
+
+  if (typeof updatePlannerTaskStatusById === "function") {
+    updatePlannerTaskStatusById(taskId, newStatus);
+  } else if (typeof updatePlannerTaskStatus === "function") {
+    updatePlannerTaskStatus(taskId, newStatus);
+  } else {
+    const plans = typeof getPlannerData === "function" ? getPlannerData() : [];
+
+    const updated = plans.map(plan =>
+      String(plan.id) === String(taskId)
+        ? { ...plan, status: newStatus }
+        : plan
+    );
+
+    if (typeof savePlannerData === "function") {
+      savePlannerData(updated);
+    }
+  }
+
+  // Refresh the professional Today tab first
+  if (typeof renderPlannerTodayFocusV3 === "function") {
+    renderPlannerTodayFocusV3();
+  }
+
+  // Refresh overview/dashboard numbers
+  if (typeof renderPlannerOverviewProV3 === "function") {
+    renderPlannerOverviewProV3();
+  }
+
+  if (typeof renderPlannerCommandCenterV2 === "function") {
+    renderPlannerCommandCenterV2();
+  }
+
+  if (typeof updatePlannerStats === "function") {
+    updatePlannerStats();
+  }
+
+  // Refresh other sections only if needed, but do NOT overwrite Today V3
+  if (typeof renderCalendar === "function") {
+    renderCalendar();
+  }
+
+  if (typeof renderStudyAnalytics === "function") {
+    renderStudyAnalytics();
+  }
+
+  // Safety: if the user is still on Today tab, force Today V3 back after old renders
+  setTimeout(() => {
+    const activeSection = document.querySelector("#planner [data-planner-os-section].active");
+    const isTodayActive =
+      activeSection?.getAttribute("data-planner-os-section") === "today";
+
+    if (isTodayActive && typeof renderPlannerTodayFocusV3 === "function") {
+      renderPlannerTodayFocusV3();
+    }
+  }, 120);
+}
+
+function renderPlannerTodayFocusV3() {
+  const oldToday = document.getElementById("todayTasks");
+  if (!oldToday) return;
+
+  const plans = typeof getPlannerData === "function" ? getPlannerData() : [];
+
+
+  const today = typeof plannerV2TodayString === "function"
+    ? plannerV2TodayString()
+    : new Date().toISOString().slice(0, 10);
+
+  const todayTasks = plans
+    .filter(task => String(task.date || "") === today)
+    .sort((a, b) => {
+      const at = a.startTime || a.start || "99:99";
+      const bt = b.startTime || b.start || "99:99";
+      return String(at).localeCompare(String(bt));
+    });
+
+  const done = todayTasks.filter(t => plannerV2NormalizeStatus(t.status) === "done").length;
+  const inProgress = todayTasks.filter(t => plannerV2NormalizeStatus(t.status) === "in_progress").length;
+  const notStarted = todayTasks.filter(t => plannerV2NormalizeStatus(t.status) === "not_started").length;
+  const minutes = todayTasks.reduce((sum, task) => sum + plannerV2Minutes(task), 0);
+
+  oldToday.innerHTML = `
+    <section class="planner-today-v3">
+      <div class="planner-today-hero">
+        <span class="planner-today-kicker">Today Focus</span>
+        <h2 class="planner-today-title">Your Study Day</h2>
+        <p class="planner-today-subtitle">
+          هذه شاشة اليوم فقط: ابدأ المهمة، غيّر حالتها، وأنهِها. كل تغيير ينعكس على الـ Overview والـ Analytics.
+        </p>
+
+        <div class="planner-today-summary">
+          <div class="planner-today-pill">
+            <span>Today Tasks</span>
+            <strong>${todayTasks.length}</strong>
+          </div>
+          <div class="planner-today-pill">
+            <span>Done</span>
+            <strong>${done}</strong>
+          </div>
+          <div class="planner-today-pill">
+            <span>In Progress</span>
+            <strong>${inProgress}</strong>
+          </div>
+          <div class="planner-today-pill">
+            <span>Planned Time</span>
+            <strong>${plannerV2FormatHours(minutes)}</strong>
+          </div>
+        </div>
+
+        <div class="planner-today-actions">
+          <button class="planner-today-btn gold" onclick="showPlannerStudyOSTab('builder')">
+            Add Today Task ✍️
+          </button>
+          <button class="planner-today-btn green" onclick="showPage('studySystem')">
+            Generate Smart Schedule 🚀
+          </button>
+          <button class="planner-today-btn" onclick="renderPlannerTodayFocusV3()">
+            Refresh Today 🔄
+          </button>
+        </div>
+      </div>
+
+      ${
+        todayTasks.length === 0
+          ? `
+            <div class="planner-today-empty">
+              <strong>No tasks for today.</strong><br>
+              افتح Builder وأضف مهمة قصيرة، أو استخدم Study System لتوليد خطة ذكية. لا تبدأ بيوم مزدحم؛ ابدأ بمهمة واحدة.
+            </div>
+          `
+          : `
+            <div class="planner-today-timeline">
+              ${todayTasks.map(task => {
+                const status = plannerV2NormalizeStatus(task.status);
+                const taskId = String(task.id || "");
+
+                return `
+                  <article class="planner-today-task">
+                    <div class="planner-today-time">
+                      ${plannerTodayV3TaskTime(task)}
+                      <small>${task.date || today}</small>
+                    </div>
+
+                    <div class="planner-today-body">
+                      <h3>${plannerOverviewV3SafeText(task.subject || "General")}</h3>
+                      <p>${plannerOverviewV3SafeText(plannerTodayV3TaskTitle(task))}</p>
+
+                      <div class="planner-today-meta">
+                        <span class="planner-today-tag status-${status}">
+                          ${plannerTodayV3StatusLabel(status)}
+                        </span>
+                        <span class="planner-today-tag">
+                          ${plannerOverviewV3SafeText(task.system || task.source || "manual")}
+                        </span>
+                        <span class="planner-today-tag">
+                          ${plannerV2FormatHours(plannerV2Minutes(task))}
+                        </span>
+                      </div>
+
+                      <div class="planner-today-task-actions">
+                        <button class="planner-today-action start" onclick="plannerTodayV3UpdateStatus('${taskId}', 'in_progress')">
+                          Start
+                        </button>
+                        <button class="planner-today-action done" onclick="plannerTodayV3UpdateStatus('${taskId}', 'done')">
+                          Done
+                        </button>
+                        <button class="planner-today-action reset" onclick="plannerTodayV3UpdateStatus('${taskId}', 'not_started')">
+                          Reset
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                `;
+              }).join("")}
+            </div>
+          `
+      }
+    </section>
+  `;
+}
+
+window.renderPlannerTodayFocusV3 = renderPlannerTodayFocusV3;
+window.plannerTodayV3UpdateStatus = plannerTodayV3UpdateStatus;
+/* =====================================================
+   Planner Builder Pro Organizer
+   Keeps existing addPlan / generateSmartPlan logic
+===================================================== */
+
+function organizePlannerBuilderProV3() {
+  const builder = document.querySelector("#planner [data-planner-os-section='builder']");
+  if (!builder) return;
+
+  builder.setAttribute("data-builder-pro", "true");
+
+ const smartBtn = [...builder.querySelectorAll("button")]
+  .find(btn => btn.getAttribute("onclick") === "generateSmartPlan()");
+
+if (smartBtn) {
+  smartBtn.style.setProperty("display", "block", "important");
+  smartBtn.removeAttribute("data-launch-hidden");
+  smartBtn.textContent = "Generate Smart Plan 🚀";
+  smartBtn.classList.add("builder-smart-plan-btn");
+}
+  const addBtn = [...builder.querySelectorAll("button")]
+    .find(btn => btn.getAttribute("onclick") === "addPlan()");
+
+  if (addBtn) {
+    addBtn.textContent = "Add Study Task ✅";
+  }
+
+  const clearBtn = [...builder.querySelectorAll("button")]
+    .find(btn => btn.getAttribute("onclick") === "clearAllPlans()");
+
+  if (clearBtn) {
+    clearBtn.textContent = "Clear All Plans ⚠️";
+  }
+
+  console.log("✅ Planner Builder Pro organized");
+}
+
+window.organizePlannerBuilderProV3 = organizePlannerBuilderProV3;
+
+/* =====================================================
+   Planner Analytics Pro V3
+   Overall + current-system analytics from real planner data
+===================================================== */
+
+function plannerAnalyticsV3CurrentSystemTasks() {
+  if (typeof getPlannerTasksByCurrentSystem === "function") {
+    return getPlannerTasksByCurrentSystem();
+  }
+
+  return typeof getPlannerData === "function" ? getPlannerData() : [];
+}
+
+function plannerAnalyticsV3StatsFromTasks(tasks) {
+  const total = tasks.length;
+  const done = tasks.filter(t => plannerV2NormalizeStatus(t.status) === "done").length;
+  const inProgress = tasks.filter(t => plannerV2NormalizeStatus(t.status) === "in_progress").length;
+  const notStarted = tasks.filter(t => plannerV2NormalizeStatus(t.status) === "not_started").length;
+  const completionRate = total ? Math.round((done / total) * 100) : 0;
+  const totalMinutes = tasks.reduce((sum, t) => sum + plannerV2Minutes(t), 0);
+
+  const subjectMap = {};
+  tasks.forEach(t => {
+    const subject = t.subject || "General";
+    subjectMap[subject] = (subjectMap[subject] || 0) + plannerV2Minutes(t);
+  });
+
+  const topSubjects = Object.entries(subjectMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
+
+  return {
+    total,
+    done,
+    inProgress,
+    notStarted,
+    completionRate,
+    totalMinutes,
+    topSubjects
+  };
+}
+
+function plannerAnalyticsV3Insight(overall, current) {
+  if (!overall.total) {
+    return "لا توجد بيانات كافية بعد. أضف خطة واحدة على الأقل حتى تبدأ التحليلات الحقيقية.";
+  }
+
+  if (overall.completionRate < 30) {
+    return "نسبة الإنجاز منخفضة. لا تضف مهامًا كثيرة الآن؛ أنجز مهمة واحدة قصيرة اليوم ثم راقب التقدم.";
+  }
+
+  if (overall.notStarted > overall.done * 2) {
+    return "عدد المهام غير المنجزة كبير مقارنة بالمنجزة. الأفضل تقليل الحمل أو تقسيم المهام إلى جلسات أصغر.";
+  }
+
+  if (current.total && current.completionRate === 0) {
+    return "النظام الحالي يحتوي مهامًا، لكن لا يوجد إنجاز بعد. افتح Today وابدأ أول مهمة.";
+  }
+
+  if (overall.completionRate >= 70) {
+    return "ممتاز. مستوى الالتزام جيد. حافظ على نفس النظام وأضف مراجعة قصيرة بدل زيادة الضغط.";
+  }
+
+  return "الخطة تعمل. ركّز على إكمال مهام اليوم أولًا، ثم راجع التوزيع بين المواد.";
+}
+
+function renderPlannerAnalyticsProV3() {
+  const analytics = document.querySelector("#planner [data-planner-os-section='analytics']");
+  if (!analytics) return;
+
+  const allPlans = typeof getPlannerData === "function" ? getPlannerData() : [];
+  const overall = plannerAnalyticsV3StatsFromTasks(allPlans);
+
+  const currentTasks = plannerAnalyticsV3CurrentSystemTasks();
+  const current = plannerAnalyticsV3StatsFromTasks(currentTasks);
+
+  const currentSystem =
+    localStorage.getItem("jakCurrentStudySystem") ||
+    window.currentStudySystem ||
+    "all";
+
+  const maxSubjectMinutes = Math.max(
+    1,
+    ...overall.topSubjects.map(item => Number(item[1]) || 0)
+  );
+
+  const insight = plannerAnalyticsV3Insight(overall, current);
+
+  analytics.innerHTML = `
+    <section class="planner-analytics-pro-v3">
+      <div class="planner-analytics-hero-v3">
+        <span class="planner-analytics-kicker-v3">Planner Analytics Pro</span>
+        <h2 class="planner-analytics-title-v3">Study Performance Dashboard</h2>
+        <p class="planner-analytics-subtitle-v3">
+          هذه التحليلات تقرأ كل خططك الحقيقية، وتعرض الصورة العامة مع مقارنة النظام الدراسي الحالي.
+        </p>
+      </div>
+
+      <section class="planner-analytics-kpi-grid-v3">
+        <div class="planner-analytics-kpi-v3">
+          <span>Overall Completion</span>
+          <strong>${overall.completionRate}%</strong>
+          <small>${overall.done} done out of ${overall.total} total tasks.</small>
+        </div>
+
+        <div class="planner-analytics-kpi-v3">
+          <span>Total Study Time</span>
+          <strong>${plannerV2FormatHours(overall.totalMinutes)}</strong>
+          <small>Planned study time across all systems.</small>
+        </div>
+
+        <div class="planner-analytics-kpi-v3">
+          <span>Current System</span>
+          <strong>${String(currentSystem).replace("_", " ")}</strong>
+          <small>${current.total} tasks in current filter.</small>
+        </div>
+
+        <div class="planner-analytics-kpi-v3">
+          <span>Not Started</span>
+          <strong>${overall.notStarted}</strong>
+          <small>Tasks waiting for action.</small>
+        </div>
+      </section>
+
+      <section class="planner-analytics-grid-v3">
+        <div class="planner-analytics-panel-v3">
+          <h3>Overall Progress</h3>
+
+          <div class="planner-analytics-row-v3">
+            <span>Completion Rate</span>
+            <strong>${overall.completionRate}%</strong>
+          </div>
+
+          <div class="planner-analytics-track-v3">
+            <div class="planner-analytics-fill-v3" style="width:${Math.min(100, overall.completionRate)}%"></div>
+          </div>
+
+          <div class="planner-analytics-row-v3">
+            <span>Done</span>
+            <strong>${overall.done}</strong>
+          </div>
+
+          <div class="planner-analytics-row-v3">
+            <span>In Progress</span>
+            <strong>${overall.inProgress}</strong>
+          </div>
+
+          <div class="planner-analytics-row-v3">
+            <span>Not Started</span>
+            <strong>${overall.notStarted}</strong>
+          </div>
+
+          <div class="planner-analytics-row-v3">
+            <span>Total Tasks</span>
+            <strong>${overall.total}</strong>
+          </div>
+        </div>
+
+        <div class="planner-analytics-panel-v3">
+          <h3>Smart Insight</h3>
+          <div class="planner-analytics-insight-v3">${insight}</div>
+        </div>
+      </section>
+
+      <section class="planner-analytics-grid-v3">
+        <div class="planner-analytics-panel-v3">
+          <h3>Subject Distribution</h3>
+          ${
+            overall.topSubjects.length
+              ? overall.topSubjects.map(([subject, minutes]) => {
+                  const width = Math.round((Number(minutes || 0) / maxSubjectMinutes) * 100);
+
+                  return `
+                    <div class="planner-analytics-subject-v3">
+                      <div class="planner-analytics-subject-top-v3">
+                        <span>${plannerOverviewV3SafeText(subject)}</span>
+                        <strong>${plannerV2FormatHours(minutes)}</strong>
+                      </div>
+                      <div class="planner-analytics-subject-track-v3">
+                        <div class="planner-analytics-subject-fill-v3" style="width:${width}%"></div>
+                      </div>
+                    </div>
+                  `;
+                }).join("")
+              : `<div class="planner-analytics-row-v3"><span>No subjects yet</span><strong>0</strong></div>`
+          }
+        </div>
+
+        <div class="planner-analytics-panel-v3">
+          <h3>Current Study System</h3>
+
+          <div class="planner-analytics-row-v3">
+            <span>System</span>
+            <strong>${String(currentSystem).replace("_", " ")}</strong>
+          </div>
+
+          <div class="planner-analytics-row-v3">
+            <span>Tasks</span>
+            <strong>${current.total}</strong>
+          </div>
+
+          <div class="planner-analytics-row-v3">
+            <span>Completion</span>
+            <strong>${current.completionRate}%</strong>
+          </div>
+
+          <div class="planner-analytics-row-v3">
+            <span>Time</span>
+            <strong>${plannerV2FormatHours(current.totalMinutes)}</strong>
+          </div>
+        </div>
+      </section>
+    </section>
+  `;
+}
+
+window.renderPlannerAnalyticsProV3 = renderPlannerAnalyticsProV3;
+
+/* =====================================================
+   Writing Academy Safe Function Aliases
+   Prevent old buttons or future calls from failing
+===================================================== */
+
+function analyzeWriting() {
+  if (typeof analyzeWritingLocally === "function") {
+    return analyzeWritingLocally();
+  }
+
+  console.warn("analyzeWritingLocally is not available yet.");
+}
+
+function checkWriting() {
+  if (typeof analyzeWritingLocally === "function") {
+    return analyzeWritingLocally();
+  }
+
+  console.warn("analyzeWritingLocally is not available yet.");
+}
+window.analyzeWriting = analyzeWriting;
+window.checkWriting = checkWriting;
+
+/* =====================================================
+   Writing Academy Screen Organizer V4
+   Shows only the useful action groups for the active screen
+   Preserves all existing functions and HTML
+===================================================== */
+
+function getActiveWritingV3Screen() {
+  const activeTab = document.querySelector("#writingAcademy .writing-v3-tabs button.active");
+
+  const onclick = activeTab?.getAttribute("onclick") || "";
+  const match = onclick.match(/showWritingV3Screen\('([^']+)'\)/);
+
+  return match ? match[1] : "mission";
+}
+
+function setWritingGroupVisible(selector, visible) {
+  document.querySelectorAll(`#writingAcademy ${selector}`).forEach(el => {
+    el.style.display = visible ? "" : "none";
+    el.setAttribute("data-writing-organized", visible ? "visible" : "hidden");
+  });
+}
+
+function organizeWritingAcademyScreenV4(screenName) {
+  const screen = screenName || getActiveWritingV3Screen();
+
+  // Always keep top navigation visible
+  setWritingGroupVisible(".writing-v3-tabs", true);
+
+  // Hide all action groups first
+  setWritingGroupVisible(".writing-v3-actions", false);
+  setWritingGroupVisible(".writing-v3-step-row", false);
+  setWritingGroupVisible(".writing-v3-editor-toolbar", false);
+  setWritingGroupVisible(".writing-v3-lesson-buttons", false);
+
+  // Mission Control: setup + mission buttons only
+  if (screen === "mission") {
+    document.querySelectorAll("#writingAcademy .writing-v3-actions").forEach(group => {
+      const text = group.textContent.trim();
+
+      const isMissionActions =
+        text.includes("Generate Mission") ||
+        text.includes("Load Template") ||
+        text.includes("Reset");
+
+      group.style.display = isMissionActions ? "" : "none";
+      group.setAttribute("data-writing-organized", isMissionActions ? "visible" : "hidden");
+    });
+  }
+
+  // Writing Lab: editor toolbar + analysis buttons
+  if (screen === "lab") {
+    setWritingGroupVisible(".writing-v3-editor-toolbar", true);
+
+    document.querySelectorAll("#writingAcademy .writing-v3-actions").forEach(group => {
+      const text = group.textContent.trim();
+
+      const isLabActions =
+        text.includes("Analyze Writing") ||
+        text.includes("New Prompt") ||
+        text === "Clear" ||
+        text.includes("Clear");
+
+      group.style.display = isLabActions ? "" : "none";
+      group.setAttribute("data-writing-organized", isLabActions ? "visible" : "hidden");
+    });
+  }
+
+  // Writing Paths: paragraph builder steps + build/send/clear
+  if (screen === "paths") {
+    document.querySelectorAll("#writingAcademy .writing-v3-step-row").forEach(group => {
+      const text = group.textContent.trim();
+
+      const isPathSteps =
+        text.includes("Main Idea") ||
+        text.includes("Support") ||
+        text.includes("Example") ||
+        text.includes("Connector") ||
+        text.includes("Build Paragraph") ||
+        text.includes("Send to Editor");
+
+      group.style.display = isPathSteps ? "" : "none";
+      group.setAttribute("data-writing-organized", isPathSteps ? "visible" : "hidden");
+    });
+
+    document.querySelectorAll("#writingAcademy .writing-v3-actions").forEach(group => {
+      const text = group.textContent.trim();
+
+      const isPathActions =
+        text.includes("Build Paragraph") ||
+        text.includes("Send to Editor") ||
+        text === "Clear" ||
+        text.includes("Clear");
+
+      group.style.display = isPathActions ? "" : "none";
+      group.setAttribute("data-writing-organized", isPathActions ? "visible" : "hidden");
+    });
+  }
+
+  // Lessons Hub: connector categories + lesson buttons
+  if (screen === "lessons") {
+    setWritingGroupVisible(".writing-v3-lesson-buttons", true);
+
+    document.querySelectorAll("#writingAcademy .writing-v3-step-row").forEach(group => {
+      const text = group.textContent.trim();
+
+      const isConnectorCategories =
+        text.includes("Contrast") ||
+        text.includes("Addition") ||
+        text.includes("Cause & Effect") ||
+        text.includes("Sequence") ||
+        text.includes("Conclusion");
+
+      group.style.display = isConnectorCategories ? "" : "none";
+      group.setAttribute("data-writing-organized", isConnectorCategories ? "visible" : "hidden");
+    });
+  }
+
+  // Analytics: keep progress/analytics visible, hide action clutter
+  if (screen === "analytics") {
+    // no extra groups needed
+  }
+
+  // Writing Missions: recommended mission action
+  if (screen === "missions") {
+    document.querySelectorAll("#writingAcademy .writing-v3-actions").forEach(group => {
+      const text = group.textContent.trim();
+
+      const isMissionRecommendation =
+        text.includes("Load Recommended Mission");
+
+      group.style.display = isMissionRecommendation ? "" : "none";
+      group.setAttribute("data-writing-organized", isMissionRecommendation ? "visible" : "hidden");
+    });
+  }
+
+  // AI Coach: hide old action clutter for now
+  if (screen === "coach") {
+    // no extra groups needed until real AI backend is connected
+  }
+
+  console.log("✅ Writing Academy organized screen:", screen);
+}
+
+const originalShowWritingV3Screen = window.showWritingV3Screen;
+
+window.showWritingV3Screen = function(screenName) {
+  if (typeof originalShowWritingV3Screen === "function") {
+    originalShowWritingV3Screen(screenName);
+  }
+
+  setTimeout(() => {
+    organizeWritingAcademyScreenV4(screenName);
+  }, 80);
+};
+
+window.organizeWritingAcademyScreenV4 = organizeWritingAcademyScreenV4;
+
+/* =========================================================
+   EXAMS PATCH 1 — AUTO LOAD + COMPATIBILITY LAYER
+   Safe add-on layer for JAK Academy Exams
+   ========================================================= */
+
+(function installExamsAutoLoadPatch() {
+  if (window.__examsAutoLoadPatchInstalled) {
+    console.log("Exams Auto Load Patch already installed.");
+    return;
+  }
+
+  window.__examsAutoLoadPatchInstalled = true;
+
+  // Compatibility aliases for future code / easier debugging
+  if (typeof window.loadExams !== "function" && typeof window.loadStudentExams === "function") {
+    window.loadExams = window.loadStudentExams;
+  }
+
+  if (typeof window.startExam !== "function" && typeof window.startSolvingExam === "function") {
+    window.startExam = window.startSolvingExam;
+  }
+
+  function setEmptyStateIfNeeded(elementId, message, actionText, actionFnName) {
+    const box = document.getElementById(elementId);
+    if (!box) return;
+
+    const text = String(box.innerText || "").trim();
+
+    if (text) return;
+
+    const hasAction = actionText && actionFnName && typeof window[actionFnName] === "function";
+
+    box.innerHTML = `
+      <div class="exam-empty-state">
+        <div class="exam-empty-icon">📭</div>
+        <h3>${message}</h3>
+        ${
+          hasAction
+            ? `<button class="exam-refresh-btn" onclick="${actionFnName}()">${actionText}</button>`
+            : ""
+        }
+      </div>
+    `;
+  }
+
+  async function safeRunExamLoader(name) {
+    try {
+      if (typeof window[name] === "function") {
+        await window[name]();
+      }
+    } catch (error) {
+      console.warn(`Exam loader failed: ${name}`, error);
+    }
+  }
+
+  async function autoLoadExamsForPage(pageId) {
+    // Give showPage time to switch visible sections
+    setTimeout(async () => {
+      if (pageId === "teacherDashboard") {
+        await safeRunExamLoader("loadTeacherExams");
+        await safeRunExamLoader("loadTeacherResults");
+
+        setEmptyStateIfNeeded(
+          "teacherExamList",
+          "No teacher exams found yet.",
+          "Refresh Teacher Exams",
+          "loadTeacherExams"
+        );
+
+        setEmptyStateIfNeeded(
+          "teacherResultsList",
+          "No teacher results found yet.",
+          "Refresh Teacher Results",
+          "loadTeacherResults"
+        );
+      }
+
+      if (pageId === "studentExams") {
+        await safeRunExamLoader("loadStudentExams");
+
+        setEmptyStateIfNeeded(
+          "studentExamList",
+          "No published exams found yet.",
+          "Refresh Exams",
+          "loadStudentExams"
+        );
+      }
+
+      if (pageId === "myResults") {
+        await safeRunExamLoader("loadMyResults");
+
+        setEmptyStateIfNeeded(
+          "myResultsList",
+          "No results found yet. Solve an exam first.",
+          "Refresh My Results",
+          "loadMyResults"
+        );
+      }
+
+      if (pageId === "questionManager") {
+        setEmptyStateIfNeeded(
+          "questionList",
+          "No questions loaded yet. Open an exam or add your first question.",
+          "",
+          ""
+        );
+      }
+    }, 250);
+  }
+
+  // Wrap showPage safely without breaking original logic
+  if (typeof window.showPage === "function" && !window.__originalShowPageForExamsPatch) {
+    window.__originalShowPageForExamsPatch = window.showPage;
+
+    window.showPage = async function patchedShowPage(id) {
+      const result = await window.__originalShowPageForExamsPatch(id);
+      await autoLoadExamsForPage(id);
+      return result;
+    };
+  }
+
+  // Initial load based on currently active page
+  const activePageId = document.querySelector(".page.active")?.id;
+  if (activePageId) {
+    autoLoadExamsForPage(activePageId);
+  }
+
+  console.log("✅ Exams Auto Load Patch installed successfully.");
+})();
+
+/* =========================================================
+   EXAMS PATCH 2 — ACADEMIC CLASSIFICATION FOUNDATION
+   Subjects / Grades / Units for Exams
+   ========================================================= */
+
+(function installAcademicClassificationPatch() {
+  if (window.__academicClassificationPatchInstalled) {
+    console.log("Academic Classification Patch already installed.");
+    return;
+  }
+
+  window.__academicClassificationPatchInstalled = true;
+
+  window.JAK_ACADEMIC_SUBJECTS = [
+    "English",
+    "Arabic",
+    "Math",
+    "Science",
+    "History",
+    "Geography",
+    "Religion",
+    "National Education",
+    "Computer Science",
+    "Physics",
+    "Chemistry",
+    "Biology"
+  ];
+
+  window.JAK_ACADEMIC_GRADES = [
+    "1", "2", "3", "4", "5", "6",
+    "7", "8", "9", "10", "11", "12"
+  ];
+
+  window.JAK_ACADEMIC_UNITS = [
+    "Unit 1",
+    "Unit 2",
+    "Unit 3",
+    "Unit 4",
+    "Unit 5",
+    "Unit 6",
+    "Unit 7",
+    "Unit 8",
+    "Unit 9",
+    "Unit 10"
+  ];
+
+  function createSelectField({ id, label, options, placeholder }) {
+    const wrap = document.createElement("div");
+    wrap.className = "academic-field";
+
+    const labelEl = document.createElement("label");
+    labelEl.setAttribute("for", id);
+    labelEl.textContent = label;
+
+    const select = document.createElement("select");
+    select.id = id;
+    select.className = "academic-select";
+
+    const first = document.createElement("option");
+    first.value = "";
+    first.textContent = placeholder || `Select ${label}`;
+    select.appendChild(first);
+
+    options.forEach(option => {
+      const opt = document.createElement("option");
+      opt.value = option;
+      opt.textContent = option.startsWith("Unit") ? option : option;
+      select.appendChild(opt);
+    });
+
+    wrap.appendChild(labelEl);
+    wrap.appendChild(select);
+
+    return wrap;
+  }
+
+  function insertAfter(referenceNode, newNode) {
+    if (!referenceNode || !referenceNode.parentNode) return;
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+  }
+
+  function upgradeExamCreateFields() {
+    const examTitle = document.getElementById("examTitle");
+    const examGrade = document.getElementById("examGrade");
+
+    if (!examTitle || !examGrade) return;
+
+    // Avoid duplicate install
+    if (document.getElementById("examSubject")) return;
+
+    const subjectField = createSelectField({
+      id: "examSubject",
+      label: "Subject",
+      options: window.JAK_ACADEMIC_SUBJECTS,
+      placeholder: "Select Subject"
+    });
+
+    const unitField = createSelectField({
+      id: "examUnit",
+      label: "Unit",
+      options: window.JAK_ACADEMIC_UNITS,
+      placeholder: "Select Unit"
+    });
+
+    // Convert grade input into controlled select while preserving the same id
+    const gradeSelect = document.createElement("select");
+    gradeSelect.id = "examGrade";
+    gradeSelect.className = examGrade.className || "academic-select";
+
+    const gradeFirst = document.createElement("option");
+    gradeFirst.value = "";
+    gradeFirst.textContent = "Select Grade";
+    gradeSelect.appendChild(gradeFirst);
+
+    window.JAK_ACADEMIC_GRADES.forEach(grade => {
+      const opt = document.createElement("option");
+      opt.value = grade;
+      opt.textContent = `Grade ${grade}`;
+      gradeSelect.appendChild(opt);
+    });
+
+    examGrade.replaceWith(gradeSelect);
+
+    insertAfter(examTitle, subjectField);
+    insertAfter(gradeSelect, unitField);
+
+    console.log("✅ Exam create fields upgraded: subject, grade select, unit.");
+  }
+
+  function upgradeTeacherFilters() {
+    const gradeFilter = document.getElementById("teacherExamGradeFilter");
+    if (!gradeFilter) return;
+
+    if (!document.getElementById("teacherExamSubjectFilter")) {
+      const subjectFilter = createSelectField({
+        id: "teacherExamSubjectFilter",
+        label: "Subject",
+        options: window.JAK_ACADEMIC_SUBJECTS,
+        placeholder: "All Subjects"
+      });
+
+      gradeFilter.parentNode.insertBefore(subjectFilter, gradeFilter);
+    }
+
+    if (!document.getElementById("teacherExamUnitFilter")) {
+      const unitFilter = createSelectField({
+        id: "teacherExamUnitFilter",
+        label: "Unit",
+        options: window.JAK_ACADEMIC_UNITS,
+        placeholder: "All Units"
+      });
+
+      insertAfter(gradeFilter, unitFilter);
+    }
+
+    console.log("✅ Teacher exam filters upgraded.");
+  }
+
+  function upgradeStudentFilters() {
+    const gradeFilter = document.getElementById("studentExamGradeFilter");
+    if (!gradeFilter) return;
+
+    if (!document.getElementById("studentExamSubjectFilter")) {
+      const subjectFilter = createSelectField({
+        id: "studentExamSubjectFilter",
+        label: "Subject",
+        options: window.JAK_ACADEMIC_SUBJECTS,
+        placeholder: "All Subjects"
+      });
+
+      gradeFilter.parentNode.insertBefore(subjectFilter, gradeFilter);
+    }
+
+    if (!document.getElementById("studentExamUnitFilter")) {
+      const unitFilter = createSelectField({
+        id: "studentExamUnitFilter",
+        label: "Unit",
+        options: window.JAK_ACADEMIC_UNITS,
+        placeholder: "All Units"
+      });
+
+      insertAfter(gradeFilter, unitFilter);
+    }
+
+    console.log("✅ Student exam filters upgraded.");
+  }
+
+  function installAcademicFields() {
+    upgradeExamCreateFields();
+    upgradeTeacherFilters();
+    upgradeStudentFilters();
+  }
+
+  window.installAcademicFields = installAcademicFields;
+
+  // Run now
+  setTimeout(installAcademicFields, 300);
+
+  // Re-run after page changes
+  if (typeof window.showPage === "function" && !window.__originalShowPageForAcademicPatch) {
+    window.__originalShowPageForAcademicPatch = window.showPage;
+
+    window.showPage = async function academicPatchedShowPage(id) {
+      const result = await window.__originalShowPageForAcademicPatch(id);
+      setTimeout(installAcademicFields, 300);
+      return result;
+    };
+  }
+
+  console.log("✅ Academic Classification Patch installed successfully.");
+})();
+
+/* =========================================================
+   EXAMS PATCH 3B — ACADEMIC FILTER EVENTS
+   ========================================================= */
+
+(function installAcademicExamFilterEvents() {
+  if (window.__academicExamFilterEventsInstalled) {
+    console.log("Academic exam filter events already installed.");
+    return;
+  }
+
+  window.__academicExamFilterEventsInstalled = true;
+
+  function bindChange(id, fnName) {
+    const el = document.getElementById(id);
+    if (!el || typeof window[fnName] !== "function") return;
+
+    el.addEventListener("change", () => {
+      window[fnName]();
+    });
+  }
+
+  function bindAcademicExamFilters() {
+    bindChange("teacherExamSubjectFilter", "loadTeacherExams");
+    bindChange("teacherExamGradeFilter", "loadTeacherExams");
+    bindChange("teacherExamUnitFilter", "loadTeacherExams");
+
+    bindChange("studentExamSubjectFilter", "loadStudentExams");
+    bindChange("studentExamGradeFilter", "loadStudentExams");
+    bindChange("studentExamUnitFilter", "loadStudentExams");
+  }
+
+  window.bindAcademicExamFilters = bindAcademicExamFilters;
+
+  setTimeout(bindAcademicExamFilters, 500);
+
+  console.log("✅ Academic exam filter events installed.");
+})();
+/* =========================================================
+   EXAMS PATCH 4A — QUESTION ACADEMIC METADATA UI
+   ========================================================= */
+
+(function installQuestionMetadataUIPatch() {
+  if (window.__questionMetadataUIPatchInstalled) {
+    console.log("Question Metadata UI Patch already installed.");
+    return;
+  }
+
+  window.__questionMetadataUIPatchInstalled = true;
+
+  function makeQuestionMetaSelect(id, label, options, placeholder) {
+    const wrap = document.createElement("div");
+    wrap.className = "academic-field question-meta-field";
+
+    const labelEl = document.createElement("label");
+    labelEl.setAttribute("for", id);
+    labelEl.textContent = label;
+
+    const select = document.createElement("select");
+    select.id = id;
+    select.className = "academic-select";
+
+    const first = document.createElement("option");
+    first.value = "";
+    first.textContent = placeholder || `Select ${label}`;
+    select.appendChild(first);
+
+    options.forEach(item => {
+      const opt = document.createElement("option");
+      opt.value = item;
+      opt.textContent = item;
+      select.appendChild(opt);
+    });
+
+    wrap.appendChild(labelEl);
+    wrap.appendChild(select);
+    return wrap;
+  }
+
+  function makeQuestionMetaInput(id, label, placeholder) {
+    const wrap = document.createElement("div");
+    wrap.className = "academic-field question-meta-field";
+
+    const labelEl = document.createElement("label");
+    labelEl.setAttribute("for", id);
+    labelEl.textContent = label;
+
+    const input = document.createElement("input");
+    input.id = id;
+    input.className = "academic-select";
+    input.placeholder = placeholder || label;
+
+    wrap.appendChild(labelEl);
+    wrap.appendChild(input);
+    return wrap;
+  }
+
+  function installQuestionMetaFields() {
+    const questionType = document.getElementById("questionType");
+    if (!questionType) return;
+
+    if (document.getElementById("questionSubject")) return;
+
+    const metaBox = document.createElement("div");
+    metaBox.id = "questionMetadataBox";
+    metaBox.className = "question-metadata-box";
+
+    metaBox.innerHTML = `
+      <h3 class="question-metadata-title">Question Classification</h3>
+      <p class="question-metadata-subtitle">Classify this question for the future Question Bank.</p>
+    `;
+
+    metaBox.appendChild(makeQuestionMetaSelect(
+      "questionSubject",
+      "Subject",
+      window.JAK_ACADEMIC_SUBJECTS || ["English", "Arabic", "Math", "Science"],
+      "Select Subject"
+    ));
+
+    metaBox.appendChild(makeQuestionMetaSelect(
+      "questionGrade",
+      "Grade",
+      (window.JAK_ACADEMIC_GRADES || ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]).map(g => `Grade ${g}`),
+      "Select Grade"
+    ));
+
+    metaBox.appendChild(makeQuestionMetaSelect(
+      "questionUnit",
+      "Unit",
+      window.JAK_ACADEMIC_UNITS || ["Unit 1", "Unit 2", "Unit 3"],
+      "Select Unit"
+    ));
+
+    metaBox.appendChild(makeQuestionMetaInput(
+      "questionLesson",
+      "Lesson",
+      "Example: Present Simple / Question Tags"
+    ));
+
+    metaBox.appendChild(makeQuestionMetaSelect(
+      "questionSkill",
+      "Skill",
+      ["Grammar", "Vocabulary", "Reading", "Writing", "Listening", "Speaking", "Literature", "General"],
+      "Select Skill"
+    ));
+
+    metaBox.appendChild(makeQuestionMetaSelect(
+      "questionDifficulty",
+      "Difficulty",
+      ["Easy", "Medium", "Hard"],
+      "Select Difficulty"
+    ));
+
+    questionType.parentNode.insertBefore(metaBox, questionType);
+    console.log("✅ Question metadata fields installed.");
+  }
+
+  window.installQuestionMetaFields = installQuestionMetaFields;
+
+  setTimeout(installQuestionMetaFields, 500);
+
+  if (typeof window.showPage === "function" && !window.__originalShowPageForQuestionMetaPatch) {
+    window.__originalShowPageForQuestionMetaPatch = window.showPage;
+
+    window.showPage = async function questionMetaPatchedShowPage(id) {
+      const result = await window.__originalShowPageForQuestionMetaPatch(id);
+      if (id === "questionManager") {
+        setTimeout(installQuestionMetaFields, 300);
+      }
+      return result;
+    };
+  }
+
+  console.log("✅ Question Metadata UI Patch installed successfully.");
+})();
+
+/* =========================================================
+   EXAMS PATCH 5A — QUESTION BANK FOUNDATION
+   ========================================================= */
+
+(function installQuestionBankFoundation() {
+  if (window.__questionBankFoundationInstalled) {
+    console.log("Question Bank Foundation already installed.");
+    return;
+  }
+
+  window.__questionBankFoundationInstalled = true;
+
+  function fillSelectOptions(selectId, options, placeholder) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    const currentValue = select.value;
+    select.innerHTML = "";
+
+    const first = document.createElement("option");
+    first.value = "";
+    first.textContent = placeholder;
+    select.appendChild(first);
+
+    options.forEach(item => {
+      const opt = document.createElement("option");
+      opt.value = item;
+      opt.textContent = item;
+      select.appendChild(opt);
+    });
+
+    if ([...select.options].some(o => o.value === currentValue)) {
+      select.value = currentValue;
+    }
+  }
+
+  function setupQuestionBankFilters() {
+    fillSelectOptions(
+      "bankSubjectFilter",
+      window.JAK_ACADEMIC_SUBJECTS || ["English", "Arabic", "Math", "Science"],
+      "All Subjects"
+    );
+
+    fillSelectOptions(
+      "bankGradeFilter",
+      (window.JAK_ACADEMIC_GRADES || ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]).map(g => String(g)),
+      "All Grades"
+    );
+
+    fillSelectOptions(
+      "bankUnitFilter",
+      window.JAK_ACADEMIC_UNITS || ["Unit 1", "Unit 2", "Unit 3"],
+      "All Units"
+    );
+  }
+
+  function getQuestionBankFilters() {
+    return {
+      subject: document.getElementById("bankSubjectFilter")?.value || "",
+      grade: document.getElementById("bankGradeFilter")?.value || "",
+      unit: document.getElementById("bankUnitFilter")?.value || "",
+      skill: document.getElementById("bankSkillFilter")?.value || "",
+      difficulty: document.getElementById("bankDifficultyFilter")?.value || ""
+    };
+  }
+
+  window.clearQuestionBankFilters = function clearQuestionBankFilters() {
+    ["bankSubjectFilter", "bankGradeFilter", "bankUnitFilter", "bankSkillFilter", "bankDifficultyFilter"]
+      .forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+
+    if (typeof window.loadQuestionBank === "function") {
+      window.loadQuestionBank();
+    }
+  };
+
+  window.loadQuestionBank = async function loadQuestionBank() {
+    const list = document.getElementById("questionBankList");
+    const status = document.getElementById("questionBankStatus");
+
+    if (!list) return;
+
+    setupQuestionBankFilters();
+
+    list.innerHTML = "Loading question bank...";
+    if (status) status.textContent = "";
+
+    const user = typeof getCurrentUser === "function" ? await getCurrentUser() : null;
+
+    if (!user) {
+      list.innerHTML = "<p>Please login first.</p>";
+      return;
+    }
+
+    let query = client
+      .from("questions")
+      .select(`
+        *,
+        exams (
+          id,
+          title,
+          teacher_id
+        )
+      `)
+      .order("created_at", { ascending: false });
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Load question bank error:", error);
+      list.innerHTML = "<p>Could not load question bank.</p>";
+      if (status) status.textContent = error.message;
+      return;
+    }
+
+    let questions = data || [];
+
+    // Keep only questions from this teacher's exams unless admin/super_admin logic is added later
+    questions = questions.filter(q => {
+      return q.exams && q.exams.teacher_id === user.id;
+    });
+
+    const filters = getQuestionBankFilters();
+
+    if (filters.subject) {
+      questions = questions.filter(q => String(q.subject || "") === filters.subject);
+    }
+
+    if (filters.grade) {
+      questions = questions.filter(q => String(q.grade_level || "") === filters.grade);
+    }
+
+    if (filters.unit) {
+      questions = questions.filter(q => String(q.unit || "") === filters.unit);
+    }
+
+    if (filters.skill) {
+      questions = questions.filter(q => String(q.skill || "") === filters.skill);
+    }
+
+    if (filters.difficulty) {
+      questions = questions.filter(q => String(q.difficulty || "") === filters.difficulty);
+    }
+
+    if (status) {
+      status.textContent = `Showing ${questions.length} question(s).`;
+    }
+
+    if (!questions.length) {
+      list.innerHTML = `
+        <div class="exam-empty-state">
+          <div class="exam-empty-icon">📚</div>
+          <h3>No questions found for the selected filters.</h3>
+          <button class="exam-refresh-btn" onclick="clearQuestionBankFilters()">Clear Filters</button>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = "";
+
+    questions.forEach((q, index) => {
+      const card = document.createElement("div");
+      card.className = "box question-bank-card";
+      card.dataset.questionId = q.id; 
+
+      const typeLabel = q.question_type === "mcq" ? "Multiple Choice" : "True / False";
+
+      const optionsHtml = q.question_type === "mcq"
+        ? `
+          <div class="question-bank-options">
+            <p><strong>A.</strong> ${safeText(q.option_a || "")}</p>
+            <p><strong>B.</strong> ${safeText(q.option_b || "")}</p>
+            <p><strong>C.</strong> ${safeText(q.option_c || "")}</p>
+            <p><strong>D.</strong> ${safeText(q.option_d || "")}</p>
+          </div>
+        `
+        : `
+          <div class="question-bank-options">
+            <p><strong>A.</strong> True</p>
+            <p><strong>B.</strong> False</p>
+          </div>
+        `;
+
+      card.innerHTML = `
+        <div class="question-bank-card-top">
+          <label class="bank-question-select-label">
+            <input 
+              type="checkbox"
+              class="bank-question-checkbox"
+              data-question-id="${safeText(q.id)}"
+              onchange="toggleBankQuestionSelectionDirect(this)"
+            />
+            Select
+          </label>
+
+          <span class="badge">#${index + 1}</span>
+          <span class="badge">${safeText(typeLabel)}</span>
+
+          ${q.subject ? `<span class="badge">${safeText(q.subject)}</span>` : ""}
+          ${q.grade_level ? `<span class="badge">Grade ${safeText(q.grade_level)}</span>` : ""}
+          ${q.unit ? `<span class="badge">${safeText(q.unit)}</span>` : ""}
+          ${q.skill ? `<span class="badge">${safeText(q.skill)}</span>` : ""}
+          ${q.difficulty ? `<span class="badge">${safeText(q.difficulty)}</span>` : ""}
+        </div>
+
+        <h3>${safeText(q.question_text || "")}</h3>
+
+        ${q.lesson ? `<p><strong>Lesson:</strong> ${safeText(q.lesson)}</p>` : ""}
+
+        ${optionsHtml}
+
+        <p><strong>Correct Answer:</strong> ${safeText(q.correct_answer || "")}</p>
+
+        <p><strong>Explanation:</strong> ${safeText(q.explanation || "Not added")}</p>
+
+        <p><strong>Source Exam:</strong> ${safeText(q.exams?.title || "Unknown exam")}</p>
+      `;
+
+      list.appendChild(card);
+    });
+  };
+
+  function bindQuestionBankFilterEvents() {
+    ["bankSubjectFilter", "bankGradeFilter", "bankUnitFilter", "bankSkillFilter", "bankDifficultyFilter"]
+      .forEach(id => {
+        const el = document.getElementById(id);
+        if (el && !el.dataset.bankFilterBound) {
+          el.dataset.bankFilterBound = "true";
+          el.addEventListener("change", () => {
+            if (typeof window.loadQuestionBank === "function") {
+              window.loadQuestionBank();
+            }
+          });
+        }
+      });
+  }
+
+  window.setupQuestionBankFilters = setupQuestionBankFilters;
+  window.bindQuestionBankFilterEvents = bindQuestionBankFilterEvents;
+
+  setTimeout(() => {
+    setupQuestionBankFilters();
+    bindQuestionBankFilterEvents();
+  }, 500);
+
+  if (typeof window.showPage === "function" && !window.__originalShowPageForQuestionBankPatch) {
+    window.__originalShowPageForQuestionBankPatch = window.showPage;
+
+    window.showPage = async function questionBankPatchedShowPage(id) {
+      const result = await window.__originalShowPageForQuestionBankPatch(id);
+
+      if (id === "questionBank") {
+        setTimeout(() => {
+          setupQuestionBankFilters();
+          bindQuestionBankFilterEvents();
+          if (typeof window.loadQuestionBank === "function") {
+            window.loadQuestionBank();
+          }
+        }, 300);
+      }
+
+      return result;
+    };
+  }
+
+  console.log("✅ Question Bank Foundation installed successfully.");
+})();
+/* =========================================================
+   EXAMS PATCH 5B — CREATE EXAM FROM QUESTION BANK
+   ========================================================= */
+
+(function installQuestionBankExamBuilder() {
+  if (window.__questionBankExamBuilderInstalled) {
+    console.log("Question Bank Exam Builder already installed.");
+    return;
+  }
+
+  window.__questionBankExamBuilderInstalled = true;
+
+  window.selectedBankQuestions = window.selectedBankQuestions || [];
+
+  function updateSelectedBankQuestionsCount() {
+    const countBox = document.getElementById("selectedBankQuestionsCount");
+    if (countBox) {
+      countBox.textContent = String(window.selectedBankQuestions.length);
+    }
+  }
+
+  window.toggleBankQuestionSelection = function toggleBankQuestionSelection(questionId) {
+    if (!questionId) return;
+
+    const exists = window.selectedBankQuestions.includes(questionId);
+
+    if (exists) {
+      window.selectedBankQuestions = window.selectedBankQuestions.filter(id => id !== questionId);
+    } else {
+      window.selectedBankQuestions.push(questionId);
+    }
+
+    updateSelectedBankQuestionsCount();
+  };
+
+  function enhanceQuestionBankCardsWithSelection() {
+    const cards = document.querySelectorAll(".question-bank-card");
+
+    cards.forEach(card => {
+      if (card.dataset.selectionEnhanced === "true") return;
+
+      const questionId = card.dataset.questionId;
+      if (!questionId) return;
+
+      const top = card.querySelector(".question-bank-card-top");
+      if (!top) return;
+
+      const label = document.createElement("label");
+      label.className = "bank-question-select-label";
+
+      label.innerHTML = `
+        <input 
+          type="checkbox"
+          class="bank-question-checkbox"
+          onchange="toggleBankQuestionSelection('${questionId}')"
+          ${window.selectedBankQuestions.includes(questionId) ? "checked" : ""}
+        />
+        Select
+      `;
+
+      top.prepend(label);
+      card.dataset.selectionEnhanced = "true";
+    });
+
+    updateSelectedBankQuestionsCount();
+  }
+
+  const originalLoadQuestionBank = window.loadQuestionBank;
+
+  if (typeof originalLoadQuestionBank === "function" && !window.__originalLoadQuestionBankForExamBuilder) {
+    window.__originalLoadQuestionBankForExamBuilder = originalLoadQuestionBank;
+
+    window.loadQuestionBank = async function patchedLoadQuestionBank() {
+      const result = await window.__originalLoadQuestionBankForExamBuilder();
+
+      setTimeout(() => {
+        enhanceQuestionBankCardsWithSelection();
+      }, 100);
+
+      return result;
+    };
+  }
+
+  window.createExamFromSelectedBankQuestions = async function createExamFromSelectedBankQuestions() {
+    const status = document.getElementById("questionBankStatus");
+
+    if (!window.selectedBankQuestions || window.selectedBankQuestions.length === 0) {
+      if (status) status.textContent = "Please select at least one question first.";
+      alert("Please select at least one question first.");
+      return;
+    }
+
+    const user = typeof getCurrentUser === "function" ? await getCurrentUser() : null;
+
+    if (!user) {
+      if (status) status.textContent = "Login first.";
+      alert("Login first.");
+      return;
+    }
+
+    const title = prompt("Enter new exam title:", "New Exam from Question Bank");
+
+    if (!title || !title.trim()) {
+      if (status) status.textContent = "Exam creation cancelled.";
+      return;
+    }
+
+    const timeInput = prompt("Enter exam duration in minutes:", "10");
+    const timeLimit = Number(timeInput || 10);
+
+    if (!timeLimit || timeLimit <= 0) {
+      alert("Please enter a valid exam duration.");
+      return;
+    }
+
+    if (status) status.textContent = "Creating exam from selected questions...";
+
+    const selectedIds = [...window.selectedBankQuestions];
+
+    const { data: selectedQuestions, error: questionsError } = await client
+      .from("questions")
+      .select("*")
+      .in("id", selectedIds);
+
+    if (questionsError) {
+      console.error("Load selected bank questions error:", questionsError);
+      if (status) status.textContent = questionsError.message;
+      return;
+    }
+
+    if (!selectedQuestions || selectedQuestions.length === 0) {
+      if (status) status.textContent = "No selected questions were found.";
+      return;
+    }
+
+    const firstQuestion = selectedQuestions[0] || {};
+
+    const examData = {
+      title: title.trim(),
+      description: "Created from Question Bank",
+      time_limit: timeLimit,
+      question_count: selectedQuestions.length,
+      exam_type: "multiple_choice",
+      subject: firstQuestion.subject || "",
+      grade_level: firstQuestion.grade_level || "",
+      unit: firstQuestion.unit || "",
+      status: "draft",
+      teacher_id: user.id
+    };
+
+    const { data: newExam, error: examError } = await client
+      .from("exams")
+      .insert([examData])
+      .select()
+      .single();
+
+    if (examError) {
+      console.error("Create exam from bank error:", examError);
+      if (status) status.textContent = examError.message;
+      return;
+    }
+
+    const copiedQuestions = selectedQuestions.map(q => ({
+      exam_id: newExam.id,
+      question_text: q.question_text,
+      question_type: q.question_type,
+      explanation: q.explanation || "",
+      option_a: q.option_a,
+      option_b: q.option_b,
+      option_c: q.option_c,
+      option_d: q.option_d,
+      correct_answer: q.correct_answer,
+      subject: q.subject || "",
+      grade_level: q.grade_level || "",
+      unit: q.unit || "",
+      lesson: q.lesson || "",
+      skill: q.skill || "",
+      difficulty: q.difficulty || ""
+    }));
+
+    const { error: insertQuestionsError } = await client
+      .from("questions")
+      .insert(copiedQuestions);
+
+    if (insertQuestionsError) {
+      console.error("Copy bank questions error:", insertQuestionsError);
+      if (status) status.textContent = insertQuestionsError.message;
+      return;
+    }
+
+    window.selectedBankQuestions = [];
+    updateSelectedBankQuestionsCount();
+
+    if (status) {
+      status.textContent = `Exam created successfully with ${copiedQuestions.length} question(s).`;
+    }
+
+    alert("Exam created successfully ✅");
+
+    if (typeof loadTeacherExams === "function") {
+      await loadTeacherExams();
+    }
+
+    if (typeof openQuestionManager === "function") {
+      openQuestionManager(newExam.id, newExam.title);
+    }
+  };
+
+  setTimeout(() => {
+    enhanceQuestionBankCardsWithSelection();
+  }, 500);
+
+  console.log("✅ Question Bank Exam Builder installed successfully.");
+})();
+
+/* =========================================================
+   EXAMS PATCH 5B FINAL FIX — DIRECT BANK SELECTION
+   ========================================================= */
+
+(function installQuestionBankDirectSelectionFix() {
+  if (window.__questionBankDirectSelectionFixInstalled) {
+    console.log("Question Bank Direct Selection Fix already installed.");
+    return;
+  }
+
+  window.__questionBankDirectSelectionFixInstalled = true;
+
+  window.selectedBankQuestions = window.selectedBankQuestions || [];
+
+  function updateSelectedBankQuestionsCountDirect() {
+    const countBox = document.getElementById("selectedBankQuestionsCount");
+    if (countBox) {
+      countBox.textContent = String(window.selectedBankQuestions.length);
+    }
+  }
+
+  window.toggleBankQuestionSelectionDirect = function toggleBankQuestionSelectionDirect(checkbox) {
+    const questionId =
+      checkbox?.dataset?.questionId ||
+      checkbox?.closest(".question-bank-card")?.dataset?.questionId;
+
+    if (!questionId) {
+      console.warn("No question id found for selected bank question.");
+      return;
+    }
+
+    if (checkbox.checked) {
+      if (!window.selectedBankQuestions.includes(questionId)) {
+        window.selectedBankQuestions.push(questionId);
+      }
+    } else {
+      window.selectedBankQuestions = window.selectedBankQuestions.filter(id => id !== questionId);
+    }
+
+    updateSelectedBankQuestionsCountDirect();
+
+    console.log("Selected bank questions:", window.selectedBankQuestions);
+  };
+
+  window.syncSelectedBankQuestionsDirect = function syncSelectedBankQuestionsDirect() {
+    const selected = [];
+
+    document.querySelectorAll(".bank-question-checkbox:checked").forEach(cb => {
+      const id =
+        cb.dataset.questionId ||
+        cb.closest(".question-bank-card")?.dataset.questionId;
+
+      if (id) selected.push(id);
+    });
+
+    window.selectedBankQuestions = [...new Set(selected)];
+    updateSelectedBankQuestionsCountDirect();
+
+    return window.selectedBankQuestions;
+  };
+
+  console.log("✅ Question Bank Direct Selection Fix installed successfully.");
+})();
+
+/* =========================================================
+   EXAMS PATCH 5B FINAL CLEAN OVERRIDE
+   Stable Question Bank loader + direct selection
+   ========================================================= */
+
+(function installQuestionBankFinalCleanOverride() {
+  if (window.__questionBankFinalCleanOverrideInstalled) {
+    console.log("Question Bank Final Clean Override already installed.");
+    return;
+  }
+
+  window.__questionBankFinalCleanOverrideInstalled = true;
+
+  window.selectedBankQuestions = window.selectedBankQuestions || [];
+
+  function updateSelectedBankQuestionsCountFinal() {
+    const countBox = document.getElementById("selectedBankQuestionsCount");
+    if (countBox) {
+      countBox.textContent = String(window.selectedBankQuestions.length);
+    }
+  }
+
+  window.toggleBankQuestionSelectionDirect = function toggleBankQuestionSelectionDirect(checkbox) {
+    const questionId =
+      checkbox?.dataset?.questionId ||
+      checkbox?.closest(".question-bank-card")?.dataset?.questionId;
+
+    if (!questionId) {
+      console.warn("No question id found for selected bank question.");
+      return;
+    }
+
+    if (checkbox.checked) {
+      if (!window.selectedBankQuestions.includes(questionId)) {
+        window.selectedBankQuestions.push(questionId);
+      }
+    } else {
+      window.selectedBankQuestions = window.selectedBankQuestions.filter(id => id !== questionId);
+    }
+
+    updateSelectedBankQuestionsCountFinal();
+    console.log("Selected bank questions:", window.selectedBankQuestions);
+  };
+
+  window.syncSelectedBankQuestionsDirect = function syncSelectedBankQuestionsDirect() {
+    const selected = [];
+
+    document.querySelectorAll(".bank-question-checkbox:checked").forEach(cb => {
+      const id =
+        cb.dataset.questionId ||
+        cb.closest(".question-bank-card")?.dataset.questionId;
+
+      if (id) selected.push(id);
+    });
+
+    window.selectedBankQuestions = [...new Set(selected)];
+    updateSelectedBankQuestionsCountFinal();
+
+    return window.selectedBankQuestions;
+  };
+
+  function getBankFiltersFinal() {
+    return {
+      subject: document.getElementById("bankSubjectFilter")?.value || "",
+      grade: document.getElementById("bankGradeFilter")?.value || "",
+      unit: document.getElementById("bankUnitFilter")?.value || "",
+      skill: document.getElementById("bankSkillFilter")?.value || "",
+      difficulty: document.getElementById("bankDifficultyFilter")?.value || ""
+    };
+  }
+
+  window.clearQuestionBankFilters = function clearQuestionBankFilters() {
+    [
+      "bankSubjectFilter",
+      "bankGradeFilter",
+      "bankUnitFilter",
+      "bankSkillFilter",
+      "bankDifficultyFilter"
+    ].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+
+    window.selectedBankQuestions = [];
+    updateSelectedBankQuestionsCountFinal();
+
+    if (typeof window.loadQuestionBank === "function") {
+      window.loadQuestionBank();
+    }
+  };
+
+  window.loadQuestionBank = async function loadQuestionBank() {
+    const list = document.getElementById("questionBankList");
+    const status = document.getElementById("questionBankStatus");
+
+    if (!list) return;
+
+    list.innerHTML = "Loading question bank...";
+    if (status) status.textContent = "";
+
+    const user = typeof getCurrentUser === "function" ? await getCurrentUser() : null;
+
+    if (!user) {
+      list.innerHTML = "<p>Please login first.</p>";
+      if (status) status.textContent = "Login first.";
+      return;
+    }
+
+    const { data, error } = await client
+      .from("questions")
+      .select(`
+        *,
+        exams (
+          id,
+          title,
+          teacher_id
+        )
+      `)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Load question bank error:", error);
+      list.innerHTML = "<p>Could not load question bank.</p>";
+      if (status) status.textContent = error.message;
+      return;
+    }
+
+    let questions = data || [];
+
+    questions = questions.filter(q => {
+      return q.exams && q.exams.teacher_id === user.id;
+    });
+
+    const filters = getBankFiltersFinal();
+
+    if (filters.subject) {
+      questions = questions.filter(q => String(q.subject || "") === filters.subject);
+    }
+
+    if (filters.grade) {
+      questions = questions.filter(q => String(q.grade_level || "") === filters.grade);
+    }
+
+    if (filters.unit) {
+      questions = questions.filter(q => String(q.unit || "") === filters.unit);
+    }
+
+    if (filters.skill) {
+      questions = questions.filter(q => String(q.skill || "") === filters.skill);
+    }
+
+    if (filters.difficulty) {
+      questions = questions.filter(q => String(q.difficulty || "") === filters.difficulty);
+    }
+
+    if (status) {
+      status.textContent = `Showing ${questions.length} question(s).`;
+    }
+
+    if (!questions.length) {
+      list.innerHTML = `
+        <div class="exam-empty-state">
+          <div class="exam-empty-icon">📚</div>
+          <h3>No questions found for the selected filters.</h3>
+          <button class="exam-refresh-btn" onclick="clearQuestionBankFilters()">Clear Filters</button>
+        </div>
+      `;
+      updateSelectedBankQuestionsCountFinal();
+      return;
+    }
+
+    list.innerHTML = "";
+
+    questions.forEach((q, index) => {
+      const card = document.createElement("div");
+      card.className = "box question-bank-card";
+      card.dataset.questionId = q.id;
+
+      const typeLabel = q.question_type === "mcq" ? "Multiple Choice" : "True / False";
+
+      const isSelected = window.selectedBankQuestions.includes(q.id);
+
+      const optionsHtml = q.question_type === "mcq"
+        ? `
+          <div class="question-bank-options">
+            <p><strong>A.</strong> ${safeText(q.option_a || "")}</p>
+            <p><strong>B.</strong> ${safeText(q.option_b || "")}</p>
+            <p><strong>C.</strong> ${safeText(q.option_c || "")}</p>
+            <p><strong>D.</strong> ${safeText(q.option_d || "")}</p>
+          </div>
+        `
+        : `
+          <div class="question-bank-options">
+            <p><strong>A.</strong> True</p>
+            <p><strong>B.</strong> False</p>
+          </div>
+        `;
+
+      card.innerHTML = `
+        <div class="question-bank-card-top">
+          <label class="bank-question-select-label">
+            <input
+              type="checkbox"
+              class="bank-question-checkbox"
+              data-question-id="${safeText(q.id)}"
+              onchange="toggleBankQuestionSelectionDirect(this)"
+              ${isSelected ? "checked" : ""}
+            />
+            Select
+          </label>
+
+          <span class="badge">#${index + 1}</span>
+          <span class="badge">${safeText(typeLabel)}</span>
+          ${q.subject ? `<span class="badge">${safeText(q.subject)}</span>` : ""}
+          ${q.grade_level ? `<span class="badge">Grade ${safeText(q.grade_level)}</span>` : ""}
+          ${q.unit ? `<span class="badge">${safeText(q.unit)}</span>` : ""}
+          ${q.skill ? `<span class="badge">${safeText(q.skill)}</span>` : ""}
+          ${q.difficulty ? `<span class="badge">${safeText(q.difficulty)}</span>` : ""}
+        </div>
+
+        <h3>${safeText(q.question_text || "")}</h3>
+
+        ${q.lesson ? `<p><strong>Lesson:</strong> ${safeText(q.lesson)}</p>` : ""}
+
+        ${optionsHtml}
+
+        <p><strong>Correct Answer:</strong> ${safeText(q.correct_answer || "")}</p>
+
+        <p><strong>Explanation:</strong> ${safeText(q.explanation || "Not added")}</p>
+
+        <p><strong>Source Exam:</strong> ${safeText(q.exams?.title || "Unknown exam")}</p>
+      `;
+
+      list.appendChild(card);
+    });
+
+    updateSelectedBankQuestionsCountFinal();
+  };
+
+  console.log("✅ Question Bank Final Clean Override installed successfully.");
+})();
+
+/* =========================================================
+   EXAMS PATCH 5B CLEANUP — REMOVE DUPLICATE SELECTS
+   ========================================================= */
+
+(function installQuestionBankSelectionCleanup() {
+  if (window.__questionBankSelectionCleanupInstalled) {
+    console.log("Question Bank Selection Cleanup already installed.");
+    return;
+  }
+
+  window.__questionBankSelectionCleanupInstalled = true;
+
+  window.selectedBankQuestions = window.selectedBankQuestions || [];
+
+  function updateBankSelectedCount() {
+    const countBox = document.getElementById("selectedBankQuestionsCount");
+    if (countBox) {
+      countBox.textContent = String(window.selectedBankQuestions.length);
+    }
+  }
+
+  window.toggleBankQuestionSelectionDirect = function toggleBankQuestionSelectionDirect(checkbox) {
+    const questionId =
+      checkbox?.dataset?.questionId ||
+      checkbox?.closest(".question-bank-card")?.dataset?.questionId;
+
+    if (!questionId) {
+      console.warn("No question id found.");
+      return;
+    }
+
+    if (checkbox.checked) {
+      if (!window.selectedBankQuestions.includes(questionId)) {
+        window.selectedBankQuestions.push(questionId);
+      }
+    } else {
+      window.selectedBankQuestions = window.selectedBankQuestions.filter(id => id !== questionId);
+    }
+
+    updateBankSelectedCount();
+  };
+
+  window.cleanQuestionBankSelectionUI = function cleanQuestionBankSelectionUI() {
+    document.querySelectorAll(".question-bank-card").forEach(card => {
+      const questionId = card.dataset.questionId;
+      const labels = [...card.querySelectorAll(".bank-question-select-label")];
+
+      // Keep only the first Select label
+      labels.slice(1).forEach(label => label.remove());
+
+      const firstLabel = card.querySelector(".bank-question-select-label");
+      const checkbox = firstLabel?.querySelector(".bank-question-checkbox");
+
+      if (checkbox && questionId) {
+        checkbox.dataset.questionId = questionId;
+        checkbox.setAttribute("onchange", "toggleBankQuestionSelectionDirect(this)");
+      }
+    });
+
+    updateBankSelectedCount();
+  };
+
+  const previousLoadQuestionBankCleanup = window.loadQuestionBank;
+
+  if (typeof previousLoadQuestionBankCleanup === "function" && !window.__questionBankSelectionCleanupWrapped) {
+    window.__questionBankSelectionCleanupWrapped = true;
+
+    window.loadQuestionBank = async function cleanedLoadQuestionBank() {
+      const result = await previousLoadQuestionBankCleanup();
+
+      setTimeout(() => {
+        cleanQuestionBankSelectionUI();
+      }, 150);
+
+      return result;
+    };
+  }
+
+  setTimeout(() => {
+    cleanQuestionBankSelectionUI();
+  }, 500);
+
+  console.log("✅ Question Bank Selection Cleanup installed successfully.");
+})();
+
+/* =========================================================
+   EXAMS PATCH 6A — IMPORT QUESTIONS INTO BANK
+   ========================================================= */
+
+(function installImportQuestionsToBankPatch() {
+  if (window.__importQuestionsToBankPatchInstalled) {
+    console.log("Import Questions To Bank Patch already installed.");
+    return;
+  }
+
+  window.__importQuestionsToBankPatchInstalled = true;
+
+  window.importedBankQuestionsPreview = [];
+
+  function fillImportSelect(selectId, options, placeholder) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    const currentValue = select.value;
+
+    select.innerHTML = "";
+
+    const first = document.createElement("option");
+    first.value = "";
+    first.textContent = placeholder;
+    select.appendChild(first);
+
+    options.forEach(item => {
+      const opt = document.createElement("option");
+      opt.value = item;
+      opt.textContent = item;
+      select.appendChild(opt);
+    });
+
+    if ([...select.options].some(o => o.value === currentValue)) {
+      select.value = currentValue;
+    }
+  }
+
+  window.setupImportQuestionFields = function setupImportQuestionFields() {
+    fillImportSelect(
+      "importQuestionSubject",
+      window.JAK_ACADEMIC_SUBJECTS || ["English", "Arabic", "Math", "Science"],
+      "Select Subject"
+    );
+
+    fillImportSelect(
+      "importQuestionGrade",
+      (window.JAK_ACADEMIC_GRADES || ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]).map(g => String(g)),
+      "Select Grade"
+    );
+
+    fillImportSelect(
+      "importQuestionUnit",
+      window.JAK_ACADEMIC_UNITS || ["Unit 1", "Unit 2", "Unit 3"],
+      "Select Unit"
+    );
+  };
+
+  function getImportMeta() {
+    return {
+      subject: document.getElementById("importQuestionSubject")?.value || "",
+      grade_level: document.getElementById("importQuestionGrade")?.value || "",
+      unit: document.getElementById("importQuestionUnit")?.value || "",
+      lesson: document.getElementById("importQuestionLesson")?.value.trim() || "",
+      skill: document.getElementById("importQuestionSkill")?.value || "",
+      difficulty: document.getElementById("importQuestionDifficulty")?.value || ""
+    };
+  }
+
+  function parseImportedQuestions(rawText) {
+    const blocks = String(rawText || "")
+      .split(/\n\s*\n/g)
+      .map(block => block.trim())
+      .filter(Boolean);
+
+    const parsed = [];
+
+    blocks.forEach((block, index) => {
+      const lines = block
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean);
+
+      let question = "";
+      let optionA = "";
+      let optionB = "";
+      let optionC = "";
+      let optionD = "";
+      let correct = "";
+      let explanation = "";
+
+      lines.forEach(line => {
+        if (/^Q\s*:/i.test(line)) {
+          question = line.replace(/^Q\s*:/i, "").trim();
+        } else if (/^A[\)\.]\s*/i.test(line)) {
+          optionA = line.replace(/^A[\)\.]\s*/i, "").trim();
+        } else if (/^B[\)\.]\s*/i.test(line)) {
+          optionB = line.replace(/^B[\)\.]\s*/i, "").trim();
+        } else if (/^C[\)\.]\s*/i.test(line)) {
+          optionC = line.replace(/^C[\)\.]\s*/i, "").trim();
+        } else if (/^D[\)\.]\s*/i.test(line)) {
+          optionD = line.replace(/^D[\)\.]\s*/i, "").trim();
+        } else if (/^Correct\s*:/i.test(line)) {
+          correct = line.replace(/^Correct\s*:/i, "").trim().toUpperCase();
+        } else if (/^Explanation\s*:/i.test(line)) {
+          explanation = line.replace(/^Explanation\s*:/i, "").trim();
+        }
+      });
+
+      parsed.push({
+        number: index + 1,
+        question_text: question,
+        question_type: "mcq",
+        option_a: optionA,
+        option_b: optionB,
+        option_c: optionC,
+        option_d: optionD,
+        correct_answer: correct,
+        explanation
+      });
+    });
+
+    return parsed;
+  }
+
+  function validateImportedQuestion(q) {
+    const errors = [];
+
+    if (!q.question_text) errors.push("Missing question text.");
+    if (!q.option_a) errors.push("Missing option A.");
+    if (!q.option_b) errors.push("Missing option B.");
+    if (!q.option_c) errors.push("Missing option C.");
+    if (!q.option_d) errors.push("Missing option D.");
+    if (!["A", "B", "C", "D"].includes(String(q.correct_answer || "").toUpperCase())) {
+      errors.push("Correct answer must be A, B, C, or D.");
+    }
+
+    return errors;
+  }
+
+  window.previewImportedQuestions = function previewImportedQuestions() {
+    const status = document.getElementById("importQuestionsStatus");
+    const preview = document.getElementById("importQuestionsPreview");
+    const raw = document.getElementById("importQuestionsText")?.value || "";
+
+    if (!preview) return;
+
+    const meta = getImportMeta();
+
+    if (!meta.subject || !meta.grade_level || !meta.unit || !meta.skill || !meta.difficulty) {
+      if (status) status.textContent = "Please select Subject, Grade, Unit, Skill, and Difficulty first.";
+      return;
+    }
+
+    const parsed = parseImportedQuestions(raw);
+
+    window.importedBankQuestionsPreview = parsed.map(q => ({
+      ...q,
+      errors: validateImportedQuestion(q)
+    }));
+
+    if (!window.importedBankQuestionsPreview.length) {
+      preview.innerHTML = "<p>No valid question blocks found. Use Q:, A), B), C), D), Correct:, Explanation: format.</p>";
+      if (status) status.textContent = "No imported questions found.";
+      return;
+    }
+
+    const validCount = window.importedBankQuestionsPreview.filter(q => q.errors.length === 0).length;
+
+    if (status) {
+      status.textContent = `Preview ready: ${validCount}/${window.importedBankQuestionsPreview.length} valid question(s).`;
+    }
+
+    preview.innerHTML = "";
+
+    window.importedBankQuestionsPreview.forEach(q => {
+      const card = document.createElement("div");
+      card.className = q.errors.length ? "box import-question-card import-question-error" : "box import-question-card";
+
+      card.innerHTML = `
+        <div class="question-bank-card-top">
+          <span class="badge">Imported #${safeText(q.number)}</span>
+          <span class="badge">Multiple Choice</span>
+          ${q.errors.length ? `<span class="badge draft">⚠️ Needs Fix</span>` : `<span class="badge published">✅ Ready</span>`}
+        </div>
+
+        <h3>${safeText(q.question_text || "Missing question text")}</h3>
+
+        <div class="question-bank-options">
+          <p><strong>A.</strong> ${safeText(q.option_a || "Missing")}</p>
+          <p><strong>B.</strong> ${safeText(q.option_b || "Missing")}</p>
+          <p><strong>C.</strong> ${safeText(q.option_c || "Missing")}</p>
+          <p><strong>D.</strong> ${safeText(q.option_d || "Missing")}</p>
+        </div>
+
+        <p><strong>Correct Answer:</strong> ${safeText(q.correct_answer || "Missing")}</p>
+        <p><strong>Explanation:</strong> ${safeText(q.explanation || "Not added")}</p>
+
+        ${
+          q.errors.length
+            ? `<div class="import-errors">${q.errors.map(e => `<p>⚠️ ${safeText(e)}</p>`).join("")}</div>`
+            : ""
+        }
+      `;
+
+      preview.appendChild(card);
+    });
+  };
+
+  async function getOrCreateBankSourceExam(meta, user) {
+    const bankTitle = `Question Bank Source - ${meta.subject} Grade ${meta.grade_level} ${meta.unit}`;
+
+    const existing = await client
+      .from("exams")
+      .select("*")
+      .eq("teacher_id", user.id)
+      .eq("title", bankTitle)
+      .limit(1);
+
+    if (existing.error) {
+      throw existing.error;
+    }
+
+    if (existing.data && existing.data.length > 0) {
+      return existing.data[0];
+    }
+
+    const examData = {
+      title: bankTitle,
+      description: "Internal source exam for Question Bank imported questions",
+      time_limit: 10,
+      question_count: 0,
+      exam_type: "multiple_choice",
+      subject: meta.subject,
+      grade_level: meta.grade_level,
+      unit: meta.unit,
+      status: "draft",
+      teacher_id: user.id
+    };
+
+    const created = await client
+      .from("exams")
+      .insert([examData])
+      .select()
+      .single();
+
+    if (created.error) {
+      throw created.error;
+    }
+
+    return created.data;
+  }
+
+  window.saveImportedQuestionsToBank = async function saveImportedQuestionsToBank() {
+    const status = document.getElementById("importQuestionsStatus");
+
+    const user = typeof getCurrentUser === "function" ? await getCurrentUser() : null;
+
+    if (!user) {
+      if (status) status.textContent = "Login first.";
+      return;
+    }
+
+    const meta = getImportMeta();
+
+    if (!meta.subject || !meta.grade_level || !meta.unit || !meta.skill || !meta.difficulty) {
+      if (status) status.textContent = "Please select Subject, Grade, Unit, Skill, and Difficulty first.";
+      return;
+    }
+
+    if (!window.importedBankQuestionsPreview.length) {
+      previewImportedQuestions();
+    }
+
+    const validQuestions = window.importedBankQuestionsPreview.filter(q => q.errors.length === 0);
+
+    if (!validQuestions.length) {
+      if (status) status.textContent = "No valid questions to save.";
+      return;
+    }
+
+    if (status) status.textContent = "Saving imported questions to bank...";
+
+    try {
+      const sourceExam = await getOrCreateBankSourceExam(meta, user);
+
+      const rows = validQuestions.map(q => ({
+        exam_id: sourceExam.id,
+        question_text: q.question_text,
+        question_type: "mcq",
+        option_a: q.option_a,
+        option_b: q.option_b,
+        option_c: q.option_c,
+        option_d: q.option_d,
+        correct_answer: q.correct_answer,
+        explanation: q.explanation || "",
+        subject: meta.subject,
+        grade_level: meta.grade_level,
+        unit: meta.unit,
+        lesson: meta.lesson,
+        skill: meta.skill,
+        difficulty: meta.difficulty
+      }));
+
+      const { error } = await client
+        .from("questions")
+        .insert(rows);
+
+      if (error) {
+        console.error("Save imported questions error:", error);
+        if (status) status.textContent = error.message;
+        return;
+      }
+
+      if (status) {
+        status.textContent = `Saved ${rows.length} question(s) to Question Bank ✅`;
+      }
+
+      window.importedBankQuestionsPreview = [];
+
+      const preview = document.getElementById("importQuestionsPreview");
+      if (preview) preview.innerHTML = "<p>Imported questions saved successfully ✅</p>";
+
+      const textarea = document.getElementById("importQuestionsText");
+      if (textarea) textarea.value = "";
+
+      if (typeof loadQuestionBank === "function") {
+        await loadQuestionBank();
+      }
+    } catch (error) {
+      console.error("Import questions failed:", error);
+      if (status) status.textContent = error.message || "Import failed.";
+    }
+  };
+
+  window.clearImportedQuestions = function clearImportedQuestions() {
+    const textarea = document.getElementById("importQuestionsText");
+    const preview = document.getElementById("importQuestionsPreview");
+    const status = document.getElementById("importQuestionsStatus");
+
+    if (textarea) textarea.value = "";
+    if (preview) preview.innerHTML = "<p>No imported questions preview yet.</p>";
+    if (status) status.textContent = "";
+
+    window.importedBankQuestionsPreview = [];
+  };
+
+  setTimeout(setupImportQuestionFields, 500);
+
+  if (typeof window.showPage === "function" && !window.__originalShowPageForImportQuestionsPatch) {
+    window.__originalShowPageForImportQuestionsPatch = window.showPage;
+
+    window.showPage = async function importQuestionsPatchedShowPage(id) {
+      const result = await window.__originalShowPageForImportQuestionsPatch(id);
+
+      if (id === "questionBank") {
+        setTimeout(() => {
+          setupImportQuestionFields();
+        }, 300);
+      }
+
+      return result;
+    };
+  }
+
+  console.log("✅ Import Questions To Bank Patch installed successfully.");
+})();
