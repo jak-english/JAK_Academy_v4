@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JAK Academy v4 Enhanced</title>
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="launch-clean.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -17,6 +18,7 @@
     <div>
       <div class="brand-title">JAK Academy</div>
       <div class="brand-sub">Learning is Fun ✨</div>
+      <button id="languageToggleBtn" onclick="toggleLanguage()">AR</button>
     </div>
   </div>
 
@@ -668,11 +670,16 @@
     <h1>Admin Controls</h1>
 
     <div class="actions" style="margin: 15px 0;">
-      <button onclick="showPage('teacherDashboard')">Open Teacher Dashboard</button>
-      <button onclick="showPage('premium'); loadUsers(); renderPaymentInfo();">
-        Open Users Management
-      </button>
-    </div>
+  <button onclick="showPage('teacherDashboard')">
+    Open Teacher Dashboard
+  </button>
+
+  
+
+  <button onclick="showPage('premium'); loadUsers(); renderPaymentInfo();">
+    Open Users Management
+  </button>
+</div>
 
     <div id="adminOverview" class="grid three"></div>
 
@@ -826,8 +833,7 @@
       <p>Browse, filter, and reuse classified questions across exams.</p>
     </div>
     <button onclick="showPage('teacherDashboard')">Back to Teacher Dashboard</button>
-  </div>
-
+<button onclick="loadQuestionBank()">Load Question Bank</button>
   <div class="box question-bank-controls">
     <h2>Filters</h2>
 
@@ -878,7 +884,14 @@
         </select>
       </div>
     </div>
-
+<div class="academic-field">
+  <label for="bankTypeFilter">Question Type</label>
+  <select id="bankTypeFilter" class="academic-select">
+    <option value="">All Types</option>
+    <option value="mcq">Multiple Choice</option>
+    <option value="tf">True / False</option>
+  </select>
+</div>
      <div class="question-bank-actions">
   <button onclick="loadQuestionBank()">Load Question Bank</button>
   <button onclick="clearQuestionBankFilters()">Clear Filters</button>

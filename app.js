@@ -2,6 +2,7 @@ console.log("🔥 APP.JS STARTED");
 const supabaseUrl = "https://bvvgfsogkzaikpraluof.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2dmdmc29na3phaWtwcmFsdW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMjYwMDAsImV4cCI6MjA5MjYwMjAwMH0.Rv4gjwqFA_ZVyice9JBV7sf81alsZb3PmB3lVtS4Xjo";
 const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+window.client = client;
 const $ = (id) => document.getElementById(id);
 
 const safeText = (value) => {
@@ -11924,6 +11925,7 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
     return [
       "home",
       "dashboard",
+      "questionBank",
       "teachers",
       "exams",
       "planner",
@@ -11940,22 +11942,24 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
   }
 
   if (normalizedRole.includes("teacher")) {
-    return [
-      "home",
-      "dashboard",
-      "teachers",
-      "exams",
-      "planner",
-      "studySystem",
-      "writing",
-      "aiCenter",
-      "assistant",
-      "games",
-      "dictionaries",
-      "premium",
-      "leaderboard",
-      "logout"
-    ];
+  return [
+    "home",
+    "dashboard",
+    "questionBank",
+    "teachers",
+    "exams",
+    "planner",
+    "studySystem",
+    "writing",
+    "aiCenter",
+    "assistant",
+    "games",
+    "dictionaries",
+    "premium",
+    "leaderboard",
+    "logout"
+  ];
+
   }
 
   if (normalizedRole.includes("student")) {
@@ -23628,15 +23632,16 @@ window.organizeWritingAcademyScreenV4 = organizeWritingAcademyScreenV4;
     );
   }
 
-  function getQuestionBankFilters() {
-    return {
-      subject: document.getElementById("bankSubjectFilter")?.value || "",
-      grade: document.getElementById("bankGradeFilter")?.value || "",
-      unit: document.getElementById("bankUnitFilter")?.value || "",
-      skill: document.getElementById("bankSkillFilter")?.value || "",
-      difficulty: document.getElementById("bankDifficultyFilter")?.value || ""
-    };
-  }
+   function getQuestionBankFilters() {
+  return {
+    subject: document.getElementById("bankSubjectFilter")?.value || "",
+    grade: document.getElementById("bankGradeFilter")?.value || "",
+    unit: document.getElementById("bankUnitFilter")?.value || "",
+    skill: document.getElementById("bankSkillFilter")?.value || "",
+    difficulty: document.getElementById("bankDifficultyFilter")?.value || "",
+    questionType: document.getElementById("bankTypeFilter")?.value || ""
+  };
+}
 
   window.clearQuestionBankFilters = function clearQuestionBankFilters() {
     ["bankSubjectFilter", "bankGradeFilter", "bankUnitFilter", "bankSkillFilter", "bankDifficultyFilter"]
@@ -23717,7 +23722,12 @@ window.organizeWritingAcademyScreenV4 = organizeWritingAcademyScreenV4;
     if (filters.difficulty) {
       questions = questions.filter(q => String(q.difficulty || "") === filters.difficulty);
     }
-
+if (filters.questionType) {
+  questions = questions.filter(q => {
+    const type = String(q.question_type || "mcq").toLowerCase();
+    return type === filters.questionType;
+  });
+}
     if (status) {
       status.textContent = `Showing ${questions.length} question(s).`;
     }
@@ -24193,25 +24203,25 @@ window.organizeWritingAcademyScreenV4 = organizeWritingAcademyScreenV4;
   }
 
   window.clearQuestionBankFilters = function clearQuestionBankFilters() {
-    [
-      "bankSubjectFilter",
-      "bankGradeFilter",
-      "bankUnitFilter",
-      "bankSkillFilter",
-      "bankDifficultyFilter"
-    ].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = "";
-    });
+  [
+    "bankSubjectFilter",
+    "bankGradeFilter",
+    "bankUnitFilter",
+    "bankSkillFilter",
+    "bankDifficultyFilter",
+    "bankTypeFilter"
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
 
-    window.selectedBankQuestions = [];
-    updateSelectedBankQuestionsCountFinal();
+  window.selectedBankQuestions = [];
+  updateSelectedBankQuestionsCountFinal();
 
-    if (typeof window.loadQuestionBank === "function") {
-      window.loadQuestionBank();
-    }
-  };
-
+  if (typeof window.loadQuestionBank === "function") {
+    window.loadQuestionBank();
+  }
+};
   window.loadQuestionBank = async function loadQuestionBank() {
     const list = document.getElementById("questionBankList");
     const status = document.getElementById("questionBankStatus");
@@ -24519,75 +24529,121 @@ window.organizeWritingAcademyScreenV4 = organizeWritingAcademyScreenV4;
   }
 
   function parseImportedQuestions(rawText) {
-    const blocks = String(rawText || "")
-      .split(/\n\s*\n/g)
-      .map(block => block.trim())
+  const blocks = String(rawText || "")
+    .split(/\n\s*\n/g)
+    .map(block => block.trim())
+    .filter(Boolean);
+
+  const parsed = [];
+
+  blocks.forEach((block, index) => {
+    const lines = block
+      .split("\n")
+      .map(line => line.trim())
       .filter(Boolean);
 
-    const parsed = [];
+    let question = "";
+    let type = "mcq";
+    let optionA = "";
+    let optionB = "";
+    let optionC = "";
+    let optionD = "";
+    let correct = "";
+    let explanation = "";
 
-    blocks.forEach((block, index) => {
-      const lines = block
-        .split("\n")
-        .map(line => line.trim())
-        .filter(Boolean);
+    lines.forEach(line => {
+      if (/^Q\s*:/i.test(line)) {
+        question = line.replace(/^Q\s*:/i, "").trim();
+      } else if (/^Type\s*:/i.test(line)) {
+        const rawType = line.replace(/^Type\s*:/i, "").trim().toLowerCase();
 
-      let question = "";
-      let optionA = "";
-      let optionB = "";
-      let optionC = "";
-      let optionD = "";
-      let correct = "";
-      let explanation = "";
-
-      lines.forEach(line => {
-        if (/^Q\s*:/i.test(line)) {
-          question = line.replace(/^Q\s*:/i, "").trim();
-        } else if (/^A[\)\.]\s*/i.test(line)) {
-          optionA = line.replace(/^A[\)\.]\s*/i, "").trim();
-        } else if (/^B[\)\.]\s*/i.test(line)) {
-          optionB = line.replace(/^B[\)\.]\s*/i, "").trim();
-        } else if (/^C[\)\.]\s*/i.test(line)) {
-          optionC = line.replace(/^C[\)\.]\s*/i, "").trim();
-        } else if (/^D[\)\.]\s*/i.test(line)) {
-          optionD = line.replace(/^D[\)\.]\s*/i, "").trim();
-        } else if (/^Correct\s*:/i.test(line)) {
-          correct = line.replace(/^Correct\s*:/i, "").trim().toUpperCase();
-        } else if (/^Explanation\s*:/i.test(line)) {
-          explanation = line.replace(/^Explanation\s*:/i, "").trim();
+        if (
+          rawType === "tf" ||
+          rawType === "truefalse" ||
+          rawType === "true/false" ||
+          rawType === "true false"
+        ) {
+          type = "tf";
+        } else {
+          type = "mcq";
         }
-      });
-
-      parsed.push({
-        number: index + 1,
-        question_text: question,
-        question_type: "mcq",
-        option_a: optionA,
-        option_b: optionB,
-        option_c: optionC,
-        option_d: optionD,
-        correct_answer: correct,
-        explanation
-      });
+      } else if (/^A[\)\.]\s*/i.test(line)) {
+        optionA = line.replace(/^A[\)\.]\s*/i, "").trim();
+      } else if (/^B[\)\.]\s*/i.test(line)) {
+        optionB = line.replace(/^B[\)\.]\s*/i, "").trim();
+      } else if (/^C[\)\.]\s*/i.test(line)) {
+        optionC = line.replace(/^C[\)\.]\s*/i, "").trim();
+      } else if (/^D[\)\.]\s*/i.test(line)) {
+        optionD = line.replace(/^D[\)\.]\s*/i, "").trim();
+      } else if (/^Correct\s*:/i.test(line)) {
+        correct = line.replace(/^Correct\s*:/i, "").trim();
+      } else if (/^Explanation\s*:/i.test(line)) {
+        explanation = line.replace(/^Explanation\s*:/i, "").trim();
+      }
     });
 
-    return parsed;
-  }
+    if (type === "tf") {
+      const normalizedCorrect = String(correct || "").trim().toLowerCase();
 
-  function validateImportedQuestion(q) {
-    const errors = [];
+      correct =
+        normalizedCorrect === "true" ||
+        normalizedCorrect === "t" ||
+        normalizedCorrect === "صح"
+          ? "True"
+          : normalizedCorrect === "false" ||
+            normalizedCorrect === "f" ||
+            normalizedCorrect === "خطأ"
+          ? "False"
+          : correct;
 
-    if (!q.question_text) errors.push("Missing question text.");
-    if (!q.option_a) errors.push("Missing option A.");
-    if (!q.option_b) errors.push("Missing option B.");
-    if (!q.option_c) errors.push("Missing option C.");
-    if (!q.option_d) errors.push("Missing option D.");
-    if (!["A", "B", "C", "D"].includes(String(q.correct_answer || "").toUpperCase())) {
-      errors.push("Correct answer must be A, B, C, or D.");
+      optionA = "True";
+      optionB = "False";
+      optionC = "";
+      optionD = "";
+    } else {
+      correct = String(correct || "").trim().toUpperCase();
+    }
+
+    parsed.push({
+      number: index + 1,
+      question_text: question,
+      question_type: type,
+      option_a: optionA,
+      option_b: optionB,
+      option_c: optionC,
+      option_d: optionD,
+      correct_answer: correct,
+      explanation
+    });
+  });
+
+  return parsed;
+}
+
+ function validateImportedQuestion(q) {
+  const errors = [];
+
+  if (!q.question_text) errors.push("Missing question text.");
+
+  if (q.question_type === "tf") {
+    if (!["True", "False"].includes(String(q.correct_answer || ""))) {
+      errors.push("Correct answer for True / False must be True or False.");
     }
 
     return errors;
   }
+
+  if (!q.option_a) errors.push("Missing option A.");
+  if (!q.option_b) errors.push("Missing option B.");
+  if (!q.option_c) errors.push("Missing option C.");
+  if (!q.option_d) errors.push("Missing option D.");
+
+  if (!["A", "B", "C", "D"].includes(String(q.correct_answer || "").toUpperCase())) {
+    errors.push("Correct answer must be A, B, C, or D.");
+  }
+
+  return errors;
+}
 
   window.previewImportedQuestions = function previewImportedQuestions() {
     const status = document.getElementById("importQuestionsStatus");
@@ -24631,18 +24687,29 @@ window.organizeWritingAcademyScreenV4 = organizeWritingAcademyScreenV4;
       card.innerHTML = `
         <div class="question-bank-card-top">
           <span class="badge">Imported #${safeText(q.number)}</span>
-          <span class="badge">Multiple Choice</span>
+          <span class="badge">${q.question_type === "tf" ? "True / False" : "Multiple Choice"}</span>
           ${q.errors.length ? `<span class="badge draft">⚠️ Needs Fix</span>` : `<span class="badge published">✅ Ready</span>`}
         </div>
 
         <h3>${safeText(q.question_text || "Missing question text")}</h3>
 
-        <div class="question-bank-options">
-          <p><strong>A.</strong> ${safeText(q.option_a || "Missing")}</p>
-          <p><strong>B.</strong> ${safeText(q.option_b || "Missing")}</p>
-          <p><strong>C.</strong> ${safeText(q.option_c || "Missing")}</p>
-          <p><strong>D.</strong> ${safeText(q.option_d || "Missing")}</p>
-        </div>
+         ${
+  q.question_type === "tf"
+    ? `
+      <div class="question-bank-options">
+        <p><strong>A.</strong> True</p>
+        <p><strong>B.</strong> False</p>
+      </div>
+    `
+    : `
+      <div class="question-bank-options">
+        <p><strong>A.</strong> ${safeText(q.option_a || "Missing")}</p>
+        <p><strong>B.</strong> ${safeText(q.option_b || "Missing")}</p>
+        <p><strong>C.</strong> ${safeText(q.option_c || "Missing")}</p>
+        <p><strong>D.</strong> ${safeText(q.option_d || "Missing")}</p>
+      </div>
+    `
+      }
 
         <p><strong>Correct Answer:</strong> ${safeText(q.correct_answer || "Missing")}</p>
         <p><strong>Explanation:</strong> ${safeText(q.explanation || "Not added")}</p>
@@ -24735,37 +24802,73 @@ window.organizeWritingAcademyScreenV4 = organizeWritingAcademyScreenV4;
     try {
       const sourceExam = await getOrCreateBankSourceExam(meta, user);
 
-      const rows = validQuestions.map(q => ({
-        exam_id: sourceExam.id,
-        question_text: q.question_text,
-        question_type: "mcq",
-        option_a: q.option_a,
-        option_b: q.option_b,
-        option_c: q.option_c,
-        option_d: q.option_d,
-        correct_answer: q.correct_answer,
-        explanation: q.explanation || "",
-        subject: meta.subject,
-        grade_level: meta.grade_level,
-        unit: meta.unit,
-        lesson: meta.lesson,
-        skill: meta.skill,
-        difficulty: meta.difficulty
-      }));
+       const importedTexts = validQuestions
+  .map(q => String(q.question_text || "").trim())
+  .filter(Boolean);
 
-      const { error } = await client
-        .from("questions")
-        .insert(rows);
+const { data: existingQuestions, error: existingError } = await client
+  .from("questions")
+  .select("id, question_text")
+  .eq("exam_id", sourceExam.id)
+  .in("question_text", importedTexts);
 
-      if (error) {
-        console.error("Save imported questions error:", error);
-        if (status) status.textContent = error.message;
-        return;
-      }
+if (existingError) {
+  console.error("Check duplicate imported questions error:", existingError);
+  if (status) status.textContent = existingError.message;
+  return;
+}
 
-      if (status) {
-        status.textContent = `Saved ${rows.length} question(s) to Question Bank ✅`;
-      }
+const existingTextSet = new Set(
+  (existingQuestions || []).map(q => String(q.question_text || "").trim())
+);
+
+const uniqueQuestions = validQuestions.filter(q => {
+  return !existingTextSet.has(String(q.question_text || "").trim());
+});
+
+if (!uniqueQuestions.length) {
+  if (status) {
+    status.textContent = `No new questions saved. ${validQuestions.length} duplicate question(s) found.`;
+  }
+  return;
+}
+
+const rows = uniqueQuestions.map(q => ({
+  exam_id: sourceExam.id,
+  question_text: q.question_text,
+   question_type: q.question_type || "mcq",
+option_a: q.question_type === "tf" ? "True" : q.option_a,
+option_b: q.question_type === "tf" ? "False" : q.option_b,
+option_c: q.question_type === "tf" ? null : q.option_c,
+option_d: q.question_type === "tf" ? null : q.option_d,
+correct_answer: q.correct_answer,
+  explanation: q.explanation || "",
+  subject: meta.subject,
+  grade_level: meta.grade_level,
+  unit: meta.unit,
+  lesson: meta.lesson,
+  skill: meta.skill,
+  difficulty: meta.difficulty
+}));
+
+const { error } = await client
+  .from("questions")
+  .insert(rows);
+
+if (error) {
+  console.error("Save imported questions error:", error);
+  if (status) status.textContent = error.message;
+  return;
+}
+
+const duplicateCount = validQuestions.length - uniqueQuestions.length;
+
+if (status) {
+  status.textContent =
+    `Saved ${rows.length} new question(s) to Question Bank ✅` +
+    (duplicateCount > 0 ? ` | Skipped ${duplicateCount} duplicate(s).` : "");
+}
+
 
       window.importedBankQuestionsPreview = [];
 
@@ -25082,3 +25185,269 @@ window.organizeWritingAcademyScreenV4 = organizeWritingAcademyScreenV4;
 
   console.log("✅ Bank Exam Builder Modal Patch installed successfully.");
 })();
+ /* =========================================================
+   FIX: Flexible Import Parser for Question Bank
+   Accepts:
+   Q:
+   Type: MCQ / Multiple Choice / TF
+   A:
+   B:
+   C:
+   D:
+   Correct:
+   Explanation:
+========================================================= */
+
+window.importedBankQuestionsPreview = [];
+
+function normalizeImportedQuestionType(typeText) {
+  const t = String(typeText || "").trim().toLowerCase();
+
+  if (
+    t.includes("tf") ||
+    t.includes("true") ||
+    t.includes("false") ||
+    t.includes("صح") ||
+    t.includes("خطأ")
+  ) {
+    return "tf";
+  }
+
+  return "mcq";
+}
+
+function parseImportedQuestionsFlexible(rawText) {
+  const text = String(rawText || "").replace(/\r/g, "").trim();
+
+  if (!text) return [];
+
+  const blocks = text
+    .split(/\n\s*\n+/)
+    .map(block => block.trim())
+    .filter(Boolean);
+
+  return blocks.map((block, index) => {
+    const lines = block
+      .split("\n")
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    const q = {
+      index: index + 1,
+      type: "mcq",
+      question_text: "",
+      option_a: "",
+      option_b: "",
+      option_c: "",
+      option_d: "",
+      correct_answer: "",
+      explanation: "",
+      errors: []
+    };
+
+    lines.forEach(line => {
+      const clean = line.trim();
+
+      if (/^Q\s*:/i.test(clean)) {
+        q.question_text = clean.replace(/^Q\s*:/i, "").trim();
+      } else if (/^Type\s*:/i.test(clean)) {
+        q.type = normalizeImportedQuestionType(clean.replace(/^Type\s*:/i, "").trim());
+      } else if (/^A\s*:/i.test(clean)) {
+        q.option_a = clean.replace(/^A\s*:/i, "").trim();
+      } else if (/^B\s*:/i.test(clean)) {
+        q.option_b = clean.replace(/^B\s*:/i, "").trim();
+      } else if (/^C\s*:/i.test(clean)) {
+        q.option_c = clean.replace(/^C\s*:/i, "").trim();
+      } else if (/^D\s*:/i.test(clean)) {
+        q.option_d = clean.replace(/^D\s*:/i, "").trim();
+      } else if (/^Correct\s*:/i.test(clean)) {
+        q.correct_answer = clean.replace(/^Correct\s*:/i, "").trim().toUpperCase();
+      } else if (/^Explanation\s*:/i.test(clean)) {
+        q.explanation = clean.replace(/^Explanation\s*:/i, "").trim();
+      }
+    });
+
+    if (!q.question_text) {
+      q.errors.push("Missing question text");
+    }
+
+    if (q.type === "mcq") {
+      if (!q.option_a) q.errors.push("Missing option A");
+      if (!q.option_b) q.errors.push("Missing option B");
+      if (!q.option_c) q.errors.push("Missing option C");
+      if (!q.option_d) q.errors.push("Missing option D");
+
+      if (!["A", "B", "C", "D"].includes(q.correct_answer)) {
+        q.errors.push("Correct answer must be A, B, C, or D");
+      }
+    }
+
+    if (q.type === "tf") {
+      if (!["TRUE", "FALSE", "T", "F", "صح", "خطأ"].includes(q.correct_answer)) {
+        q.errors.push("Correct answer must be True or False");
+      }
+    }
+
+    return q;
+  });
+}
+
+window.previewImportedQuestions = function previewImportedQuestions() {
+  const textArea = document.getElementById("importQuestionsText");
+  const statusBox = document.getElementById("questionBankStatus");
+  const listBox =
+    document.getElementById("importQuestionsPreview") ||
+    document.getElementById("questionBankList");
+
+  if (!textArea) {
+    alert("Import text area not found.");
+    return;
+  }
+
+  const parsed = parseImportedQuestionsFlexible(textArea.value);
+
+  window.importedBankQuestionsPreview = parsed;
+
+  const validCount = parsed.filter(q => q.errors.length === 0).length;
+
+  if (statusBox) {
+    statusBox.innerHTML = `
+      <div class="status-card">
+        Preview Count: ${parsed.length}<br>
+        Valid Count: ${validCount}<br>
+        Invalid Count: ${parsed.length - validCount}
+      </div>
+    `;
+  }
+
+  if (listBox) {
+    listBox.innerHTML = parsed.map(q => `
+      <div class="question-card">
+        <h4>Imported #${q.index} — ${q.type === "tf" ? "True / False" : "Multiple Choice"}</h4>
+        <p><strong>Q:</strong> ${q.question_text || "-"}</p>
+
+        ${
+          q.type === "mcq"
+            ? `
+              <p>A: ${q.option_a || "-"}</p>
+              <p>B: ${q.option_b || "-"}</p>
+              <p>C: ${q.option_c || "-"}</p>
+              <p>D: ${q.option_d || "-"}</p>
+            `
+            : ""
+        }
+
+        <p><strong>Correct:</strong> ${q.correct_answer || "-"}</p>
+        <p><strong>Explanation:</strong> ${q.explanation || "-"}</p>
+
+        ${
+          q.errors.length
+            ? `<p style="color:#dc2626;"><strong>Errors:</strong> ${q.errors.join(" / ")}</p>`
+            : `<p style="color:#16a34a;"><strong>Status:</strong> Valid ✅</p>`
+        }
+      </div>
+    `).join("");
+  }
+
+  console.log("IMPORTED QUESTIONS PREVIEW:", {
+    total: parsed.length,
+    valid: validCount,
+    questions: parsed
+  });
+};
+
+/* =========================================================
+   PATCH: Add Question Bank button if missing - no duplicates
+========================================================= */
+function ensureQuestionBankNavButton() {
+  const allQuestionBankButtons = Array.from(
+    document.querySelectorAll('[data-nav-key="questionBank"]')
+  );
+
+  if (allQuestionBankButtons.length > 1) {
+    allQuestionBankButtons.slice(1).forEach(btn => btn.remove());
+    console.log("✅ Duplicate Question Bank buttons removed.");
+    return;
+  }
+
+  if (allQuestionBankButtons.length === 1) return;
+
+  const teacherDashboardButton =
+    document.querySelector('[onclick*="teacherDashboard"]') ||
+    document.querySelector('[data-nav-key="dashboard"]') ||
+    document.querySelector('[data-nav-key="teacherDashboard"]');
+
+  if (!teacherDashboardButton || !teacherDashboardButton.parentElement) {
+    console.warn("Question Bank button was not added: nav parent not found.");
+    return;
+  }
+
+  const questionBankButton = document.createElement("button");
+  questionBankButton.type = "button";
+  questionBankButton.className = teacherDashboardButton.className || "nav-btn";
+  questionBankButton.setAttribute("data-nav-key", "questionBank");
+  questionBankButton.textContent = "Question Bank";
+  questionBankButton.onclick = function () {
+    showPage("questionBank");
+    if (typeof loadQuestionBank === "function") {
+      loadQuestionBank();
+    }
+  };
+
+  teacherDashboardButton.parentElement.insertBefore(
+    questionBankButton,
+    teacherDashboardButton.nextSibling
+  );
+
+  console.log("✅ Question Bank nav button added.");
+}
+
+document.addEventListener("DOMContentLoaded", ensureQuestionBankNavButton);
+
+setTimeout(ensureQuestionBankNavButton, 500);
+setTimeout(ensureQuestionBankNavButton, 1500);
+setTimeout(ensureQuestionBankNavButton, 2500);
+
+/* =========================================================
+   PATCH: Quiet Study Analytics missing containers warning
+   Safe: prevents console noise when analytics UI is not visible
+========================================================= */
+
+if (typeof renderStudyAnalytics === "function") {
+  const originalRenderStudyAnalytics = renderStudyAnalytics;
+
+  window.renderStudyAnalytics = function quietRenderStudyAnalytics(...args) {
+    try {
+      return originalRenderStudyAnalytics.apply(this, args);
+    } catch (error) {
+      if (
+        String(error?.message || "").toLowerCase().includes("container") ||
+        String(error || "").toLowerCase().includes("study analytics")
+      ) {
+        return;
+      }
+
+      console.error(error);
+    }
+  };
+}
+
+let jakCurrentLang = localStorage.getItem("jakLang") || "en";
+
+function toggleLanguage() {
+  jakCurrentLang = jakCurrentLang === "en" ? "ar" : "en";
+  localStorage.setItem("jakLang", jakCurrentLang);
+  applyLanguage();
+}
+
+function applyLanguage() {
+  document.documentElement.lang = jakCurrentLang;
+  document.documentElement.dir = jakCurrentLang === "ar" ? "rtl" : "ltr";
+
+  console.log("Language switched to:", jakCurrentLang);
+}
+
+window.toggleLanguage = toggleLanguage;
+window.applyLanguage = applyLanguage;
+
+applyLanguage();
