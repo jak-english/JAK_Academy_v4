@@ -38,6 +38,12 @@
   دروس الإنجليزي التفاعلية ✨
 </button>
   <button onclick="showPage('studentExams')">Exams</button>
+  <button 
+  class="nav-btn golden-nav-btn" 
+  data-nav-key="goldenIntensive"
+  onclick="showPage('goldenIntensive')">
+  المكثف الذهبي
+</button>
   <button onclick="openPlanner()">Planner</button>
   <button onclick="showPage('studySystem')">Study System</button>
   <button onclick="showPage('writingAcademy')">Writing Academy ✍️</button>
@@ -824,6 +830,444 @@
 
       <div id="studentExamList" class="grid three"></div>
     </div>
+  </div>
+</section>
+<!-- =========================================================
+     Golden Intensive Page - المكثف الذهبي
+========================================================= -->
+<section id="goldenIntensive" class="page golden-intensive-page">
+<div id="goldenOwnerTools" class="golden-owner-tools" style="display:none;">
+  <button onclick="exportGoldenBackup()">تصدير نسخة احتياطية</button>
+
+  <label class="golden-import-label">
+    استيراد نسخة احتياطية
+    <input type="file" accept="application/json" onchange="importGoldenBackup(event)">
+  </label>
+</div>
+  <!-- Hero -->
+  <div class="golden-hero">
+    <div class="golden-hero-content">
+      <span class="golden-badge">JAK Academy | Tawjihi Golden Intensive</span>
+
+      <h1>المكثف الذهبي</h1>
+
+      <p>
+        مراجعة نهائية منظمة لطلاب التوجيهي، تشمل تلخيص القواعد، القطع،
+        المفردات، ومهارات الكتابة من Unit 1 إلى Unit 10، مع قسم خاص
+        لموضوعات الإنشاء لجيل 2009.
+      </p>
+
+      <div class="golden-hero-actions">
+        <button onclick="openGoldenSection('grade2008')">
+          مكثف 2008
+        </button>
+
+        <button class="secondary-golden-btn" onclick="openGoldenSection('grade2009')">
+          مكثف 2009
+        </button>
+      </div>
+    </div>
+
+    <div class="golden-hero-card">
+      <h3>ماذا يحتوي المكثف؟</h3>
+
+      <p>
+        كل ما يحتاجه الطالب للمراجعة النهائية بطريقة مختصرة، منظمة، ومناسبة للامتحان.
+      </p>
+
+      <div class="golden-mini-stats">
+        <div>
+          <strong>10</strong>
+          <span>Units</span>
+        </div>
+
+        <div>
+          <strong>4</strong>
+          <span>Grammar / Reading / Vocabulary / Writing</span>
+        </div>
+
+        <div>
+          <strong>2008</strong>
+          <span>مراجعة شاملة</span>
+        </div>
+
+        <div>
+          <strong>2009</strong>
+          <span>Writing Topics</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="golden-tabs">
+    <button class="golden-tab active" onclick="openGoldenSection('overview')">
+      الرئيسية
+    </button>
+
+    <button class="golden-tab" onclick="openGoldenSection('grade2008')">
+      جيل 2008
+    </button>
+
+    <button class="golden-tab" onclick="openGoldenSection('grade2009')">
+      جيل 2009
+    </button>
+
+    <button class="golden-tab" onclick="openGoldenSection('grammar')">
+      القواعد
+    </button>
+
+    <button class="golden-tab" onclick="openGoldenSection('reading')">
+      القطع
+    </button>
+
+    <button class="golden-tab" onclick="openGoldenSection('vocabulary')">
+      المفردات
+    </button>
+
+    <button class="golden-tab" onclick="openGoldenSection('writing')">
+      Writing Skills
+    </button>
+
+    <button class="golden-tab" onclick="openGoldenSection('quickTests')">
+      اختبارات سريعة
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="golden-content">
+
+    <!-- Overview -->
+    <div id="golden-overview" class="golden-panel active">
+      <h2>فكرة المكثف الذهبي</h2>
+
+      <p class="golden-section-intro">
+        المكثف الذهبي هو صفحة مراجعة نهائية داخل المنصة، هدفها أن تجمع للطالب
+        أهم ما يحتاجه قبل الامتحان: قواعد، قطع، مفردات، مهارات كتابة، وأسئلة تدريبية.
+      </p>
+
+      <div class="golden-grid">
+
+        <div class="golden-card">
+          <span class="golden-card-icon">📘</span>
+          <h3>Grammar Summary</h3>
+          <p>
+            تلخيص أهم قواعد المنهاج من Unit 1 إلى Unit 10 بطريقة مركزة وسهلة.
+          </p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">📖</span>
+          <h3>Reading Passages</h3>
+          <p>
+            تلخيص القطع، الأفكار الرئيسية، الضمائر، الكلمات، والأسئلة المتوقعة.
+          </p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">🧠</span>
+          <h3>Vocabulary</h3>
+          <p>
+            أهم المفردات، المرادفات، الأضداد، collocations، والتعابير المهمة.
+          </p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">✍️</span>
+          <h3>Writing Skills</h3>
+          <p>
+            قوالب الكتابة، الروابط، الجمل المفيدة، وأهم الأخطاء التي يجب تجنبها.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Grade 2008 -->
+    <div id="golden-grade2008" class="golden-panel">
+      <h2>المكثف الذهبي - جيل 2008</h2>
+
+      <p class="golden-section-intro">
+        هذا القسم مخصص لجيل 2008، ويغطي المنهاج من Unit 1 إلى Unit 10:
+        Grammar, Reading, Vocabulary, and Writing Skills.
+      </p>
+
+      <div id="goldenUnits2008" class="golden-units-grid"></div>
+<div id="goldenUnitViewer2008" class="golden-unit-viewer">
+          <h3>اختر وحدة لعرض محتواها</h3>
+        <p>
+          عند الضغط على أي وحدة، سيظهر هنا تلخيص القواعد، المفردات، القطع،
+          ومهارة الكتابة الخاصة بها.
+        </p>
+      </div>
+    </div>
+
+    <!-- Grade 2009 -->
+<div id="golden-grade2009" class="golden-panel">
+  <h2>المكثف الذهبي - جيل 2009</h2>
+
+  <p class="golden-section-intro">
+    هذا القسم مخصص لجيل 2009، ويغطي منهاج High Note 4 من Unit 1 إلى Unit 10:
+    Grammar, Vocabulary, Reading / Passages, Writing Skills, and Writing Topics.
+  </p>
+
+  <div id="goldenUnits2009" class="golden-units-grid"></div>
+
+  <div id="goldenUnitViewer2009" class="golden-unit-viewer">
+    <h3>اختر وحدة لعرض محتواها</h3>
+    <p>
+      عند الضغط على أي وحدة، سيظهر هنا تلخيص القواعد، المعاني، القطعة،
+      مهارات الكتابة، وموضوعات الإنشاء الخاصة بجيل 2009 / High Note 4.
+    </p>
+  </div>
+</div>
+        <div class="golden-card">
+          <span class="golden-card-icon">🧩</span>
+          <h3>Essay Structure</h3>
+          <p>
+            مقدمة، أفكار رئيسية، أمثلة، خاتمة، وروابط مناسبة.
+          </p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">🔗</span>
+          <h3>Useful Connectors</h3>
+          <p>
+            روابط الإضافة، السبب، النتيجة، المقارنة، المعارضة، والخاتمة.
+          </p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">⚠️</span>
+          <h3>Common Writing Mistakes</h3>
+          <p>
+            أخطاء شائعة في الأزمنة، ترتيب الجملة، علامات الترقيم، والربط.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="golden-writing-topics">
+        <h3>موضوعات إنشاء مقترحة لجيل 2009</h3>
+
+        <div class="golden-topic-list">
+          <div>Technology in education</div>
+          <div>Artificial intelligence</div>
+          <div>Online learning</div>
+          <div>Social media</div>
+          <div>Environmental problems</div>
+          <div>The importance of reading</div>
+          <div>A person who inspires you</div>
+          <div>Volunteering</div>
+          <div>Healthy lifestyle</div>
+          <div>Future jobs</div>
+          <div>Studying abroad</div>
+          <div>Learning English</div>
+          <div>Time management</div>
+          <div>Success and ambition</div>
+          <div>Helping others</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grammar -->
+    <div id="golden-grammar" class="golden-panel">
+      <h2>القواعد الذهبية</h2>
+
+      <p class="golden-section-intro">
+        هذا القسم سيكون ملخصًا سريعًا لأهم القواعد المطلوبة في المنهاج.
+      </p>
+
+      <div class="golden-list">
+
+        <div class="golden-list-item">
+          <strong>Tenses</strong>
+          <span>الأزمنة الأساسية والمتقدمة، كلمات الدلالة، والاستخدامات.</span>
+        </div>
+
+        <div class="golden-list-item">
+          <strong>Passive Voice</strong>
+          <span>تحويل الجمل إلى المبني للمجهول حسب الزمن.</span>
+        </div>
+
+        <div class="golden-list-item">
+          <strong>Reported Speech</strong>
+          <span>الكلام المنقول: تغيير الأزمنة، الضمائر، وظروف الزمان والمكان.</span>
+        </div>
+
+        <div class="golden-list-item">
+          <strong>Conditionals</strong>
+          <span>Zero, First, Second, Third, and Mixed Conditionals.</span>
+        </div>
+
+        <div class="golden-list-item">
+          <strong>Modal Perfect</strong>
+          <span>must have, might have, could have, can't have, should have.</span>
+        </div>
+
+        <div class="golden-list-item">
+          <strong>Relative Clauses</strong>
+          <span>who, which, that, where, when, whose, whom.</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Reading -->
+    <div id="golden-reading" class="golden-panel">
+      <h2>القطع والأسئلة</h2>
+
+      <p class="golden-section-intro">
+        هذا القسم يلخص القطع ويجهز الطالب لأسئلة الفهم، الاقتباس، الضمائر، والمعاني.
+      </p>
+
+      <div class="golden-grid">
+
+        <div class="golden-card">
+          <span class="golden-card-icon">🔍</span>
+          <h3>Comprehension Questions</h3>
+          <p>What, Why, How, Mention two, Give two reasons.</p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">❝</span>
+          <h3>Quote Questions</h3>
+          <p>Quote the sentence which shows that...</p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">👤</span>
+          <h3>Pronoun Reference</h3>
+          <p>What does the underlined pronoun refer to?</p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">📌</span>
+          <h3>Vocabulary in Context</h3>
+          <p>Find a word that means / synonym / opposite.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Vocabulary -->
+    <div id="golden-vocabulary" class="golden-panel">
+      <h2>المفردات الذهبية</h2>
+
+      <p class="golden-section-intro">
+        هذا القسم سيكون بنكًا مختصرًا لأهم كلمات المنهاج حسب الوحدات.
+      </p>
+
+      <div class="golden-grid">
+
+        <div class="golden-card">
+          <span class="golden-card-icon">🧾</span>
+          <h3>Key Words</h3>
+          <p>أهم الكلمات المطلوبة في كل وحدة.</p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">🔁</span>
+          <h3>Synonyms</h3>
+          <p>المرادفات الأكثر تكرارًا في القطع والأسئلة.</p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">↔️</span>
+          <h3>Opposites</h3>
+          <p>الأضداد المهمة والمتوقعة في الامتحان.</p>
+        </div>
+
+        <div class="golden-card">
+          <span class="golden-card-icon">🧩</span>
+          <h3>Collocations</h3>
+          <p>التراكيب والتعابير المهمة من المنهاج.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Writing -->
+    <div id="golden-writing" class="golden-panel">
+      <h2>Writing Skills</h2>
+
+      <p class="golden-section-intro">
+        هذا القسم يلخص مهارات الكتابة المطلوبة، مع قوالب وروابط وجمل جاهزة.
+      </p>
+
+      <div class="golden-writing-box">
+        <h3>Golden Writing Toolkit</h3>
+
+        <div class="golden-writing-skills-grid">
+
+          <div>
+            <strong>Opinion Essay</strong>
+            <span>Introduction, opinion, reasons, examples, conclusion.</span>
+          </div>
+
+          <div>
+            <strong>For and Against Essay</strong>
+            <span>Arguments for, arguments against, final opinion.</span>
+          </div>
+
+          <div>
+            <strong>Formal Email</strong>
+            <span>Greeting, purpose, details, closing.</span>
+          </div>
+
+          <div>
+            <strong>Report</strong>
+            <span>Title, introduction, findings, recommendations.</span>
+          </div>
+
+          <div>
+            <strong>Story</strong>
+            <span>Setting, characters, problem, events, ending.</span>
+          </div>
+
+          <div>
+            <strong>Application Letter</strong>
+            <span>Reason for applying, experience, skills, closing.</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Tests -->
+    <div id="golden-quickTests" class="golden-panel">
+      <h2>اختبارات سريعة</h2>
+
+      <p class="golden-section-intro">
+        لاحقًا سيتم ربط هذا القسم ببنك الأسئلة لإنشاء اختبارات قصيرة من المكثف.
+      </p>
+
+      <div class="golden-grid">
+
+        <div class="golden-card test-card">
+          <span class="golden-card-icon">⚡</span>
+          <h3>Grammar Quick Test</h3>
+          <p>10 أسئلة لاختبار القواعد بسرعة.</p>
+          <button onclick="alert('قريبًا: Grammar Quick Test')">ابدأ</button>
+        </div>
+
+        <div class="golden-card test-card">
+          <span class="golden-card-icon">📖</span>
+          <h3>Reading Quick Test</h3>
+          <p>قطعة قصيرة مع أسئلة نمط وزارة.</p>
+          <button onclick="alert('قريبًا: Reading Quick Test')">ابدأ</button>
+        </div>
+
+        <div class="golden-card test-card">
+          <span class="golden-card-icon">✍️</span>
+          <h3>Writing Practice</h3>
+          <p>موضوع كتابة قصير للتدريب.</p>
+          <button onclick="alert('قريبًا: Writing Practice')">ابدأ</button>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </section>
 <section id="questionBank" class="page">

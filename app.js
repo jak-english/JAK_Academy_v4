@@ -11868,16 +11868,28 @@ window.showWritingV3Screen = showWritingV3Screen;
    Safe patch: hide/show existing nav buttons without removing them
 ===================================================== */
 
-function getNavButtonKey(button) {
+ function getNavButtonKey(button) {
   const text = (button.innerText || "").trim().toLowerCase();
+  const rawText = button.textContent || "";
   const onclick = button.getAttribute("onclick") || "";
+  const dataKey = button.getAttribute("data-nav-key") || "";
 
-  if ( button.getAttribute("data-nav-key") === "englishLessonJourney" ||
-  button.textContent.includes("دروس الإنجليزي") ||
-  button.textContent.includes("English Lesson")
-) {
-  return "englishLessonJourney";
-}
+  if (
+    dataKey === "goldenIntensive" ||
+    onclick.includes("goldenIntensive") ||
+    rawText.includes("المكثف الذهبي")
+  ) {
+    return "goldenIntensive";
+  }
+
+  if (
+    dataKey === "englishLessonJourney" ||
+    rawText.includes("دروس الإنجليزي") ||
+    rawText.includes("English Lesson")
+  ) {
+    return "englishLessonJourney";
+  }
+
   if (onclick.includes("showPage('home')")) return "home";
   if (onclick.includes("teachersPage")) return "teachers";
   if (onclick.includes("goDashboard")) return "dashboard";
@@ -11893,6 +11905,9 @@ function getNavButtonKey(button) {
   if (onclick.includes("premium")) return "premium";
   if (onclick.includes("leaderboard")) return "leaderboard";
   if (onclick.includes("logout")) return "logout";
+
+  if (text.includes("المكثف الذهبي")) return "goldenIntensive";
+  if (text.includes("golden intensive")) return "goldenIntensive";
 
   if (text.includes("home")) return "home";
   if (text.includes("teacher")) return "teachers";
@@ -11937,6 +11952,7 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
       "dictionaries",
       "premium",
       "leaderboard",
+      "goldenIntensive",
       "logout"
     ];
   }
@@ -11957,6 +11973,7 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
     "dictionaries",
     "premium",
     "leaderboard",
+    "goldenIntensive",
     "logout"
   ];
 
@@ -11976,6 +11993,7 @@ function getVisibleNavKeysByRole(role, isLoggedIn) {
       "dictionaries",
       "premium",
       "leaderboard",
+     "goldenIntensive",
       "logout"
     ];
   }
@@ -25451,3 +25469,2747 @@ window.toggleLanguage = toggleLanguage;
 window.applyLanguage = applyLanguage;
 
 applyLanguage();
+
+ 
+/* ========================================================
+   Golden Intensive Data - Manual Teacher Input
+   2008 = High Note 5
+   2009 = High Note 4
+========================================================= */
+
+const GOLDEN_STORAGE_KEY = "jakGoldenIntensiveDataV1";
+
+const goldenCourseConfig = {
+  "2008": {
+    cohortTitle: "جيل 2008",
+    book: "High Note 5",
+    units: 10
+  },
+  "2009": {
+    cohortTitle: "جيل 2009",
+    book: "High Note 4",
+    units: 10
+  }
+};
+
+function createEmptyGoldenUnit(unitNumber) {
+  return {
+    title: `Unit ${unitNumber}`,
+    grammar: "",
+    vocabulary: "",
+    reading: "",
+    writing: "",
+    notes: ""
+  };
+}
+
+function createDefaultGoldenData() {
+  const data = {};
+
+  Object.keys(goldenCourseConfig).forEach(cohort => {
+    data[cohort] = {};
+
+    for (let i = 1; i <= goldenCourseConfig[cohort].units; i++) {
+      data[cohort][`unit${i}`] = createEmptyGoldenUnit(i);
+    }
+  });
+
+  return data;
+}
+
+function loadGoldenData() {
+  try {
+    const saved = localStorage.getItem(GOLDEN_STORAGE_KEY);
+
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      const defaults = createDefaultGoldenData();
+
+      return {
+        ...defaults,
+        ...parsed,
+        "2008": {
+          ...defaults["2008"],
+          ...(parsed["2008"] || {})
+        },
+        "2009": {
+          ...defaults["2009"],
+          ...(parsed["2009"] || {})
+        }
+      };
+    }
+  } catch (error) {
+    console.warn("Could not load Golden Intensive data:", error);
+  }
+
+  return createDefaultGoldenData();
+}
+
+function saveGoldenData(data) {
+  localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(data));
+}
+
+let goldenUnitData = loadGoldenData();
+
+ function openGoldenUnit(cohort = "2008", unitKeyOrNumber = "unit1") {
+  cohort = String(cohort || "2008");
+
+  const rawKey = String(unitKeyOrNumber || "unit1").trim();
+
+  const unitKey =
+    rawKey === "cultureSpot" || rawKey === "literatureSpot"
+      ? rawKey
+      : rawKey.startsWith("unit")
+        ? rawKey
+        : `unit${rawKey.replace(/[^\d]/g, "") || "1"}`;
+
+  const isExtraSpot = unitKey === "cultureSpot" || unitKey === "literatureSpot";
+
+  const viewer =
+    document.getElementById(`goldenViewer${cohort}`) ||
+    document.getElementById(`goldenUnitViewer${cohort}`) ||
+    document.getElementById("goldenViewer2008") ||
+    document.getElementById("goldenViewer2009") ||
+    document.getElementById("goldenUnitViewer2008") ||
+    document.getElementById("goldenUnitViewer2009");
+
+  if (!viewer) {
+    console.warn("Golden viewer not found:", cohort);
+    return;
+  }
+
+  const config =
+    typeof goldenCourseConfig !== "undefined" && goldenCourseConfig?.[cohort]
+      ? goldenCourseConfig[cohort]
+      : {
+          cohortTitle: cohort === "2009" ? "جيل 2009" : "جيل 2008",
+          book: cohort === "2009" ? "High Note 4" : "High Note 5",
+          units: 10
+        };
+
+  if (!goldenUnitData[cohort]) {
+    goldenUnitData[cohort] = {};
+  }
+
+  const canEdit =
+    typeof canEditGoldenIntensive === "function"
+      ? canEditGoldenIntensive()
+      : true;
+
+  // Culture Spot / Literature Spot مستقلين بعد Unit 10
+  if (isExtraSpot) {
+    const defaultTitle = unitKey === "cultureSpot" ? "Culture Spot" : "Literature Spot";
+
+    if (!goldenUnitData[cohort][unitKey]) {
+      goldenUnitData[cohort][unitKey] = {
+        title: defaultTitle,
+        content: ""
+      };
+    }
+
+    const spot = goldenUnitData[cohort][unitKey];
+
+    viewer.innerHTML = `
+      <div class="golden-unit-view-shell" dir="auto">
+        <div class="golden-unit-view-header">
+          <div>
+            <span class="golden-unit-badge">
+              ${escapeGoldenHTML(config.cohortTitle || cohort)} | ${escapeGoldenHTML(config.book || "")}
+            </span>
+            <h2>${escapeGoldenHTML(spot.title || defaultTitle)}</h2>
+            <p>قسم مستقل بعد Unit 10 وليس داخل الوحدات.</p>
+          </div>
+
+          ${
+            canEdit
+              ? `<button type="button" class="golden-edit-main-btn" onclick="openGoldenUnitEditor('${cohort}', '${unitKey}')">
+                   ✏️ تعديل القسم
+                 </button>`
+              : ""
+          }
+        </div>
+
+        ${renderGoldenContentBox(
+          spot.title || defaultTitle,
+          spot.content || "",
+          "لم يتم إدخال محتوى هذا القسم بعد."
+        )}
+      </div>
+    `;
+
+    viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+
+  // الوحدات العادية Unit 1 - Unit 10
+  const unitNumber = unitKey.replace("unit", "") || "1";
+
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = {
+      title: `Unit ${unitNumber}`,
+      vocabulary: "",
+      grammar: "",
+      reading: "",
+      writing: "",
+      notes: ""
+    };
+  }
+
+  const unit = {
+    title: `Unit ${unitNumber}`,
+    vocabulary: "",
+    grammar: "",
+    reading: "",
+    writing: "",
+    notes: "",
+    ...(goldenUnitData[cohort][unitKey] || {})
+  };
+
+  delete unit.cultureSpot;
+  delete unit.literatureSpot;
+
+  goldenUnitData[cohort][unitKey] = unit;
+
+  const parts = [
+    { key: "vocabulary", label: "📚 المعاني" },
+    { key: "grammar", label: "📘 القواعد" },
+    { key: "reading", label: "📖 القراءة" },
+    { key: "writing", label: "✍️ الكتابة" },
+    { key: "notes", label: "📝 ملاحظات" }
+  ];
+
+  viewer.innerHTML = `
+    <div class="golden-unit-view-shell" dir="auto">
+      <div class="golden-unit-view-header">
+        <div>
+          <span class="golden-unit-badge">
+            ${escapeGoldenHTML(config.cohortTitle || cohort)} | ${escapeGoldenHTML(config.book || "")}
+          </span>
+          <h2>${escapeGoldenHTML(unit.title || `Unit ${unitNumber}`)}</h2>
+          <p>اختر القسم الذي تريد مراجعته داخل الوحدة.</p>
+        </div>
+
+        ${
+          canEdit
+            ? `<button type="button" class="golden-edit-main-btn" onclick="openGoldenUnitEditor('${cohort}', '${unitKey}')">
+                 ✏️ إدخال / تعديل المحتوى
+               </button>`
+            : ""
+        }
+      </div>
+
+      <div class="golden-parts-toolbar">
+        ${parts.map((part, index) => `
+          <button
+            type="button"
+            class="golden-part-btn ${index === 0 ? "active" : ""}"
+            data-part="${part.key}"
+            onclick="renderGoldenUnitPart('${cohort}', '${unitKey}', '${part.key}')"
+          >
+            ${part.label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div class="golden-active-part-content"></div>
+    </div>
+  `;
+
+  renderGoldenUnitPart(cohort, unitKey, "vocabulary");
+  viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+ // window.openGoldenUnit = openGoldenUnit;
+ 
+
+ 
+ function escapeGoldenHTML(text) {
+  return String(text || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function detectGoldenLineDirection(line) {
+  const text = String(line || "").trim();
+
+  const arabicChars = (text.match(/[\u0600-\u06FF]/g) || []).length;
+  const latinChars = (text.match(/[A-Za-z]/g) || []).length;
+
+  if (arabicChars > latinChars) {
+    return "golden-line-ar";
+  }
+
+  if (latinChars > arabicChars) {
+    return "golden-line-en";
+  }
+
+  return "golden-line-mixed";
+}
+
+function detectGoldenLineDirection(line) {
+  const text = String(line || "").trim();
+
+  const arabicChars = (text.match(/[\u0600-\u06FF]/g) || []).length;
+  const latinChars = (text.match(/[A-Za-z]/g) || []).length;
+
+  if (arabicChars > latinChars) {
+    return "golden-line-ar";
+  }
+
+  if (latinChars > arabicChars) {
+    return "golden-line-en";
+  }
+
+  return "golden-line-mixed";
+}
+
+function formatGoldenContent(text) {
+  const safeText = escapeGoldenHTML(text);
+
+  if (!safeText.trim()) {
+    return `<p class="golden-muted">لم يتم إدخال محتوى بعد.</p>`;
+  }
+
+  return safeText
+    .split("\n")
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map(line => {
+      const directionClass = detectGoldenLineDirection(line);
+      return `<p class="${directionClass}">${line}</p>`;
+    })
+    .join("");
+}
+
+function renderGoldenUnitPart(cohort, unitKey, partKey) {
+  const viewerId = cohort === "2009" ? "goldenViewer2009" : "goldenViewer2008";
+  const viewer = document.getElementById(viewerId);
+  if (!viewer) return;
+
+  const normalizedUnitKey =
+    String(unitKey).startsWith("unit") ? String(unitKey) : `unit${unitKey}`;
+
+  const unit =
+    goldenUnitData?.[cohort]?.[normalizedUnitKey] ||
+    createEmptyGoldenUnit(String(normalizedUnitKey).replace("unit", ""));
+
+  const partLabels = {
+    vocabulary: "📚 المعاني والمفردات",
+    grammar: "📘 القواعد",
+    reading: "📖 القراءة",
+    writing: "✍️ الكتابة",
+    notes: "📝 ملاحظات"
+  };
+
+  const emptyMessages = {
+    vocabulary: "لم يتم إضافة المعاني والمفردات لهذه الوحدة بعد.",
+    grammar: "لم يتم إضافة القواعد لهذه الوحدة بعد.",
+    reading: "لم يتم إضافة القراءة لهذه الوحدة بعد.",
+    writing: "لم يتم إضافة الكتابة لهذه الوحدة بعد.",
+    notes: "لا توجد ملاحظات لهذه الوحدة بعد."
+  };
+
+  const contentArea = viewer.querySelector(".golden-active-part-content");
+  if (!contentArea) return;
+
+  viewer.querySelectorAll(".golden-part-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.part === partKey);
+  });
+
+  contentArea.innerHTML = renderGoldenContentBox(
+    partLabels[partKey] || partKey,
+    unit?.[partKey] || "",
+    emptyMessages[partKey] || "لم يتم إضافة محتوى بعد."
+  );
+}
+
+window.renderGoldenUnitPart = renderGoldenUnitPart;
+
+ function openGoldenUnit(cohort = "2008", unitKeyOrNumber = "unit1") {
+  if (typeof ensureGoldenDataShape === "function") {
+    ensureGoldenDataShape();
+  }
+
+  cohort = String(cohort || "2008");
+
+  const rawKey = String(unitKeyOrNumber || "unit1").trim();
+
+  const unitKey =
+    rawKey === "cultureSpot" || rawKey === "literatureSpot"
+      ? rawKey
+      : rawKey.startsWith("unit")
+        ? rawKey
+        : `unit${rawKey.replace(/[^\d]/g, "") || "1"}`;
+
+  const isExtraSpot = unitKey === "cultureSpot" || unitKey === "literatureSpot";
+
+  const viewerId = cohort === "2009" ? "goldenViewer2009" : "goldenViewer2008";
+  const viewer =
+    document.getElementById(viewerId) ||
+    document.getElementById(`goldenUnitViewer${cohort}`);
+
+  if (!viewer) return;
+
+  if (!goldenUnitData[cohort]) {
+    goldenUnitData[cohort] = {};
+  }
+
+  const canEdit =
+    typeof canEditGoldenIntensive === "function" && canEditGoldenIntensive();
+
+  if (isExtraSpot) {
+    const defaultTitle = unitKey === "cultureSpot" ? "Culture Spot" : "Literature Spot";
+
+    if (!goldenUnitData[cohort][unitKey]) {
+      goldenUnitData[cohort][unitKey] = {
+        title: defaultTitle,
+        content: ""
+      };
+    }
+
+    const spot = goldenUnitData[cohort][unitKey];
+
+    viewer.innerHTML = `
+      <div class="golden-unit-view-shell">
+        <div class="golden-unit-view-header">
+          <div>
+            <span class="golden-cohort-badge">${escapeGoldenHTML(cohort)}</span>
+            <h2>${escapeGoldenHTML(spot.title || defaultTitle)}</h2>
+            <p>قسم مستقل بعد Unit 10 وليس داخل الوحدات.</p>
+          </div>
+
+          ${
+            canEdit
+              ? `<button type="button" class="golden-edit-main-btn" onclick="openGoldenUnitEditor('${cohort}', '${unitKey}')">
+                   ✏️ Edit Section
+                 </button>`
+              : ""
+          }
+        </div>
+
+        ${renderGoldenContentBox(
+          spot.title || defaultTitle,
+          spot.content || "",
+          "لم يتم إدخال محتوى هذا القسم بعد."
+        )}
+      </div>
+    `;
+
+    viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+
+  const unitNumber = unitKey.replace("unit", "") || "1";
+
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit(unitNumber);
+  }
+
+  const unit = {
+    title: `Unit ${unitNumber}`,
+    vocabulary: "",
+    grammar: "",
+    reading: "",
+    writing: "",
+    notes: "",
+    ...(goldenUnitData[cohort][unitKey] || {})
+  };
+
+  delete unit.cultureSpot;
+  delete unit.literatureSpot;
+
+  goldenUnitData[cohort][unitKey] = unit;
+
+  const parts = [
+    { key: "vocabulary", label: "📚 المعاني" },
+    { key: "grammar", label: "📘 القواعد" },
+    { key: "reading", label: "📖 القراءة" },
+    { key: "writing", label: "✍️ الكتابة" },
+    { key: "notes", label: "📝 ملاحظات" }
+  ];
+
+  viewer.innerHTML = `
+    <div class="golden-unit-view-shell">
+      <div class="golden-unit-view-header">
+        <div>
+          <span class="golden-cohort-badge">${escapeGoldenHTML(cohort)}</span>
+          <h2>${escapeGoldenHTML(unit.title || `Unit ${unitNumber}`)}</h2>
+          <p>اختر القسم الذي تريد مراجعته داخل الوحدة.</p>
+        </div>
+
+        ${
+          canEdit
+            ? `<button type="button" class="golden-edit-main-btn" onclick="openGoldenUnitEditor('${cohort}', '${unitKey}')">
+                 ✏️ Edit Unit
+               </button>`
+            : ""
+        }
+      </div>
+
+      <div class="golden-parts-toolbar">
+        ${parts.map((part, index) => `
+          <button
+            type="button"
+            class="golden-part-btn ${index === 0 ? "active" : ""}"
+            data-part="${part.key}"
+            onclick="renderGoldenUnitPart('${cohort}', '${unitKey}', '${part.key}')"
+          >
+            ${part.label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div class="golden-active-part-content"></div>
+    </div>
+  `;
+
+  renderGoldenUnitPart(cohort, unitKey, "vocabulary");
+  viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// window.openGoldenUnit = openGoldenUnit; 
+function showGoldenEditorPart(partName, clickedButton) {
+  const editor = document.querySelector(".golden-editor-box");
+  if (!editor) return;
+
+  const parts = editor.querySelectorAll(".golden-editor-part");
+  const buttons = editor.querySelectorAll(".golden-editor-tabs button");
+
+  parts.forEach(part => part.classList.remove("active"));
+  buttons.forEach(button => button.classList.remove("active"));
+
+  const target = editor.querySelector(`#goldenEditorPart-${partName}`);
+
+  if (target) {
+    target.classList.add("active");
+  }
+
+  if (clickedButton) {
+    clickedButton.classList.add("active");
+  }
+}
+
+window.showGoldenEditorPart = showGoldenEditorPart;
+ function showGoldenUnitPart(partName, clickedButton) {
+  const viewer = document.getElementById("goldenUnitViewer");
+  if (!viewer) return;
+
+  const parts = viewer.querySelectorAll(".golden-unit-part");
+  const buttons = viewer.querySelectorAll(".golden-unit-section-buttons button");
+
+  parts.forEach(part => {
+    part.classList.remove("active");
+  });
+
+  buttons.forEach(button => {
+    button.classList.remove("active");
+  });
+
+  const targetPart = viewer.querySelector(`#goldenPart-${partName}`);
+
+  if (targetPart) {
+    targetPart.classList.add("active");
+  }
+
+  if (clickedButton) {
+    clickedButton.classList.add("active");
+  }
+}
+
+window.showGoldenUnitPart = showGoldenUnitPart;
+
+
+ // window.openGoldenUnitEditor = openGoldenUnitEditor;
+function saveGoldenUnitContent(cohort, unitKey) {
+  if (!canEditGoldenIntensive()) {
+    alert("الحفظ مخصص لصاحب المنصة فقط.");
+    return;
+  }
+
+  const titleInput = document.getElementById("goldenEditTitle");
+  const grammarInput = document.getElementById("goldenEditGrammar");
+  const vocabularyInput = document.getElementById("goldenEditVocabulary");
+  const readingInput = document.getElementById("goldenEditReading");
+  const writingInput = document.getElementById("goldenEditWriting");
+  const notesInput = document.getElementById("goldenEditNotes");
+
+  if (!goldenUnitData[cohort]) {
+    goldenUnitData[cohort] = {};
+  }
+
+  const unitNumber = unitKey.replace("unit", "");
+
+  const updatedUnit = {
+    title: titleInput ? titleInput.value.trim() : `Unit ${unitNumber}`,
+    grammar: grammarInput ? grammarInput.value.trim() : "",
+    vocabulary: vocabularyInput ? vocabularyInput.value.trim() : "",
+    reading: readingInput ? readingInput.value.trim() : "",
+    writing: writingInput ? writingInput.value.trim() : "",
+    notes: notesInput ? notesInput.value.trim() : ""
+  };
+
+  goldenUnitData[cohort][unitKey] = updatedUnit;
+
+  localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+
+  if (typeof renderGoldenUnitCards === "function") {
+    renderGoldenUnitCards();
+  }
+
+  const status = document.getElementById("goldenSaveStatus");
+
+  if (status) {
+    status.textContent = "تم حفظ المحتوى بنجاح ✅";
+    status.classList.add("saved");
+  }
+
+  console.log("✅ Golden unit saved:", {
+    cohort,
+    unitKey,
+    savedUnit: updatedUnit
+  });
+
+  setTimeout(() => {
+    openGoldenUnit(cohort, unitKey);
+  }, 500);
+}
+
+// window.openGoldenUnitEditor = openGoldenUnitEditor;
+window.saveGoldenUnitContent = saveGoldenUnitContent;
+
+/* =========================================================
+   Golden Intensive Owner Permission
+   Only Jalal can edit Golden Intensive content
+========================================================= */
+
+function getGoldenCurrentUserEmail() {
+  try {
+    if (window.currentUserEmail) return String(window.currentUserEmail).toLowerCase();
+    if (window.loggedInUserEmail) return String(window.loggedInUserEmail).toLowerCase();
+    if (window.currentUser?.email) return String(window.currentUser.email).toLowerCase();
+    if (window.user?.email) return String(window.user.email).toLowerCase();
+    if (window.supabaseUser?.email) return String(window.supabaseUser.email).toLowerCase();
+  } catch (error) {
+    console.warn("Could not read current user email:", error);
+  }
+
+  return "";
+}
+
+ /* =========================================================
+   Golden Intensive Owner Permission
+   Only Jalal can edit Golden Intensive content
+========================================================= */
+
+let goldenOwnerEmail = "";
+let goldenOwnerCanEdit = false;
+
+async function initGoldenOwnerPermission() {
+  const allowedOwnerEmails = [
+    "jalal26@yahoo.com",
+    "jalal026@gmail.com"
+  ];
+
+  try {
+    if (!client?.auth?.getUser) {
+      goldenOwnerEmail = "";
+      goldenOwnerCanEdit = false;
+      return false;
+    }
+
+    const { data, error } = await client.auth.getUser();
+
+    if (error) {
+      console.warn("Golden owner permission error:", error);
+      goldenOwnerEmail = "";
+      goldenOwnerCanEdit = false;
+      return false;
+    }
+
+    goldenOwnerEmail = String(data?.user?.email || "").toLowerCase();
+    goldenOwnerCanEdit = allowedOwnerEmails.includes(goldenOwnerEmail);
+
+    return goldenOwnerCanEdit;
+  } catch (error) {
+    console.warn("Golden owner permission failed:", error);
+    goldenOwnerEmail = "";
+    goldenOwnerCanEdit = false;
+    return false;
+  }
+}
+
+function getGoldenCurrentUserEmail() {
+  return goldenOwnerEmail;
+}
+
+function canEditGoldenIntensive() {
+  return goldenOwnerCanEdit === true;
+}
+
+window.initGoldenOwnerPermission = initGoldenOwnerPermission;
+window.getGoldenCurrentUserEmail = getGoldenCurrentUserEmail;
+window.canEditGoldenIntensive = canEditGoldenIntensive;
+
+  document.addEventListener("DOMContentLoaded", async () => {
+  await initGoldenOwnerPermission();
+
+  await loadCurrentGoldenProfile();
+
+  updateGoldenOwnerToolsVisibility();
+
+  if (typeof renderGoldenUnitCards === "function") {
+    renderGoldenUnitCards();
+  }
+
+  if (typeof updateGoldenCohortTabsVisibility === "function") {
+    updateGoldenCohortTabsVisibility();
+  }
+});
+
+async function canEditGoldenIntensiveFromSupabase() {
+  const ownerEmail = "jalal026@gmail.com";
+
+  try {
+    if (!client?.auth?.getUser) return false;
+
+    const { data } = await client.auth.getUser();
+    const email = String(data?.user?.email || "").toLowerCase();
+
+    return email === ownerEmail;
+  } catch (error) {
+    console.warn("Golden Supabase owner check failed:", error);
+    return false;
+  }
+}
+window.canEditGoldenIntensiveFromSupabase = canEditGoldenIntensiveFromSupabase;
+/* =========================================================
+   Golden Intensive Backup / Restore
+========================================================= */
+
+function updateGoldenOwnerToolsVisibility() {
+  const tools = document.getElementById("goldenOwnerTools");
+  if (!tools) return;
+
+  tools.style.display = canEditGoldenIntensive() ? "flex" : "none";
+}
+
+function exportGoldenBackup() {
+  if (!canEditGoldenIntensive()) {
+    alert("هذا الخيار مخصص لصاحب المنصة فقط.");
+    return;
+  }
+
+  const backupData = {
+    app: "JAK Academy",
+    feature: "Golden Intensive",
+    version: "1.0",
+    exportedAt: new Date().toISOString(),
+    data: goldenUnitData
+  };
+
+  const json = JSON.stringify(backupData, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `jak-golden-intensive-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  console.log("✅ Golden backup exported.");
+}
+
+function importGoldenBackup(event) {
+  if (!canEditGoldenIntensive()) {
+    alert("هذا الخيار مخصص لصاحب المنصة فقط.");
+    return;
+  }
+
+  const file = event?.target?.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+
+      const importedData = parsed?.data || parsed;
+
+      if (!importedData["2008"] || !importedData["2009"]) {
+        alert("ملف النسخة الاحتياطية غير صحيح.");
+        return;
+      }
+
+      if (!confirm("هل تريد استيراد هذه النسخة؟ سيتم استبدال بيانات المكثف الحالية.")) {
+        return;
+      }
+
+      goldenUnitData = {
+        ...createDefaultGoldenData(),
+        ...importedData,
+        "2008": {
+          ...createDefaultGoldenData()["2008"],
+          ...(importedData["2008"] || {})
+        },
+        "2009": {
+          ...createDefaultGoldenData()["2009"],
+          ...(importedData["2009"] || {})
+        }
+      };
+
+      localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+
+      if (typeof renderGoldenUnitCards === "function") {
+        renderGoldenUnitCards();
+      }
+
+      alert("تم استيراد النسخة الاحتياطية بنجاح ✅");
+      openGoldenSection("grade2008");
+      openGoldenUnit("2008", "unit1");
+
+    } catch (error) {
+      console.error("Golden backup import failed:", error);
+      alert("حدث خطأ أثناء قراءة ملف النسخة الاحتياطية.");
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+window.updateGoldenOwnerToolsVisibility = updateGoldenOwnerToolsVisibility;
+window.exportGoldenBackup = exportGoldenBackup;
+window.importGoldenBackup = importGoldenBackup;
+
+
+function getGoldenExamGradeLevel(cohort) {
+  if (String(cohort) === "2008") return "12";
+  if (String(cohort) === "2009") return "11";
+  return "";
+}
+
+function openGoldenUnitExam(cohort, unitKey, skill) {
+  const unitNumber = String(unitKey || "").replace("unit", "");
+  const config = goldenCourseConfig?.[cohort];
+
+  const gradeLevel = getGoldenExamGradeLevel(cohort);
+
+  const examContext = {
+    source: "golden_intensive",
+    cohort,
+    book: config?.book || "",
+    grade_level: gradeLevel,
+    unitKey,
+    unit: `Unit ${unitNumber}`,
+    subject: "English",
+    skill,
+    openedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem("jakGoldenExamContext", JSON.stringify(examContext));
+
+  console.log("✅ Golden exam context saved:", examContext);
+
+  if (typeof showPage === "function") {
+    showPage("exams");
+  } else {
+    alert("تم تجهيز بيانات الاختبار، لكن صفحة الامتحانات غير متاحة الآن.");
+  }
+
+  setTimeout(() => {
+    applyGoldenExamContextToFilters();
+  }, 300);
+}
+
+window.getGoldenExamGradeLevel = getGoldenExamGradeLevel;
+window.openGoldenUnitExam = openGoldenUnitExam;
+
+/* =========================================================
+   Golden Intensive - Exams Bridge Final Override
+   2008 = Grade 12 = High Note 5
+   2009 = Grade 11 = High Note 4
+========================================================= */
+
+function getGoldenExamGradeLevel(cohort) {
+  if (String(cohort) === "2008") return "12";
+  if (String(cohort) === "2009") return "11";
+  return "";
+}
+
+function openGoldenUnitExam(cohort, unitKey, skill) {
+  const unitNumber = String(unitKey || "").replace("unit", "");
+  const config = goldenCourseConfig?.[cohort];
+  const gradeLevel = getGoldenExamGradeLevel(cohort);
+
+  const examContext = {
+    source: "golden_intensive",
+    cohort: String(cohort),
+    book: config?.book || "",
+    grade_level: gradeLevel,
+    unitKey: unitKey,
+    unit: `Unit ${unitNumber}`,
+    subject: "English",
+    skill: skill,
+    openedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem("jakGoldenExamContext", JSON.stringify(examContext));
+
+  console.log("✅ Golden exam context saved:", examContext);
+
+  if (typeof showPage === "function") {
+    showPage("exams");
+  } else {
+    alert("تم تجهيز بيانات الاختبار، لكن صفحة الامتحانات غير متاحة الآن.");
+  }
+
+  setTimeout(() => {
+    applyGoldenExamContextToFilters();
+  }, 400);
+}
+
+function applyGoldenExamContextToFilters() {
+  const contextRaw = localStorage.getItem("jakGoldenExamContext");
+  if (!contextRaw) return;
+
+  let context = null;
+
+  try {
+    context = JSON.parse(contextRaw);
+  } catch (error) {
+    console.warn("Could not parse Golden exam context:", error);
+    return;
+  }
+
+  const possibleSubjectFilters = [
+    "studentExamSubjectFilter",
+    "teacherExamSubjectFilter",
+    "examSubjectFilter",
+    "examFilterSubject"
+  ];
+
+  const possibleGradeFilters = [
+    "studentExamGradeFilter",
+    "teacherExamGradeFilter",
+    "examGradeFilter",
+    "examFilterGrade",
+    "examGradeLevelFilter"
+  ];
+
+  const possibleUnitFilters = [
+    "studentExamUnitFilter",
+    "teacherExamUnitFilter",
+    "examUnitFilter",
+    "examFilterUnit"
+  ];
+
+  possibleSubjectFilters.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = context.subject || "English";
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
+
+  possibleGradeFilters.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = context.grade_level || "";
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
+
+  possibleUnitFilters.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = context.unit || "";
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
+
+  const msg =
+    `Golden Intensive: ${context.book} | Grade ${context.grade_level} | ${context.unit} | ${context.skill}`;
+
+  let notice = document.getElementById("goldenExamContextNotice");
+
+  if (!notice) {
+    notice = document.createElement("div");
+    notice.id = "goldenExamContextNotice";
+    notice.className = "golden-exam-context-notice";
+
+    const examsPage =
+      document.getElementById("exams") ||
+      document.getElementById("studentExams") ||
+      document.getElementById("teacherDashboard") ||
+      document.querySelector(".page.active");
+
+    if (examsPage) {
+      examsPage.prepend(notice);
+    }
+  }
+
+  notice.innerHTML = `
+    <strong>قادمة من المكثف الذهبي:</strong>
+    <span>${escapeGoldenHTML(msg)}</span>
+    <button onclick="clearGoldenExamContext()">مسح الاختيار</button>
+  `;
+
+  if (typeof loadStudentExams === "function") {
+    loadStudentExams();
+  }
+
+  if (typeof loadTeacherExams === "function") {
+    loadTeacherExams();
+  }
+}
+
+function clearGoldenExamContext() {
+  localStorage.removeItem("jakGoldenExamContext");
+
+  const notice = document.getElementById("goldenExamContextNotice");
+  if (notice) notice.remove();
+
+  console.log("Golden exam context cleared.");
+}
+
+window.getGoldenExamGradeLevel = getGoldenExamGradeLevel;
+window.openGoldenUnitExam = openGoldenUnitExam;
+window.applyGoldenExamContextToFilters = applyGoldenExamContextToFilters;
+window.clearGoldenExamContext = clearGoldenExamContext;
+
+/* =========================================================
+   Golden Intensive - Keep Navbar Button Visible
+========================================================= */
+
+function fixGoldenIntensiveNavVisibility() {
+  const goldenButtons = Array.from(document.querySelectorAll("button, a")).filter(el => {
+    const onclickValue = el.getAttribute("onclick") || "";
+    const textValue = el.textContent || "";
+
+    return (
+      onclickValue.includes("goldenIntensive") ||
+      textValue.includes("المكثف الذهبي")
+    );
+  });
+
+  goldenButtons.forEach(btn => {
+    btn.style.display = "";
+    btn.hidden = false;
+    btn.classList.remove("hidden");
+  });
+}
+
+window.fixGoldenIntensiveNavVisibility = fixGoldenIntensiveNavVisibility;
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(fixGoldenIntensiveNavVisibility, 500);
+  setTimeout(fixGoldenIntensiveNavVisibility, 1200);
+});
+
+/* =========================================================
+   Golden Intensive - Navbar Visibility Fix
+========================================================= */
+
+function fixGoldenIntensiveNavVisibility() {
+  const goldenButtons = Array.from(document.querySelectorAll("button, a")).filter(el => {
+    const onclickValue = el.getAttribute("onclick") || "";
+    const textValue = el.textContent || "";
+
+    return (
+      onclickValue.includes("goldenIntensive") ||
+      textValue.includes("المكثف الذهبي")
+    );
+  });
+
+  goldenButtons.forEach(btn => {
+    btn.dataset.navKey = "goldenIntensive";
+    btn.style.display = "";
+    btn.hidden = false;
+    btn.classList.remove("hidden");
+  });
+}
+
+window.fixGoldenIntensiveNavVisibility = fixGoldenIntensiveNavVisibility;
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(fixGoldenIntensiveNavVisibility, 300);
+  setTimeout(fixGoldenIntensiveNavVisibility, 900);
+  setTimeout(fixGoldenIntensiveNavVisibility, 1600);
+});
+/* =========================================================
+   Golden Intensive - Role Navigation Official Patch
+========================================================= */
+
+(function patchGoldenIntensiveRoleNavigation() {
+  const originalGetVisibleNavKeysByRole = window.getVisibleNavKeysByRole;
+
+  if (typeof originalGetVisibleNavKeysByRole === "function") {
+    window.getVisibleNavKeysByRole = function(role, isLoggedIn) {
+      const keys = originalGetVisibleNavKeysByRole(role, isLoggedIn) || [];
+
+      if (!keys.includes("goldenIntensive")) {
+        keys.push("goldenIntensive");
+      }
+
+      return keys;
+    };
+  }
+
+  const originalNormalizeStudySystemKey = window.normalizeStudySystemKey;
+
+  window.normalizeGoldenNavButtonKey = function(button) {
+    const onclickValue = button?.getAttribute?.("onclick") || "";
+    const textValue = button?.textContent || "";
+
+    if (
+      onclickValue.includes("goldenIntensive") ||
+      textValue.includes("المكثف الذهبي")
+    ) {
+      return "goldenIntensive";
+    }
+
+    if (typeof originalNormalizeStudySystemKey === "function") {
+      return originalNormalizeStudySystemKey(button);
+    }
+
+    return button?.dataset?.navKey || "unknown";
+  };
+
+  function forceGoldenNavKey() {
+    const goldenButtons = Array.from(document.querySelectorAll("button, a")).filter(el => {
+      const onclickValue = el.getAttribute("onclick") || "";
+      const textValue = el.textContent || "";
+
+      return (
+        onclickValue.includes("goldenIntensive") ||
+        textValue.includes("المكثف الذهبي")
+      );
+    });
+
+    goldenButtons.forEach(btn => {
+      btn.dataset.navKey = "goldenIntensive";
+      btn.style.display = "";
+      btn.hidden = false;
+      btn.classList.remove("hidden");
+    });
+  }
+
+  window.forceGoldenNavKey = forceGoldenNavKey;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(forceGoldenNavKey, 300);
+    setTimeout(forceGoldenNavKey, 1000);
+    setTimeout(forceGoldenNavKey, 2000);
+  });
+})();
+
+/* =========================================================
+   Golden Intensive - Current Profile Access
+========================================================= */
+
+let currentGoldenProfile = null;
+
+async function loadCurrentGoldenProfile() {
+  try {
+    const { data: userData, error: userError } = await client.auth.getUser();
+
+    if (userError || !userData?.user?.id) {
+      currentGoldenProfile = null;
+      return null;
+    }
+
+    const { data, error } = await client
+      .from("profiles")
+      .select("id,email,role,is_premium,premium_until,grade_level,cohort,full_name")
+      .eq("id", userData.user.id)
+      .single();
+
+    if (error) {
+      console.warn("Golden profile load error:", error);
+      currentGoldenProfile = null;
+      return null;
+    }
+
+    currentGoldenProfile = data;
+    return data;
+  } catch (error) {
+    console.warn("Golden profile load failed:", error);
+    currentGoldenProfile = null;
+    return null;
+  }
+}
+
+function getGoldenAllowedCohortsForCurrentUser() {
+  if (typeof canEditGoldenIntensive === "function" && canEditGoldenIntensive()) {
+    return ["2008", "2009"];
+  }
+
+  const profile = currentGoldenProfile || {};
+
+  const cohort = String(profile.cohort || "").trim();
+  const grade = String(profile.grade_level || "").trim();
+
+  if (cohort === "2008" || grade === "12") {
+    return ["2008"];
+  }
+
+  if (cohort === "2009" || grade === "11") {
+    return ["2009"];
+  }
+
+  return [];
+}
+
+function canViewGoldenCohort(cohort) {
+  return getGoldenAllowedCohortsForCurrentUser().includes(String(cohort));
+}
+
+window.loadCurrentGoldenProfile = loadCurrentGoldenProfile;
+window.getGoldenAllowedCohortsForCurrentUser = getGoldenAllowedCohortsForCurrentUser;
+window.canViewGoldenCohort = canViewGoldenCohort;
+
+/* =========================================================
+   Golden Intensive - Startup Init
+========================================================= */
+
+async function initGoldenIntensiveSystem() {
+  if (typeof initGoldenOwnerPermission === "function") {
+    await initGoldenOwnerPermission();
+  }
+
+  if (typeof loadCurrentGoldenProfile === "function") {
+    await loadCurrentGoldenProfile();
+  }
+
+  if (typeof updateGoldenOwnerToolsVisibility === "function") {
+    updateGoldenOwnerToolsVisibility();
+  }
+
+  if (typeof renderGoldenUnitCards === "function") {
+    renderGoldenUnitCards();
+  }
+
+  if (typeof updateGoldenCohortTabsVisibility === "function") {
+    updateGoldenCohortTabsVisibility();
+  }
+
+  console.log("✅ Golden Intensive system initialized", {
+    ownerEmail:
+      typeof getGoldenCurrentUserEmail === "function"
+        ? getGoldenCurrentUserEmail()
+        : "",
+    canEdit:
+      typeof canEditGoldenIntensive === "function"
+        ? canEditGoldenIntensive()
+        : false,
+    profile: typeof currentGoldenProfile !== "undefined" ? currentGoldenProfile : null,
+    allowedCohorts:
+      typeof getGoldenAllowedCohortsForCurrentUser === "function"
+        ? getGoldenAllowedCohortsForCurrentUser()
+        : []
+  });
+}
+
+window.initGoldenIntensiveSystem = initGoldenIntensiveSystem;
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(initGoldenIntensiveSystem, 600);
+});
+
+/* =========================================================
+   Golden Intensive - Cohort Tabs Visibility
+========================================================= */
+
+function updateGoldenCohortTabsVisibility() {
+  const allowed = getGoldenAllowedCohortsForCurrentUser();
+
+  const tabs = Array.from(document.querySelectorAll(".golden-tab"));
+
+  tabs.forEach(tab => {
+    const onclickValue = tab.getAttribute("onclick") || "";
+
+    if (onclickValue.includes("grade2008")) {
+      tab.style.display = allowed.includes("2008") ? "" : "none";
+    }
+
+    if (onclickValue.includes("grade2009")) {
+      tab.style.display = allowed.includes("2009") ? "" : "none";
+    }
+  });
+
+  const grade2008Panel = document.getElementById("golden-grade2008");
+  const grade2009Panel = document.getElementById("golden-grade2009");
+
+  if (grade2008Panel && !allowed.includes("2008")) {
+    grade2008Panel.classList.remove("active");
+  }
+
+  if (grade2009Panel && !allowed.includes("2009")) {
+    grade2009Panel.classList.remove("active");
+  }
+}
+function openGoldenSection(sectionKey = "grade2008") {
+  const targetId = String(sectionKey || "grade2008").startsWith("golden-")
+    ? String(sectionKey)
+    : `golden-${sectionKey}`;
+
+  const panels = document.querySelectorAll("#goldenIntensive .golden-panel");
+  const tabs = document.querySelectorAll("#goldenIntensive .golden-tab");
+
+  panels.forEach(panel => {
+    panel.classList.toggle("active", panel.id === targetId);
+  });
+
+  tabs.forEach(tab => {
+    const onclickValue = tab.getAttribute("onclick") || "";
+    tab.classList.toggle("active", onclickValue.includes(sectionKey));
+  });
+
+  if (typeof renderGoldenUnitCards === "function") {
+    renderGoldenUnitCards();
+  }
+
+  if (targetId === "golden-grade2008" && typeof openGoldenUnit === "function") {
+    // لا نفتح الوحدة تلقائيًا، فقط نجهز الكروت
+  }
+
+  if (targetId === "golden-grade2009" && typeof openGoldenUnit === "function") {
+    // لا نفتح الوحدة تلقائيًا، فقط نجهز الكروت
+  }
+}
+
+window.openGoldenSection = openGoldenSection;
+window.updateGoldenCohortTabsVisibility = updateGoldenCohortTabsVisibility;
+
+/* =========================================================
+   Golden Intensive - Render Unit Cards
+   2008 = High Note 5
+   2009 = High Note 4
+========================================================= */
+
+  function renderGoldenUnitCards() {
+ if (typeof ensureGoldenDataShape === "function") {
+  ensureGoldenDataShape();
+}
+  const groups = [
+    {
+      cohort: "2008",
+      containerId: "goldenUnits2008",
+      viewerId: "goldenViewer2008"
+    },
+    {
+      cohort: "2009",
+      containerId: "goldenUnits2009",
+      viewerId: "goldenViewer2009"
+    }
+  ];
+
+  groups.forEach(group => {
+    const container = document.getElementById(group.containerId);
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const config = goldenCourseConfig?.[group.cohort];
+    const totalUnits = config?.units || 10;
+
+    for (let i = 1; i <= totalUnits; i++) {
+      const unitNumber = i;
+      const unitKey = `unit${i}`;
+      const unit =
+        goldenUnitData?.[group.cohort]?.[unitKey] ||
+        createEmptyGoldenUnit(i);
+
+      const card = document.createElement("div");
+      card.className = "golden-unit-card clean-golden-unit-card";
+      card.dataset.cohort = group.cohort;
+      card.dataset.unit = unitNumber;
+
+      card.innerHTML = `
+        <div class="golden-unit-card-head">
+          <span class="golden-unit-badge">Unit ${unitNumber}</span>
+          <span class="golden-cohort-badge">${group.cohort}</span>
+        </div>
+
+        <h3>${unit.title || `Unit ${unitNumber}`}</h3>
+
+         <p>
+  Vocabulary, grammar, reading, and writing content.
+</p>
+
+        <div class="golden-unit-actions">
+          <button type="button" onclick="openGoldenUnit('${group.cohort}', '${unitNumber}')">
+            Open Unit
+          </button>
+
+          ${
+            typeof canEditGoldenIntensive === "function" && canEditGoldenIntensive()
+              ? `<button type="button" onclick="openGoldenUnitEditor('${group.cohort}', '${unitNumber}')">
+                   Edit Content
+                 </button>`
+              : ""
+          }
+        </div>
+      `;
+
+      container.appendChild(card);
+    }
+    const extraCards = [
+  {
+    key: "cultureSpot",
+    title: "Culture Spot",
+    label: "Culture",
+    description: "Key cultural ideas, textbook culture notes, and exam-focused cultural content."
+  },
+  {
+    key: "literatureSpot",
+    title: "Literature Spot",
+    label: "Literature",
+    description: "Literature notes, characters, themes, quotations, and exam-focused analysis."
+  }
+];
+
+extraCards.forEach(extra => {
+  const card = document.createElement("div");
+  card.className = "golden-unit-card clean-golden-unit-card golden-extra-card";
+  card.dataset.cohort = group.cohort;
+  card.dataset.unit = extra.key;
+
+  card.innerHTML = `
+    <div class="golden-unit-card-head">
+      <span class="golden-unit-badge">${extra.label}</span>
+      <span class="golden-cohort-badge">${group.cohort}</span>
+    </div>
+
+    <h3>${extra.title}</h3>
+
+    <p>${extra.description}</p>
+
+    <div class="golden-unit-actions">
+      <button type="button" onclick="openGoldenUnit('${group.cohort}', '${extra.key}')">
+        Open ${extra.label}
+      </button>
+
+      ${
+        typeof canEditGoldenIntensive === "function" && canEditGoldenIntensive()
+          ? `<button type="button" onclick="openGoldenUnitEditor('${group.cohort}', '${extra.key}')">
+               Edit Content
+             </button>`
+          : ""
+      }
+    </div>
+  `;
+
+  container.appendChild(card);
+});
+  });
+}
+window.renderGoldenUnitCards = renderGoldenUnitCards;
+/* =========================================================
+   Golden Intensive - Remove Old/Duplicate Unit Cards
+   يحذف الكروت القديمة قبل رسم الكروت الجديدة
+========================================================= */
+
+function clearGoldenUnitCardsContainer(containerId) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+
+  // يمسح كل شيء داخل صندوق الوحدات حتى لا تبقى كروت قديمة
+  box.innerHTML = "";
+}
+
+  function oldRenderGoldenUnitCards_DISABLED_1() {
+ if (typeof ensureGoldenDataShape === "function") {
+  ensureGoldenDataShape();
+}
+  const groups = [
+    {
+      cohort: "2008",
+      containerId: "goldenUnits2008",
+      viewerId: "goldenViewer2008"
+    },
+    {
+      cohort: "2009",
+      containerId: "goldenUnits2009",
+      viewerId: "goldenViewer2009"
+    }
+  ];
+
+  groups.forEach(group => {
+    const container = document.getElementById(group.containerId);
+    if (!container) return;
+
+    clearGoldenUnitCardsContainer(group.containerId);
+
+    const units = goldenIntensiveData?.[group.cohort]?.units || [];
+
+    units.forEach(unit => {
+      const unitNumber = getGoldenUnitNumber(unit.key || unit.id || unit.unitKey);
+
+      const card = document.createElement("div");
+      card.className = "golden-unit-card clean-golden-unit-card";
+      card.dataset.cohort = group.cohort;
+      card.dataset.unit = unitNumber;
+
+      card.innerHTML = `
+        <div class="golden-unit-card-head">
+          <span class="golden-unit-badge">Unit ${unitNumber}</span>
+          <span class="golden-cohort-badge">${group.cohort}</span>
+        </div>
+
+        <h3>${unit.title || `Unit ${unitNumber}`}</h3>
+
+        <p>
+          Vocabulary, grammar, reading, writing, culture, and literature content.
+        </p>
+
+        <div class="golden-unit-actions">
+          <button type="button" onclick="openGoldenUnit('${group.cohort}', '${unitNumber}')">
+            Open Unit
+          </button>
+
+          ${
+            canEditGoldenIntensive && canEditGoldenIntensive()
+              ? `<button type="button" onclick="openGoldenUnitEditor('${group.cohort}', '${unitNumber}')">
+                   Edit Content
+                 </button>`
+              : ""
+          }
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+  });
+}
+window.renderGoldenUnitCards = renderGoldenUnitCards;
+ /* =========================================================
+   Golden Intensive - Clean Core Functions
+   Keeps old permission / backup / exam bridge
+   Fixes 2008 + 2009 units, editor, save, Culture, Literature
+========================================================= */
+
+ function normalizeGoldenUnitKey(unitKeyOrNumber) {
+  const raw = String(unitKeyOrNumber || "unit1").trim();
+
+  if (raw === "cultureSpot" || raw === "literatureSpot") {
+    return raw;
+  }
+
+  if (raw.startsWith("unit")) return raw;
+
+  const number = raw.replace(/[^\d]/g, "") || "1";
+  return `unit${number}`;
+}
+
+function getGoldenUnitNumber(unitKeyOrNumber) {
+  return normalizeGoldenUnitKey(unitKeyOrNumber).replace("unit", "") || "1";
+}
+
+function getGoldenUnitNumber(unitKeyOrNumber) {
+  const key = normalizeGoldenUnitKey(unitKeyOrNumber);
+
+  if (key === "cultureSpot") return "Culture Spot";
+  if (key === "literatureSpot") return "Literature Spot";
+
+  return key.replace("unit", "") || "1";
+}
+function isGoldenExtraSpot(unitKey) {
+  return unitKey === "cultureSpot" || unitKey === "literatureSpot";
+}
+
+function createEmptyGoldenExtraSpot(unitKey) {
+  if (unitKey === "cultureSpot") {
+    return {
+      title: "Culture Spot",
+      content: ""
+    };
+  }
+
+  if (unitKey === "literatureSpot") {
+    return {
+      title: "Literature Spot",
+      content: ""
+    };
+  }
+
+  return {
+    title: "Extra Spot",
+    content: ""
+  };
+}
+ function getGoldenViewer(cohort) {
+  return (
+    document.getElementById(`goldenViewer${cohort}`) ||
+    document.getElementById(`goldenUnitViewer${cohort}`) ||
+    document.getElementById("goldenViewer2008") ||
+    document.getElementById("goldenViewer2009") ||
+    document.getElementById("goldenUnitViewer2008") ||
+    document.getElementById("goldenUnitViewer2009")
+  );
+}
+
+function renderGoldenContentBox(title, value, emptyText) {
+  return `
+    <div class="golden-content-box">
+      <h3>${title}</h3>
+      <div class="golden-content-area golden-bilingual-content" dir="auto">
+        ${
+          String(value || "").trim()
+            ? formatGoldenContent(value)
+            : `<p class="golden-muted">${emptyText}</p>`
+        }
+      </div>
+    </div>
+  `;
+}
+
+ function openGoldenUnit(cohort = "2008", unitKeyOrNumber = "unit1") {
+ if (typeof ensureGoldenDataShape === "function") {
+  ensureGoldenDataShape();
+}
+  cohort = String(cohort || "2008");
+
+  const unitKey = normalizeGoldenUnitKey(unitKeyOrNumber);
+  const unitNumber = getGoldenUnitNumber(unitKey);
+  const config = goldenCourseConfig?.[cohort];
+  const viewer = getGoldenViewer(cohort);
+
+  if (!config || !viewer) {
+    console.warn("Golden unit cannot open:", { cohort, unitKey });
+    return;
+  }
+
+  if (!goldenUnitData[cohort]) {
+    goldenUnitData[cohort] = {};
+  }
+
+  goldenUnitData[cohort][unitKey] = normalizeUnitObjectSafe(
+    goldenUnitData[cohort][unitKey],
+    unitNumber
+  );
+
+  const unit = goldenUnitData[cohort][unitKey];
+
+  const parts = [
+    { key: "vocabulary", label: "📚 المعاني" },
+    { key: "grammar", label: "📘 القواعد" },
+    { key: "reading", label: "📖 القراءة" },
+    { key: "writing", label: "✍️ الكتابة" },
+    { key: "notes", label: "📝 ملاحظات" }
+  ];
+
+  const canEdit =
+    typeof canEditGoldenIntensive === "function"
+      ? canEditGoldenIntensive()
+      : false;
+
+  viewer.dataset.cohort = cohort;
+  viewer.dataset.unitKey = unitKey;
+
+  viewer.innerHTML = `
+    <div class="golden-unit-view-shell" dir="auto">
+      <div class="golden-unit-view-header">
+        <div>
+          <span class="golden-unit-badge">
+            ${escapeGoldenHTML(config.cohortTitle)} | ${escapeGoldenHTML(config.book)}
+          </span>
+          <h2>${escapeGoldenHTML(unit.title || `Unit ${unitNumber}`)}</h2>
+          <p>اختر القسم الذي تريد مراجعته داخل الوحدة.</p>
+        </div>
+
+        ${
+          canEdit
+            ? `<button class="golden-edit-main-btn" onclick="openGoldenUnitEditor('${cohort}', '${unitKey}')">
+                ✏️ إدخال / تعديل المحتوى
+              </button>`
+            : ""
+        }
+      </div>
+
+      <div class="golden-parts-toolbar">
+        ${parts.map((part, index) => `
+          <button
+            type="button"
+            class="golden-part-btn ${index === 0 ? "active" : ""}"
+            data-part="${part.key}"
+            onclick="renderGoldenUnitPart('${cohort}', '${unitKey}', '${part.key}')"
+          >
+            ${part.label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div class="golden-active-part-content"></div>
+    </div>
+  `;
+
+  renderGoldenUnitPart(cohort, unitKey, "vocabulary");
+  viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+ function renderGoldenEditorPart(partKey) {
+  const shell = document.querySelector(".golden-editor-shell");
+  if (!shell) return;
+
+  const cohort = shell.dataset.cohort;
+  const unitKey = shell.dataset.unit;
+  if (isGoldenExtraSpot(unitKey)) {
+  const config = goldenCourseConfig?.[cohort];
+  const viewer = getGoldenViewer(cohort);
+  if (!viewer) return;
+
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenExtraSpot(unitKey);
+  }
+
+  const spot = goldenUnitData[cohort][unitKey];
+  const defaultSpot = createEmptyGoldenExtraSpot(unitKey);
+
+  const canEdit =
+    typeof canEditGoldenIntensive === "function"
+      ? canEditGoldenIntensive()
+      : false;
+
+  viewer.innerHTML = `
+    <div class="golden-unit-view-shell" dir="auto">
+      <div class="golden-unit-view-header">
+        <div>
+          <span class="golden-unit-badge">
+            ${escapeGoldenHTML(config?.cohortTitle || cohort)} | ${escapeGoldenHTML(config?.book || "")}
+          </span>
+          <h2>${escapeGoldenHTML(spot.title || defaultSpot.title)}</h2>
+          <p>قسم مستقل بعد Unit 10.</p>
+        </div>
+
+        ${
+          canEdit
+            ? `<button class="golden-edit-main-btn" onclick="openGoldenUnitEditor('${cohort}', '${unitKey}')">
+                ✏️ تعديل القسم
+              </button>`
+            : ""
+        }
+      </div>
+
+      ${renderGoldenContentBox(
+        spot.title || defaultSpot.title,
+        spot.content || "",
+        "لم يتم إدخال محتوى هذا القسم بعد."
+      )}
+    </div>
+  `;
+
+  viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+  return;
+}
+  const contentArea = shell.querySelector(".golden-editor-active-part");
+
+  if (!cohort || !unitKey || !contentArea) return;
+
+  const unitNumber = getGoldenUnitNumber(unitKey);
+
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit(unitNumber);
+  }
+
+  const unit = goldenUnitData[cohort][unitKey];
+
+  const labels = {
+    vocabulary: "📚 المعاني والمفردات",
+    grammar: "📘 القواعد",
+    reading: "📖 القراءة",
+    writing: "✍️ الكتابة",
+    notes: "📝 ملاحظات"
+  };
+
+  shell.querySelectorAll(".golden-editor-part-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.part === partKey);
+  });
+
+  contentArea.innerHTML = `
+    <label class="golden-editor-label">${labels[partKey] || partKey}</label>
+    <textarea
+      id="goldenEditor_${partKey}"
+      class="golden-editor-textarea"
+      placeholder="اكتب محتوى هذا القسم هنا..."
+    >${escapeGoldenHTML(unit?.[partKey] || "")}</textarea>
+  `;
+}
+
+window.renderGoldenEditorPart = renderGoldenEditorPart;
+
+
+function openGoldenUnitEditor(cohort = "2008", unitKeyOrNumber = "unit1") {
+ if (typeof ensureGoldenDataShape === "function") {
+  ensureGoldenDataShape();
+}
+  if (typeof canEditGoldenIntensive === "function" && !canEditGoldenIntensive()) {
+    alert("هذا الخيار مخصص لصاحب المنصة فقط.");
+    return;
+  }
+
+  cohort = String(cohort || "2008");
+
+  const unitKey = normalizeGoldenUnitKey(unitKeyOrNumber);
+  if (isGoldenExtraSpot(unitKey)) {
+  const viewer = getGoldenViewer(cohort);
+  if (!viewer) return;
+
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenExtraSpot(unitKey);
+  }
+
+  const spot = goldenUnitData[cohort][unitKey];
+
+  viewer.innerHTML = `
+    <div class="golden-editor-shell" data-cohort="${escapeGoldenHTML(cohort)}" data-unit="${escapeGoldenHTML(unitKey)}">
+      <div class="golden-unit-view-header">
+        <div>
+          <span class="golden-unit-badge">Edit | ${escapeGoldenHTML(cohort)}</span>
+          <h2>✏️ تعديل ${escapeGoldenHTML(spot.title)}</h2>
+          <p>هذا القسم مستقل بعد Unit 10 وليس داخل الوحدات.</p>
+        </div>
+
+        <button type="button" class="golden-edit-main-btn" onclick="openGoldenUnit('${cohort}', '${unitKey}')">
+          👁️ معاينة
+        </button>
+      </div>
+
+      <label class="golden-editor-label">العنوان</label>
+      <input
+        id="goldenEditor_title"
+        class="golden-editor-input"
+        value="${escapeGoldenHTML(spot.title)}"
+        placeholder="Title"
+      />
+
+      <label class="golden-editor-label">المحتوى</label>
+      <textarea
+        id="goldenEditor_content"
+        class="golden-editor-textarea"
+        placeholder="اكتب محتوى هذا القسم هنا..."
+      >${escapeGoldenHTML(spot.content || "")}</textarea>
+
+      <div class="golden-unit-actions" style="margin-top:16px;">
+        <button type="button" onclick="saveGoldenUnitContent('${cohort}', '${unitKey}')">
+          💾 حفظ التغييرات
+        </button>
+
+        <button type="button" onclick="openGoldenUnit('${cohort}', '${unitKey}')">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  `;
+
+  viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+  return;
+}
+  const unitNumber = getGoldenUnitNumber(unitKey);
+  const viewer = getGoldenViewer(cohort);
+
+  if (!viewer) {
+    console.warn("Golden editor viewer not found:", { cohort, unitKey });
+    return;
+  }
+
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit(unitNumber);
+  }
+
+  goldenUnitData[cohort][unitKey] = normalizeGoldenUnitObject(
+    goldenUnitData[cohort][unitKey],
+    unitNumber
+  );
+
+  const unit = goldenUnitData[cohort][unitKey];
+
+  const parts = [
+    { key: "vocabulary", label: "📚 المعاني" },
+    { key: "grammar", label: "📘 القواعد" },
+    { key: "reading", label: "📖 القراءة" },
+    { key: "writing", label: "✍️ الكتابة" },
+    { key: "notes", label: "📝 ملاحظات" }
+  ];
+
+  viewer.innerHTML = `
+    <div class="golden-editor-shell" data-cohort="${escapeGoldenHTML(cohort)}" data-unit="${escapeGoldenHTML(unitKey)}">
+      <div class="golden-unit-view-header">
+        <div>
+          <span class="golden-unit-badge">Edit | ${escapeGoldenHTML(cohort)}</span>
+          <h2>✏️ تعديل ${escapeGoldenHTML(unit.title || `Unit ${unitNumber}`)}</h2>
+          <p>اختر القسم الذي تريد تعديله، ثم اضغط حفظ.</p>
+        </div>
+
+        <button type="button" class="golden-edit-main-btn" onclick="openGoldenUnit('${cohort}', '${unitKey}')">
+          👁️ معاينة
+        </button>
+      </div>
+
+      <label class="golden-editor-label">عنوان الوحدة</label>
+      <input
+        id="goldenEditor_title"
+        class="golden-editor-input"
+        value="${escapeGoldenHTML(unit.title || `Unit ${unitNumber}`)}"
+        placeholder="Unit title"
+      />
+
+      <div class="golden-parts-toolbar">
+        ${parts.map((part, index) => `
+          <button
+            type="button"
+            class="golden-editor-part-btn ${index === 0 ? "active" : ""}"
+            data-part="${part.key}"
+            onclick="renderGoldenEditorPart('${part.key}')"
+          >
+            ${part.label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div class="golden-editor-active-part"></div>
+
+      <div class="golden-unit-actions" style="margin-top:16px;">
+        <button type="button" onclick="saveGoldenUnitContent('${cohort}', '${unitKey}')">
+          💾 حفظ التغييرات
+        </button>
+
+        <button type="button" onclick="openGoldenUnit('${cohort}', '${unitKey}')">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  `;
+
+  renderGoldenEditorPart("vocabulary");
+  viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+ // window.openGoldenUnitEditor = openGoldenUnitEditor;
+
+function saveGoldenUnitContent(cohort = "2008", unitKeyOrNumber = "unit1") {
+  if (typeof canEditGoldenIntensive === "function" && !canEditGoldenIntensive()) {
+    alert("الحفظ مخصص لصاحب المنصة فقط.");
+    return;
+  }
+
+ if (typeof ensureGoldenDataShape === "function") {
+  ensureGoldenDataShape();
+}
+  cohort = String(cohort || "2008");
+
+  const unitKey = normalizeGoldenUnitKey(unitKeyOrNumber);
+  if (isGoldenExtraSpot(unitKey)) {
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenExtraSpot(unitKey);
+  }
+
+  const titleInput = document.getElementById("goldenEditor_title");
+  const contentInput = document.getElementById("goldenEditor_content");
+
+  goldenUnitData[cohort][unitKey] = {
+    title: titleInput ? titleInput.value.trim() || createEmptyGoldenExtraSpot(unitKey).title : createEmptyGoldenExtraSpot(unitKey).title,
+    content: contentInput ? contentInput.value.trim() : ""
+  };
+
+  localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+
+  if (typeof renderGoldenUnitCards === "function") {
+    renderGoldenUnitCards();
+  }
+
+  openGoldenUnit(cohort, unitKey);
+
+  alert("✅ تم حفظ القسم بنجاح");
+  return;
+}
+  const unitNumber = getGoldenUnitNumber(unitKey);
+
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit(unitNumber);
+  }
+
+  const existingUnit = normalizeGoldenUnitObject(goldenUnitData[cohort][unitKey], unitNumber);
+
+  const titleInput = document.getElementById("goldenEditor_title");
+  if (titleInput) {
+    existingUnit.title = titleInput.value.trim() || `Unit ${unitNumber}`;
+  }
+
+  const activeTextarea = document.querySelector(".golden-editor-active-part textarea");
+  if (activeTextarea) {
+    const partKey = activeTextarea.id.replace("goldenEditor_", "");
+    existingUnit[partKey] = activeTextarea.value.trim();
+  }
+
+  delete existingUnit.cultureSpot;
+  delete existingUnit.literatureSpot;
+
+  goldenUnitData[cohort][unitKey] = existingUnit;
+
+  localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+
+  if (typeof renderGoldenUnitCards === "function") {
+    renderGoldenUnitCards();
+  }
+
+  openGoldenUnit(cohort, unitKey);
+
+  alert("✅ تم حفظ محتوى الوحدة بنجاح");
+}
+
+window.saveGoldenUnitContent = saveGoldenUnitContent;
+
+function clearGoldenUnitContent(cohort = "2008", unitKeyOrNumber = "unit1") {
+  if (typeof canEditGoldenIntensive === "function" && !canEditGoldenIntensive()) {
+    alert("هذا الخيار مخصص لصاحب المنصة فقط.");
+    return;
+  }
+
+  if (!confirm("هل أنت متأكد من مسح محتوى هذه الوحدة؟")) return;
+
+  cohort = String(cohort || "2008");
+
+  const unitKey = normalizeGoldenUnitKey(unitKeyOrNumber);
+  const unitNumber = getGoldenUnitNumber(unitKey);
+
+  if (!goldenUnitData[cohort]) {
+    goldenUnitData[cohort] = {};
+  }
+
+  goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit(unitNumber);
+  localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+
+  renderGoldenUnitCards();
+  openGoldenUnitEditor(cohort, unitKey);
+}
+
+ function oldRenderGoldenUnitCards_DISABLED_2() {
+Object.keys(goldenCourseConfig || {}).forEach(cohort => {
+    const container = document.getElementById(`goldenUnits${cohort}`);
+    const config = goldenCourseConfig[cohort];
+
+    if (!container || !config) return;
+
+    if (!goldenUnitData[cohort]) {
+      goldenUnitData[cohort] = {};
+    }
+
+    container.innerHTML = "";
+
+    for (let i = 1; i <= config.units; i++) {
+      const unitKey = `unit${i}`;
+
+      goldenUnitData[cohort][unitKey] = normalizeGoldenUnitObject(
+        goldenUnitData[cohort][unitKey],
+        i
+      );
+
+      const unit = goldenUnitData[cohort][unitKey];
+
+      const hasContent =
+        String(unit.grammar || "").trim() ||
+        String(unit.vocabulary || "").trim() ||
+        String(unit.reading || "").trim() ||
+        String(unit.writing || "").trim() ||
+        String(unit.cultureSpot || "").trim() ||
+        String(unit.literatureSpot || "").trim() ||
+        String(unit.notes || "").trim();
+
+      container.innerHTML += `
+        <div class="golden-unit-card">
+          <span>Unit ${i}</span>
+
+          <h3>${escapeGoldenHTML(config.book)} | ${escapeGoldenHTML(unit.title || `Unit ${i}`)}</h3>
+
+          <p>
+            ${hasContent ? "تم إدخال محتوى لهذه الوحدة." : "جاهزة لإدخال محتوى المكثف."}
+          </p>
+
+          <button onclick="openGoldenUnit('${cohort}', '${unitKey}')">
+            ${hasContent ? "عرض / تعديل" : "افتح الوحدة"}
+          </button>
+        </div>
+      `;
+    }
+  });
+
+  localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+}
+
+window.normalizeGoldenUnitKey = normalizeGoldenUnitKey;
+ // window.openGoldenUnit = openGoldenUnit;
+ // window.openGoldenUnitEditor = openGoldenUnitEditor;
+ window.saveGoldenUnitContent = saveGoldenUnitContent;
+window.clearGoldenUnitContent = clearGoldenUnitContent;
+window.renderGoldenUnitPart = renderGoldenUnitPart;
+window.renderGoldenEditorPart = renderGoldenEditorPart;
+ 
+ensureGoldenDataShape();
+renderGoldenUnitCards();
+
+console.log("✅ Golden Intensive clean core functions loaded.");
+
+/* =========================================================
+   Golden Intensive - Safety Bridge for Missing Core Helpers
+   إصلاح آمن إذا اختفت ensureGoldenDataShape بسبب ترتيب الدوال
+========================================================= */
+
+if (typeof window.ensureGoldenDataShape !== "function") {
+  window.ensureGoldenDataShape = function ensureGoldenDataShape() {
+    if (typeof goldenCourseConfig === "undefined" || typeof goldenUnitData === "undefined") {
+      console.warn("Golden data/config not ready yet.");
+      return;
+    }
+
+    Object.keys(goldenCourseConfig || {}).forEach(cohort => {
+      if (!goldenUnitData[cohort]) {
+        goldenUnitData[cohort] = {};
+      }
+
+      const totalUnits = goldenCourseConfig?.[cohort]?.units || 10;
+
+      for (let i = 1; i <= totalUnits; i++) {
+        const unitKey = `unit${i}`;
+
+        const baseUnit = {
+          title: `Unit ${i}`,
+          vocabulary: "",
+          grammar: "",
+          reading: "",
+          writing: "",
+          notes: ""
+        };
+
+        const cleanUnit = {
+          ...baseUnit,
+          ...(goldenUnitData[cohort][unitKey] || {})
+        };
+
+        delete cleanUnit.cultureSpot;
+        delete cleanUnit.literatureSpot;
+
+        goldenUnitData[cohort][unitKey] = cleanUnit;
+      }
+    });
+
+    if (typeof GOLDEN_STORAGE_KEY !== "undefined") {
+      localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+    }
+  };
+}
+
+/* =========================================================
+   Golden Intensive - FINAL Stable Override
+   يحسم تعدد دوال openGoldenUnit ويفرض النسخة الصحيحة
+========================================================= */
+
+function normalizeGoldenUnitKey_FINAL(unitKeyOrNumber) {
+  const raw = String(unitKeyOrNumber || "unit1").trim();
+
+  if (raw === "cultureSpot" || raw === "literatureSpot") {
+    return raw;
+  }
+
+  if (raw.startsWith("unit")) return raw;
+
+  const number = raw.replace(/[^\d]/g, "") || "1";
+  return `unit${number}`;
+}
+
+function getGoldenUnitNumber_FINAL(unitKeyOrNumber) {
+  const key = normalizeGoldenUnitKey_FINAL(unitKeyOrNumber);
+
+  if (key === "cultureSpot") return "Culture Spot";
+  if (key === "literatureSpot") return "Literature Spot";
+
+  return key.replace("unit", "") || "1";
+}
+
+function isGoldenExtraSpot_FINAL(unitKey) {
+  return unitKey === "cultureSpot" || unitKey === "literatureSpot";
+}
+
+function createEmptyGoldenExtraSpot_FINAL(unitKey) {
+  if (unitKey === "cultureSpot") {
+    return {
+      title: "Culture Spot",
+      content: ""
+    };
+  }
+
+  if (unitKey === "literatureSpot") {
+    return {
+      title: "Literature Spot",
+      content: ""
+    };
+  }
+
+  return {
+    title: "Extra Spot",
+    content: ""
+  };
+}
+
+function createEmptyGoldenUnit_FINAL(unitNumber) {
+  return {
+    title: `Unit ${unitNumber}`,
+    vocabulary: "",
+    grammar: "",
+    reading: "",
+    writing: "",
+    notes: ""
+  };
+}
+
+function normalizeGoldenUnitObject_FINAL(unit, unitNumber) {
+  const cleanUnit = {
+    ...createEmptyGoldenUnit_FINAL(unitNumber),
+    ...(unit || {})
+  };
+
+  delete cleanUnit.cultureSpot;
+  delete cleanUnit.literatureSpot;
+
+  return cleanUnit;
+}
+
+function getGoldenViewer_FINAL(cohort) {
+  return (
+    document.getElementById(`goldenViewer${cohort}`) ||
+    document.getElementById(`goldenUnitViewer${cohort}`) ||
+    document.getElementById("goldenViewer2008") ||
+    document.getElementById("goldenViewer2009") ||
+    document.getElementById("goldenUnitViewer2008") ||
+    document.getElementById("goldenUnitViewer2009")
+  );
+}
+
+function renderGoldenUnitPart_FINAL(cohort, unitKeyOrNumber, partKey) {
+  const unitKey = normalizeGoldenUnitKey_FINAL(unitKeyOrNumber);
+  const unitNumber = getGoldenUnitNumber_FINAL(unitKey);
+  const viewer = getGoldenViewer_FINAL(cohort);
+
+  if (!viewer) return;
+
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit_FINAL(unitNumber);
+  }
+
+  const unit = normalizeGoldenUnitObject_FINAL(goldenUnitData[cohort][unitKey], unitNumber);
+
+  const partLabels = {
+    vocabulary: "📚 المعاني والمفردات",
+    grammar: "📘 القواعد",
+    reading: "📖 القراءة",
+    writing: "✍️ الكتابة",
+    notes: "📝 ملاحظات"
+  };
+
+  const emptyMessages = {
+    vocabulary: "لم يتم إضافة المعاني والمفردات لهذه الوحدة بعد.",
+    grammar: "لم يتم إضافة القواعد لهذه الوحدة بعد.",
+    reading: "لم يتم إضافة القراءة لهذه الوحدة بعد.",
+    writing: "لم يتم إضافة الكتابة لهذه الوحدة بعد.",
+    notes: "لا توجد ملاحظات لهذه الوحدة بعد."
+  };
+
+  const contentArea = viewer.querySelector(".golden-active-part-content");
+  if (!contentArea) return;
+
+  viewer.querySelectorAll(".golden-part-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.part === partKey);
+  });
+
+  contentArea.innerHTML = renderGoldenContentBox(
+    partLabels[partKey] || partKey,
+    unit?.[partKey] || "",
+    emptyMessages[partKey] || "لم يتم إضافة محتوى بعد."
+  );
+}
+
+function openGoldenUnit_FINAL(cohort = "2008", unitKeyOrNumber = "unit1") {
+  cohort = String(cohort || "2008");
+
+  const unitKey = normalizeGoldenUnitKey_FINAL(unitKeyOrNumber);
+  const viewer = getGoldenViewer_FINAL(cohort);
+  const config = typeof goldenCourseConfig !== "undefined" ? goldenCourseConfig?.[cohort] : null;
+
+  if (!viewer) {
+    console.warn("Golden viewer not found:", { cohort, unitKey });
+    return;
+  }
+
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+
+  if (isGoldenExtraSpot_FINAL(unitKey)) {
+    if (!goldenUnitData[cohort][unitKey]) {
+      goldenUnitData[cohort][unitKey] = createEmptyGoldenExtraSpot_FINAL(unitKey);
+    }
+
+    const spot = goldenUnitData[cohort][unitKey];
+    const defaultSpot = createEmptyGoldenExtraSpot_FINAL(unitKey);
+
+    const canEdit =
+      typeof canEditGoldenIntensive === "function"
+        ? canEditGoldenIntensive()
+        : false;
+
+    viewer.innerHTML = `
+      <div class="golden-unit-view-shell" dir="auto">
+        <div class="golden-unit-view-header">
+          <div>
+            <span class="golden-unit-badge">
+              ${escapeGoldenHTML(config?.cohortTitle || cohort)} | ${escapeGoldenHTML(config?.book || "")}
+            </span>
+            <h2>${escapeGoldenHTML(spot.title || defaultSpot.title)}</h2>
+            <p>قسم مستقل بعد Unit 10.</p>
+          </div>
+
+          ${
+            canEdit
+              ? `<button class="golden-edit-main-btn" onclick="openGoldenUnitEditor('${cohort}', '${unitKey}')">
+                  ✏️ تعديل القسم
+                </button>`
+              : ""
+          }
+        </div>
+
+        ${renderGoldenContentBox(
+          spot.title || defaultSpot.title,
+          spot.content || "",
+          "لم يتم إدخال محتوى هذا القسم بعد."
+        )}
+      </div>
+    `;
+
+    viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+
+  const unitNumber = getGoldenUnitNumber_FINAL(unitKey);
+
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit_FINAL(unitNumber);
+  }
+
+  goldenUnitData[cohort][unitKey] = normalizeGoldenUnitObject_FINAL(
+    goldenUnitData[cohort][unitKey],
+    unitNumber
+  );
+
+  const unit = goldenUnitData[cohort][unitKey];
+
+  const parts = [
+    { key: "vocabulary", label: "📚 المعاني" },
+    { key: "grammar", label: "📘 القواعد" },
+    { key: "reading", label: "📖 القراءة" },
+    { key: "writing", label: "✍️ الكتابة" },
+    { key: "notes", label: "📝 ملاحظات" }
+  ];
+
+  const canEdit =
+    typeof canEditGoldenIntensive === "function"
+      ? canEditGoldenIntensive()
+      : false;
+
+  viewer.innerHTML = `
+    <div class="golden-unit-view-shell" dir="auto">
+      <div class="golden-unit-view-header">
+        <div>
+          <span class="golden-unit-badge">
+            ${escapeGoldenHTML(config?.cohortTitle || cohort)} | ${escapeGoldenHTML(config?.book || "")}
+          </span>
+          <h2>${escapeGoldenHTML(unit.title || `Unit ${unitNumber}`)}</h2>
+          <p>اختر القسم الذي تريد مراجعته داخل الوحدة.</p>
+        </div>
+
+        ${
+          canEdit
+            ? `<button class="golden-edit-main-btn" onclick="openGoldenUnitEditor('${cohort}', '${unitKey}')">
+                ✏️ إدخال / تعديل المحتوى
+              </button>`
+            : ""
+        }
+      </div>
+
+      <div class="golden-parts-toolbar">
+        ${parts.map((part, index) => `
+          <button
+            type="button"
+            class="golden-part-btn ${index === 0 ? "active" : ""}"
+            data-part="${part.key}"
+            onclick="renderGoldenUnitPart('${cohort}', '${unitKey}', '${part.key}')"
+          >
+            ${part.label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div class="golden-active-part-content"></div>
+    </div>
+  `;
+
+  renderGoldenUnitPart_FINAL(cohort, unitKey, "vocabulary");
+  viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderGoldenEditorPart_FINAL(partKey) {
+  const shell = document.querySelector(".golden-editor-shell");
+  if (!shell) return;
+
+  const cohort = shell.dataset.cohort;
+  const unitKey = shell.dataset.unit;
+  const contentArea = shell.querySelector(".golden-editor-active-part");
+  if (!cohort || !unitKey || !contentArea) return;
+
+  const unitNumber = getGoldenUnitNumber_FINAL(unitKey);
+
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit_FINAL(unitNumber);
+  }
+
+  const unit = normalizeGoldenUnitObject_FINAL(goldenUnitData[cohort][unitKey], unitNumber);
+
+  const labels = {
+    vocabulary: "📚 المعاني والمفردات",
+    grammar: "📘 القواعد",
+    reading: "📖 القراءة",
+    writing: "✍️ الكتابة",
+    notes: "📝 ملاحظات"
+  };
+
+  shell.querySelectorAll(".golden-editor-part-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.part === partKey);
+  });
+
+  contentArea.innerHTML = `
+    <label class="golden-editor-label">${labels[partKey] || partKey}</label>
+    <textarea
+      id="goldenEditor_${partKey}"
+      class="golden-editor-textarea"
+      placeholder="اكتب محتوى هذا القسم هنا..."
+    >${escapeGoldenHTML(unit?.[partKey] || "")}</textarea>
+  `;
+}
+
+function openGoldenUnitEditor_FINAL(cohort = "2008", unitKeyOrNumber = "unit1") {
+  cohort = String(cohort || "2008");
+
+  if (typeof canEditGoldenIntensive === "function" && !canEditGoldenIntensive()) {
+    alert("هذا الخيار مخصص لصاحب المنصة فقط.");
+    return;
+  }
+
+  const unitKey = normalizeGoldenUnitKey_FINAL(unitKeyOrNumber);
+  const viewer = getGoldenViewer_FINAL(cohort);
+
+  if (!viewer) {
+    console.warn("Golden editor viewer not found:", { cohort, unitKey });
+    return;
+  }
+
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+
+  if (isGoldenExtraSpot_FINAL(unitKey)) {
+    if (!goldenUnitData[cohort][unitKey]) {
+      goldenUnitData[cohort][unitKey] = createEmptyGoldenExtraSpot_FINAL(unitKey);
+    }
+
+    const spot = goldenUnitData[cohort][unitKey];
+    const defaultSpot = createEmptyGoldenExtraSpot_FINAL(unitKey);
+
+    viewer.innerHTML = `
+      <div class="golden-editor-shell" data-cohort="${escapeGoldenHTML(cohort)}" data-unit="${escapeGoldenHTML(unitKey)}">
+        <div class="golden-unit-view-header">
+          <div>
+            <span class="golden-unit-badge">Edit | ${escapeGoldenHTML(cohort)}</span>
+            <h2>✏️ تعديل ${escapeGoldenHTML(spot.title || defaultSpot.title)}</h2>
+            <p>هذا القسم مستقل بعد Unit 10 وليس داخل الوحدات.</p>
+          </div>
+
+          <button type="button" class="golden-edit-main-btn" onclick="openGoldenUnit('${cohort}', '${unitKey}')">
+            👁️ معاينة
+          </button>
+        </div>
+
+        <label class="golden-editor-label">العنوان</label>
+        <input
+          id="goldenEditor_title"
+          class="golden-editor-input"
+          value="${escapeGoldenHTML(spot.title || defaultSpot.title)}"
+          placeholder="Title"
+        />
+
+        <label class="golden-editor-label">المحتوى</label>
+        <textarea
+          id="goldenEditor_content"
+          class="golden-editor-textarea"
+          placeholder="اكتب محتوى هذا القسم هنا..."
+        >${escapeGoldenHTML(spot.content || "")}</textarea>
+
+        <div class="golden-unit-actions" style="margin-top:16px;">
+          <button type="button" onclick="saveGoldenUnitContent('${cohort}', '${unitKey}')">
+            💾 حفظ التغييرات
+          </button>
+
+          <button type="button" onclick="openGoldenUnit('${cohort}', '${unitKey}')">
+            إلغاء
+          </button>
+        </div>
+      </div>
+    `;
+
+    viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+
+  const unitNumber = getGoldenUnitNumber_FINAL(unitKey);
+
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit_FINAL(unitNumber);
+  }
+
+  goldenUnitData[cohort][unitKey] = normalizeGoldenUnitObject_FINAL(
+    goldenUnitData[cohort][unitKey],
+    unitNumber
+  );
+
+  const unit = goldenUnitData[cohort][unitKey];
+
+  const parts = [
+    { key: "vocabulary", label: "📚 المعاني" },
+    { key: "grammar", label: "📘 القواعد" },
+    { key: "reading", label: "📖 القراءة" },
+    { key: "writing", label: "✍️ الكتابة" },
+    { key: "notes", label: "📝 ملاحظات" }
+  ];
+
+  viewer.innerHTML = `
+    <div class="golden-editor-shell" data-cohort="${escapeGoldenHTML(cohort)}" data-unit="${escapeGoldenHTML(unitKey)}">
+      <div class="golden-unit-view-header">
+        <div>
+          <span class="golden-unit-badge">Edit | ${escapeGoldenHTML(cohort)}</span>
+          <h2>✏️ تعديل ${escapeGoldenHTML(unit.title || `Unit ${unitNumber}`)}</h2>
+          <p>اختر القسم الذي تريد تعديله، ثم اضغط حفظ.</p>
+        </div>
+
+        <button type="button" class="golden-edit-main-btn" onclick="openGoldenUnit('${cohort}', '${unitKey}')">
+          👁️ معاينة
+        </button>
+      </div>
+
+      <label class="golden-editor-label">عنوان الوحدة</label>
+      <input
+        id="goldenEditor_title"
+        class="golden-editor-input"
+        value="${escapeGoldenHTML(unit.title || `Unit ${unitNumber}`)}"
+        placeholder="Unit title"
+      />
+
+      <div class="golden-parts-toolbar">
+        ${parts.map((part, index) => `
+          <button
+            type="button"
+            class="golden-editor-part-btn ${index === 0 ? "active" : ""}"
+            data-part="${part.key}"
+            onclick="renderGoldenEditorPart('${part.key}')"
+          >
+            ${part.label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div class="golden-editor-active-part"></div>
+
+      <div class="golden-unit-actions" style="margin-top:16px;">
+        <button type="button" onclick="saveGoldenUnitContent('${cohort}', '${unitKey}')">
+          💾 حفظ التغييرات
+        </button>
+
+        <button type="button" onclick="openGoldenUnit('${cohort}', '${unitKey}')">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  `;
+
+  renderGoldenEditorPart_FINAL("vocabulary");
+  viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function saveGoldenUnitContent_FINAL(cohort = "2008", unitKeyOrNumber = "unit1") {
+  cohort = String(cohort || "2008");
+
+  if (typeof canEditGoldenIntensive === "function" && !canEditGoldenIntensive()) {
+    alert("الحفظ مخصص لصاحب المنصة فقط.");
+    return;
+  }
+
+  const unitKey = normalizeGoldenUnitKey_FINAL(unitKeyOrNumber);
+
+  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+
+  if (isGoldenExtraSpot_FINAL(unitKey)) {
+    if (!goldenUnitData[cohort][unitKey]) {
+      goldenUnitData[cohort][unitKey] = createEmptyGoldenExtraSpot_FINAL(unitKey);
+    }
+
+    const titleInput = document.getElementById("goldenEditor_title");
+    const contentInput = document.getElementById("goldenEditor_content");
+    const defaultSpot = createEmptyGoldenExtraSpot_FINAL(unitKey);
+
+    goldenUnitData[cohort][unitKey] = {
+      title: titleInput ? titleInput.value.trim() || defaultSpot.title : defaultSpot.title,
+      content: contentInput ? contentInput.value.trim() : ""
+    };
+
+    localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+
+    if (typeof renderGoldenUnitCards === "function") {
+      renderGoldenUnitCards();
+    }
+
+    openGoldenUnit_FINAL(cohort, unitKey);
+    alert("✅ تم حفظ القسم بنجاح");
+    return;
+  }
+
+  const unitNumber = getGoldenUnitNumber_FINAL(unitKey);
+
+  if (!goldenUnitData[cohort][unitKey]) {
+    goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit_FINAL(unitNumber);
+  }
+
+  const existingUnit = normalizeGoldenUnitObject_FINAL(goldenUnitData[cohort][unitKey], unitNumber);
+
+  const titleInput = document.getElementById("goldenEditor_title");
+  if (titleInput) {
+    existingUnit.title = titleInput.value.trim() || `Unit ${unitNumber}`;
+  }
+
+  const activeTextarea = document.querySelector(".golden-editor-active-part textarea");
+  if (activeTextarea) {
+    const partKey = activeTextarea.id.replace("goldenEditor_", "");
+    existingUnit[partKey] = activeTextarea.value.trim();
+  }
+
+  delete existingUnit.cultureSpot;
+  delete existingUnit.literatureSpot;
+
+  goldenUnitData[cohort][unitKey] = existingUnit;
+
+  localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+
+  if (typeof renderGoldenUnitCards === "function") {
+    renderGoldenUnitCards();
+  }
+
+  openGoldenUnit_FINAL(cohort, unitKey);
+  alert("✅ تم حفظ محتوى الوحدة بنجاح");
+}
+
+/* اربط النسخة النهائية حتى تتغلب على كل النسخ القديمة */
+window.normalizeGoldenUnitKey = normalizeGoldenUnitKey_FINAL;
+window.getGoldenUnitNumber = getGoldenUnitNumber_FINAL;
+window.isGoldenExtraSpot = isGoldenExtraSpot_FINAL;
+window.createEmptyGoldenExtraSpot = createEmptyGoldenExtraSpot_FINAL;
+window.normalizeGoldenUnitObject = normalizeGoldenUnitObject_FINAL;
+window.getGoldenViewer = getGoldenViewer_FINAL;
+
+window.renderGoldenUnitPart = renderGoldenUnitPart_FINAL;
+window.renderGoldenEditorPart = renderGoldenEditorPart_FINAL;
+window.openGoldenUnit = openGoldenUnit_FINAL;
+window.openGoldenUnitEditor = openGoldenUnitEditor_FINAL;
+window.saveGoldenUnitContent = saveGoldenUnitContent_FINAL;
+
+console.log("✅ Golden Intensive FINAL stable override loaded.");
+
+/* =========================================================
+   Golden Intensive - FORCE FINAL BINDINGS LAST LINE
+========================================================= */
+
+window.normalizeGoldenUnitKey = normalizeGoldenUnitKey_FINAL;
+window.getGoldenUnitNumber = getGoldenUnitNumber_FINAL;
+window.isGoldenExtraSpot = isGoldenExtraSpot_FINAL;
+window.createEmptyGoldenExtraSpot = createEmptyGoldenExtraSpot_FINAL;
+window.normalizeGoldenUnitObject = normalizeGoldenUnitObject_FINAL;
+window.getGoldenViewer = getGoldenViewer_FINAL;
+
+window.renderGoldenUnitPart = renderGoldenUnitPart_FINAL;
+window.renderGoldenEditorPart = renderGoldenEditorPart_FINAL;
+window.openGoldenUnit = openGoldenUnit_FINAL;
+window.openGoldenUnitEditor = openGoldenUnitEditor_FINAL;
+window.saveGoldenUnitContent = saveGoldenUnitContent_FINAL;
+
+console.log("✅ Golden Intensive FINAL bindings forced at end.");
+window.openGoldenUnit = openGoldenUnit_FINAL;
+window.openGoldenUnitEditor = openGoldenUnitEditor_FINAL;
+window.saveGoldenUnitContent = saveGoldenUnitContent_FINAL;
+window.renderGoldenUnitPart = renderGoldenUnitPart_FINAL;
+window.renderGoldenEditorPart = renderGoldenEditorPart_FINAL;
+
+console.log("LAST GOLDEN BINDING:", window.openGoldenUnit.name);
+
+/* =========================================================
+   Golden Intensive - DELAYED FINAL FORCE BINDING
+   هذا يغلب أي ربط قديم يحدث بعد تحميل الصفحة
+========================================================= */
+
+function forceGoldenFinalBindings() {
+  if (typeof openGoldenUnit_FINAL === "function") {
+    window.openGoldenUnit = openGoldenUnit_FINAL;
+  }
+
+  if (typeof openGoldenUnitEditor_FINAL === "function") {
+    window.openGoldenUnitEditor = openGoldenUnitEditor_FINAL;
+  }
+
+  if (typeof saveGoldenUnitContent_FINAL === "function") {
+    window.saveGoldenUnitContent = saveGoldenUnitContent_FINAL;
+  }
+
+  if (typeof renderGoldenUnitPart_FINAL === "function") {
+    window.renderGoldenUnitPart = renderGoldenUnitPart_FINAL;
+  }
+
+  if (typeof renderGoldenEditorPart_FINAL === "function") {
+    window.renderGoldenEditorPart = renderGoldenEditorPart_FINAL;
+  }
+
+  if (typeof normalizeGoldenUnitKey_FINAL === "function") {
+    window.normalizeGoldenUnitKey = normalizeGoldenUnitKey_FINAL;
+  }
+
+  console.log("✅ GOLDEN FINAL BINDINGS FORCED:", {
+    openGoldenUnit: window.openGoldenUnit?.name,
+    openGoldenUnitEditor: window.openGoldenUnitEditor?.name,
+    saveGoldenUnitContent: window.saveGoldenUnitContent?.name
+  });
+}
+
+forceGoldenFinalBindings();
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(forceGoldenFinalBindings, 100);
+  setTimeout(forceGoldenFinalBindings, 800);
+  setTimeout(forceGoldenFinalBindings, 1600);
+});
+
+setTimeout(forceGoldenFinalBindings, 2500);
