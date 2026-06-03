@@ -27559,7 +27559,13 @@ window.clearGoldenUnitContent = clearGoldenUnitContent;
 window.renderGoldenUnitPart = renderGoldenUnitPart;
 window.renderGoldenEditorPart = renderGoldenEditorPart;
  
-ensureGoldenDataShape();
+ if (typeof ensureGoldenDataShape === "function") {
+  ensureGoldenDataShape();
+} else if (typeof ensureGoldenDataShape_FINAL === "function") {
+  ensureGoldenDataShape_FINAL();
+} else {
+  console.warn("⚠️ ensureGoldenDataShape is not defined; skipping Golden data shape check.");
+}
 renderGoldenUnitCards();
 
 console.log("✅ Golden Intensive clean core functions loaded.");
@@ -28166,8 +28172,7 @@ window.renderGoldenUnitPart = renderGoldenUnitPart_FINAL;
 window.renderGoldenEditorPart = renderGoldenEditorPart_FINAL;
 
 console.log("LAST GOLDEN BINDING:", window.openGoldenUnit.name);
-
-/* =========================================================
+ /* ======================================================
    Golden Intensive - DELAYED FINAL FORCE BINDING
    هذا يغلب أي ربط قديم يحدث بعد تحميل الصفحة
 ========================================================= */
@@ -28204,7 +28209,14 @@ function forceGoldenFinalBindings() {
   });
 }
 
+window.forceGoldenFinalBindings = forceGoldenFinalBindings;
+
 forceGoldenFinalBindings();
+
+setTimeout(forceGoldenFinalBindings, 0);
+setTimeout(forceGoldenFinalBindings, 300);
+setTimeout(forceGoldenFinalBindings, 1000);
+setTimeout(forceGoldenFinalBindings, 2000);
 
 document.addEventListener("DOMContentLoaded", () => {
   setTimeout(forceGoldenFinalBindings, 100);
@@ -28212,4 +28224,66 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(forceGoldenFinalBindings, 1600);
 });
 
+window.addEventListener("load", forceGoldenFinalBindings);
+
 setTimeout(forceGoldenFinalBindings, 2500);
+
+/* ======================================================
+   ABSOLUTE LAST GOLDEN FINAL LOCK
+   لازم يكون آخر كود في app.js بالكامل
+========================================================= */
+
+(function lockGoldenFinalSystem() {
+  function applyGoldenFinalLock() {
+    if (typeof openGoldenUnit_FINAL === "function") {
+      window.openGoldenUnit = openGoldenUnit_FINAL;
+    }
+
+    if (typeof openGoldenUnitEditor_FINAL === "function") {
+      window.openGoldenUnitEditor = openGoldenUnitEditor_FINAL;
+    }
+
+    if (typeof saveGoldenUnitContent_FINAL === "function") {
+      window.saveGoldenUnitContent = saveGoldenUnitContent_FINAL;
+    }
+
+    if (typeof renderGoldenUnitPart_FINAL === "function") {
+      window.renderGoldenUnitPart = renderGoldenUnitPart_FINAL;
+    }
+
+    if (typeof renderGoldenEditorPart_FINAL === "function") {
+      window.renderGoldenEditorPart = renderGoldenEditorPart_FINAL;
+    }
+
+    if (typeof normalizeGoldenUnitKey_FINAL === "function") {
+      window.normalizeGoldenUnitKey = normalizeGoldenUnitKey_FINAL;
+    }
+
+    window.forceGoldenFinalBindings = applyGoldenFinalLock;
+  }
+
+  applyGoldenFinalLock();
+
+  setTimeout(applyGoldenFinalLock, 0);
+  setTimeout(applyGoldenFinalLock, 100);
+  setTimeout(applyGoldenFinalLock, 300);
+  setTimeout(applyGoldenFinalLock, 800);
+  setTimeout(applyGoldenFinalLock, 1600);
+  setTimeout(applyGoldenFinalLock, 2500);
+  setTimeout(applyGoldenFinalLock, 4000);
+
+  window.addEventListener("DOMContentLoaded", applyGoldenFinalLock);
+  window.addEventListener("load", applyGoldenFinalLock);
+
+  const goldenLockInterval = setInterval(applyGoldenFinalLock, 250);
+
+  setTimeout(() => {
+    clearInterval(goldenLockInterval);
+    applyGoldenFinalLock();
+
+    console.log("🔒 GOLDEN FINAL LOCK VERIFIED:", {
+      openGoldenUnit: window.openGoldenUnit?.name,
+      finalStillActive: window.openGoldenUnit?.name === "openGoldenUnit_FINAL"
+    });
+  }, 6000);
+})();
