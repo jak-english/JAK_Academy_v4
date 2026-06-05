@@ -836,14 +836,21 @@
      Golden Intensive Page - المكثف الذهبي
 ========================================================= -->
 <section id="goldenIntensive" class="page golden-intensive-page">
-<div id="goldenOwnerTools" class="golden-owner-tools" style="display:none;">
+ <div id="goldenOwnerTools" class="golden-owner-tools" style="display:none;"></div>
   <button onclick="exportGoldenBackup()">تصدير نسخة احتياطية</button>
 
-  <label class="golden-import-label">
-    استيراد نسخة احتياطية
-    <input type="file" accept="application/json" onchange="importGoldenBackup(event)">
-  </label>
-</div>
+    <label class="golden-import-label">
+      استيراد نسخة احتياطية
+      <input type="file" accept="application/json" onchange="importGoldenBackup(event)">
+    </label>
+
+    <button class="golden-owner-btn" onclick="runGoldenSafeCheck()">
+      فحص المكثف ✅
+    </button>
+
+    <div id="goldenSafeCheckBox" style="margin-top:12px;"></div>
+  </div>
+
   <!-- Hero -->
   <div class="golden-hero">
     <div class="golden-hero-content">

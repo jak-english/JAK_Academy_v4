@@ -25767,22 +25767,94 @@ function detectGoldenLineDirection(line) {
 }
 
 function formatGoldenContent(text) {
-  const safeText = escapeGoldenHTML(text);
+  let safeText = String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 
   if (!safeText.trim()) {
     return `<p class="golden-muted">لم يتم إدخال محتوى بعد.</p>`;
   }
 
-  return safeText
-    .split("\n")
-    .map(line => line.trim())
-    .filter(Boolean)
-    .map(line => {
-      const directionClass = detectGoldenLineDirection(line);
-      return `<p class="${directionClass}">${line}</p>`;
-    })
-    .join("");
+  function formatInline(line) {
+    return String(line || "")
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/__(.*?)__/g, "<u>$1</u>")
+      .replace(/==(.*?)==/g, '<mark class="golden-highlight">$1</mark>')
+      .replace(
+        /\[color:(#[0-9a-fA-F]{3,6}|red|blue|green|orange|purple|black|gray|grey|brown)\](.*?)\[\/color\]/g,
+        '<span style="color:$1;">$2</span>'
+      );
+  }
+
+  const lines = safeText.split(/\r?\n/);
+  let html = "";
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i].trim();
+
+    if (!line) {
+      i++;
+      continue;
+    }
+
+    // Table format:
+    // | Word | Meaning |
+    // |------|---------|
+    // | achievement | إنجاز |
+    if (
+      line.startsWith("|") &&
+      lines[i + 1] &&
+      /^\s*\|?[\s\-:|]+\|?\s*$/.test(lines[i + 1])
+    ) {
+      const headers = line
+        .split("|")
+        .map(x => x.trim())
+        .filter(Boolean)
+        .map(formatInline);
+
+      i += 2;
+
+      const rows = [];
+
+      while (i < lines.length && lines[i].trim().startsWith("|")) {
+        rows.push(
+          lines[i]
+            .trim()
+            .split("|")
+            .map(x => x.trim())
+            .filter(Boolean)
+            .map(formatInline)
+        );
+        i++;
+      }
+
+      html += `<table class="golden-content-table"><thead><tr>`;
+      html += headers.map(h => `<th>${h}</th>`).join("");
+      html += `</tr></thead><tbody>`;
+      html += rows
+        .map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`)
+        .join("");
+      html += `</tbody></table>`;
+
+      continue;
+    }
+
+    const directionClass =
+      typeof detectGoldenLineDirection === "function"
+        ? detectGoldenLineDirection(line)
+        : "golden-line-mixed";
+
+    html += `<p class="${directionClass}">${formatInline(line)}</p>`;
+    i++;
+  }
+
+  return html;
 }
+
+window.formatGoldenContent = formatGoldenContent;
+window.goldenFormatContent = formatGoldenContent;
 
 function renderGoldenUnitPart(cohort, unitKey, partKey) {
   const viewerId = cohort === "2009" ? "goldenViewer2009" : "goldenViewer2008";
@@ -28283,7 +28355,2051 @@ setTimeout(forceGoldenFinalBindings, 2500);
 
     console.log("🔒 GOLDEN FINAL LOCK VERIFIED:", {
       openGoldenUnit: window.openGoldenUnit?.name,
-      finalStillActive: window.openGoldenUnit?.name === "openGoldenUnit_FINAL"
+finalStillActive:
+  window.openGoldenUnit?.name === "openGoldenUnit_FINAL" ||
+  window.openGoldenUnit?.name === "openGoldenUnit_FINAL_WITH_CORRECT_VIEWER_EXAMS"
     });
   }, 6000);
 })();
+/* =========================================================
+   GOLDEN INTENSIVE - EXAM LINKER PATCH 1
+   Purpose:
+   - Owner can link any exam to any Golden Intensive lesson.
+   - Uses exams columns:
+     golden_cohort, golden_unit, golden_lesson, golden_skill
+   ========================================================= */
+
+(function installGoldenExamLinkerPatch() {
+  console.log("🔗 Installing Golden Exam Linker Patch 1...");
+
+  function getSupabaseClientSafe() {
+    if (typeof client !== "undefined" && client) return client;
+    if (window.client) return window.client;
+    if (window.supabaseClient) return window.supabaseClient;
+    return null;
+  }
+
+  function normalizeGoldenUnitForExam(unitKeyOrNumber) {
+    const raw = String(unitKeyOrNumber || "").trim();
+
+    if (/^Unit\s+\d+/i.test(raw)) return raw.replace(/^unit/i, "Unit");
+
+    const match = raw.match(/\d+/);
+    if (match) return `Unit ${match[0]}`;
+
+    return raw || "Unit 1";
+  }
+
+  function getGoldenGradeFromCohort(cohort) {
+    return String(cohort) === "2008" ? "12" : "11";
+  }
+
+  function getGoldenWritingSkillLabel(cohort) {
+    return String(cohort) === "2008" ? "Writing Skills" : "Writing Topics";
+  }
+
+  async function isGoldenOwnerForExamLinker() {
+    const db = getSupabaseClientSafe();
+    if (!db || !db.auth || !db.auth.getUser) return false;
+
+    try {
+      const { data } = await db.auth.getUser();
+      const email = data?.user?.email || "";
+
+      return [
+        "jalal26@yahoo.com",
+        "jalal026@gmail.com"
+      ].includes(email);
+    } catch (err) {
+      console.warn("Golden owner check failed:", err);
+      return false;
+    }
+  }
+ function getGoldenSkillOptions(cohort) {
+  const writingLabel = getGoldenWritingSkillLabel(cohort);
+
+  return [
+    "Grammar",
+    "Vocabulary",
+    "Reading",
+    writingLabel,
+    "Culture Spot",
+    "Literature Spot",
+    "Mixed"
+  ];
+}
+
+  async function loadGoldenExamOptions() {
+    const db = getSupabaseClientSafe();
+    if (!db) return [];
+
+    const { data, error } = await db
+      .from("exams")
+      .select("id,title,subject,grade_level,unit,status,question_count,golden_cohort,golden_unit,golden_lesson,golden_skill,created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
+
+    if (error) {
+      console.error("Failed to load exams for Golden linker:", error);
+      return [];
+    }
+
+    return data || [];
+  }
+
+  async function renderGoldenExamLinkerPanel() {
+    const canEdit = await isGoldenOwnerForExamLinker();
+    if (!canEdit) return;
+
+    const page = document.getElementById("goldenIntensive");
+    if (!page) return;
+
+    const old = document.getElementById("goldenExamLinkerPanel");
+    if (old) old.remove();
+
+    const exams = await loadGoldenExamOptions();
+
+    const panel = document.createElement("div");
+    panel.id = "goldenExamLinkerPanel";
+    panel.className = "golden-exam-linker-panel";
+    panel.dir = "rtl";
+
+    panel.innerHTML = `
+      <div class="golden-linker-head">
+        <h3>🔗 ربط امتحان بالمكثف الذهبي</h3>
+        <p>
+          اختر أي امتحان موجود، ثم اربطه بالجيل والوحدة والدرس والمهارة.
+          هذا لا يحذف ولا يغيّر أسئلة الامتحان؛ فقط يحدد مكان ظهوره داخل المكثف.
+        </p>
+      </div>
+
+      <div class="golden-linker-grid">
+        <label>
+          الامتحان
+          <select id="goldenLinkExamId">
+            <option value="">اختر امتحانًا...</option>
+            ${exams.map(exam => `
+              <option value="${exam.id}">
+                ${exam.title || "Untitled Exam"} 
+                — Grade ${exam.grade_level || "-"} 
+                — ${exam.unit || "-"} 
+                — ${exam.status || "-"} 
+                — ${exam.question_count || 0} Q
+              </option>
+            `).join("")}
+          </select>
+        </label>
+
+        <label>
+          الجيل
+          <select id="goldenLinkCohort">
+            <option value="2008">2008 / High Note 5 / Grade 12</option>
+            <option value="2009">2009 / High Note 4 / Grade 11</option>
+          </select>
+        </label>
+
+        <label>
+          الوحدة
+          <select id="goldenLinkUnit">
+            ${Array.from({ length: 10 }, (_, i) => `
+              <option value="Unit ${i + 1}">Unit ${i + 1}</option>
+            `).join("")}
+          </select>
+        </label>
+
+        <label>
+          المهارة / القسم
+          <select id="goldenLinkSkill">
+            <option value="Grammar">Grammar / القواعد</option>
+           <option value="Vocabulary">Vocabulary / المعاني</option>
+            <option value="Reading">Reading / القراءة</option>
+            <option value="Writing Skills">Writing Skills / مهارات الكتابة 2008</option>
+            <option value="Writing Topics">Writing Topics / مواضيع الكتابة 2009</option>
+            <option value="Culture Spot">Culture Spot / الثقافة</option>
+           <option value="Literature Spot">Literature Spot / الأدب</option>
+            <option value="Mixed">Mixed / شامل</option>
+          </select>
+        </label>
+
+        <label class="golden-linker-full">
+          اسم الدرس
+          <input id="goldenLinkLesson" type="text" placeholder="مثال: Question Tags / Unit Vocabulary / Reading Text 1">
+        </label>
+      </div>
+
+      <div class="golden-linker-actions">
+        <button type="button" onclick="saveGoldenExamLink()">💾 حفظ الربط</button>
+        <button type="button" onclick="loadGoldenLinkedExamsPreview()">👁️ عرض الامتحانات المرتبطة</button>
+      </div>
+
+      <div id="goldenExamLinkerStatus" class="golden-linker-status"></div>
+      <div id="goldenLinkedExamsPreview" class="golden-linked-preview"></div>
+    `;
+
+    const firstPanel = page.querySelector(".golden-owner-tools, .golden-toolbar, .golden-tabs, .golden-cohort-tabs");
+    if (firstPanel && firstPanel.parentNode) {
+      firstPanel.parentNode.insertBefore(panel, firstPanel.nextSibling);
+    } else {
+      page.prepend(panel);
+    }
+
+    const cohortSelect = document.getElementById("goldenLinkCohort");
+    const skillSelect = document.getElementById("goldenLinkSkill");
+
+    if (cohortSelect && skillSelect) {
+      cohortSelect.addEventListener("change", () => {
+        const cohort = cohortSelect.value;
+        const writingSkill = getGoldenWritingSkillLabel(cohort);
+
+        if (String(cohort) === "2008") {
+          skillSelect.value = "Writing Skills";
+        } else {
+          skillSelect.value = "Writing Topics";
+        }
+
+        Array.from(skillSelect.options).forEach(opt => {
+          if (opt.value === "Writing Skills") {
+            opt.disabled = String(cohort) !== "2008";
+          }
+          if (opt.value === "Writing Topics") {
+            opt.disabled = String(cohort) !== "2009";
+          }
+        });
+
+        if (!getGoldenSkillOptions(cohort).includes(skillSelect.value)) {
+          skillSelect.value = writingSkill;
+        }
+      });
+
+      cohortSelect.dispatchEvent(new Event("change"));
+    }
+  }
+
+  async function saveGoldenExamLink() {
+    const db = getSupabaseClientSafe();
+    if (!db) {
+      alert("Supabase client not found.");
+      return;
+    }
+
+    const canEdit = await isGoldenOwnerForExamLinker();
+    if (!canEdit) {
+      alert("This action is allowed for the owner only.");
+      return;
+    }
+
+    const examId = document.getElementById("goldenLinkExamId")?.value;
+    const cohort = document.getElementById("goldenLinkCohort")?.value;
+    const unit = document.getElementById("goldenLinkUnit")?.value;
+    const lesson = document.getElementById("goldenLinkLesson")?.value?.trim();
+    const skill = document.getElementById("goldenLinkSkill")?.value;
+
+    const statusBox = document.getElementById("goldenExamLinkerStatus");
+
+    if (!examId || !cohort || !unit || !lesson || !skill) {
+      if (statusBox) {
+        statusBox.textContent = "⚠️ اختر الامتحان والجيل والوحدة والدرس والمهارة.";
+      }
+      return;
+    }
+
+    const { error } = await db
+      .from("exams")
+      .update({
+        golden_cohort: cohort,
+        golden_unit: unit,
+        golden_lesson: lesson,
+        golden_skill: skill
+      })
+      .eq("id", examId);
+
+    if (error) {
+      console.error("Failed to save Golden exam link:", error);
+      if (statusBox) statusBox.textContent = "❌ فشل حفظ الربط. راجع Console.";
+      return;
+    }
+
+    if (statusBox) {
+      statusBox.textContent = `✅ تم ربط الامتحان مع ${cohort} / ${unit} / ${lesson} / ${skill}`;
+    }
+
+    await loadGoldenLinkedExamsPreview();
+  }
+
+  async function loadGoldenLinkedExamsPreview() {
+    const db = getSupabaseClientSafe();
+    if (!db) return;
+
+    const cohort = document.getElementById("goldenLinkCohort")?.value;
+    const unit = document.getElementById("goldenLinkUnit")?.value;
+    const lesson = document.getElementById("goldenLinkLesson")?.value?.trim();
+    const skill = document.getElementById("goldenLinkSkill")?.value;
+
+    let query = db
+      .from("exams")
+      .select("id,title,status,question_count,golden_cohort,golden_unit,golden_lesson,golden_skill")
+      .eq("golden_cohort", cohort)
+      .eq("golden_unit", unit)
+      .order("created_at", { ascending: false });
+
+    if (lesson) query = query.eq("golden_lesson", lesson);
+    if (skill) query = query.eq("golden_skill", skill);
+
+    const { data, error } = await query;
+
+    const box = document.getElementById("goldenLinkedExamsPreview");
+    if (!box) return;
+
+    if (error) {
+      console.error("Failed to preview linked exams:", error);
+      box.innerHTML = `<p class="golden-linker-error">❌ فشل تحميل الامتحانات المرتبطة.</p>`;
+      return;
+    }
+
+    if (!data || !data.length) {
+      box.innerHTML = `<p class="golden-linker-empty">لا توجد امتحانات مرتبطة بهذه البيانات بعد.</p>`;
+      return;
+    }
+
+    box.innerHTML = `
+      <h4>🧠 الامتحانات المرتبطة</h4>
+      <div class="golden-linked-list">
+        ${data.map(exam => `
+          <div class="golden-linked-exam-card">
+            <strong>${exam.title}</strong>
+            <span>${exam.status || "draft"} · ${exam.question_count || 0} سؤال</span>
+            <small>${exam.golden_cohort} / ${exam.golden_unit} / ${exam.golden_lesson} / ${exam.golden_skill}</small>
+            <button type="button" onclick="startSolvingExam && startSolvingExam('${exam.id}')">
+              ▶️ فتح الامتحان
+            </button>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  async function renderGoldenLinkedExamsInsideViewer(cohort, unit, lesson, skill) {
+    const db = getSupabaseClientSafe();
+    if (!db) return;
+
+    const viewer =
+      document.getElementById(`goldenViewer${cohort}`) ||
+      document.getElementById("goldenViewer2008") ||
+      document.getElementById("goldenViewer2009");
+
+    if (!viewer) return;
+
+    const old = viewer.querySelector(".golden-lesson-exams-box");
+    if (old) old.remove();
+
+    let query = db
+      .from("exams")
+      .select("id,title,status,question_count,golden_cohort,golden_unit,golden_lesson,golden_skill")
+      .eq("golden_cohort", String(cohort))
+      .eq("golden_unit", normalizeGoldenUnitForExam(unit));
+
+    if (lesson) query = query.eq("golden_lesson", lesson);
+    if (skill) query = query.eq("golden_skill", skill);
+
+    const { data, error } = await query.order("created_at", { ascending: false });
+
+    const box = document.createElement("div");
+    box.className = "golden-lesson-exams-box";
+    box.dir = "rtl";
+
+    if (error) {
+      console.error("Failed to load Golden lesson exams:", error);
+      box.innerHTML = `<p>❌ تعذر تحميل امتحانات هذا الدرس.</p>`;
+      viewer.appendChild(box);
+      return;
+    }
+
+    if (!data || !data.length) {
+      box.innerHTML = `
+        <h4>🧠 امتحانات وتدريبات هذا الدرس</h4>
+        <p>لا توجد امتحانات مرتبطة بهذا الدرس حتى الآن.</p>
+      `;
+      viewer.appendChild(box);
+      return;
+    }
+
+    box.innerHTML = `
+      <h4>🧠 امتحانات وتدريبات هذا الدرس</h4>
+      <div class="golden-lesson-exams-grid">
+        ${data.map(exam => `
+          <div class="golden-lesson-exam-card">
+            <strong>${exam.title}</strong>
+            <span>${exam.question_count || 0} سؤال · ${exam.status || "draft"}</span>
+            <small>${exam.golden_lesson || ""} · ${exam.golden_skill || ""}</small>
+            <button type="button" onclick="startSolvingExam && startSolvingExam('${exam.id}')">
+              ابدأ التدريب ▶️
+            </button>
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+    viewer.appendChild(box);
+  }
+
+  window.renderGoldenExamLinkerPanel = renderGoldenExamLinkerPanel;
+  window.saveGoldenExamLink = saveGoldenExamLink;
+  window.loadGoldenLinkedExamsPreview = loadGoldenLinkedExamsPreview;
+  window.renderGoldenLinkedExamsInsideViewer = renderGoldenLinkedExamsInsideViewer;
+
+  const originalShowPage = window.showPage;
+  if (typeof originalShowPage === "function" && !window.__goldenExamLinkerShowPageWrapped) {
+    window.showPage = function patchedShowPage(pageId, ...args) {
+      const result = originalShowPage.call(this, pageId, ...args);
+
+      if (pageId === "goldenIntensive") {
+        setTimeout(() => {
+          renderGoldenExamLinkerPanel();
+        }, 400);
+      }
+
+      return result;
+    };
+
+    window.__goldenExamLinkerShowPageWrapped = true;
+  }
+
+  setTimeout(() => {
+    if (document.getElementById("goldenIntensive")?.classList.contains("active")) {
+      renderGoldenExamLinkerPanel();
+    }
+  }, 800);
+
+  console.log("✅ Golden Exam Linker Patch 1 installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - SHOW LINKED EXAMS INSIDE UNIT PATCH 2
+   Purpose:
+   Show linked exams automatically inside the relevant Golden unit.
+   ========================================================= */
+
+(function installGoldenLinkedExamsAutoDisplayPatch() {
+  console.log("🧠 Installing Golden Linked Exams Auto Display Patch 2...");
+
+  function getSupabaseClientSafe() {
+    if (typeof client !== "undefined" && client) return client;
+    if (window.client) return window.client;
+    if (window.supabaseClient) return window.supabaseClient;
+    return null;
+  }
+
+  function normalizeGoldenUnitForDisplay(unitValue) {
+    const raw = String(unitValue || "").trim();
+
+    if (/^Unit\s+\d+/i.test(raw)) {
+      return raw.replace(/^unit/i, "Unit");
+    }
+
+    const match = raw.match(/\d+/);
+    if (match) return `Unit ${match[0]}`;
+
+    return raw || "Unit 1";
+  }
+
+  function detectGoldenCohortFromArgs(args) {
+    const joined = args.map(x => String(x || "")).join(" ");
+    if (joined.includes("2008")) return "2008";
+    if (joined.includes("2009")) return "2009";
+
+    const active2008 = document.getElementById("golden-grade2008")?.classList.contains("active");
+    const active2009 = document.getElementById("golden-grade2009")?.classList.contains("active");
+
+    if (active2008) return "2008";
+    if (active2009) return "2009";
+
+    return "2009";
+  }
+
+  function detectGoldenUnitFromArgs(args) {
+    const found = args.find(arg => {
+      const value = String(arg || "");
+      return /unit\s*\d+/i.test(value) || /^u\d+$/i.test(value) || /^\d+$/.test(value);
+    });
+
+    return normalizeGoldenUnitForDisplay(found || "Unit 1");
+  }
+
+  async function isGoldenOwnerForAutoExams() {
+    const db = getSupabaseClientSafe();
+    if (!db?.auth?.getUser) return false;
+
+    try {
+      const { data } = await db.auth.getUser();
+      const email = data?.user?.email || "";
+
+      return [
+        "jalal26@yahoo.com",
+        "jalal026@gmail.com"
+      ].includes(email);
+    } catch (err) {
+      return false;
+    }
+  }
+
+  async function renderGoldenLinkedExamsForUnit(cohort, unitValue) {
+    const db = getSupabaseClientSafe();
+    if (!db) return;
+
+    const unit = normalizeGoldenUnitForDisplay(unitValue);
+    const viewer = document.getElementById(`goldenViewer${cohort}`);
+
+    if (!viewer) return;
+
+    const oldBox = viewer.querySelector(".golden-unit-linked-exams-box");
+    if (oldBox) oldBox.remove();
+
+    const isOwner = await isGoldenOwnerForAutoExams();
+
+    let query = db
+      .from("exams")
+      .select("id,title,status,question_count,golden_cohort,golden_unit,golden_lesson,golden_skill")
+      .eq("golden_cohort", String(cohort))
+      .eq("golden_unit", unit)
+      .order("created_at", { ascending: false });
+
+    if (!isOwner) {
+      query = query.eq("status", "published");
+    }
+
+    const { data, error } = await query;
+
+    const box = document.createElement("div");
+    box.className = "golden-unit-linked-exams-box";
+    box.dir = "rtl";
+
+    if (error) {
+      console.error("Failed to load linked Golden exams:", error);
+      box.innerHTML = `
+        <h4>🧠 امتحانات وتدريبات هذه الوحدة</h4>
+        <p>حدث خطأ أثناء تحميل امتحانات الوحدة.</p>
+      `;
+      viewer.appendChild(box);
+      return;
+    }
+
+    if (!data || !data.length) {
+      box.innerHTML = `
+        <h4>🧠 امتحانات وتدريبات هذه الوحدة</h4>
+        <p>لا توجد امتحانات مرتبطة بهذه الوحدة بعد.</p>
+      `;
+      viewer.appendChild(box);
+      return;
+    }
+
+    const grouped = data.reduce((acc, exam) => {
+      const key = `${exam.golden_skill || "Mixed"} — ${exam.golden_lesson || "درس عام"}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(exam);
+      return acc;
+    }, {});
+
+    box.innerHTML = `
+      <h4>🧠 امتحانات وتدريبات هذه الوحدة</h4>
+      <p class="golden-unit-linked-note">
+        هذه الامتحانات مرتبطة مباشرة بهذه الوحدة حسب الدرس والمهارة.
+      </p>
+
+      ${Object.entries(grouped).map(([groupTitle, exams]) => `
+        <div class="golden-linked-exam-group">
+          <h5>${groupTitle}</h5>
+
+          <div class="golden-linked-exam-grid">
+            ${exams.map(exam => `
+              <div class="golden-linked-exam-unit-card">
+                <strong>${exam.title || "Untitled Exam"}</strong>
+                <span>${exam.question_count || 0} سؤال · ${exam.status || "draft"}</span>
+                <small>
+                  ${exam.golden_cohort || ""} / 
+                  ${exam.golden_unit || ""} / 
+                  ${exam.golden_lesson || ""} / 
+                  ${exam.golden_skill || ""}
+                </small>
+                <button type="button" onclick="startSolvingExam && startSolvingExam('${exam.id}')">
+                  ابدأ الامتحان ▶️
+                </button>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `).join("")}
+    `;
+
+    viewer.appendChild(box);
+  }
+
+  window.renderGoldenLinkedExamsForUnit = renderGoldenLinkedExamsForUnit;
+
+  if (typeof window.openGoldenUnit === "function" && !window.__goldenLinkedExamsOpenUnitWrapped) {
+    const originalOpenGoldenUnit = window.openGoldenUnit;
+
+    window.openGoldenUnit = function openGoldenUnit_WITH_LINKED_EXAMS(...args) {
+      const result = originalOpenGoldenUnit.apply(this, args);
+
+      const cohort = detectGoldenCohortFromArgs(args);
+      const unit = detectGoldenUnitFromArgs(args);
+
+      setTimeout(() => {
+        renderGoldenLinkedExamsForUnit(cohort, unit);
+      }, 500);
+
+      return result;
+    };
+
+    window.__goldenLinkedExamsOpenUnitWrapped = true;
+  }
+
+  console.log("✅ Golden Linked Exams Auto Display Patch 2 installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - LINKED EXAMS VIEWER ID FIX PATCH 5
+   Correct target: goldenUnitViewer2008 / goldenUnitViewer2009
+   ========================================================= */
+
+(function installGoldenLinkedExamsViewerIdFix() {
+  console.log("🎯 Installing Golden Linked Exams Viewer ID Fix Patch 5...");
+
+  function getDb() {
+    if (typeof client !== "undefined" && client) return client;
+    if (window.client) return window.client;
+    if (window.supabaseClient) return window.supabaseClient;
+    return null;
+  }
+
+  function normalizeUnit(unitValue) {
+    const raw = String(unitValue || "").trim();
+    if (/^Unit\s+\d+/i.test(raw)) return raw.replace(/^unit/i, "Unit");
+    const match = raw.match(/\d+/);
+    return match ? `Unit ${match[0]}` : "Unit 1";
+  }
+
+  async function renderGoldenLinkedExamsForCorrectViewer(cohort, unitValue) {
+    const db = getDb();
+    if (!db) return;
+
+    const unit = normalizeUnit(unitValue);
+    const viewer = document.getElementById(`goldenUnitViewer${cohort}`);
+
+    if (!viewer) {
+      console.warn("Golden unit viewer not found:", `goldenUnitViewer${cohort}`);
+      return;
+    }
+
+    viewer.querySelectorAll(
+      ".golden-unit-linked-exams-box, #goldenUniversalLinkedExamsBox, #goldenCorrectViewerLinkedExamsBox"
+    ).forEach(el => el.remove());
+
+    const { data, error } = await db
+      .from("exams")
+      .select("id,title,status,question_count,golden_cohort,golden_unit,golden_lesson,golden_skill")
+      .eq("golden_cohort", String(cohort))
+      .eq("golden_unit", unit)
+      .order("created_at", { ascending: false });
+
+    const box = document.createElement("div");
+    box.id = "goldenCorrectViewerLinkedExamsBox";
+    box.className = "golden-unit-linked-exams-box";
+    box.dir = "rtl";
+
+    if (error) {
+      console.error("Golden linked exams error:", error);
+      box.innerHTML = `
+        <h4>🧠 امتحانات وتدريبات هذه الوحدة</h4>
+        <p>تعذر تحميل الامتحانات المرتبطة.</p>
+      `;
+      viewer.appendChild(box);
+      return;
+    }
+
+    if (!data || !data.length) {
+      box.innerHTML = `
+        <h4>🧠 امتحانات وتدريبات هذه الوحدة</h4>
+        <p>لا توجد امتحانات مرتبطة بهذه الوحدة حتى الآن.</p>
+      `;
+      viewer.appendChild(box);
+      return;
+    }
+
+    const grouped = data.reduce((acc, exam) => {
+      const key = `${exam.golden_skill || "Mixed"} — ${exam.golden_lesson || "درس عام"}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(exam);
+      return acc;
+    }, {});
+
+    box.innerHTML = `
+      <h4>🧠 امتحانات وتدريبات هذه الوحدة</h4>
+      <p class="golden-unit-linked-note">
+        هذه الامتحانات مرتبطة بهذه الوحدة حسب الدرس والمهارة.
+      </p>
+
+      ${Object.entries(grouped).map(([groupTitle, exams]) => `
+        <div class="golden-linked-exam-group">
+          <h5>${groupTitle}</h5>
+
+          <div class="golden-linked-exam-grid">
+            ${exams.map(exam => `
+              <div class="golden-linked-exam-unit-card">
+                <strong>${exam.title || "Untitled Exam"}</strong>
+                <span>${exam.question_count || 0} سؤال · ${exam.status || "draft"}</span>
+                <small>
+                  ${exam.golden_cohort || ""} / 
+                  ${exam.golden_unit || ""} / 
+                  ${exam.golden_lesson || ""} / 
+                  ${exam.golden_skill || ""}
+                </small>
+                <button type="button" onclick="startSolvingExam && startSolvingExam('${exam.id}')">
+                  ابدأ الامتحان ▶️
+                </button>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `).join("")}
+    `;
+
+    viewer.appendChild(box);
+
+    console.log("✅ Linked exams rendered in correct viewer:", {
+      viewerId: viewer.id,
+      cohort,
+      unit,
+      count: data.length
+    });
+  }
+
+  window.renderGoldenLinkedExamsForCorrectViewer = renderGoldenLinkedExamsForCorrectViewer;
+
+  function detectCohort(args) {
+    const text = args.map(x => String(x || "")).join(" ");
+    if (text.includes("2008")) return "2008";
+    if (text.includes("2009")) return "2009";
+
+    const active2009 = document.getElementById("golden-grade2009")?.classList.contains("active");
+    if (active2009) return "2009";
+
+    return "2008";
+  }
+
+  function detectUnit(args) {
+    const found = args.find(arg => {
+      const value = String(arg || "");
+      return /unit\s*\d+/i.test(value) || /^unit\d+$/i.test(value) || /^\d+$/.test(value);
+    });
+
+    return normalizeUnit(found || "Unit 1");
+  }
+
+  function bindGoldenUnitCorrectViewer() {
+    if (typeof window.openGoldenUnit !== "function") return;
+    if (window.openGoldenUnit.__goldenCorrectViewerBound) return;
+
+    const original = window.openGoldenUnit;
+
+    window.openGoldenUnit = function openGoldenUnit_FINAL_WITH_CORRECT_VIEWER_EXAMS(...args) {
+      const result = original.apply(this, args);
+
+      const cohort = detectCohort(args);
+      const unit = detectUnit(args);
+
+      setTimeout(() => {
+        renderGoldenLinkedExamsForCorrectViewer(cohort, unit);
+      }, 700);
+
+      return result;
+    };
+
+    window.openGoldenUnit.__goldenCorrectViewerBound = true;
+    console.log("✅ Golden correct viewer exam binding installed.");
+  }
+
+  bindGoldenUnitCorrectViewer();
+  setTimeout(bindGoldenUnitCorrectViewer, 700);
+  setTimeout(bindGoldenUnitCorrectViewer, 1800);
+  setTimeout(bindGoldenUnitCorrectViewer, 3500);
+
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - CLEAN DUPLICATE LINKER PANELS
+   ========================================================= */
+
+(function cleanDuplicateGoldenExamLinkerPanelsPatch() {
+  function cleanDuplicateGoldenExamLinkerPanels() {
+    const panels = Array.from(document.querySelectorAll("#goldenExamLinkerPanel"));
+
+    if (panels.length <= 1) return;
+
+    panels.forEach((panel, index) => {
+      if (index > 0) panel.remove();
+    });
+
+    console.log("🧹 Removed duplicate Golden exam linker panels:", panels.length - 1);
+  }
+
+  window.cleanDuplicateGoldenExamLinkerPanels = cleanDuplicateGoldenExamLinkerPanels;
+
+  cleanDuplicateGoldenExamLinkerPanels();
+  setTimeout(cleanDuplicateGoldenExamLinkerPanels, 500);
+  setTimeout(cleanDuplicateGoldenExamLinkerPanels, 1500);
+  setTimeout(cleanDuplicateGoldenExamLinkerPanels, 3000);
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - FINAL CLEAN + LINKED EXAMS STABILIZER
+   Put this at the VERY END of app.js
+   ========================================================= */
+
+(function installGoldenFinalCleanAndExamStabilizer() {
+  console.log("🧹 Installing Golden final clean + exams stabilizer...");
+
+  function cleanGoldenDuplicateLinkerPanels() {
+    const panels = Array.from(document.querySelectorAll('[id="goldenExamLinkerPanel"]'));
+
+    if (panels.length > 1) {
+      panels.forEach((panel, index) => {
+        if (index > 0) panel.remove();
+      });
+
+      console.log("🧹 Golden duplicate linker panels removed:", panels.length - 1);
+    }
+  }
+
+  function getActiveGoldenCohort() {
+    if (document.getElementById("golden-grade2009")?.classList.contains("active")) return "2009";
+    if (document.getElementById("golden-grade2008")?.classList.contains("active")) return "2008";
+
+    const txt = document.getElementById("goldenIntensive")?.innerText || "";
+    if (txt.includes("جيل 2009")) return "2009";
+    if (txt.includes("جيل 2008")) return "2008";
+
+    return "2009";
+  }
+
+  function detectUnitFromViewer(cohort) {
+    const viewer = document.getElementById(`goldenUnitViewer${cohort}`);
+    const txt = viewer?.innerText || "";
+
+    const match = txt.match(/Unit\s+\d+/i);
+    if (match) return match[0].replace(/^unit/i, "Unit");
+
+    return "Unit 1";
+  }
+
+  async function refreshGoldenLinkedExamsIfPossible() {
+    const cohort = getActiveGoldenCohort();
+    const unit = detectUnitFromViewer(cohort);
+
+    if (typeof window.renderGoldenLinkedExamsForCorrectViewer === "function") {
+      await window.renderGoldenLinkedExamsForCorrectViewer(cohort, unit);
+    }
+  }
+
+  window.cleanGoldenDuplicateLinkerPanels = cleanGoldenDuplicateLinkerPanels;
+  window.refreshGoldenLinkedExamsIfPossible = refreshGoldenLinkedExamsIfPossible;
+
+  cleanGoldenDuplicateLinkerPanels();
+
+  setTimeout(cleanGoldenDuplicateLinkerPanels, 300);
+  setTimeout(cleanGoldenDuplicateLinkerPanels, 1000);
+  setTimeout(cleanGoldenDuplicateLinkerPanels, 2500);
+  setTimeout(cleanGoldenDuplicateLinkerPanels, 5000);
+
+  const oldOpen = window.openGoldenUnit;
+
+  if (typeof oldOpen === "function" && !oldOpen.__goldenFinalCleanExamStable) {
+    window.openGoldenUnit = function openGoldenUnit_FINAL_CLEAN_EXAMS(...args) {
+      const result = oldOpen.apply(this, args);
+
+      setTimeout(() => {
+        cleanGoldenDuplicateLinkerPanels();
+        refreshGoldenLinkedExamsIfPossible();
+      }, 900);
+
+      return result;
+    };
+
+    window.openGoldenUnit.__goldenFinalCleanExamStable = true;
+  }
+
+  setTimeout(() => {
+    cleanGoldenDuplicateLinkerPanels();
+  }, 1200);
+
+  console.log("✅ Golden final clean + exams stabilizer installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - VIEWER OBSERVER EXAMS PATCH FINAL
+   Does NOT wrap openGoldenUnit.
+   Watches goldenUnitViewer2008 / goldenUnitViewer2009 directly.
+   ========================================================= */
+
+(function installGoldenViewerObserverExamsFinal() {
+  console.log("👁️ Installing Golden Viewer Observer Exams Final Patch...");
+
+  function getDb() {
+    if (typeof client !== "undefined" && client) return client;
+    if (window.client) return window.client;
+    if (window.supabaseClient) return window.supabaseClient;
+    return null;
+  }
+
+  function cleanDuplicateGoldenLinkerPanels() {
+    const panels = Array.from(document.querySelectorAll('[id="goldenExamLinkerPanel"]'));
+    if (panels.length <= 1) return;
+
+    panels.forEach((panel, index) => {
+      if (index > 0) panel.remove();
+    });
+
+    console.log("🧹 Cleaned duplicate golden linker panels:", panels.length - 1);
+  }
+
+  function normalizeUnit(unitValue) {
+    const raw = String(unitValue || "").trim();
+    const match = raw.match(/Unit\s*\d+/i) || raw.match(/\d+/);
+    if (!match) return "Unit 1";
+
+    const num = String(match[0]).match(/\d+/)?.[0] || "1";
+    return `Unit ${num}`;
+  }
+
+  function detectUnitFromViewer(viewer) {
+    const txt = viewer?.innerText || "";
+    const match = txt.match(/Unit\s*\d+/i);
+    return normalizeUnit(match ? match[0] : "Unit 1");
+  }
+
+  function getActiveGoldenViewerInfo() {
+    const panel2009 = document.getElementById("golden-grade2009");
+    const panel2008 = document.getElementById("golden-grade2008");
+
+    const is2009Active = panel2009?.classList.contains("active");
+    const is2008Active = panel2008?.classList.contains("active");
+
+    if (is2009Active) {
+      return {
+        cohort: "2009",
+        viewer: document.getElementById("goldenUnitViewer2009")
+      };
+    }
+
+    if (is2008Active) {
+      return {
+        cohort: "2008",
+        viewer: document.getElementById("goldenUnitViewer2008")
+      };
+    }
+
+    const viewer2009 = document.getElementById("goldenUnitViewer2009");
+    const viewer2008 = document.getElementById("goldenUnitViewer2008");
+
+    if (viewer2009 && viewer2009.innerText.includes("جيل 2009")) {
+      return { cohort: "2009", viewer: viewer2009 };
+    }
+
+    if (viewer2008 && viewer2008.innerText.includes("جيل 2008")) {
+      return { cohort: "2008", viewer: viewer2008 };
+    }
+
+    return {
+      cohort: "2009",
+      viewer: viewer2009 || viewer2008 || null
+    };
+  }
+
+  async function renderGoldenExamsIntoViewer(cohort, unit, viewer) {
+    const db = getDb();
+    if (!db || !viewer) return;
+
+    const unitLabel = normalizeUnit(unit);
+    const renderKey = `${cohort}|${unitLabel}`;
+
+    if (viewer.dataset.goldenExamRenderKey === renderKey && viewer.querySelector("#goldenCorrectViewerLinkedExamsBox")) {
+      return;
+    }
+
+    viewer.dataset.goldenExamRenderKey = renderKey;
+
+    viewer.querySelectorAll(
+      ".golden-unit-linked-exams-box, #goldenCorrectViewerLinkedExamsBox, #goldenUniversalLinkedExamsBox"
+    ).forEach(el => el.remove());
+
+    const { data, error } = await db
+      .from("exams")
+      .select("id,title,status,question_count,golden_cohort,golden_unit,golden_lesson,golden_skill")
+      .eq("golden_cohort", String(cohort))
+      .eq("golden_unit", unitLabel)
+      .order("created_at", { ascending: false });
+
+    const box = document.createElement("div");
+    box.id = "goldenCorrectViewerLinkedExamsBox";
+    box.className = "golden-unit-linked-exams-box";
+    box.dir = "rtl";
+
+    if (error) {
+      console.error("Golden linked exams load error:", error);
+      box.innerHTML = `
+        <h4>🧠 امتحانات وتدريبات هذه الوحدة</h4>
+        <p>تعذر تحميل الامتحانات المرتبطة.</p>
+      `;
+      viewer.appendChild(box);
+      return;
+    }
+
+    if (!data || !data.length) {
+      box.innerHTML = `
+        <h4>🧠 امتحانات وتدريبات هذه الوحدة</h4>
+        <p>لا توجد امتحانات مرتبطة بهذه الوحدة حتى الآن.</p>
+      `;
+      viewer.appendChild(box);
+      return;
+    }
+
+    const grouped = data.reduce((acc, exam) => {
+      const key = `${exam.golden_skill || "Mixed"} — ${exam.golden_lesson || "درس عام"}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(exam);
+      return acc;
+    }, {});
+
+    box.innerHTML = `
+      <h4>🧠 امتحانات وتدريبات هذه الوحدة</h4>
+      <p class="golden-unit-linked-note">
+        هذه الامتحانات مرتبطة بهذه الوحدة حسب الدرس والمهارة.
+      </p>
+
+      ${Object.entries(grouped).map(([groupTitle, exams]) => `
+        <div class="golden-linked-exam-group">
+          <h5>${groupTitle}</h5>
+
+          <div class="golden-linked-exam-grid">
+            ${exams.map(exam => `
+              <div class="golden-linked-exam-unit-card">
+                <strong>${exam.title || "Untitled Exam"}</strong>
+                <span>${exam.question_count || 0} سؤال · ${exam.status || "draft"}</span>
+                <small>
+                  ${exam.golden_cohort || ""} /
+                  ${exam.golden_unit || ""} /
+                  ${exam.golden_lesson || ""} /
+                  ${exam.golden_skill || ""}
+                </small>
+                <button type="button" onclick="startSolvingExam && startSolvingExam('${exam.id}')">
+                  ابدأ الامتحان ▶️
+                </button>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `).join("")}
+    `;
+
+    viewer.appendChild(box);
+
+    console.log("✅ Golden exams rendered by observer:", {
+      cohort,
+      unit: unitLabel,
+      count: data.length,
+      viewerId: viewer.id
+    });
+  }
+
+  async function refreshGoldenViewerExams() {
+    cleanDuplicateGoldenLinkerPanels();
+
+    const info = getActiveGoldenViewerInfo();
+    if (!info.viewer) return;
+
+    const unit = detectUnitFromViewer(info.viewer);
+
+    const text = info.viewer.innerText || "";
+    if (!text.includes("Unit")) return;
+
+    await renderGoldenExamsIntoViewer(info.cohort, unit, info.viewer);
+  }
+
+  function installViewerObservers() {
+    ["2008", "2009"].forEach(cohort => {
+      const viewer = document.getElementById(`goldenUnitViewer${cohort}`);
+      if (!viewer || viewer.__goldenExamObserverInstalled) return;
+
+      const observer = new MutationObserver(() => {
+        setTimeout(refreshGoldenViewerExams, 300);
+      });
+
+      observer.observe(viewer, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+
+      viewer.__goldenExamObserverInstalled = true;
+      console.log("👁️ Golden exam observer installed for:", viewer.id);
+    });
+  }
+
+  window.refreshGoldenViewerExams = refreshGoldenViewerExams;
+  window.renderGoldenExamsIntoViewer = renderGoldenExamsIntoViewer;
+  window.cleanDuplicateGoldenLinkerPanels = cleanDuplicateGoldenLinkerPanels;
+
+  function bootGoldenViewerObserver() {
+    cleanDuplicateGoldenLinkerPanels();
+    installViewerObservers();
+    refreshGoldenViewerExams();
+  }
+
+  bootGoldenViewerObserver();
+
+  setTimeout(bootGoldenViewerObserver, 500);
+  setTimeout(bootGoldenViewerObserver, 1500);
+  setTimeout(bootGoldenViewerObserver, 3000);
+  setInterval(() => {
+    const page = document.getElementById("goldenIntensive");
+    if (page?.classList.contains("active")) {
+      bootGoldenViewerObserver();
+    }
+  }, 2500);
+
+  console.log("✅ Golden Viewer Observer Exams Final Patch installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - START LINKED EXAM FIX
+   Fix: "No exam selected" when clicking Golden linked exam.
+   ========================================================= */
+
+(function installGoldenStartLinkedExamFix() {
+  console.log("▶️ Installing Golden Start Linked Exam Fix...");
+
+  async function startGoldenLinkedExam(examId) {
+    if (!examId) {
+      alert("لم يتم تحديد الامتحان.");
+      return;
+    }
+
+    // نحفظ الامتحان المطلوب بأكثر من اسم احتياطيًا
+    window.currentExamId = examId;
+    window.selectedExamId = examId;
+    window.activeExamId = examId;
+    window.goldenSelectedExamId = examId;
+
+    localStorage.setItem("currentExamId", examId);
+    localStorage.setItem("selectedExamId", examId);
+    localStorage.setItem("goldenSelectedExamId", examId);
+
+    // نحاول نضبط أي select موجود في الصفحة إذا كان يحتوي نفس الامتحان
+    const selects = Array.from(document.querySelectorAll("select"));
+    selects.forEach(select => {
+      const hasOption = Array.from(select.options || []).some(opt => opt.value === examId);
+      if (hasOption) {
+        select.value = examId;
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    });
+
+    // نحاول تشغيل الامتحان بالطريقة المباشرة
+    if (typeof window.startSolvingExam === "function") {
+      try {
+        window.startSolvingExam(examId);
+        return;
+      } catch (err) {
+        console.warn("Direct startSolvingExam(examId) failed, trying fallback:", err);
+      }
+
+      try {
+        window.startSolvingExam();
+        return;
+      } catch (err) {
+        console.warn("Fallback startSolvingExam() failed:", err);
+      }
+    }
+
+    alert("دالة تشغيل الامتحان غير موجودة أو تحتاج ربط مختلف.");
+  }
+
+  window.startGoldenLinkedExam = startGoldenLinkedExam;
+
+  function replaceGoldenExamButtons() {
+    document.querySelectorAll(".golden-linked-exam-unit-card button").forEach(button => {
+      const oldClick = button.getAttribute("onclick") || "";
+      const match = oldClick.match(/['"]([0-9a-fA-F-]{20,})['"]/);
+
+      if (!match) return;
+
+      const examId = match[1];
+
+      button.setAttribute("onclick", `startGoldenLinkedExam('${examId}')`);
+      button.textContent = "ابدأ الامتحان ▶️";
+    });
+  }
+
+  window.replaceGoldenExamButtons = replaceGoldenExamButtons;
+
+  setTimeout(replaceGoldenExamButtons, 500);
+  setTimeout(replaceGoldenExamButtons, 1500);
+  setTimeout(replaceGoldenExamButtons, 3000);
+
+  const oldRefresh = window.refreshGoldenViewerExams;
+  if (typeof oldRefresh === "function" && !oldRefresh.__goldenStartButtonFixed) {
+    window.refreshGoldenViewerExams = async function refreshGoldenViewerExams_WITH_START_FIX(...args) {
+      const result = await oldRefresh.apply(this, args);
+      setTimeout(replaceGoldenExamButtons, 300);
+      return result;
+    };
+
+    window.refreshGoldenViewerExams.__goldenStartButtonFixed = true;
+  }
+
+  console.log("✅ Golden Start Linked Exam Fix installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - START LINKED EXAM FINAL FIX
+   Fixes: "No exam selected."
+   startSolvingExam() depends on currentPreviewExam.
+   ========================================================= */
+
+(function installGoldenStartLinkedExamFinalFix() {
+  console.log("▶️ Installing Golden Start Linked Exam FINAL Fix...");
+
+  async function startGoldenLinkedExam(examId) {
+    if (!examId) {
+      alert("لم يتم تحديد الامتحان.");
+      return;
+    }
+
+    const { data: exam, error } = await client
+      .from("exams")
+      .select("id,title,status,time_limit")
+      .eq("id", examId)
+      .single();
+
+    if (error || !exam) {
+      console.error("Golden linked exam load error:", error);
+      alert("تعذر العثور على الامتحان.");
+      return;
+    }
+
+    if (exam.status !== "published") {
+      alert("هذا الامتحان غير منشور بعد. انشره أولًا حتى يستطيع الطالب فتحه.");
+      return;
+    }
+
+    // مهم جدًا: startSolvingExam تعتمد على هذا المتغير
+    currentPreviewExam = {
+      id: exam.id,
+      title: exam.title,
+      status: exam.status,
+      timeLimit: exam.time_limit
+    };
+
+    window.currentPreviewExam = currentPreviewExam;
+
+    await startSolvingExam();
+  }
+
+  window.startGoldenLinkedExam = startGoldenLinkedExam;
+
+  function fixGoldenLinkedExamButtons() {
+    document.querySelectorAll(".golden-linked-exam-unit-card button").forEach(button => {
+      const oldClick = button.getAttribute("onclick") || "";
+      const match = oldClick.match(/['"]([0-9a-fA-F-]{20,})['"]/);
+
+      if (!match) return;
+
+      const examId = match[1];
+
+      button.setAttribute("onclick", `startGoldenLinkedExam('${examId}')`);
+      button.textContent = "ابدأ الامتحان ▶️";
+    });
+  }
+
+  window.fixGoldenLinkedExamButtons = fixGoldenLinkedExamButtons;
+
+  const oldRefresh = window.refreshGoldenViewerExams;
+  if (typeof oldRefresh === "function" && !oldRefresh.__goldenStartFinalFixed) {
+    window.refreshGoldenViewerExams = async function refreshGoldenViewerExams_START_FIXED(...args) {
+      const result = await oldRefresh.apply(this, args);
+      setTimeout(fixGoldenLinkedExamButtons, 300);
+      return result;
+    };
+
+    window.refreshGoldenViewerExams.__goldenStartFinalFixed = true;
+  }
+
+  setTimeout(fixGoldenLinkedExamButtons, 500);
+  setTimeout(fixGoldenLinkedExamButtons, 1500);
+  setTimeout(fixGoldenLinkedExamButtons, 3000);
+
+  console.log("✅ Golden Start Linked Exam FINAL Fix installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - FORCE START BUTTONS FIX FINAL
+   Converts linked exam buttons from startSolvingExam(id)
+   to startGoldenLinkedExam(id) after observer renders them.
+   ========================================================= */
+
+(function installGoldenForceStartButtonsFixFinal() {
+  console.log("🔧 Installing Golden Force Start Buttons Fix FINAL...");
+
+  function forceFixGoldenStartButtons() {
+    const buttons = Array.from(document.querySelectorAll(".golden-linked-exam-unit-card button"));
+
+    buttons.forEach(button => {
+      const oldClick = button.getAttribute("onclick") || "";
+      const match = oldClick.match(/['"]([0-9a-fA-F-]{20,})['"]/);
+
+      if (!match) return;
+
+      const examId = match[1];
+
+      if (!oldClick.includes("startGoldenLinkedExam")) {
+        button.setAttribute("onclick", `startGoldenLinkedExam('${examId}')`);
+        button.textContent = "ابدأ الامتحان ▶️";
+      }
+    });
+
+    if (buttons.length) {
+      console.log("✅ Golden start buttons fixed:", buttons.length);
+    }
+  }
+
+  window.forceFixGoldenStartButtons = forceFixGoldenStartButtons;
+
+  const oldRefresh = window.refreshGoldenViewerExams;
+  if (typeof oldRefresh === "function" && !oldRefresh.__forceStartButtonsFixed) {
+    window.refreshGoldenViewerExams = async function refreshGoldenViewerExams_FORCE_BUTTONS(...args) {
+      const result = await oldRefresh.apply(this, args);
+
+      setTimeout(forceFixGoldenStartButtons, 100);
+      setTimeout(forceFixGoldenStartButtons, 400);
+      setTimeout(forceFixGoldenStartButtons, 900);
+
+      return result;
+    };
+
+    window.refreshGoldenViewerExams.__forceStartButtonsFixed = true;
+  }
+
+  const oldRender = window.renderGoldenExamsIntoViewer;
+  if (typeof oldRender === "function" && !oldRender.__forceStartButtonsFixed) {
+    window.renderGoldenExamsIntoViewer = async function renderGoldenExamsIntoViewer_FORCE_BUTTONS(...args) {
+      const result = await oldRender.apply(this, args);
+
+      setTimeout(forceFixGoldenStartButtons, 100);
+      setTimeout(forceFixGoldenStartButtons, 400);
+      setTimeout(forceFixGoldenStartButtons, 900);
+
+      return result;
+    };
+
+    window.renderGoldenExamsIntoViewer.__forceStartButtonsFixed = true;
+  }
+
+  setInterval(() => {
+    const page = document.getElementById("goldenIntensive");
+    if (page?.classList.contains("active")) {
+      forceFixGoldenStartButtons();
+    }
+  }, 1200);
+
+  setTimeout(forceFixGoldenStartButtons, 500);
+  setTimeout(forceFixGoldenStartButtons, 1500);
+  setTimeout(forceFixGoldenStartButtons, 3000);
+
+  console.log("✅ Golden Force Start Buttons Fix FINAL installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - FINAL INFRASTRUCTURE PATCH
+   Purpose:
+   - Freeze Golden infrastructure before data entry.
+   - Add Culture / Literature linking options.
+   - Keep 2008 Writing Skills and 2009 Writing Topics clear.
+   - Provide final audit helper.
+   ========================================================= */
+
+(function installGoldenFinalInfrastructurePatch() {
+  console.log("🏗️ Installing Golden Final Infrastructure Patch...");
+
+  const GOLDEN_SKILLS = [
+    { value: "Grammar", label: "Grammar / القواعد" },
+    { value: "Vocabulary", label: "Vocabulary / المعاني والمفردات" },
+    { value: "Reading", label: "Reading / القراءة والقطع" },
+    { value: "Writing Skills", label: "Writing Skills / مهارات الكتابة - 2008" },
+    { value: "Writing Topics", label: "Writing Topics / مواضيع الكتابة - 2009" },
+    { value: "Culture Spot", label: "Culture Spot / الثقافة" },
+    { value: "Literature Spot", label: "Literature Spot / الأدب" },
+    { value: "Mixed", label: "Mixed / شامل" }
+  ];
+
+  function addOptionsToSelect(select) {
+    if (!select) return;
+
+    GOLDEN_SKILLS.forEach(item => {
+      const exists = Array.from(select.options || []).some(opt => opt.value === item.value);
+
+      if (!exists) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.textContent = item.label;
+        select.appendChild(option);
+      }
+    });
+  }
+
+  function goldenEnsureSkillOptions() {
+    const possibleSkillSelects = [
+      "goldenLinkSkill",
+      "importQuestionSkill",
+      "questionSkill",
+      "questionBankSkill",
+      "questionBankSkillFilter",
+      "bankSkillFilter",
+      "teacherQuestionSkill",
+      "examSkill",
+      "examSkillFilter"
+    ];
+
+    possibleSkillSelects.forEach(id => {
+      addOptionsToSelect(document.getElementById(id));
+    });
+
+    document.querySelectorAll("select").forEach(select => {
+      const text = select.textContent || "";
+      const id = select.id || "";
+
+      if (
+        id.toLowerCase().includes("skill") ||
+        text.includes("Grammar") ||
+        text.includes("Vocabulary") ||
+        text.includes("Writing")
+      ) {
+        addOptionsToSelect(select);
+      }
+    });
+  }
+
+  function goldenApplyCohortWritingRule() {
+    const cohortSelect = document.getElementById("goldenLinkCohort");
+    const skillSelect = document.getElementById("goldenLinkSkill");
+
+    if (!cohortSelect || !skillSelect) return;
+
+    const cohort = cohortSelect.value;
+
+    Array.from(skillSelect.options || []).forEach(opt => {
+      if (opt.value === "Writing Skills") {
+        opt.disabled = cohort === "2009";
+      }
+
+      if (opt.value === "Writing Topics") {
+        opt.disabled = cohort === "2008";
+      }
+    });
+
+    if (cohort === "2008" && skillSelect.value === "Writing Topics") {
+      skillSelect.value = "Writing Skills";
+    }
+
+    if (cohort === "2009" && skillSelect.value === "Writing Skills") {
+      skillSelect.value = "Writing Topics";
+    }
+  }
+
+  function goldenCleanDuplicatePanels() {
+    const panels = Array.from(document.querySelectorAll('[id="goldenExamLinkerPanel"]'));
+
+    panels.forEach((panel, index) => {
+      if (index > 0) panel.remove();
+    });
+  }
+
+  function goldenInfrastructureRefresh() {
+    goldenEnsureSkillOptions();
+    goldenApplyCohortWritingRule();
+    goldenCleanDuplicatePanels();
+
+    const cohortSelect = document.getElementById("goldenLinkCohort");
+
+    if (cohortSelect && !cohortSelect.__goldenWritingRuleBound) {
+      cohortSelect.addEventListener("change", goldenApplyCohortWritingRule);
+      cohortSelect.__goldenWritingRuleBound = true;
+    }
+
+    if (typeof window.forceFixGoldenStartButtons === "function") {
+      window.forceFixGoldenStartButtons();
+    }
+  }
+
+  async function goldenFinalInfrastructureAudit() {
+    const result = {
+      pageExists: !!document.getElementById("goldenIntensive"),
+      linkerPanels: document.querySelectorAll('[id="goldenExamLinkerPanel"]').length,
+      viewer2008: !!document.getElementById("goldenUnitViewer2008"),
+      viewer2009: !!document.getElementById("goldenUnitViewer2009"),
+      openGoldenUnit: window.openGoldenUnit?.name,
+      refreshGoldenViewerExams: typeof window.refreshGoldenViewerExams,
+      startGoldenLinkedExam: typeof window.startGoldenLinkedExam,
+      forceFixGoldenStartButtons: typeof window.forceFixGoldenStartButtons,
+      linkedExamCards: document.querySelectorAll(".golden-linked-exam-unit-card").length,
+      linkedExamButtons: Array.from(document.querySelectorAll(".golden-linked-exam-unit-card button"))
+        .map(btn => btn.getAttribute("onclick")),
+      goldenLinkSkillOptions: Array.from(document.getElementById("goldenLinkSkill")?.options || [])
+        .map(opt => opt.value)
+    };
+
+    console.table(result);
+
+    if (window.client) {
+      const { data, error } = await client
+        .from("exams")
+        .select("title,status,golden_cohort,golden_unit,golden_lesson,golden_skill")
+        .not("golden_cohort", "is", null)
+        .order("created_at", { ascending: false });
+
+      console.log("LINKED EXAMS ERROR:", error);
+      console.table(data);
+    }
+
+    return result;
+  }
+
+  function goldenDataEntryMap() {
+    console.table([
+      {
+        cohort: "2008",
+        book: "High Note 5",
+        grade_level: "12",
+        writing_section: "Writing Skills",
+        units: "Unit 1 - Unit 10",
+        extra_sections: "Culture Spot / Literature Spot"
+      },
+      {
+        cohort: "2009",
+        book: "High Note 4",
+        grade_level: "11",
+        writing_section: "Writing Topics",
+        units: "Unit 1 - Unit 10",
+        extra_sections: "Culture Spot / Literature Spot"
+      }
+    ]);
+
+    console.log("Golden data entry rule:");
+    console.log("2008 = Writing Skills");
+    console.log("2009 = Writing Topics");
+    console.log("Every lesson can be linked to exams using golden_cohort / golden_unit / golden_lesson / golden_skill.");
+  }
+
+  window.goldenInfrastructureRefresh = goldenInfrastructureRefresh;
+  window.goldenFinalInfrastructureAudit = goldenFinalInfrastructureAudit;
+  window.goldenDataEntryMap = goldenDataEntryMap;
+
+  goldenInfrastructureRefresh();
+
+  setTimeout(goldenInfrastructureRefresh, 500);
+  setTimeout(goldenInfrastructureRefresh, 1500);
+  setTimeout(goldenInfrastructureRefresh, 3000);
+
+  setInterval(() => {
+    const page = document.getElementById("goldenIntensive");
+    if (page?.classList.contains("active")) {
+      goldenInfrastructureRefresh();
+    }
+  }, 3000);
+
+  console.log("✅ Golden Final Infrastructure Patch installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - SAFE CONTENT FORMATTER PATCH
+   Supports:
+   **bold**
+   __underline__
+   ==highlight==
+   [color:red]text[/color]
+   # / ## headings
+   - lists
+   Markdown-like tables
+   ========================================================= */
+
+(function installGoldenContentFormatterPatch() {
+  console.log("🎨 Installing Golden Content Formatter Patch...");
+
+  const GOLDEN_ALLOWED_COLORS = {
+    red: "golden-color-red",
+    blue: "golden-color-blue",
+    green: "golden-color-green",
+    orange: "golden-color-orange",
+    purple: "golden-color-purple",
+    gray: "golden-color-gray",
+    gold: "golden-color-gold"
+  };
+
+  function escapeGoldenHtml(text) {
+    return String(text || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function formatGoldenInline(text) {
+    let safe = escapeGoldenHtml(text);
+
+    safe = safe.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    safe = safe.replace(/__(.+?)__/g, "<u>$1</u>");
+    safe = safe.replace(/==(.+?)==/g, "<mark>$1</mark>");
+
+    safe = safe.replace(/\[color:(red|blue|green|orange|purple|gray|gold)\](.+?)\[\/color\]/gi, function (_, color, content) {
+      const cls = GOLDEN_ALLOWED_COLORS[String(color).toLowerCase()] || "golden-color-blue";
+      return `<span class="${cls}">${content}</span>`;
+    });
+
+    return safe;
+  }
+
+  function isGoldenTableSeparator(line) {
+    return /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line);
+  }
+
+  function isGoldenTableRow(line) {
+    return String(line || "").includes("|");
+  }
+
+  function parseGoldenTable(lines, startIndex) {
+    const tableLines = [];
+    let i = startIndex;
+
+    while (i < lines.length && isGoldenTableRow(lines[i]) && String(lines[i]).trim()) {
+      tableLines.push(lines[i]);
+      i++;
+    }
+
+    if (tableLines.length < 2 || !isGoldenTableSeparator(tableLines[1])) {
+      return null;
+    }
+
+    const rows = tableLines
+      .filter((line, index) => index !== 1)
+      .map(line => {
+        let cleaned = String(line).trim();
+
+        if (cleaned.startsWith("|")) cleaned = cleaned.slice(1);
+        if (cleaned.endsWith("|")) cleaned = cleaned.slice(0, -1);
+
+        return cleaned.split("|").map(cell => cell.trim());
+      });
+
+    if (!rows.length) return null;
+
+    const header = rows[0];
+    const body = rows.slice(1);
+
+    const html = `
+      <div class="golden-table-wrap">
+        <table class="golden-content-table">
+          <thead>
+            <tr>
+              ${header.map(cell => `<th>${formatGoldenInline(cell)}</th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            ${body.map(row => `
+              <tr>
+                ${row.map(cell => `<td>${formatGoldenInline(cell)}</td>`).join("")}
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    return {
+      html,
+      nextIndex: i
+    };
+  }
+
+  function goldenFormatContent(rawText) {
+    const text = String(rawText || "").replace(/\r\n/g, "\n");
+    const lines = text.split("\n");
+    const html = [];
+    let i = 0;
+
+    while (i < lines.length) {
+      const line = lines[i];
+      const trimmed = line.trim();
+
+      if (!trimmed) {
+        html.push(`<div class="golden-content-space"></div>`);
+        i++;
+        continue;
+      }
+
+      const table = parseGoldenTable(lines, i);
+      if (table) {
+        html.push(table.html);
+        i = table.nextIndex;
+        continue;
+      }
+
+      if (trimmed.startsWith("### ")) {
+        html.push(`<h4 class="golden-format-h4">${formatGoldenInline(trimmed.slice(4))}</h4>`);
+        i++;
+        continue;
+      }
+
+      if (trimmed.startsWith("## ")) {
+        html.push(`<h3 class="golden-format-h3">${formatGoldenInline(trimmed.slice(3))}</h3>`);
+        i++;
+        continue;
+      }
+
+      if (trimmed.startsWith("# ")) {
+        html.push(`<h2 class="golden-format-h2">${formatGoldenInline(trimmed.slice(2))}</h2>`);
+        i++;
+        continue;
+      }
+
+      if (/^\s*[-*]\s+/.test(line)) {
+        const items = [];
+
+        while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
+          items.push(lines[i].replace(/^\s*[-*]\s+/, "").trim());
+          i++;
+        }
+
+        html.push(`
+          <ul class="golden-format-list">
+            ${items.map(item => `<li>${formatGoldenInline(item)}</li>`).join("")}
+          </ul>
+        `);
+
+        continue;
+      }
+
+      html.push(`<p class="golden-format-p">${formatGoldenInline(line)}</p>`);
+      i++;
+    }
+
+    return `<div class="golden-formatted-content">${html.join("")}</div>`;
+  }
+
+  function applyGoldenFormattingToElement(element, rawText) {
+    if (!element) return;
+
+    const sourceText = rawText !== undefined
+      ? rawText
+      : element.dataset.rawGoldenText || element.textContent || "";
+
+    element.dataset.rawGoldenText = sourceText;
+    element.innerHTML = goldenFormatContent(sourceText);
+    element.classList.add("golden-formatted-output");
+  }
+
+  function goldenFormatterPreview(rawText) {
+    const previewId = "goldenFormatterPreviewBox";
+    let box = document.getElementById(previewId);
+
+    if (!box) {
+      box = document.createElement("div");
+      box.id = previewId;
+      box.dir = "auto";
+      box.style.margin = "20px 0";
+
+      const page = document.getElementById("goldenIntensive") || document.body;
+      page.prepend(box);
+    }
+
+    box.innerHTML = goldenFormatContent(rawText);
+    return box;
+  }
+
+  function goldenFormatterHelp() {
+    const sample = `
+# عنوان رئيسي
+
+## قاعدة مهمة
+
+**هذا نص غامق**
+__هذا نص تحته خط__
+==هذا نص مظلل==
+
+[color:red]خطأ شائع[/color]
+[color:green]إجابة صحيحة[/color]
+[color:blue]ملاحظة مهمة[/color]
+[color:orange]تنبيه[/color]
+[color:purple]مصطلح مهم[/color]
+[color:gold]نقطة ذهبية[/color]
+
+- نقطة أولى
+- نقطة ثانية
+- نقطة ثالثة
+
+| English | Arabic | Note |
+|---|---|---|
+| tag question | سؤال ذيلي | مهم |
+| affirmative | مثبت | قاعدة |
+`;
+
+    console.log(sample);
+    return sample;
+  }
+
+  window.goldenFormatContent = goldenFormatContent;
+  window.applyGoldenFormattingToElement = applyGoldenFormattingToElement;
+  window.goldenFormatterPreview = goldenFormatterPreview;
+  window.goldenFormatterHelp = goldenFormatterHelp;
+
+  console.log("✅ Golden Content Formatter Patch installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - APPLY FORMATTER TO REAL UNIT VIEWERS
+   Purpose:
+   Make saved Golden content display with formatting.
+   Requires: goldenFormatContent()
+   ========================================================= */
+
+
+function runGoldenSafeCheck() {
+  const box = document.getElementById("goldenSafeCheckBox");
+
+  if (!box) {
+    alert("goldenSafeCheckBox غير موجود في HTML");
+    return;
+  }
+
+  const checks = {
+    openGoldenUnitName: window.openGoldenUnit?.name || "NOT FOUND",
+    goldenFormatContent: typeof window.goldenFormatContent,
+    goldenInsertTable: typeof window.goldenInsertTable,
+    goldenFormatterPreview: !!ensureGoldenFormatterPreview(),
+    goldenEditorExists: !!document.getElementById("goldenUnitEditor"),
+ viewer2008: !!document.getElementById("goldenUnitViewer2008"),
+    viewer2009: !!document.getElementById("goldenUnitViewer2009"),
+ finalStillActive:
+  window.openGoldenUnit?.name === "openGoldenUnit_FINAL" ||
+  window.openGoldenUnit?.name === "openGoldenUnit_FINAL_WITH_CORRECT_VIEWER_EXAMS"
+  };
+
+  box.innerHTML = `
+    <div style="
+      padding:14px;
+      border-radius:16px;
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      color:#7c2d12;
+      font-family:Cairo, sans-serif;
+      line-height:1.8;
+      direction:ltr;
+      text-align:left;
+      white-space:pre-wrap;
+      overflow:auto;
+    ">${JSON.stringify(checks, null, 2)}</div>
+  `;
+}
+
+window.runGoldenSafeCheck = runGoldenSafeCheck;
+function goldenInsertTable(textareaId = "goldenEditorTextarea") {
+  const textarea =
+    document.getElementById(textareaId) ||
+    document.querySelector("#goldenIntensive textarea") ||
+    document.querySelector("textarea");
+
+  const tableText = `
+| العنوان 1 | العنوان 2 | العنوان 3 |
+|-----------|-----------|-----------|
+| نص 1      | نص 2      | نص 3      |
+| نص 4      | نص 5      | نص 6      |
+`;
+
+  if (!textarea) {
+    alert("لم يتم العثور على مربع كتابة لإضافة الجدول.");
+    return;
+  }
+
+  const start = textarea.selectionStart || textarea.value.length;
+  const end = textarea.selectionEnd || textarea.value.length;
+
+  textarea.value =
+    textarea.value.substring(0, start) +
+    tableText +
+    textarea.value.substring(end);
+
+  textarea.focus();
+  textarea.selectionStart = textarea.selectionEnd = start + tableText.length;
+
+  if (typeof goldenFormatContent === "function") {
+    try {
+      goldenFormatContent();
+    } catch (error) {
+      console.warn("goldenFormatContent preview skipped:", error);
+    }
+  }
+}
+
+window.goldenInsertTable = goldenInsertTable;
+function ensureGoldenFormatterPreview() {
+  let preview = document.getElementById("goldenFormatterPreview");
+
+  if (preview) {
+    return preview;
+  }
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "golden-formatter-preview-wrap";
+  wrapper.innerHTML = `
+    <h4>معاينة التنسيق 👁️</h4>
+    <div id="goldenFormatterPreview" class="golden-formatter-preview">
+      ستظهر معاينة المحتوى المنسق هنا.
+    </div>
+  `;
+
+  const activeViewer =
+    document.querySelector("#goldenUnitViewer2009") ||
+    document.querySelector("#goldenUnitViewer2008") ||
+    document.querySelector("#goldenIntensive .golden-unit-viewer") ||
+    document.getElementById("goldenIntensive");
+
+  if (activeViewer) {
+    activeViewer.appendChild(wrapper);
+  }
+
+  return document.getElementById("goldenFormatterPreview");
+}
+
+window.ensureGoldenFormatterPreview = ensureGoldenFormatterPreview;
+function goldenFormatContent(rawText) {
+  const text = String(rawText || "");
+
+  let safe = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  // Bold: **text**
+  safe = safe.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+  // Underline: __text__
+  safe = safe.replace(/__(.*?)__/g, "<u>$1</u>");
+
+  // Highlight: ==text==
+  safe = safe.replace(/==(.*?)==/g, '<mark class="golden-highlight">$1</mark>');
+
+  // Color: [color:red]text[/color]
+  safe = safe.replace(
+    /\[color:(#[0-9a-fA-F]{3,6}|red|blue|green|orange|purple|black|gray|grey|brown)\](.*?)\[\/color\]/g,
+    '<span style="color:$1;">$2</span>'
+  );
+
+  // Simple markdown tables
+  const lines = safe.split("\n");
+  let html = "";
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (
+      line.trim().startsWith("|") &&
+      lines[i + 1] &&
+      /^\s*\|?[\s\-:|]+\|?\s*$/.test(lines[i + 1])
+    ) {
+      const headers = line
+        .split("|")
+        .map(x => x.trim())
+        .filter(Boolean);
+
+      i += 2;
+
+      const rows = [];
+      while (i < lines.length && lines[i].trim().startsWith("|")) {
+        rows.push(
+          lines[i]
+            .split("|")
+            .map(x => x.trim())
+            .filter(Boolean)
+        );
+        i++;
+      }
+
+      html += `<table class="golden-content-table"><thead><tr>`;
+      html += headers.map(h => `<th>${h}</th>`).join("");
+      html += `</tr></thead><tbody>`;
+      html += rows
+        .map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join("")}</tr>`)
+        .join("");
+      html += `</tbody></table>`;
+    } else {
+      if (line.trim() === "") {
+        html += "<br>";
+      } else {
+        html += `<p>${line}</p>`;
+      }
+      i++;
+    }
+  }
+
+  return html;
+}
+
+window.goldenFormatContent = goldenFormatContent;
+function testGoldenFormatterNow() {
+  const box = document.getElementById("goldenSafeCheckBox");
+
+  const sample = `
+**Bold English**
+__Underlined English__
+==Highlighted text==
+[color:red]Red text[/color]
+
+| Word | Meaning |
+|------|---------|
+| achievement | إنجاز |
+| environment | بيئة |
+`;
+
+  const result = {
+    formatGoldenContentType: typeof formatGoldenContent,
+    goldenFormatContentType: typeof window.goldenFormatContent,
+    formatGoldenContentText: typeof formatGoldenContent === "function"
+      ? formatGoldenContent(sample).slice(0, 500)
+      : "formatGoldenContent NOT FOUND",
+    goldenFormatContentText: typeof window.goldenFormatContent === "function"
+      ? window.goldenFormatContent(sample).slice(0, 500)
+      : "window.goldenFormatContent NOT FOUND"
+  };
+
+  if (box) {
+    box.innerHTML = `
+      <div style="
+        padding:14px;
+        border-radius:16px;
+        background:#f8fafc;
+        border:1px solid #cbd5e1;
+        color:#0f172a;
+        font-family:Cairo, sans-serif;
+        line-height:1.8;
+        direction:ltr;
+        text-align:left;
+        white-space:pre-wrap;
+        overflow:auto;
+      ">${JSON.stringify(result, null, 2)}</div>
+
+      <h4 style="font-family:Cairo;margin-top:16px;">Live Preview:</h4>
+      <div style="
+        padding:14px;
+        border:1px solid #ddd;
+        border-radius:12px;
+        background:white;
+        direction:auto;
+      ">
+        ${typeof formatGoldenContent === "function" ? formatGoldenContent(sample) : ""}
+      </div>
+    `;
+  } else {
+    alert(JSON.stringify(result, null, 2));
+  }
+}
+
+window.testGoldenFormatterNow = testGoldenFormatterNow;
