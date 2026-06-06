@@ -31849,3 +31849,96 @@ window.submitExam = function submitExam_GoldenSafeWrapper() {
 window.submitGoldenLinkedExam = submitGoldenLinkedExam;
 
 console.log("✅ Golden submit exam fix installed.");
+/* =========================================================
+   GOLDEN LINKED EXAM BY CONTEXT
+   Opens Culture / Literature / Unit exams using final V3 flow
+========================================================= */
+
+async function startGoldenLinkedExamByContext(cohort, unitKey) {
+  try {
+    if (!window.client) {
+      alert("Supabase غير جاهز.");
+      return;
+    }
+
+    const normalizedUnit =
+      typeof normalizeGoldenAccessUnitKey === "function"
+        ? normalizeGoldenAccessUnitKey(unitKey)
+        : String(unitKey || "").trim();
+
+    console.log("🔎 Searching Golden linked exam by context:", {
+      cohort,
+      unitKey,
+      normalizedUnit
+    });
+
+    const { data: exams, error } = await client
+      .from("exams")
+      .select("*")
+      .eq("status", "published")
+      .eq("golden_cohort", String(cohort))
+      .eq("golden_unit", normalizedUnit)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Golden context exam search error:", error);
+      alert("تعذر البحث عن امتحان هذا القسم.");
+      return;
+    }
+
+    if (!exams || !exams.length) {
+      alert("لا يوجد امتحان منشور مرتبط بهذا القسم بعد.");
+      return;
+    }
+
+    /*
+      Use latest published exam.
+      This avoids duplicate old test rows.
+    */
+    const exam = exams[0];
+
+    console.log("✅ Golden linked exam found:", {
+      title: exam.title,
+      id: exam.id,
+      cohort: exam.golden_cohort,
+      unit: exam.golden_unit
+    });
+
+    if (typeof startGoldenLinkedExamV3 !== "function") {
+      alert("دالة تشغيل امتحان المكثف غير جاهزة.");
+      return;
+    }
+
+    await startGoldenLinkedExamV3(exam.id);
+
+  } catch (err) {
+    console.error("❌ startGoldenLinkedExamByContext failed:", err);
+    alert("حدث خطأ أثناء فتح امتحان المكثف.");
+  }
+}
+
+window.startGoldenLinkedExamByContext = startGoldenLinkedExamByContext;
+
+console.log("✅ Golden linked exam by context installed.");
+/* =========================================================
+   GOLDEN LITERATURE EXAM STARTER
+========================================================= */
+
+async function startGoldenLiteratureExam(cohort) {
+  return startGoldenLinkedExamByContext(cohort, "literatureSpot");
+}
+
+window.startGoldenLiteratureExam = startGoldenLiteratureExam;
+
+console.log("✅ Golden Literature exam starter installed.");
+/* =========================================================
+   GOLDEN CULTURE EXAM STARTER
+========================================================= */
+
+async function startGoldenCultureExam(cohort) {
+  return startGoldenLinkedExamByContext(cohort, "cultureSpot");
+}
+
+window.startGoldenCultureExam = startGoldenCultureExam;
+
+console.log("✅ Golden Culture exam starter installed.");
