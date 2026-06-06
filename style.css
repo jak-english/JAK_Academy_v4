@@ -36603,3 +36603,54 @@ body {
   background: #fffbeb;
   box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.22);
 }
+/* =========================================================
+   GOLDEN LINKED EXAM ACTION BUTTON
+========================================================= */
+
+.golden-linked-exam-action-box {
+  margin: 22px 0 6px;
+  padding: 18px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.22);
+  color: #ffffff;
+}
+
+.golden-linked-exam-action-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.golden-linked-exam-kicker {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  font-weight: 800;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.golden-linked-exam-action-box h3 {
+  margin: 0 0 6px;
+  color: #facc15;
+  font-weight: 900;
+}
+
+.golden-linked-exam-action-box p {
+  margin: 0;
+  color: #e5e7eb;
+  line-height: 1.7;
+}
+
+.golden-linked-exam-start-btn {
+  min-width: 170px;
+  font-weight: 800;
+}

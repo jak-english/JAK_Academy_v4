@@ -31942,3 +31942,156 @@ async function startGoldenCultureExam(cohort) {
 window.startGoldenCultureExam = startGoldenCultureExam;
 
 console.log("✅ Golden Culture exam starter installed.");
+/* =========================================================
+   GOLDEN LINKED EXAM BUTTONS PATCH
+   Adds working exam buttons inside Culture / Literature / Unit viewers
+   Uses startGoldenLinkedExamByContext(cohort, unitKey)
+========================================================= */
+
+function getGoldenLinkedExamLabel(unitKey) {
+  const key = String(unitKey || "").trim();
+
+  if (key === "cultureSpot") return "Culture Spot";
+  if (key === "literatureSpot") return "Literature Spot";
+
+  const match = key.match(/\d+/);
+  if (match) return "Unit " + Number(match[0]);
+
+  return "Golden Section";
+}
+
+ function getGoldenViewerByCohort(cohort) {
+  const c = String(cohort || "").trim();
+
+  return (
+    document.getElementById("goldenUnitViewer" + c) ||
+    document.getElementById("goldenViewer" + c) ||
+    document.getElementById("goldenUnitViewer2009") ||
+    document.getElementById("goldenUnitViewer2008") ||
+    document.getElementById("goldenViewer2009") ||
+    document.getElementById("goldenViewer2008") ||
+    document.getElementById("goldenViewer") ||
+    document.getElementById("goldenIntensive")
+  );
+}
+
+async function renderGoldenLinkedExamButton(cohort, unitKey) {
+  try {
+    if (!window.client) return;
+
+    const normalizedUnit =
+      typeof normalizeGoldenAccessUnitKey === "function"
+        ? normalizeGoldenAccessUnitKey(unitKey)
+        : String(unitKey || "").trim();
+
+    const viewer = getGoldenViewerByCohort(cohort);
+    if (!viewer) return;
+const existingText = viewer.innerText || "";
+if (existingText.includes("ابدأ الامتحان الآن") && existingText.includes("اختبار مرتبط")) {
+  Array.from(viewer.querySelectorAll(".golden-linked-exam-action-box")).forEach(box => box.remove());
+}
+    // Remove old duplicate button boxes
+ Array.from(viewer.querySelectorAll(".golden-linked-exam-action-box")).forEach(box => box.remove());
+
+    const { data: exams, error } = await client
+      .from("exams")
+      .select("id,title,status,golden_cohort,golden_unit,created_at")
+      .eq("status", "published")
+      .eq("golden_cohort", String(cohort))
+      .eq("golden_unit", normalizedUnit)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.warn("Golden linked exam button search error:", error);
+      return;
+    }
+
+    if (!exams || !exams.length) {
+      return;
+    }
+
+    const exam = exams[0];
+    const label = getGoldenLinkedExamLabel(normalizedUnit);
+
+    const box = document.createElement("div");
+    box.className = "golden-linked-exam-action-box";
+    box.dir = "rtl";
+
+    box.innerHTML = `
+      <div class="golden-linked-exam-action-inner">
+        <div>
+          <div class="golden-linked-exam-kicker">اختبار مرتبط</div>
+          <h3>${label} Exam</h3>
+          <p>${exam.title}</p>
+        </div>
+
+        <button
+          class="btn golden-linked-exam-start-btn"
+          type="button"
+          onclick="startGoldenLinkedExamByContext('${String(cohort)}', '${normalizedUnit}')"
+        >
+          ابدأ الامتحان الآن
+        </button>
+      </div>
+    `;
+
+    viewer.appendChild(box);
+
+    console.log("✅ Golden linked exam button rendered:", {
+      cohort,
+      unit: normalizedUnit,
+      examTitle: exam.title,
+      examId: exam.id
+    });
+
+  } catch (err) {
+    console.error("❌ renderGoldenLinkedExamButton failed:", err);
+  }
+}
+
+function installGoldenLinkedExamButtonHook() {
+  const currentOpenGoldenUnit = window.openGoldenUnit;
+
+  if (typeof currentOpenGoldenUnit !== "function") {
+    console.warn("⚠️ openGoldenUnit not ready for linked exam button hook.");
+    return false;
+  }
+
+  if (currentOpenGoldenUnit.__goldenLinkedExamButtonHooked) {
+    return true;
+  }
+
+  function openGoldenUnit_WITH_LINKED_EXAM_BUTTON(cohort, unitKey, sectionKey) {
+    const result = currentOpenGoldenUnit(cohort, unitKey, sectionKey);
+
+    setTimeout(() => {
+      renderGoldenLinkedExamButton(cohort, unitKey);
+    }, 700);
+
+    return result;
+  }
+
+  openGoldenUnit_WITH_LINKED_EXAM_BUTTON.__goldenLinkedExamButtonHooked = true;
+  openGoldenUnit_WITH_LINKED_EXAM_BUTTON.__wrappedOriginalName =
+    currentOpenGoldenUnit.name || "anonymous";
+
+  window.openGoldenUnit = openGoldenUnit_WITH_LINKED_EXAM_BUTTON;
+
+  console.log("✅ Golden linked exam button hook installed over:", currentOpenGoldenUnit.name);
+
+  return true;
+}
+
+/*
+  Because old Golden final bindings keep rebinding openGoldenUnit,
+  install the hook several times after page load.
+*/
+setTimeout(installGoldenLinkedExamButtonHook, 1000);
+setTimeout(installGoldenLinkedExamButtonHook, 2500);
+setTimeout(installGoldenLinkedExamButtonHook, 4500);
+setTimeout(installGoldenLinkedExamButtonHook, 7000);
+
+window.renderGoldenLinkedExamButton = renderGoldenLinkedExamButton;
+window.installGoldenLinkedExamButtonHook = installGoldenLinkedExamButtonHook;
+
+console.log("✅ Golden linked exam buttons patch installed.");
