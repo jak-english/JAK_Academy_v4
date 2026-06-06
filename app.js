@@ -30403,3 +30403,1449 @@ __Underlined English__
 }
 
 window.testGoldenFormatterNow = testGoldenFormatterNow;
+/* =========================================================
+   GOLDEN PATCH — Culture / Literature Linker Options
+   Adds Culture Spot + Literature Spot to Golden linker lists
+   without touching openGoldenUnit_FINAL or formatter.
+========================================================= */
+
+(function installGoldenCultureLiteratureLinkOptions() {
+  console.log("🏛️ Installing Golden Culture/Literature Link Options Patch...");
+
+  function getWorkingGoldenExtraKey(type) {
+    const candidates =
+      type === "culture"
+        ? ["cultureSpot", "culture", "culture_spot", "goldenCultureSpot"]
+        : ["literatureSpot", "literature", "literature_spot", "goldenLiteratureSpot"];
+
+    if (typeof isGoldenExtraSpot_FINAL === "function") {
+      const found = candidates.find(key => {
+        try {
+          return isGoldenExtraSpot_FINAL(key);
+        } catch (error) {
+          return false;
+        }
+      });
+
+      if (found) return found;
+    }
+
+    return type === "culture" ? "cultureSpot" : "literatureSpot";
+  }
+
+  const GOLDEN_EXTRA_OPTIONS = [
+    {
+      label: "Culture Spot",
+      value: getWorkingGoldenExtraKey("culture"),
+      type: "culture"
+    },
+    {
+      label: "Literature Spot",
+      value: getWorkingGoldenExtraKey("literature"),
+      type: "literature"
+    }
+  ];
+
+  function addOptionIfMissing(select, value, label) {
+    if (!select || !value) return;
+
+    const exists = Array.from(select.options || []).some(option => {
+      return String(option.value).trim() === String(value).trim();
+    });
+
+    if (exists) return;
+
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    select.appendChild(option);
+  }
+
+  function looksLikeGoldenUnitSelect(select) {
+    const id = String(select.id || "").toLowerCase();
+    const name = String(select.name || "").toLowerCase();
+    const label = String(select.getAttribute("aria-label") || "").toLowerCase();
+
+    return (
+      id.includes("golden") &&
+      (
+        id.includes("unit") ||
+        name.includes("unit") ||
+        label.includes("unit")
+      )
+    );
+  }
+
+  function looksLikeGoldenSkillOrLessonSelect(select) {
+    const id = String(select.id || "").toLowerCase();
+    const name = String(select.name || "").toLowerCase();
+    const label = String(select.getAttribute("aria-label") || "").toLowerCase();
+
+    return (
+      id.includes("golden") &&
+      (
+        id.includes("skill") ||
+        id.includes("lesson") ||
+        name.includes("skill") ||
+        name.includes("lesson") ||
+        label.includes("skill") ||
+        label.includes("lesson")
+      )
+    );
+  }
+
+  function looksLikeQuestionBankSkillSelect(select) {
+    const id = String(select.id || "").toLowerCase();
+    const name = String(select.name || "").toLowerCase();
+
+    return (
+      id.includes("skill") ||
+      name.includes("skill") ||
+      id.includes("lesson") ||
+      name.includes("lesson")
+    ) && (
+      id.includes("bank") ||
+      id.includes("question") ||
+      id.includes("import")
+    );
+  }
+
+  function patchGoldenCultureLiteratureOptions() {
+    const selects = Array.from(document.querySelectorAll("select"));
+
+    const goldenUnitSelects = selects.filter(looksLikeGoldenUnitSelect);
+    const goldenSkillLessonSelects = selects.filter(looksLikeGoldenSkillOrLessonSelect);
+    const bankSkillSelects = selects.filter(looksLikeQuestionBankSkillSelect);
+
+    goldenUnitSelects.forEach(select => {
+      GOLDEN_EXTRA_OPTIONS.forEach(item => {
+        addOptionIfMissing(select, item.value, item.label);
+      });
+    });
+
+    goldenSkillLessonSelects.forEach(select => {
+      addOptionIfMissing(select, "culture_spot", "Culture Spot");
+      addOptionIfMissing(select, "literature_spot", "Literature Spot");
+    });
+
+    bankSkillSelects.forEach(select => {
+      addOptionIfMissing(select, "Culture Spot", "Culture Spot");
+      addOptionIfMissing(select, "Literature Spot", "Literature Spot");
+    });
+
+   // Culture/Literature options patched silently.
+  }
+
+  window.patchGoldenCultureLiteratureOptions = patchGoldenCultureLiteratureOptions;
+
+  setTimeout(patchGoldenCultureLiteratureOptions, 400);
+  setTimeout(patchGoldenCultureLiteratureOptions, 1200);
+  setTimeout(patchGoldenCultureLiteratureOptions, 2500);
+
+  document.addEventListener("click", function (event) {
+    const target = event.target;
+    if (!target) return;
+
+    const insideGoldenOrBank =
+      target.closest?.("#goldenIntensive") ||
+      target.closest?.("#questionBank") ||
+      target.closest?.("#teacherDashboard") ||
+      target.closest?.(".golden-linker-panel") ||
+      target.closest?.(".question-bank-panel");
+
+    if (insideGoldenOrBank) {
+      setTimeout(patchGoldenCultureLiteratureOptions, 300);
+      setTimeout(patchGoldenCultureLiteratureOptions, 900);
+    }
+  });
+
+  console.log("✅ Golden Culture/Literature Link Options Patch installed.");
+})();
+/* =========================================================
+   GOLDEN PATCH — Force Global Culture/Literature Options
+========================================================= */
+
+function patchGoldenCultureLiteratureOptions() {
+  function addOptionIfMissing(select, value, label) {
+    if (!select || !value) return;
+
+    const exists = Array.from(select.options || []).some(option =>
+      String(option.value).trim() === String(value).trim() ||
+      String(option.textContent).trim() === String(label).trim()
+    );
+
+    if (exists) return;
+
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    select.appendChild(option);
+  }
+
+  const ids = [
+    "goldenLinkUnit",
+    "goldenLinkLesson",
+    "goldenLinkSkill",
+    "bankSkillFilter",
+    "importQuestionSkill",
+    "questionSkill"
+  ];
+
+  ids.forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+
+    if (id === "goldenLinkUnit") {
+      addOptionIfMissing(select, "cultureSpot", "Culture Spot");
+      addOptionIfMissing(select, "literatureSpot", "Literature Spot");
+    } else {
+      addOptionIfMissing(select, "Culture Spot", "Culture Spot");
+      addOptionIfMissing(select, "Literature Spot", "Literature Spot");
+    }
+  });
+
+  return {
+    goldenLinkUnit: !!document.getElementById("goldenLinkUnit"),
+    goldenLinkSkill: !!document.getElementById("goldenLinkSkill"),
+    bankSkillFilter: !!document.getElementById("bankSkillFilter"),
+    importQuestionSkill: !!document.getElementById("importQuestionSkill"),
+    questionSkill: !!document.getElementById("questionSkill")
+  };
+}
+
+window.patchGoldenCultureLiteratureOptions = patchGoldenCultureLiteratureOptions;
+
+setTimeout(patchGoldenCultureLiteratureOptions, 500);
+setTimeout(patchGoldenCultureLiteratureOptions, 1500);
+setTimeout(patchGoldenCultureLiteratureOptions, 3000);
+
+console.log("✅ Golden Culture/Literature global options patch loaded.");
+/* =========================================================
+   GOLDEN PATCH — Render Linked Exams For Units + Extra Spots
+   Safe patch for Culture Spot / Literature Spot linked exams.
+========================================================= */
+
+ async function renderGoldenLinkedExamsBox(cohort, unitKey, skill = "") {
+  const db =
+    (typeof client !== "undefined" && client?.from) ? client :
+    (window.client?.from ? window.client : null);
+
+  const viewer = document.getElementById(`goldenUnitViewer${cohort}`);
+
+  if (!db || !viewer) {
+    console.warn("Golden linked exams render skipped:", {
+      db: !!db,
+      viewer: !!viewer,
+      cohort,
+      unitKey,
+      skill
+    });
+    return;
+  }
+
+  // Remove ALL old linked exam boxes to prevent duplicates / stale empty box
+  viewer.querySelectorAll(".golden-linked-exams-box").forEach(box => box.remove());
+
+  const examsBox = document.createElement("div");
+  examsBox.className = "golden-linked-exams-box";
+
+  examsBox.innerHTML = `
+    <h3>🧠 امتحانات وتدريبات هذه الوحدة</h3>
+    <p class="golden-muted">جاري تحميل الامتحانات...</p>
+  `;
+
+  viewer.appendChild(examsBox);
+
+  const possibleUnits = Array.from(new Set([
+    unitKey,
+    String(unitKey || "").replace("_", ""),
+    String(unitKey || "").replace("Spot", ""),
+    String(unitKey || "").toLowerCase(),
+    unitKey === "cultureSpot" ? "culture" : "",
+    unitKey === "literatureSpot" ? "literature" : ""
+  ].filter(Boolean)));
+
+  let { data, error } = await db
+    .from("exams")
+    .select("id,title,description,status,subject,grade_level,unit,golden_cohort,golden_unit,golden_lesson,golden_skill,time_limit,exam_type")
+    .eq("golden_cohort", String(cohort))
+    .in("golden_unit", possibleUnits)
+    .eq("status", "published");
+
+  if (error) {
+    console.error("❌ Golden linked exams query error:", error);
+    examsBox.innerHTML = `
+      <h3>🧠 امتحانات وتدريبات هذه الوحدة</h3>
+      <p class="golden-muted">حدث خطأ أثناء تحميل الامتحانات.</p>
+    `;
+    return;
+  }
+
+  data = data || [];
+
+  // Remove duplicated test/exam cards by title + golden_unit
+  const uniqueMap = new Map();
+
+  data.forEach(exam => {
+    const key = `${exam.title || ""}__${exam.golden_unit || ""}`;
+
+    if (!uniqueMap.has(key)) {
+      uniqueMap.set(key, exam);
+    }
+  });
+
+  data = Array.from(uniqueMap.values());
+
+  if (!data.length) {
+    examsBox.innerHTML = `
+      <h3>🧠 امتحانات وتدريبات هذه الوحدة</h3>
+      <p class="golden-muted">لا توجد امتحانات مرتبطة بهذه الوحدة حتى الآن.</p>
+    `;
+    return;
+  }
+
+  examsBox.innerHTML = `
+    <h3>🧠 امتحانات وتدريبات هذه الوحدة</h3>
+
+    <div class="golden-linked-exams-list">
+      ${data.map(exam => `
+        <div class="golden-linked-exam-card">
+          <div>
+            <strong>${escapeGoldenHTML(exam.title || "Golden Exam")}</strong>
+            <p>${escapeGoldenHTML(exam.description || "امتحان مرتبط بالمكثف الذهبي.")}</p>
+            <small>
+              ${escapeGoldenHTML(exam.subject || "English")}
+              ${exam.grade_level ? " | Grade " + escapeGoldenHTML(exam.grade_level) : ""}
+              ${exam.time_limit ? " | " + escapeGoldenHTML(exam.time_limit) + " min" : ""}
+            </small>
+          </div>
+
+          <button type="button" onclick="startGoldenLinkedExam('${exam.id}')">
+            ابدأ الامتحان
+          </button>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  if (typeof forceFixGoldenStartButtons === "function") {
+    setTimeout(forceFixGoldenStartButtons, 100);
+  }
+
+  console.log("✅ Golden linked exams rendered cleanly:", {
+    cohort,
+    unitKey,
+    possibleUnits,
+    count: data.length,
+    titles: data.map(e => e.title)
+  });
+}
+
+window.renderGoldenLinkedExamsBox = renderGoldenLinkedExamsBox;
+window.renderGoldenLinkedExamsBox = renderGoldenLinkedExamsBox;
+
+/* =========================================================
+   GOLDEN PATCH — Auto render linked exams after opening unit
+========================================================= */
+
+(function installGoldenLinkedExamsAutoRenderFinal() {
+  const oldOpenGoldenUnit = window.openGoldenUnit;
+
+  if (typeof oldOpenGoldenUnit !== "function") {
+    console.warn("openGoldenUnit not found for linked exams auto render.");
+    return;
+  }
+
+  window.openGoldenUnit = function(cohort, unitKeyOrNumber, ...rest) {
+    const result = oldOpenGoldenUnit.call(this, cohort, unitKeyOrNumber, ...rest);
+
+    const unitKey = String(unitKeyOrNumber || "");
+
+    setTimeout(() => {
+      if (typeof renderGoldenLinkedExamsBox === "function") {
+        renderGoldenLinkedExamsBox(String(cohort || "2008"), unitKey);
+      }
+    }, 700);
+
+    setTimeout(() => {
+      if (typeof renderGoldenLinkedExamsBox === "function") {
+        renderGoldenLinkedExamsBox(String(cohort || "2008"), unitKey);
+      }
+    }, 1500);
+
+    return result;
+  };
+
+  console.log("✅ Golden linked exams auto render final installed.");
+})();
+
+/* =========================================================
+   GOLDEN PATCH — Robust Start Linked Exam
+   Fixes "no exam selected" when starting Golden linked exams
+========================================================= */
+
+async function startGoldenLinkedExam(examId) {
+  const db =
+    (typeof client !== "undefined" && client?.from) ? client :
+    (window.client?.from ? window.client : null);
+
+  if (!db) {
+    alert("Database connection not found.");
+    console.error("❌ Supabase client not found.");
+    return;
+  }
+
+  if (!examId) {
+    alert("No exam selected.");
+    console.error("❌ No golden exam id passed.");
+    return;
+  }
+
+  console.log("▶️ Starting Golden linked exam:", examId);
+
+  const { data: exam, error: examError } = await db
+    .from("exams")
+    .select("*")
+    .eq("id", examId)
+    .single();
+
+  if (examError || !exam) {
+    alert("Exam not found.");
+    console.error("❌ Golden exam load error:", examError);
+    return;
+  }
+
+  const { data: questions, error: questionsError } = await db
+    .from("questions")
+    .select("*")
+    .eq("exam_id", examId);
+
+  if (questionsError) {
+    alert("Could not load exam questions.");
+    console.error("❌ Golden exam questions load error:", questionsError);
+    return;
+  }
+
+  if (!questions || !questions.length) {
+    alert("This exam has no questions yet.");
+    console.warn("⚠️ Golden exam has no questions:", exam);
+    return;
+  }
+
+  const fullExam = {
+    ...exam,
+    questions,
+    duration: exam.time_limit || exam.duration || 10,
+    time_limit: exam.time_limit || exam.duration || 10
+  };
+
+  // Set all likely globals used by the existing exam engine
+  window.currentPreviewExam = fullExam;
+  window.currentExam = fullExam;
+  window.selectedExam = fullExam;
+  window.previewExamQuestions = questions;
+  window.currentExamQuestions = questions;
+  window.solvingQuestions = questions;
+
+  console.log("✅ Golden exam prepared:", {
+    id: fullExam.id,
+    title: fullExam.title,
+    questions: questions.length,
+    currentPreviewExam: !!window.currentPreviewExam,
+    startSolvingExam: typeof window.startSolvingExam
+  });
+
+  if (typeof window.startSolvingExam === "function") {
+    try {
+      // Some versions expect no argument and read currentPreviewExam
+      window.startSolvingExam();
+      return;
+    } catch (error1) {
+      console.warn("⚠️ startSolvingExam() failed, trying with exam id:", error1);
+
+      try {
+        window.startSolvingExam(examId);
+        return;
+      } catch (error2) {
+        console.error("❌ startSolvingExam failed both ways:", error2);
+      }
+    }
+  }
+
+  alert("Exam is ready, but startSolvingExam was not found.");
+}
+
+window.startGoldenLinkedExam = startGoldenLinkedExam;
+
+console.log("✅ Robust Golden start linked exam patch installed.");
+/* =========================================================
+   GOLDEN INTENSIVE ACCESS CONTROL PATCH
+   Unit 1 Free / Unit 2-10 Premium / Owner Only Tools
+========================================================= */
+
+function normalizeGoldenAccessUnitKey(unitKey) {
+  const key = String(unitKey || "").trim();
+
+  if (key === "cultureSpot" || key === "literatureSpot") return key;
+
+  const match = key.match(/\d+/);
+  if (!match) return key;
+
+  return "unit" + Number(match[0]);
+}
+
+function getGoldenAccessUnitNumber(unitKey) {
+  const key = normalizeGoldenAccessUnitKey(unitKey);
+  const match = String(key).match(/\d+/);
+  return match ? Number(match[0]) : null;
+}
+
+function getGoldenCurrentUserProfileSafe() {
+  const possible =
+    window.currentProfile ||
+    window.currentUserProfile ||
+    window.profile ||
+    window.loggedInProfile ||
+    null;
+
+  return possible && typeof possible === "object" ? possible : null;
+}
+
+function getGoldenCurrentRoleSafe() {
+  const profile = getGoldenCurrentUserProfileSafe();
+
+  const role =
+    profile?.role ||
+    window.currentRole ||
+    localStorage.getItem("role") ||
+    localStorage.getItem("userRole") ||
+    "";
+
+  return String(role || "").toLowerCase().trim();
+}
+
+function getGoldenCurrentEmailSafe() {
+  const profile = getGoldenCurrentUserProfileSafe();
+
+  const email =
+    profile?.email ||
+    window.currentUser?.email ||
+    window.loggedInUser?.email ||
+    localStorage.getItem("email") ||
+    localStorage.getItem("userEmail") ||
+    "";
+
+  return String(email || "").toLowerCase().trim();
+}
+
+function isGoldenOwnerSafe() {
+  const email = getGoldenCurrentEmailSafe();
+
+  /*
+    Owner emails:
+    - jalal26@yahoo.com appeared in your console as owner/admin.
+    - jalal026@gmail.com is your ChatGPT account email.
+    Keep both for safety.
+  */
+  return email === "jalal26@yahoo.com" || email === "jalal026@gmail.com";
+}
+
+function isGoldenAdminOrTeacherSafe() {
+  const role = getGoldenCurrentRoleSafe();
+  return (
+    role.includes("admin") ||
+    role.includes("super_admin") ||
+    role.includes("teacher")
+  );
+}
+
+function isGoldenPremiumSafe() {
+  const profile = getGoldenCurrentUserProfileSafe();
+
+  const isPremium =
+    profile?.is_premium === true ||
+    profile?.premium === true ||
+    profile?.premium_status === true ||
+    String(profile?.is_premium || "").toLowerCase() === "true";
+
+  const premiumUntil = profile?.premium_until || profile?.teacher_premium_until || null;
+
+  if (premiumUntil) {
+    const expiry = new Date(premiumUntil).getTime();
+    if (!Number.isNaN(expiry) && expiry > Date.now()) return true;
+  }
+
+  return isPremium;
+}
+
+function canAccessGoldenUnit(unitKey) {
+  const normalizedKey = normalizeGoldenAccessUnitKey(unitKey);
+  const unitNumber = getGoldenAccessUnitNumber(normalizedKey);
+
+  // Owner always has access
+  if (isGoldenOwnerSafe()) return true;
+
+  // Admin/teacher can view paid material for teaching/admin purposes
+  if (isGoldenAdminOrTeacherSafe()) return true;
+
+  // Unit 1 is free for everyone
+  if (unitNumber === 1) return true;
+
+  // Culture Spot and Literature Spot are premium
+  if (normalizedKey === "cultureSpot" || normalizedKey === "literatureSpot") {
+    return isGoldenPremiumSafe();
+  }
+
+  // Unit 2-10 are premium
+  if (unitNumber && unitNumber >= 2) {
+    return isGoldenPremiumSafe();
+  }
+
+  return false;
+}
+
+function renderGoldenLockedMessage(cohort, unitKey) {
+  const normalizedKey = normalizeGoldenAccessUnitKey(unitKey);
+
+  let label = "هذا القسم";
+  const unitNumber = getGoldenAccessUnitNumber(normalizedKey);
+
+  if (unitNumber) label = "Unit " + unitNumber;
+  if (normalizedKey === "cultureSpot") label = "Culture Spot";
+  if (normalizedKey === "literatureSpot") label = "Literature Spot";
+
+  // افتح صفحة المكثف أولاً حتى تظهر الرسالة أمام الطالب
+  if (typeof showPage === "function") {
+    showPage("goldenIntensive");
+  }
+
+  // تأكد من إظهار تبويب الجيل المطلوب لو التبويبات موجودة
+  const panel2008 = document.getElementById("golden-grade2008");
+  const panel2009 = document.getElementById("golden-grade2009");
+
+  if (panel2008 && panel2009) {
+    panel2008.classList.remove("active");
+    panel2009.classList.remove("active");
+
+    if (String(cohort) === "2008") {
+      panel2008.classList.add("active");
+    } else {
+      panel2009.classList.add("active");
+    }
+  }
+
+  const viewer =
+    document.getElementById("goldenViewer" + cohort) ||
+    document.getElementById("goldenViewer2009") ||
+    document.getElementById("goldenViewer2008") ||
+    document.getElementById("goldenViewer");
+
+  if (!viewer) {
+    alert("🔒 هذا المحتوى مخصص لمشتركي Premium.\nالوحدة الأولى مجانية فقط.");
+    return;
+  }
+
+  viewer.innerHTML = `
+    <div class="golden-locked-card" dir="rtl">
+      <div class="golden-locked-badge">🔒 Premium</div>
+
+      <h3>${label} مخصص لمشتركي Premium</h3>
+
+      <p>
+        هذه الوحدة ليست ضمن المحتوى المجاني.
+      </p>
+
+      <p>
+        ✅ <strong>Unit 1 مجانية</strong><br>
+        🔒 <strong>Unit 2 إلى Unit 10</strong> متاحة فقط لمشتركي المكثف الذهبي Premium.
+      </p>
+
+      <p>
+        كذلك أقسام <strong>Culture Spot</strong> و <strong>Literature Spot</strong>
+        مخصصة للمشتركين فقط.
+      </p>
+
+      <button class="btn" onclick="showPage('premium'); if (typeof renderPaymentInfo === 'function') renderPaymentInfo();">
+        طلب الاشتراك / تفعيل Premium
+      </button>
+    </div>
+  `;
+
+  viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+
+ function protectGoldenOwnerTools() {
+  const tools = [
+    document.getElementById("goldenOwnerTools"),
+    ...document.querySelectorAll(".golden-owner-tools")
+  ].filter(Boolean);
+
+  tools.forEach(box => {
+    if (isGoldenOwnerSafe()) {
+      box.classList.add("golden-owner-visible");
+      box.style.display = "block";
+    } else {
+      box.classList.remove("golden-owner-visible");
+      box.style.display = "none";
+    }
+  });
+}
+
+
+/*
+  Wrap openGoldenUnit safely:
+  This protects the route itself, not only the buttons.
+*/
+(function installGoldenAccessGuard() {
+  const previousOpenGoldenUnit = window.openGoldenUnit;
+
+  if (typeof previousOpenGoldenUnit !== "function") {
+    console.warn("⚠️ Golden access guard waiting: openGoldenUnit is not ready yet.");
+    return;
+  }
+
+  if (previousOpenGoldenUnit.__goldenAccessGuarded) {
+    console.log("✅ Golden access guard already installed.");
+    return;
+  }
+
+  function openGoldenUnit_ACCESS_GUARDED(cohort, unitKey, sectionKey) {
+    const normalizedKey = normalizeGoldenAccessUnitKey(unitKey);
+
+    protectGoldenOwnerTools();
+
+    if (!canAccessGoldenUnit(normalizedKey)) {
+      renderGoldenLockedMessage(cohort, normalizedKey);
+      return;
+    }
+
+    return previousOpenGoldenUnit(cohort, normalizedKey, sectionKey);
+  }
+
+  openGoldenUnit_ACCESS_GUARDED.__goldenAccessGuarded = true;
+
+  window.openGoldenUnit = openGoldenUnit_ACCESS_GUARDED;
+
+  console.log("✅ Golden Intensive access guard installed.");
+})();
+
+/*
+  Re-run owner protection after page load and after role navigation.
+*/
+document.addEventListener("DOMContentLoaded", function () {
+  protectGoldenOwnerTools();
+});
+
+setTimeout(protectGoldenOwnerTools, 500);
+setTimeout(protectGoldenOwnerTools, 1500);
+setTimeout(protectGoldenOwnerTools, 3000);
+
+window.protectGoldenOwnerTools = protectGoldenOwnerTools;
+window.canAccessGoldenUnit = canAccessGoldenUnit;
+window.renderGoldenLockedMessage = renderGoldenLockedMessage;
+ /* =========================================================
+   GOLDEN ACCESS GUARD - WATCHDOG FINAL
+   Keeps protection active even if old code rebinds openGoldenUnit_FINAL
+========================================================= */
+
+function installGoldenAccessGuardWatchdog() {
+  const current = window.openGoldenUnit;
+
+  if (typeof current !== "function") {
+    return false;
+  }
+
+  if (current.__goldenAccessWatchdogGuarded) {
+    return true;
+  }
+
+  function openGoldenUnit_ACCESS_WATCHDOG(cohort, unitKey, sectionKey) {
+    const normalizedKey =
+      typeof normalizeGoldenAccessUnitKey === "function"
+        ? normalizeGoldenAccessUnitKey(unitKey)
+        : unitKey;
+
+    if (typeof protectGoldenOwnerTools === "function") {
+      protectGoldenOwnerTools();
+    }
+
+    if (
+      typeof canAccessGoldenUnit === "function" &&
+      !canAccessGoldenUnit(normalizedKey)
+    ) {
+      if (typeof renderGoldenLockedMessage === "function") {
+        renderGoldenLockedMessage(cohort, normalizedKey);
+      }
+      return;
+    }
+
+    return current(cohort, normalizedKey, sectionKey);
+  }
+
+  openGoldenUnit_ACCESS_WATCHDOG.__goldenAccessWatchdogGuarded = true;
+  openGoldenUnit_ACCESS_WATCHDOG.__wrappedOriginalName = current.name || "anonymous";
+
+  window.openGoldenUnit = openGoldenUnit_ACCESS_WATCHDOG;
+
+  console.log("✅ Golden access WATCHDOG guard installed over:", current.name);
+
+  return true;
+}
+
+/*
+  This watchdog keeps checking because old Golden code is still rebinding:
+  window.openGoldenUnit = openGoldenUnit_FINAL;
+*/
+(function startGoldenAccessWatchdog() {
+  let attempts = 0;
+
+  const timer = setInterval(function () {
+    attempts++;
+
+    const name = window.openGoldenUnit?.name || "";
+
+    if (name !== "openGoldenUnit_ACCESS_WATCHDOG") {
+      installGoldenAccessGuardWatchdog();
+    }
+
+    if (typeof protectGoldenOwnerTools === "function") {
+      protectGoldenOwnerTools();
+    }
+
+    // Stop after about 18 seconds
+    if (attempts >= 60) {
+      clearInterval(timer);
+
+      if (window.openGoldenUnit?.name !== "openGoldenUnit_ACCESS_WATCHDOG") {
+        installGoldenAccessGuardWatchdog();
+      }
+
+      console.log("✅ Golden access watchdog finished. Current:", window.openGoldenUnit?.name);
+    }
+  }, 300);
+})();
+
+window.installGoldenAccessGuardWatchdog = installGoldenAccessGuardWatchdog;
+/* =========================================================
+   GOLDEN AUTH PROFILE HYDRATION
+   Reads current Supabase user/profile for Golden access control
+========================================================= */
+
+async function hydrateGoldenCurrentProfile() {
+  try {
+    if (!window.client || !client.auth) {
+      console.warn("⚠️ Supabase client not ready for Golden profile hydration.");
+      return null;
+    }
+
+    const userResult = await client.auth.getUser();
+    const authUser = userResult?.data?.user || null;
+
+    if (!authUser?.email) {
+      window.currentUser = null;
+      window.currentProfile = null;
+      if (typeof protectGoldenOwnerTools === "function") {
+        protectGoldenOwnerTools();
+      }
+      return null;
+    }
+
+    const email = String(authUser.email || "").toLowerCase().trim();
+
+    const { data: profile, error } = await client
+      .from("profiles")
+      .select("*")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (error) {
+      console.warn("⚠️ Golden profile hydration error:", error);
+      return null;
+    }
+
+    window.currentUser = authUser;
+    window.currentProfile = profile || {
+      email,
+      role: authUser?.user_metadata?.role || "",
+      is_premium: false
+    };
+
+    if (typeof protectGoldenOwnerTools === "function") {
+      protectGoldenOwnerTools();
+    }
+
+    console.log("✅ Golden profile hydrated:", {
+      email: window.currentProfile?.email,
+      role: window.currentProfile?.role,
+      is_premium: window.currentProfile?.is_premium
+    });
+
+    return window.currentProfile;
+  } catch (err) {
+    console.error("❌ hydrateGoldenCurrentProfile failed:", err);
+    return null;
+  }
+}
+
+/*
+  Run after load because Supabase auth may not be ready instantly.
+*/
+setTimeout(hydrateGoldenCurrentProfile, 300);
+setTimeout(hydrateGoldenCurrentProfile, 1200);
+setTimeout(hydrateGoldenCurrentProfile, 2500);
+
+window.hydrateGoldenCurrentProfile = hydrateGoldenCurrentProfile;
+/* =========================================================
+   GOLDEN LINKED EXAM STARTER V2
+   Loads exam + questions directly from Supabase questions.exam_id
+========================================================= */
+
+function normalizeGoldenExamQuestion(q, index) {
+  const questionText =
+    q.question_text ||
+    q.question ||
+    q.text ||
+    "";
+
+  const type = String(q.question_type || q.type || "mcq").toLowerCase().trim();
+
+  const optionA = q.option_a ?? q.a ?? "";
+  const optionB = q.option_b ?? q.b ?? "";
+  const optionC = q.option_c ?? q.c ?? "";
+  const optionD = q.option_d ?? q.d ?? "";
+
+  const normalized = {
+    ...q,
+
+    id: q.id,
+    exam_id: q.exam_id,
+
+    question_text: questionText,
+    question: questionText,
+
+    question_type: type,
+    type: type,
+
+    option_a: optionA,
+    option_b: optionB,
+    option_c: optionC,
+    option_d: optionD,
+
+    options:
+      type === "tf"
+        ? ["True", "False"]
+        : [optionA, optionB, optionC, optionD].filter(opt => String(opt || "").trim() !== ""),
+
+    correct_answer: q.correct_answer,
+    answer: q.correct_answer,
+
+    explanation: q.explanation || "",
+
+    order_index:
+      q.order_index ??
+      q.question_order ??
+      q.sort_order ??
+      index
+  };
+
+  return normalized;
+}
+
+async function startGoldenLinkedExamV2(examId) {
+  try {
+    if (!examId) {
+      alert("لم يتم تحديد الامتحان.");
+      return;
+    }
+
+    if (!window.client) {
+      alert("Supabase غير جاهز.");
+      return;
+    }
+
+    console.log("🚀 Starting Golden linked exam V2:", examId);
+
+    const { data: exam, error: examError } = await client
+      .from("exams")
+      .select("*")
+      .eq("id", examId)
+      .single();
+
+    if (examError || !exam) {
+      console.error("Golden exam load error:", examError);
+      alert("تعذر تحميل الامتحان.");
+      return;
+    }
+
+    const { data: rawQuestions, error: questionsError } = await client
+      .from("questions")
+      .select("*")
+      .eq("exam_id", examId);
+
+    if (questionsError) {
+      console.error("Golden questions load error:", questionsError);
+      alert("تعذر تحميل أسئلة الامتحان.");
+      return;
+    }
+
+    const questions = (rawQuestions || [])
+      .map(normalizeGoldenExamQuestion)
+      .sort((a, b) => Number(a.order_index || 0) - Number(b.order_index || 0));
+
+    if (!questions.length) {
+      console.warn("⚠️ Golden exam has no questions:", examId);
+      alert("هذا الامتحان لا يحتوي على أسئلة بعد.");
+      return;
+    }
+
+    window.currentPreviewExam = {
+      ...exam,
+
+      id: exam.id,
+      title: exam.title,
+      status: exam.status,
+      timeLimit: exam.time_limit || exam.timeLimit || 10,
+      time_limit: exam.time_limit || exam.timeLimit || 10,
+
+      questions,
+      exam_questions: questions,
+      items: questions
+    };
+
+    window.solvingQuestions = questions;
+    window.currentExamQuestions = questions;
+    window.examQuestions = questions;
+    window.currentQuestionIndex = 0;
+    window.studentAnswers = {};
+    window.reviewLater = {};
+
+    console.log("✅ Golden linked exam loaded:", {
+      examTitle: window.currentPreviewExam.title,
+      questionsCount: questions.length,
+      firstQuestion: questions[0]
+    });
+
+    if (typeof startSolvingExam === "function") {
+      startSolvingExam(window.currentPreviewExam);
+      return;
+    }
+
+    if (typeof openExamSolver === "function") {
+      openExamSolver(window.currentPreviewExam);
+      return;
+    }
+
+    if (typeof showPage === "function") {
+      showPage("examSolver");
+    }
+
+    if (typeof displayQuestion === "function") {
+      displayQuestion(0);
+    }
+  } catch (err) {
+    console.error("❌ startGoldenLinkedExamV2 failed:", err);
+    alert("حدث خطأ أثناء تشغيل امتحان المكثف.");
+  }
+}
+
+/*
+  Replace old starter safely.
+*/
+window.startGoldenLinkedExam = startGoldenLinkedExamV2;
+window.startGoldenLinkedExamV2 = startGoldenLinkedExamV2;
+
+console.log("✅ Golden linked exam starter V2 installed.");
+ 
+/* =========================================================
+   GOLDEN LINKED EXAM V3 - STANDALONE FINAL
+   Loads exam + questions, prepares solver, then renders question
+========================================================= */
+
+/* =========================================================
+   GOLDEN LINKED EXAM V3 - STANDALONE FINAL + TIMER
+   Loads exam + questions, prepares solver, renders question, starts timer
+========================================================= */
+
+async function startGoldenLinkedExamV3(examId) {
+  try {
+    if (!examId) {
+      alert("No exam selected");
+      return;
+    }
+
+    if (!window.client) {
+      alert("Supabase غير جاهز.");
+      return;
+    }
+
+    console.log("🚀 Starting Golden linked exam V3 standalone:", examId);
+
+    // 1) Load exam
+    const { data: exam, error: examError } = await client
+      .from("exams")
+      .select("*")
+      .eq("id", examId)
+      .single();
+
+    if (examError || !exam) {
+      console.error("Golden exam load error:", examError);
+      alert("تعذر تحميل الامتحان.");
+      return;
+    }
+
+    // 2) Load questions linked directly by questions.exam_id
+    const { data: rawQuestions, error: questionsError } = await client
+      .from("questions")
+      .select("*")
+      .eq("exam_id", examId);
+
+    if (questionsError) {
+      console.error("Golden questions load error:", questionsError);
+      alert("تعذر تحميل أسئلة الامتحان.");
+      return;
+    }
+
+    // 3) Normalize questions
+    const questions = (rawQuestions || [])
+      .map((q, index) => normalizeGoldenExamQuestion(q, index))
+      .sort((a, b) => Number(a.order_index || 0) - Number(b.order_index || 0));
+
+    if (!questions.length) {
+      alert("هذا الامتحان لا يحتوي على أسئلة بعد.");
+      return;
+    }
+
+    // 4) Prepare exam object
+    const preparedExam = {
+      ...exam,
+
+      id: exam.id,
+      exam_id: exam.id,
+      title: exam.title || "Golden Exam",
+      status: exam.status || "published",
+
+      timeLimit: Number(exam.time_limit || exam.timeLimit || 10),
+      time_limit: Number(exam.time_limit || exam.timeLimit || 10),
+
+      questions,
+      exam_questions: questions,
+      items: questions
+    };
+
+    // 5) Fill all exam-engine globals
+    window.currentPreviewExam = preparedExam;
+    window.selectedExam = preparedExam;
+    window.currentExam = preparedExam;
+    window.activeExam = preparedExam;
+    window.examToSolve = preparedExam;
+
+    window.selectedExamId = preparedExam.id;
+    window.currentExamId = preparedExam.id;
+    window.activeExamId = preparedExam.id;
+    window.previewExamId = preparedExam.id;
+
+    window.solvingQuestions = questions;
+    window.currentExamQuestions = questions;
+    window.examQuestions = questions;
+
+    window.currentQuestionIndex = 0;
+    window.studentAnswers = {};
+    window.reviewLater = {};
+    window.examRetryMode = false;
+
+    // 6) Timer setup
+    if (window.timerInterval) {
+      clearInterval(window.timerInterval);
+      window.timerInterval = null;
+    }
+
+    window.remainingSeconds = Number(preparedExam.time_limit || 10) * 60;
+
+    function updateGoldenExamTimerDisplay() {
+      const timerEl = document.getElementById("examTimer");
+      if (!timerEl) return;
+
+      const safeSeconds = Math.max(Number(window.remainingSeconds || 0), 0);
+      const mins = Math.floor(safeSeconds / 60);
+      const secs = safeSeconds % 60;
+
+      timerEl.textContent =
+        String(mins).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
+    }
+
+    console.log("✅ Golden V3 standalone prepared:", {
+      examTitle: preparedExam.title,
+      examId: preparedExam.id,
+      questionsCount: questions.length,
+      selectedExamId: window.selectedExamId,
+      timeLimit: preparedExam.time_limit,
+      firstQuestion: questions[0]
+    });
+
+    // 7) Open solver page immediately
+    if (typeof showPage === "function") {
+      showPage("examSolver");
+    }
+
+    // 8) Render after page scripts finish changing layout
+    setTimeout(() => {
+      if (typeof showPage === "function") {
+        showPage("examSolver");
+      }
+
+      updateGoldenExamTimerDisplay();
+
+      if (typeof renderGoldenExamQuestion === "function") {
+        renderGoldenExamQuestion(0);
+      } else if (typeof displayQuestion === "function") {
+        displayQuestion(0);
+      } else {
+        console.warn("⚠️ No question renderer found.");
+      }
+
+      window.timerInterval = setInterval(() => {
+        window.remainingSeconds = Number(window.remainingSeconds || 0) - 1;
+        updateGoldenExamTimerDisplay();
+
+        if (window.remainingSeconds <= 0) {
+          clearInterval(window.timerInterval);
+          window.timerInterval = null;
+          alert("انتهى وقت الامتحان.");
+        }
+      }, 1000);
+    }, 500);
+
+  } catch (err) {
+    console.error("❌ startGoldenLinkedExamV3 standalone failed:", err);
+    alert("حدث خطأ أثناء تشغيل امتحان المكثف.");
+  }
+}
+
+/*
+  Force Golden linked exams to use V3
+*/
+window.startGoldenLinkedExam = startGoldenLinkedExamV3;
+window.startGoldenLinkedExamV3 = startGoldenLinkedExamV3;
+
+console.log("✅ Golden linked exam V3 standalone installed.");
+/* =========================================================
+   GOLDEN EXAM QUESTION RENDERER
+   Writes Golden questions directly into examSolver UI
+========================================================= */
+
+function renderGoldenExamQuestion(index = 0) {
+  const questions = window.solvingQuestions || window.currentPreviewExam?.questions || [];
+  const q = questions[index];
+
+  if (!q) {
+    console.warn("⚠️ No Golden question found at index:", index);
+    return;
+  }
+
+  window.currentQuestionIndex = index;
+
+  const titleEl = document.getElementById("solverExamTitle");
+  const progressEl = document.getElementById("examProgressText");
+  const questionEl = document.getElementById("solverQuestionText");
+  const optionsEl = document.getElementById("solverOptions");
+  const navEl = document.getElementById("questionNav");
+
+  if (titleEl) {
+    titleEl.textContent = window.currentPreviewExam?.title || "Golden Exam";
+  }
+
+  if (progressEl) {
+    progressEl.textContent = `Question ${index + 1} of ${questions.length}`;
+  }
+
+  if (questionEl) {
+    questionEl.textContent = q.question_text || q.question || "Question";
+  }
+
+  if (navEl) {
+    navEl.innerHTML = questions.map((_, i) => `
+      <button class="btn ${i === index ? "active" : ""}" onclick="renderGoldenExamQuestion(${i})">
+        ${String(i + 1).padStart(2, "0")}
+      </button>
+    `).join("");
+  }
+
+  if (!optionsEl) {
+    console.warn("⚠️ solverOptions not found.");
+    return;
+  }
+
+  const type = String(q.question_type || q.type || "mcq").toLowerCase();
+
+  const options =
+    type === "tf"
+      ? ["True", "False"]
+      : [
+          q.option_a,
+          q.option_b,
+          q.option_c,
+          q.option_d
+        ].filter(opt => String(opt || "").trim() !== "");
+
+  optionsEl.innerHTML = options.map((opt, optIndex) => {
+    const safeValue = String(opt || "").replace(/"/g, "&quot;");
+    const selected = window.studentAnswers?.[q.id] === opt;
+
+    return `
+      <button
+        class="golden-solver-option ${selected ? "selected" : ""}"
+        onclick="selectGoldenExamAnswer('${q.id}', '${safeValue}')"
+        type="button"
+      >
+        <span>${String.fromCharCode(65 + optIndex)}</span>
+        <strong>${opt}</strong>
+      </button>
+    `;
+  }).join("");
+}
+
+function selectGoldenExamAnswer(questionId, answer) {
+  if (!window.studentAnswers) window.studentAnswers = {};
+  window.studentAnswers[questionId] = answer;
+
+  renderGoldenExamQuestion(window.currentQuestionIndex || 0);
+
+  console.log("✅ Golden answer selected:", {
+    questionId,
+    answer,
+    correctAnswer: window.solvingQuestions?.[window.currentQuestionIndex || 0]?.correct_answer
+  });
+}
+
+window.renderGoldenExamQuestion = renderGoldenExamQuestion;
+window.selectGoldenExamAnswer = selectGoldenExamAnswer;
+
+console.log("✅ Golden exam question renderer installed.");
+
+/* =========================================================
+   GOLDEN EXAM SUBMIT FIX
+   Handles Golden linked exams without breaking normal exams
+========================================================= */
+
+function submitGoldenLinkedExam() {
+  const exam = window.currentPreviewExam || window.selectedExam || window.currentExam;
+  const questions = window.solvingQuestions || exam?.questions || [];
+
+  if (!exam || !questions.length) {
+    alert("لا يوجد امتحان جاهز للتسليم.");
+    return;
+  }
+
+  let score = 0;
+  const total = questions.length;
+
+  const answersReview = questions.map((q, index) => {
+    const studentAnswer = window.studentAnswers?.[q.id];
+    const correctAnswer = q.correct_answer;
+
+    const isCorrect =
+      String(studentAnswer || "").trim().toLowerCase() ===
+      String(correctAnswer || "").trim().toLowerCase();
+
+    if (isCorrect) score++;
+
+    return {
+      questionNumber: index + 1,
+      questionId: q.id,
+      questionText: q.question_text || q.question || "",
+      studentAnswer: studentAnswer || "",
+      correctAnswer: correctAnswer || "",
+      isCorrect,
+      explanation: q.explanation || ""
+    };
+  });
+
+  const percentage = total ? Math.round((score / total) * 100) : 0;
+
+  if (window.timerInterval) {
+    clearInterval(window.timerInterval);
+    window.timerInterval = null;
+  }
+
+  const resultBox = document.getElementById("examResult");
+  const solverBox = document.getElementById("examSolver");
+
+  if (typeof showPage === "function") {
+    showPage("examResult");
+  }
+
+  if (resultBox) {
+    resultBox.innerHTML = `
+      <div class="box" dir="rtl">
+        <h2>نتيجة الامتحان</h2>
+        <h3>${exam.title || "Golden Exam"}</h3>
+
+        <p><strong>العلامة:</strong> ${score} / ${total}</p>
+        <p><strong>النسبة:</strong> ${percentage}%</p>
+
+        <hr>
+
+        <h3>مراجعة الإجابات</h3>
+
+        ${answersReview.map(item => `
+          <div class="box" style="margin: 12px 0; border-color: ${item.isCorrect ? "#22c55e" : "#ef4444"};">
+            <p><strong>السؤال ${item.questionNumber}:</strong> ${item.questionText}</p>
+            <p><strong>إجابتك:</strong> ${item.studentAnswer || "لم تتم الإجابة"}</p>
+            <p><strong>الإجابة الصحيحة:</strong> ${item.correctAnswer}</p>
+            <p><strong>النتيجة:</strong> ${item.isCorrect ? "✅ صحيحة" : "❌ خاطئة"}</p>
+            ${item.explanation ? `<p><strong>الشرح:</strong> ${item.explanation}</p>` : ""}
+          </div>
+        `).join("")}
+
+        <button class="btn" onclick="showPage('goldenIntensive')">
+          العودة إلى المكثف الذهبي
+        </button>
+      </div>
+    `;
+  } else {
+    alert(`نتيجتك: ${score}/${total} - ${percentage}%`);
+  }
+
+  console.log("✅ Golden exam submitted:", {
+    examTitle: exam.title,
+    score,
+    total,
+    percentage,
+    answersReview
+  });
+}
+
+/*
+  Wrap old submitExam safely.
+  Golden exams use submitGoldenLinkedExam.
+  Normal exams keep using the original submitExam.
+*/
+if (!window.submitExamOriginal && typeof window.submitExam === "function") {
+  window.submitExamOriginal = window.submitExam;
+}
+
+window.submitExam = function submitExam_GoldenSafeWrapper() {
+  const exam = window.currentPreviewExam || window.selectedExam || window.currentExam;
+
+  const isGoldenExam =
+    exam?.golden_cohort ||
+    exam?.golden_unit ||
+    exam?.golden_lesson ||
+    exam?.golden_skill ||
+    String(exam?.title || "").includes("Golden");
+
+  if (isGoldenExam) {
+    return submitGoldenLinkedExam();
+  }
+
+  if (typeof window.submitExamOriginal === "function") {
+    return window.submitExamOriginal();
+  }
+
+  alert("Submit function not found.");
+};
+
+window.submitGoldenLinkedExam = submitGoldenLinkedExam;
+
+console.log("✅ Golden submit exam fix installed.");

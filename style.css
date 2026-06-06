@@ -36280,3 +36280,326 @@ body {
   color: #7c2d12;
   font-weight: 800;
 }
+.golden-linked-exams-box {
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #fffaf0;
+  border: 1px solid rgba(217, 119, 6, 0.22);
+}
+
+.golden-linked-exams-box h3 {
+  margin: 0 0 14px;
+  font-family: "Cairo", sans-serif;
+  color: #7c2d12;
+}
+
+.golden-linked-exams-list {
+  display: grid;
+  gap: 12px;
+}
+
+.golden-linked-exam-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+}
+
+.golden-linked-exam-card strong {
+  display: block;
+  color: #1f2937;
+  margin-bottom: 5px;
+}
+
+.golden-linked-exam-card p {
+  margin: 0 0 5px;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.golden-linked-exam-card small {
+  color: #64748b;
+}
+
+.golden-linked-exam-card button {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .golden-linked-exam-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .golden-linked-exam-card button {
+    width: 100%;
+  }
+}
+/* =========================================================
+   Golden Linked Exams Premium UI
+========================================================= */
+
+.golden-linked-exams-box {
+  margin-top: 26px;
+  padding: 22px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(245, 158, 11, 0.16), transparent 34%),
+    linear-gradient(135deg, #111827, #1e293b);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  box-shadow:
+    0 22px 55px rgba(15, 23, 42, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  direction: rtl;
+}
+
+.golden-linked-exams-box h3 {
+  margin: 0 0 16px;
+  font-family: "Cairo", "Tajawal", sans-serif;
+  color: #facc15;
+  font-size: 1.18rem;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.golden-linked-exams-box .golden-muted {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  border: 1px dashed rgba(250, 204, 21, 0.28);
+  line-height: 1.9;
+  font-family: "Cairo", "Tajawal", sans-serif;
+}
+
+.golden-linked-exams-list {
+  display: grid;
+  gap: 14px;
+}
+
+.golden-linked-exam-card {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 251, 235, 0.96));
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+  overflow: hidden;
+}
+
+.golden-linked-exam-card::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, #facc15, #f59e0b, #d97706);
+}
+
+.golden-linked-exam-card > div {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.golden-linked-exam-card strong {
+  display: block;
+  margin-bottom: 7px;
+  color: #111827;
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+.golden-linked-exam-card p {
+  margin: 0 0 8px;
+  color: #334155;
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-size: 0.94rem;
+  line-height: 1.8;
+}
+
+.golden-linked-exam-card small {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: #7c2d12;
+  background: #fff7ed;
+  border: 1px solid rgba(217, 119, 6, 0.22);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.golden-linked-exam-card button {
+  position: relative;
+  z-index: 1;
+  border: none;
+  border-radius: 16px;
+  padding: 12px 18px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 12px 24px rgba(217, 119, 6, 0.32);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.golden-linked-exam-card button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+  box-shadow: 0 16px 30px rgba(217, 119, 6, 0.42);
+}
+
+.golden-linked-exam-card button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 700px) {
+  .golden-linked-exams-box {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .golden-linked-exam-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .golden-linked-exam-card button {
+    width: 100%;
+  }
+}
+/* =========================================================
+   GOLDEN INTENSIVE ACCESS CONTROL PATCH
+   Unit 1 Free / Unit 2-10 Premium / Owner Tools Hidden
+========================================================= */
+
+/* Owner tools must be hidden by default */
+#goldenOwnerTools,
+.golden-owner-tools {
+  display: none !important;
+}
+
+/* Locked premium card style */
+.golden-locked-card {
+  padding: 24px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.96));
+  border: 1px solid rgba(234, 179, 8, 0.45);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.28);
+  margin: 18px 0;
+}
+
+.golden-locked-card h3 {
+  margin: 0 0 10px;
+  color: #facc15;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.golden-locked-card p {
+  margin: 8px 0;
+  color: #e5e7eb;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.golden-locked-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(234, 179, 8, 0.14);
+  color: #facc15;
+  border: 1px solid rgba(234, 179, 8, 0.45);
+  font-weight: 800;
+}
+/* =========================================================
+   GOLDEN OWNER TOOLS VISIBLE FOR OWNER
+========================================================= */
+
+#goldenOwnerTools.golden-owner-visible,
+.golden-owner-tools.golden-owner-visible {
+  display: block !important;
+}
+/* =========================================================
+   GOLDEN EXAM SOLVER OPTIONS
+========================================================= */
+
+#solverOptions {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.golden-solver-option {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: #ffffff;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 1rem;
+}
+
+.golden-solver-option span {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #facc15;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.golden-solver-option strong {
+  font-weight: 700;
+}
+
+.golden-solver-option.selected {
+  border-color: #facc15;
+  background: #fffbeb;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.22);
+}
