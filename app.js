@@ -31587,7 +31587,9 @@ async function startGoldenLinkedExamV3(examId) {
     if (typeof showPage === "function") {
       showPage("examSolver");
     }
-
+if (document.body && document.body.classList) {
+  document.body.classList.add("golden-linked-exam-mode");
+}
     // 8) Render after page scripts finish changing layout
     setTimeout(() => {
       if (typeof showPage === "function") {
@@ -31763,12 +31765,16 @@ function submitGoldenLinkedExam() {
 
   const percentage = total ? Math.round((score / total) * 100) : 0;
 
-  if (window.timerInterval) {
-    clearInterval(window.timerInterval);
-    window.timerInterval = null;
-  }
+   if (window.timerInterval) {
+  clearInterval(window.timerInterval);
+  window.timerInterval = null;
+}
 
-  const resultBox = document.getElementById("examResult");
+/* Exit Golden linked exam mode after submitting */
+if (document.body && document.body.classList) {
+  document.body.classList.remove("golden-linked-exam-mode");
+}
+const resultBox = document.getElementById("examResult");
   const solverBox = document.getElementById("examSolver");
 
   if (typeof showPage === "function") {
@@ -31866,35 +31872,57 @@ async function startGoldenLinkedExamByContext(cohort, unitKey) {
         ? normalizeGoldenAccessUnitKey(unitKey)
         : String(unitKey || "").trim();
 
+    const unitNumberMatch = String(normalizedUnit).match(/\d+/);
+
+    const possibleUnits = [
+      normalizedUnit,
+      String(unitKey || "").trim()
+    ];
+
+    if (unitNumberMatch) {
+      const n = Number(unitNumberMatch[0]);
+      possibleUnits.push("Unit " + n);
+      possibleUnits.push("unit" + n);
+    }
+
+    const uniqueUnits = [...new Set(possibleUnits.filter(Boolean))];
+
     console.log("🔎 Searching Golden linked exam by context:", {
       cohort,
       unitKey,
-      normalizedUnit
+      normalizedUnit,
+      uniqueUnits
     });
 
-    const { data: exams, error } = await client
-      .from("exams")
-      .select("*")
-      .eq("status", "published")
-      .eq("golden_cohort", String(cohort))
-      .eq("golden_unit", normalizedUnit)
-      .order("created_at", { ascending: false });
+   if (normalizedUnit === "cultureSpot") {
+  uniqueUnits.push("Culture Spot", "culture", "culture_spot");
+}
 
-    if (error) {
-      console.error("Golden context exam search error:", error);
-      alert("تعذر البحث عن امتحان هذا القسم.");
-      return;
-    }
+if (normalizedUnit === "literatureSpot") {
+  uniqueUnits.push("Literature Spot", "literature", "literature_spot");
+}
+
+const finalUnits = [...new Set(uniqueUnits.filter(Boolean))];
+
+const { data: exams, error } = await client
+  .from("exams")
+  .select("*")
+  .eq("status", "published")
+  .eq("golden_cohort", String(cohort))
+  .in("golden_unit", finalUnits)
+  .order("created_at", { ascending: false });
+
+if (error) {
+  console.error("Golden context exam search error:", error);
+  alert("تعذر البحث عن امتحان هذا القسم.");
+  return;
+}
 
     if (!exams || !exams.length) {
       alert("لا يوجد امتحان منشور مرتبط بهذا القسم بعد.");
       return;
     }
 
-    /*
-      Use latest published exam.
-      This avoids duplicate old test rows.
-    */
     const exam = exams[0];
 
     console.log("✅ Golden linked exam found:", {
@@ -31919,7 +31947,7 @@ async function startGoldenLinkedExamByContext(cohort, unitKey) {
 
 window.startGoldenLinkedExamByContext = startGoldenLinkedExamByContext;
 
-console.log("✅ Golden linked exam by context installed.");
+
 /* =========================================================
    GOLDEN LITERATURE EXAM STARTER
 ========================================================= */
@@ -31974,7 +32002,27 @@ function getGoldenLinkedExamLabel(unitKey) {
     document.getElementById("goldenIntensive")
   );
 }
+function activateGoldenCohortPanel(cohort) {
+  const c = String(cohort || "").trim();
 
+  const panels = [
+    document.getElementById("golden-overview"),
+    document.getElementById("golden-grade2008"),
+    document.getElementById("golden-grade2009")
+  ].filter(Boolean);
+
+  panels.forEach(panel => {
+    panel.classList.remove("active");
+    panel.style.display = "none";
+  });
+
+  const target = document.getElementById("golden-grade" + c);
+
+  if (target) {
+    target.classList.add("active");
+    target.style.display = "block";
+  }
+}
 async function renderGoldenLinkedExamButton(cohort, unitKey) {
   try {
     if (!window.client) return;
@@ -31984,21 +32032,43 @@ async function renderGoldenLinkedExamButton(cohort, unitKey) {
         ? normalizeGoldenAccessUnitKey(unitKey)
         : String(unitKey || "").trim();
 
+    /*
+      Only Culture Spot and Literature Spot use the new clean button.
+      Unit 1-10 must keep the old linked-exams system.
+    */
+    if (normalizedUnit !== "cultureSpot" && normalizedUnit !== "literatureSpot") {
+      return;
+    }
+    activateGoldenCohortPanel(cohort);
     const viewer = getGoldenViewerByCohort(cohort);
     if (!viewer) return;
-const existingText = viewer.innerText || "";
-if (existingText.includes("ابدأ الامتحان الآن") && existingText.includes("اختبار مرتبط")) {
-  Array.from(viewer.querySelectorAll(".golden-linked-exam-action-box")).forEach(box => box.remove());
-}
-    // Remove old duplicate button boxes
- Array.from(viewer.querySelectorAll(".golden-linked-exam-action-box")).forEach(box => box.remove());
+
+    /*
+      Remove old clean buttons for the same Culture/Literature section
+      from the Golden page to prevent duplication.
+    */
+    const goldenRoot = document.getElementById("goldenIntensive") || document;
+
+    Array.from(goldenRoot.querySelectorAll(".golden-linked-exam-action-box"))
+      .filter(box =>
+        box.dataset.cohort === String(cohort) &&
+        box.dataset.unit === normalizedUnit
+      )
+      .forEach(box => box.remove());
+
+    const possibleGoldenUnits =
+      normalizedUnit === "cultureSpot"
+        ? ["cultureSpot", "Culture Spot", "culture", "culture_spot"]
+        : normalizedUnit === "literatureSpot"
+          ? ["literatureSpot", "Literature Spot", "literature", "literature_spot"]
+          : [normalizedUnit];
 
     const { data: exams, error } = await client
       .from("exams")
       .select("id,title,status,golden_cohort,golden_unit,created_at")
       .eq("status", "published")
       .eq("golden_cohort", String(cohort))
-      .eq("golden_unit", normalizedUnit)
+      .in("golden_unit", possibleGoldenUnits)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -32007,6 +32077,10 @@ if (existingText.includes("ابدأ الامتحان الآن") && existingText.
     }
 
     if (!exams || !exams.length) {
+      console.log("ℹ️ No published Golden exam found for:", {
+        cohort,
+        unit: normalizedUnit
+      });
       return;
     }
 
@@ -32016,6 +32090,9 @@ if (existingText.includes("ابدأ الامتحان الآن") && existingText.
     const box = document.createElement("div");
     box.className = "golden-linked-exam-action-box";
     box.dir = "rtl";
+    box.dataset.cohort = String(cohort);
+    box.dataset.unit = normalizedUnit;
+    box.dataset.examId = exam.id;
 
     box.innerHTML = `
       <div class="golden-linked-exam-action-inner">
@@ -32035,9 +32112,9 @@ if (existingText.includes("ابدأ الامتحان الآن") && existingText.
       </div>
     `;
 
-    viewer.appendChild(box);
-
-    console.log("✅ Golden linked exam button rendered:", {
+ viewer.prepend(box);
+box.scrollIntoView({ behavior: "smooth", block: "center" });
+    console.log("✅ Golden linked exam button rendered once:", {
       cohort,
       unit: normalizedUnit,
       examTitle: exam.title,
@@ -32064,9 +32141,13 @@ function installGoldenLinkedExamButtonHook() {
   function openGoldenUnit_WITH_LINKED_EXAM_BUTTON(cohort, unitKey, sectionKey) {
     const result = currentOpenGoldenUnit(cohort, unitKey, sectionKey);
 
-    setTimeout(() => {
-      renderGoldenLinkedExamButton(cohort, unitKey);
-    }, 700);
+   setTimeout(() => {
+  renderGoldenLinkedExamButton(cohort, unitKey);
+
+  if (typeof polishGoldenOldLinkedExamCards === "function") {
+    polishGoldenOldLinkedExamCards();
+  }
+}, 700);
 
     return result;
   }
@@ -32095,3 +32176,135 @@ window.renderGoldenLinkedExamButton = renderGoldenLinkedExamButton;
 window.installGoldenLinkedExamButtonHook = installGoldenLinkedExamButtonHook;
 
 console.log("✅ Golden linked exam buttons patch installed.");
+
+/* =========================================================
+   GOLDEN OLD LINKED EXAMS CARD POLISHER
+   Adds stable classes to old linked exam cards without changing logic
+========================================================= */
+
+ function polishGoldenOldLinkedExamCards() {
+  const boxes = Array.from(document.querySelectorAll(
+    "#goldenCorrectViewerLinkedExamsBox, .golden-unit-linked-exams-box, .golden-linked-exams-box"
+  ));
+
+  boxes.forEach(box => {
+    box.classList.add("golden-old-linked-exams-polished");
+
+    const children = Array.from(box.children);
+
+    children.forEach(child => {
+      const text = child.innerText || "";
+      const hasStartButton = !!child.querySelector("button");
+
+      const looksLikeExamCard =
+        hasStartButton &&
+        (
+          text.includes("published") ||
+          text.includes("سؤال") ||
+          text.includes("ابدأ") ||
+          text.includes("Start")
+        );
+
+      if (looksLikeExamCard) {
+        child.classList.add("golden-linked-exam-card");
+
+        /*
+          Remove old inline styles that caused tiny centered cards
+          and huge empty white space.
+        */
+        child.style.width = "";
+        child.style.maxWidth = "";
+        child.style.minHeight = "";
+        child.style.height = "";
+        child.style.marginLeft = "";
+        child.style.marginRight = "";
+        child.style.textAlign = "";
+      }
+    });
+  });
+
+  console.log("✅ Golden old linked exam cards polished V2:", {
+    boxes: boxes.length,
+    cards: document.querySelectorAll(".golden-linked-exam-card").length
+  });
+}
+
+window.polishGoldenOldLinkedExamCards = polishGoldenOldLinkedExamCards;
+
+/*
+  Run after Golden unit content renders.
+*/
+setTimeout(polishGoldenOldLinkedExamCards, 800);
+setTimeout(polishGoldenOldLinkedExamCards, 1800);
+setTimeout(polishGoldenOldLinkedExamCards, 3200);
+
+/* =========================================================
+   GOLDEN DUPLICATE OLD EXAM CARDS CLEANER
+   Keeps only one visual card per linked exam
+========================================================= */
+
+function cleanDuplicateGoldenOldExamCards(cohort = "2009") {
+  const viewer =
+    document.getElementById("goldenUnitViewer" + String(cohort)) ||
+    document.getElementById("goldenUnitViewer2009") ||
+    document.getElementById("goldenUnitViewer2008") ||
+    document.getElementById("goldenIntensive");
+
+  if (!viewer) return;
+
+  const cards = Array.from(viewer.querySelectorAll(".golden-linked-exam-unit-card"));
+  const seen = new Set();
+  let removed = 0;
+
+  cards.forEach(card => {
+    const title =
+      card.querySelector("h4, h3, h2")?.innerText?.trim() ||
+      "";
+
+    const meta =
+      card.querySelector("small")?.innerText?.trim() ||
+      "";
+
+    const buttonOnclick =
+      card.querySelector("button")?.getAttribute("onclick") ||
+      "";
+
+    const key = [
+      title.toLowerCase(),
+      meta.toLowerCase(),
+      buttonOnclick.toLowerCase()
+    ].join("||");
+
+    if (seen.has(key)) {
+      card.remove();
+      removed++;
+    } else {
+      seen.add(key);
+    }
+  });
+
+  /*
+    Remove empty duplicate groups after removing repeated cards.
+  */
+  Array.from(viewer.querySelectorAll(".golden-linked-exam-group")).forEach(group => {
+    const remainingCards = group.querySelectorAll(".golden-linked-exam-unit-card").length;
+    const hasMeaningfulText = (group.innerText || "").trim().length > 20;
+
+    if (!remainingCards && !hasMeaningfulText) {
+      group.remove();
+    }
+
+    if (!remainingCards && hasMeaningfulText) {
+      group.style.display = "none";
+    }
+  });
+
+  console.log("✅ Golden duplicate old exam cards cleaned:", {
+    cohort,
+    originalCards: cards.length,
+    removed,
+    remainingCards: viewer.querySelectorAll(".golden-linked-exam-unit-card").length
+  });
+}
+
+window.cleanDuplicateGoldenOldExamCards = cleanDuplicateGoldenOldExamCards;
