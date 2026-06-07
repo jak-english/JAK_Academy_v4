@@ -32023,6 +32023,13 @@ function activateGoldenCohortPanel(cohort) {
     target.style.display = "block";
   }
 }
+ function escapeGoldenDeleteText(text = "") {
+  return String(text || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/"/g, "&quot;")
+    .replace(/\n/g, " ");
+}
 async function renderGoldenLinkedExamButton(cohort, unitKey) {
   try {
     if (!window.client) return;
@@ -32087,30 +32094,45 @@ async function renderGoldenLinkedExamButton(cohort, unitKey) {
     const exam = exams[0];
     const label = getGoldenLinkedExamLabel(normalizedUnit);
 
-    const box = document.createElement("div");
-    box.className = "golden-linked-exam-action-box";
-    box.dir = "rtl";
-    box.dataset.cohort = String(cohort);
-    box.dataset.unit = normalizedUnit;
-    box.dataset.examId = exam.id;
+  const box = document.createElement("div");
+box.className = "golden-linked-exam-action-box";
+box.dir = "rtl";
+box.dataset.cohort = String(cohort);
+box.dataset.unit = normalizedUnit;
+box.dataset.examId = exam.id;
+box.dataset.examTitle = exam.title || "";
 
-    box.innerHTML = `
-      <div class="golden-linked-exam-action-inner">
-        <div>
-          <div class="golden-linked-exam-kicker">اختبار مرتبط</div>
-          <h3>${label} Exam</h3>
-          <p>${exam.title}</p>
-        </div>
+box.innerHTML = `
+  <div class="golden-linked-exam-action-inner">
+    <div>
+      <div class="golden-linked-exam-kicker">اختبار مرتبط</div>
+      <h3>${label} Exam</h3>
+      <p>${exam.title}</p>
+    </div>
 
-        <button
-          class="btn golden-linked-exam-start-btn"
-          type="button"
-          onclick="startGoldenLinkedExamByContext('${String(cohort)}', '${normalizedUnit}')"
-        >
-          ابدأ الامتحان الآن
-        </button>
-      </div>
-    `;
+    <div class="golden-linked-exam-actions-row">
+      <button
+        class="btn golden-linked-exam-start-btn"
+        type="button"
+        onclick="startGoldenLinkedExamByContext('${String(cohort)}', '${normalizedUnit}')"
+      >
+        ابدأ الامتحان الآن
+      </button>
+
+      ${
+        typeof isGoldenOwnerSafe === "function" && isGoldenOwnerSafe()
+          ? `<button
+              class="btn golden-delete-exam-btn"
+              type="button"
+              onclick="deleteGoldenLinkedExam('${exam.id}', '${escapeGoldenDeleteText(exam.title)}')"
+            >
+              حذف الامتحان 🗑️
+            </button>`
+          : ""
+      }
+    </div>
+  </div>
+`;
 
  viewer.prepend(box);
 box.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -32243,68 +32265,552 @@ setTimeout(polishGoldenOldLinkedExamCards, 3200);
    Keeps only one visual card per linked exam
 ========================================================= */
 
-function cleanDuplicateGoldenOldExamCards(cohort = "2009") {
+ function addDeleteButtonsToAllGoldenExamCards() {
+  if (typeof isGoldenOwnerSafe === "function" && !isGoldenOwnerSafe()) {
+    return;
+  }
+
+  const root = document.getElementById("goldenIntensive") || document;
+
+  const cards = Array.from(root.querySelectorAll(
+    ".golden-linked-exam-action-box, .golden-linked-exam-unit-card"
+  ));
+
+  let added = 0;
+  let skipped = 0;
+
+  cards.forEach(card => {
+    const existingButtons = Array.from(card.querySelectorAll(".golden-delete-exam-btn"));
+
+    existingButtons.forEach((btn, index) => {
+      if (index > 0) btn.remove();
+    });
+
+    if (card.querySelector(".golden-delete-exam-btn")) {
+      skipped++;
+      return;
+    }
+
+    const ok = addDeleteButtonToGoldenExamCard(card);
+
+    if (ok) added++;
+    else skipped++;
+  });
+
+  if (typeof forceCleanGoldenUnitExamCards === "function") {
+    forceCleanGoldenUnitExamCards("2009");
+    forceCleanGoldenUnitExamCards("2008");
+  }
+
+  console.log("✅ Golden delete buttons applied:", {
+    cards: cards.length,
+    added,
+    skipped,
+    totalDeleteButtons: root.querySelectorAll(".golden-delete-exam-btn").length
+  });
+}
+
+
+window.cleanDuplicateGoldenOldExamCards = cleanDuplicateGoldenOldExamCards;
+/* =========================================================
+   GOLDEN DELETE LINKED EXAM - OWNER ONLY
+   Deletes exam + questions linked by questions.exam_id
+========================================================= */
+
+async function deleteGoldenLinkedExam(examId, examTitle = "") {
+  try {
+    if (!examId) {
+      alert("لم يتم تحديد الامتحان.");
+      return;
+    }
+
+    if (typeof isGoldenOwnerSafe === "function" && !isGoldenOwnerSafe()) {
+      alert("هذا الإجراء متاح للمالك فقط.");
+      return;
+    }
+
+    if (!window.client) {
+      alert("Supabase غير جاهز.");
+      return;
+    }
+
+    const ok = confirm(
+      `هل أنت متأكد من حذف هذا الامتحان؟\n\n${examTitle || examId}\n\nسيتم حذف الامتحان وأسئلته المرتبطة.`
+    );
+
+    if (!ok) return;
+
+    console.log("🗑️ Deleting Golden linked exam:", {
+      examId,
+      examTitle
+    });
+
+    const { error: questionsError } = await client
+      .from("questions")
+      .delete()
+      .eq("exam_id", examId);
+
+    if (questionsError) {
+      console.error("Delete Golden exam questions error:", questionsError);
+      alert("تعذر حذف أسئلة الامتحان.");
+      return;
+    }
+
+    const { error: examError } = await client
+      .from("exams")
+      .delete()
+      .eq("id", examId);
+
+    if (examError) {
+      console.error("Delete Golden exam error:", examError);
+      alert("تم حذف الأسئلة، لكن تعذر حذف الامتحان.");
+      return;
+    }
+
+    alert("تم حذف الامتحان بنجاح.");
+
+    /*
+      Refresh current Golden display if possible
+    */
+    if (typeof loadGoldenLinkedExamsPreview === "function") {
+      loadGoldenLinkedExamsPreview();
+    }
+
+    if (typeof polishGoldenOldLinkedExamCards === "function") {
+      polishGoldenOldLinkedExamCards();
+    }
+
+    if (typeof cleanDuplicateGoldenOldExamCards === "function") {
+      cleanDuplicateGoldenOldExamCards("2009");
+      cleanDuplicateGoldenOldExamCards("2008");
+    }
+
+  } catch (err) {
+    console.error("❌ deleteGoldenLinkedExam failed:", err);
+    alert("حدث خطأ أثناء حذف الامتحان.");
+  }
+}
+
+window.deleteGoldenLinkedExam = deleteGoldenLinkedExam;
+
+console.log("✅ Golden delete linked exam installed.");
+
+showPage("goldenIntensive");
+
+setTimeout(() => {
+  openGoldenUnit("2009", "cultureSpot");
+}, 500);
+/* =========================================================
+   GOLDEN ADD DELETE BUTTONS TO ALL EXAM CARDS - OWNER ONLY
+   Works after opening Culture / Literature / Unit cards
+========================================================= */
+
+function extractGoldenExamIdFromCard(card) {
+  if (!card) return "";
+
+  const directId =
+    card.dataset.examId ||
+    card.getAttribute("data-exam-id") ||
+    "";
+
+  if (directId) return directId;
+
+  const clickables = Array.from(card.querySelectorAll("button, a"));
+
+  for (const el of clickables) {
+    const onclick = el.getAttribute("onclick") || "";
+    const match = onclick.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+    if (match) return match[0];
+  }
+
+  return "";
+}
+
+function addDeleteButtonToGoldenExamCard(card) {
+  if (!card) return false;
+
+  if (card.querySelector(".golden-delete-exam-btn")) {
+    return false;
+  }
+
+  const examId = extractGoldenExamIdFromCard(card);
+
+  if (!examId) {
+    return false;
+  }
+
+  const title =
+    card.dataset.examTitle ||
+    card.querySelector("h4, h3, h2, h5")?.innerText?.trim() ||
+    "Golden Exam";
+
+  card.dataset.examId = examId;
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.className = "golden-delete-exam-btn";
+  deleteBtn.innerHTML = "حذف الامتحان 🗑️";
+  deleteBtn.onclick = function () {
+    deleteGoldenLinkedExam(examId, title);
+  };
+
+  const actionRow =
+    card.querySelector(".golden-linked-exam-actions-row") ||
+    card.querySelector(".actions") ||
+    card;
+
+  actionRow.appendChild(deleteBtn);
+
+  return true;
+}
+
+function addDeleteButtonsToAllGoldenExamCards() {
+  if (typeof isGoldenOwnerSafe === "function" && !isGoldenOwnerSafe()) {
+    return;
+  }
+
+  const root = document.getElementById("goldenIntensive") || document;
+
+  const cards = Array.from(root.querySelectorAll(
+    ".golden-linked-exam-action-box, .golden-linked-exam-unit-card, .golden-linked-exam-card"
+  ));
+
+  let added = 0;
+  let skipped = 0;
+
+  cards.forEach(card => {
+    if (addDeleteButtonToGoldenExamCard(card)) {
+      added++;
+    } else {
+      skipped++;
+    }
+  });
+
+  console.log("✅ Golden delete buttons applied:", {
+    cards: cards.length,
+    added,
+    skipped,
+    totalDeleteButtons: document.querySelectorAll(".golden-delete-exam-btn").length
+  });
+}
+
+window.extractGoldenExamIdFromCard = extractGoldenExamIdFromCard;
+window.addDeleteButtonToGoldenExamCard = addDeleteButtonToGoldenExamCard;
+window.addDeleteButtonsToAllGoldenExamCards = addDeleteButtonsToAllGoldenExamCards;
+
+console.log("✅ Golden add delete buttons system installed.");
+
+/* =========================================================
+   GOLDEN FORCE CLEAN UNIT EXAM CARDS
+   Final cleaner: keeps only one card and one delete button per exam
+========================================================= */
+
+function forceCleanGoldenUnitExamCards(cohort = "2009") {
   const viewer =
     document.getElementById("goldenUnitViewer" + String(cohort)) ||
     document.getElementById("goldenUnitViewer2009") ||
-    document.getElementById("goldenUnitViewer2008") ||
-    document.getElementById("goldenIntensive");
+    document.getElementById("goldenUnitViewer2008");
 
   if (!viewer) return;
 
   const cards = Array.from(viewer.querySelectorAll(".golden-linked-exam-unit-card"));
+
   const seen = new Set();
-  let removed = 0;
+  let removedCards = 0;
+  let removedButtons = 0;
 
   cards.forEach(card => {
+    const examId =
+      card.dataset.examId ||
+      extractGoldenExamIdFromCard(card) ||
+      "";
+
     const title =
       card.querySelector("h4, h3, h2")?.innerText?.trim() ||
+      card.innerText.split("\n")[0]?.trim() ||
       "";
 
     const meta =
       card.querySelector("small")?.innerText?.trim() ||
       "";
 
-    const buttonOnclick =
-      card.querySelector("button")?.getAttribute("onclick") ||
-      "";
-
-    const key = [
-      title.toLowerCase(),
-      meta.toLowerCase(),
-      buttonOnclick.toLowerCase()
-    ].join("||");
+    const key = examId || `${title.toLowerCase()}||${meta.toLowerCase()}`;
 
     if (seen.has(key)) {
       card.remove();
-      removed++;
-    } else {
-      seen.add(key);
+      removedCards++;
+      return;
     }
+
+    seen.add(key);
+
+    if (examId) {
+      card.dataset.examId = examId;
+    }
+
+    const deleteButtons = Array.from(card.querySelectorAll(".golden-delete-exam-btn"));
+
+    deleteButtons.forEach((btn, index) => {
+      if (index > 0) {
+        btn.remove();
+        removedButtons++;
+      }
+    });
   });
 
   /*
-    Remove empty duplicate groups after removing repeated cards.
+    Remove duplicated whole groups if observer rendered the same group twice.
   */
-  Array.from(viewer.querySelectorAll(".golden-linked-exam-group")).forEach(group => {
-    const remainingCards = group.querySelectorAll(".golden-linked-exam-unit-card").length;
-    const hasMeaningfulText = (group.innerText || "").trim().length > 20;
+  const groups = Array.from(viewer.querySelectorAll(".golden-linked-exam-group"));
+  const seenGroupTitles = new Set();
 
-    if (!remainingCards && !hasMeaningfulText) {
+  groups.forEach(group => {
+    const groupTitle = group.querySelector("h5")?.innerText?.trim().toLowerCase() || "";
+    const groupCards = group.querySelectorAll(".golden-linked-exam-unit-card").length;
+
+    if (!groupCards) {
       group.remove();
+      return;
     }
 
-    if (!remainingCards && hasMeaningfulText) {
-      group.style.display = "none";
+    if (seenGroupTitles.has(groupTitle)) {
+      group.remove();
+      removedCards++;
+      return;
     }
+
+    seenGroupTitles.add(groupTitle);
   });
 
-  console.log("✅ Golden duplicate old exam cards cleaned:", {
+  console.log("✅ Force cleaned Golden unit exam cards:", {
     cohort,
-    originalCards: cards.length,
-    removed,
-    remainingCards: viewer.querySelectorAll(".golden-linked-exam-unit-card").length
+    removedCards,
+    removedButtons,
+    remainingCards: viewer.querySelectorAll(".golden-linked-exam-unit-card").length,
+    remainingDeleteButtons: viewer.querySelectorAll(".golden-delete-exam-btn").length
   });
 }
 
-window.cleanDuplicateGoldenOldExamCards = cleanDuplicateGoldenOldExamCards;
+window.forceCleanGoldenUnitExamCards = forceCleanGoldenUnitExamCards;
+/* =========================================================
+   GOLDEN DELETE BUTTONS FINAL OVERRIDE
+   One delete button only per visible exam card
+========================================================= */
+
+function addDeleteButtonsToAllGoldenExamCards() {
+  if (typeof isGoldenOwnerSafe === "function" && !isGoldenOwnerSafe()) {
+    return;
+  }
+
+  const root = document.getElementById("goldenIntensive") || document;
+
+  /*
+    Remove all old delete buttons first.
+    This prevents old duplicated buttons from staying.
+  */
+  root.querySelectorAll(".golden-delete-exam-btn").forEach(btn => btn.remove());
+
+  /*
+    Add delete buttons only to real exam cards:
+    1. Culture/Literature clean boxes
+    2. Unit linked exam cards
+  */
+  const cards = Array.from(root.querySelectorAll(
+    ".golden-linked-exam-action-box, .golden-linked-exam-unit-card"
+  ));
+
+  let added = 0;
+  let skipped = 0;
+
+  cards.forEach(card => {
+    const isVisible =
+      card.offsetParent !== null ||
+      getComputedStyle(card).display !== "none";
+
+    if (!isVisible) {
+      skipped++;
+      return;
+    }
+
+    const examId =
+      card.dataset.examId ||
+      (typeof extractGoldenExamIdFromCard === "function"
+        ? extractGoldenExamIdFromCard(card)
+        : "");
+
+    if (!examId) {
+      skipped++;
+      return;
+    }
+
+    const title =
+      card.dataset.examTitle ||
+      card.querySelector("h4, h3, h2, h5")?.innerText?.trim() ||
+      card.innerText?.split("\n")?.[0]?.trim() ||
+      "Golden Exam";
+
+    card.dataset.examId = examId;
+    card.dataset.examTitle = title;
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "golden-delete-exam-btn";
+    deleteBtn.textContent = "حذف الامتحان 🗑️";
+    deleteBtn.onclick = function () {
+      deleteGoldenLinkedExam(examId, title);
+    };
+
+    const actionRow =
+      card.querySelector(".golden-linked-exam-actions-row") ||
+      card.querySelector(".actions");
+
+    if (actionRow) {
+      actionRow.appendChild(deleteBtn);
+    } else {
+      card.appendChild(deleteBtn);
+    }
+
+    added++;
+  });
+
+  console.log("✅ Golden delete buttons FINAL applied:", {
+    cards: cards.length,
+    added,
+    skipped,
+    totalDeleteButtons: root.querySelectorAll(".golden-delete-exam-btn").length
+  });
+}
+
+window.addDeleteButtonsToAllGoldenExamCards = addDeleteButtonsToAllGoldenExamCards;
+/* =========================================================
+   GOLDEN UNIT DELETE BUTTONS - VISIBLE FINAL
+   Places delete button directly beside/under the start button in Unit cards
+========================================================= */
+
+ /* =========================================================
+   GOLDEN UNIT DELETE BUTTONS - FINAL SUPABASE VERSION
+   Adds visible delete buttons to Unit 1-10 cards by matching Supabase exams
+========================================================= */
+
+async function addVisibleDeleteButtonsToGoldenUnitCards(cohort = "2009", unitKey = "unit1") {
+  try {
+    if (typeof isGoldenOwnerSafe === "function" && !isGoldenOwnerSafe()) {
+      return;
+    }
+
+    if (!window.client) {
+      console.warn("Supabase not ready.");
+      return;
+    }
+
+    const viewer =
+      document.getElementById("goldenUnitViewer" + String(cohort)) ||
+      document.getElementById("goldenUnitViewer2009") ||
+      document.getElementById("goldenUnitViewer2008");
+
+    if (!viewer) {
+      console.warn("Golden unit viewer not found.");
+      return;
+    }
+
+    const unitNumberMatch = String(unitKey || "").match(/\d+/);
+    const unitNumber = unitNumberMatch ? Number(unitNumberMatch[0]) : 1;
+
+    const possibleUnits = [
+      String(unitKey || "").trim(),
+      "unit" + unitNumber,
+      "Unit " + unitNumber
+    ];
+
+    const uniqueUnits = [...new Set(possibleUnits.filter(Boolean))];
+
+    const { data: exams, error } = await client
+      .from("exams")
+      .select("id,title,status,golden_cohort,golden_unit,golden_lesson,golden_skill,created_at")
+      .eq("status", "published")
+      .eq("golden_cohort", String(cohort))
+      .in("golden_unit", uniqueUnits)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Unit exams load error:", error);
+      return;
+    }
+
+    const cards = Array.from(viewer.querySelectorAll(".golden-linked-exam-unit-card"));
+
+    /*
+      Remove old delete buttons first.
+    */
+    viewer.querySelectorAll(".golden-delete-exam-btn").forEach(btn => btn.remove());
+
+    let added = 0;
+
+    cards.forEach((card, index) => {
+      const cardTitle =
+        card.querySelector("h4, h3, h2")?.innerText?.trim().toLowerCase() ||
+        card.innerText?.split("\n")?.[0]?.trim().toLowerCase() ||
+        "";
+
+      /*
+        Try title match first, then fallback to same index.
+      */
+      let exam =
+        (exams || []).find(e =>
+          String(e.title || "").trim().toLowerCase() === cardTitle
+        ) ||
+        (exams || [])[index];
+
+      if (!exam?.id) return;
+
+      card.dataset.examId = exam.id;
+      card.dataset.examTitle = exam.title || "";
+
+      const startBtn =
+        Array.from(card.querySelectorAll("button")).find(btn =>
+          btn.innerText.includes("ابدأ") ||
+          btn.innerText.includes("Start")
+        );
+
+      let actionsRow = card.querySelector(".golden-unit-card-actions-row");
+
+      if (!actionsRow) {
+        actionsRow = document.createElement("div");
+        actionsRow.className = "golden-unit-card-actions-row";
+
+        if (startBtn && startBtn.parentElement) {
+          startBtn.parentElement.insertBefore(actionsRow, startBtn);
+          actionsRow.appendChild(startBtn);
+        } else {
+          card.appendChild(actionsRow);
+        }
+      }
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "golden-delete-exam-btn golden-unit-visible-delete-btn";
+      deleteBtn.textContent = "حذف الامتحان 🗑️";
+      deleteBtn.onclick = function () {
+        deleteGoldenLinkedExam(exam.id, exam.title || "Golden Exam");
+      };
+
+      actionsRow.appendChild(deleteBtn);
+      added++;
+    });
+
+    console.log("✅ Visible Unit delete buttons added from Supabase:", {
+      cohort,
+      unitKey,
+      uniqueUnits,
+      examsCount: exams?.length || 0,
+      cards: cards.length,
+      added,
+      deleteButtons: viewer.querySelectorAll(".golden-unit-visible-delete-btn").length
+    });
+
+  } catch (err) {
+    console.error("❌ addVisibleDeleteButtonsToGoldenUnitCards failed:", err);
+  }
+}
+
+window.addVisibleDeleteButtonsToGoldenUnitCards = addVisibleDeleteButtonsToGoldenUnitCards;
