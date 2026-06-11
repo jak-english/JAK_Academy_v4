@@ -30,14 +30,32 @@ body{display:flex;align-items:center;justify-content:center;padding:18px}
     <button class="secondary" onclick="resetPassword()">Reset Password</button>
     <p id="loginMsg" class="msg"></p>
   </div>
-  <div id="registerForm" class="form">
-    <input id="regName" placeholder="Full Name">
-    <input id="regEmail" type="email" placeholder="Email">
-    <input id="regPassword" type="password" placeholder="Password">
-    <select id="role"><option value="student">Student 👨‍🎓</option><option value="teacher">Teacher 👨‍🏫</option></select>
-    <button onclick="register()">Create Account</button>
-    <p id="regMsg" class="msg"></p>
-  </div>
+   <div id="registerForm" class="form">
+  <input id="regName" placeholder="Full Name">
+  <input id="regEmail" type="email" placeholder="Email">
+  <input id="regPassword" type="password" placeholder="Password">
+
+  <select id="regCohort" required>
+    <option value="">اختر جيلك الدراسي</option>
+    <option value="2008">جيل 2008 | الصف 12 | High Note 5</option>
+    <option value="2009">جيل 2009 | الصف 11 | High Note 4</option>
+    <option value="2010">جيل 2010 | الصف 10</option>
+    <option value="2011">جيل 2011 | الصف 9</option>
+    <option value="2012">جيل 2012 | الصف 8</option>
+    <option value="2013">جيل 2013 | الصف 7</option>
+    <option value="2014">جيل 2014 | الصف 6</option>
+    <option value="2015">جيل 2015 | الصف 5</option>
+    <option value="2016">جيل 2016 | الصف 4</option>
+    <option value="2017">جيل 2017 | الصف 3</option>
+    <option value="2018">جيل 2018 | الصف 2</option>
+    <option value="2019">جيل 2019 | الصف 1</option>
+  </select>
+
+  <input id="role" type="hidden" value="student">
+
+  <button onclick="register()">Create Account</button>
+  <p id="regMsg" class="msg"></p>
+</div>
   <p><a href="index.html" style="color:#fbbf24;font-weight:900;text-decoration:none">← Back to Home</a></p>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -76,6 +94,128 @@ async function register(){
  else msg.textContent="✅ Account created successfully";
  setTimeout(()=>switchTab("login"),1500);
 }
+/* =========================================================
+   JAK REGISTER COHORT SAVE PATCH - LOGIN.HTML
+   ========================================================= */
+(function installRegisterCohortSavePatch() {
+  console.log("🎓 Installing register cohort save patch in login.html...");
+
+  const cohortToGrade = {
+    "2008": 12,
+    "2009": 11,
+    "2010": 10,
+    "2011": 9,
+    "2012": 8,
+    "2013": 7,
+    "2014": 6,
+    "2015": 5,
+    "2016": 4,
+    "2017": 3,
+    "2018": 2,
+    "2019": 1
+  };
+
+  async function updateProfileCohortAfterSignup(email, cohort) {
+    const gradeLevel = cohortToGrade[String(cohort)];
+    const msg = document.querySelector("#regMsg");
+
+    if (!email || !cohort || !gradeLevel) {
+      if (msg) msg.textContent = "اختر جيلك الدراسي أولًا.";
+      return false;
+    }
+
+     function getAuthSessionFromLocalStorage() {
+  const key = Object.keys(localStorage).find(k =>
+    k.startsWith("sb-") && k.endsWith("-auth-token")
+  );
+
+  if (!key) return null;
+
+  try {
+    return JSON.parse(localStorage.getItem(key) || "null");
+  } catch (e) {
+    return null;
+  }
+}
+
+const session = getAuthSessionFromLocalStorage();
+const accessToken = session?.access_token;
+const userId = session?.user?.id;
+
+if (!accessToken || !userId) {
+  console.warn("No auth session found after signup.");
+  if (msg) msg.textContent = "تم إنشاء الحساب، لكن لم يتم العثور على جلسة الدخول.";
+  return false;
+}
+
+    const res = await fetch(
+      supabaseUrl + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId),
+      {
+        method: "PATCH",
+        headers: {
+          "apikey": supabaseKey,
+          "Authorization": "Bearer " + accessToken,
+          "Content-Type": "application/json",
+          "Prefer": "return=representation"
+        },
+        body: JSON.stringify({
+          role: "student",
+          is_premium: false,
+          cohort: String(cohort),
+          grade_level: gradeLevel
+        })
+      }
+    );
+
+    const text = await res.text();
+
+    if (!res.ok) {
+      console.error("Failed to update cohort:", res.status, text);
+      if (msg) msg.textContent = "تم إنشاء الحساب، لكن لم يتم حفظ الجيل.";
+      return false;
+    }
+
+    console.log("✅ Student cohort saved:", text);
+    if (msg) msg.textContent = "تم إنشاء الحساب وحفظ الجيل الدراسي بنجاح ✅";
+    return true;
+  }
+
+  window.updateProfileCohortAfterSignup = updateProfileCohortAfterSignup;
+
+  const oldRegister = window.register || register;
+
+  if (typeof oldRegister !== "function") {
+    console.warn("register() not found for cohort patch.");
+    return;
+  }
+
+  window.register = async function registerWithCohortSave() {
+    const email = document.querySelector("#regEmail")?.value?.trim() || "";
+    const cohort = document.querySelector("#regCohort")?.value || "";
+    const msg = document.querySelector("#regMsg");
+
+    if (!cohort) {
+      if (msg) msg.textContent = "اختر جيلك الدراسي أولًا.";
+      console.warn("اختر جيلك الدراسي أولًا.");
+      return;
+    }
+
+    const roleInput = document.querySelector("#role");
+    if (roleInput) roleInput.value = "student";
+
+    const result = await oldRegister.apply(this, arguments);
+
+    setTimeout(() => {
+      updateProfileCohortAfterSignup(email, cohort);
+    }, 1200);
+
+    return result;
+  };
+
+  window.register.__jakCohortSaveWrapped = true;
+
+  console.log("✅ Register cohort save patch installed in login.html.");
+})();
 </script>
 </body>
 </html>

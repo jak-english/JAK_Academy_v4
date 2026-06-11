@@ -4941,4 +4941,490 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
+
+<script>
+/* =========================================================
+   JAK SECURITY PATCH - REMOVE PUBLIC ALERT INLINE HANDLERS
+   Runs after app.js even if app.js has late errors
+   ========================================================= */
+
+(function installRemovePublicAlertInlineHandlers() {
+  console.log("🔒 Installing public alert inline-handler cleaner from index.html...");
+
+  function cleanPublicAlertHandlers() {
+    document.querySelectorAll("button[onclick], a[onclick], div[onclick], [onclick]").forEach(el => {
+      const onclick = el.getAttribute("onclick") || "";
+
+      if (/alert\s*\(/i.test(onclick)) {
+        const msgMatch = onclick.match(/alert\s*\(\s*['"`]([\s\S]*?)['"`]\s*\)/i);
+        const message = msgMatch?.[1] || "قريبًا";
+
+        el.removeAttribute("onclick");
+
+        if (el.tagName === "BUTTON") {
+          el.setAttribute("type", "button");
+        }
+
+        el.setAttribute("data-safe-coming-soon", message);
+
+        if (!el.__jakSafeComingSoonHandler) {
+          el.__jakSafeComingSoonHandler = true;
+
+          el.addEventListener("click", function safeComingSoonHandler(e) {
+            e.preventDefault();
+
+            const old = document.querySelector("#jakSafeToast");
+            if (old) old.remove();
+
+            const toast = document.createElement("div");
+            toast.id = "jakSafeToast";
+            toast.textContent = message;
+            toast.style.cssText = `
+              position: fixed;
+              z-index: 999999;
+              left: 50%;
+              bottom: 24px;
+              transform: translateX(-50%);
+              max-width: min(92vw, 520px);
+              padding: 14px 18px;
+              border-radius: 16px;
+              background: #0f172a;
+              color: white;
+              box-shadow: 0 18px 45px rgba(15,23,42,.22);
+              font-weight: 800;
+              text-align: center;
+              direction: auto;
+              font-family: Cairo, Tajawal, Arial, sans-serif;
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 2600);
+          });
+        }
+      }
+    });
+  }
+
+  window.cleanPublicAlertHandlers = cleanPublicAlertHandlers;
+  window.cleanJakAlertHandlersFinal = cleanPublicAlertHandlers;
+
+  function runCleaner() {
+    cleanPublicAlertHandlers();
+  }
+
+  runCleaner();
+
+  const observer = new MutationObserver(runCleaner);
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["onclick"]
+  });
+
+  [300, 800, 1500, 3000, 6000, 10000].forEach(ms => {
+    setTimeout(runCleaner, ms);
+  });
+
+  window.addEventListener("load", runCleaner);
+
+  console.log("✅ Public alert inline-handler cleaner installed from index.html.");
+})();
+</script>
+<script>
+/* JAK REGISTER COHORT SELECT - FINAL */
+(() => {
+  function buildCohortSelect() {
+    const select = document.createElement("select");
+    select.id = "regCohort";
+    select.required = true;
+
+    select.innerHTML = `
+      <option value="">اختر جيلك الدراسي</option>
+      <option value="2008">جيل 2008 | الصف 12 | High Note 5</option>
+      <option value="2009">جيل 2009 | الصف 11 | High Note 4</option>
+      <option value="2010">جيل 2010 | الصف 10</option>
+      <option value="2011">جيل 2011 | الصف 9</option>
+      <option value="2012">جيل 2012 | الصف 8</option>
+      <option value="2013">جيل 2013 | الصف 7</option>
+      <option value="2014">جيل 2014 | الصف 6</option>
+      <option value="2015">جيل 2015 | الصف 5</option>
+      <option value="2016">جيل 2016 | الصف 4</option>
+      <option value="2017">جيل 2017 | الصف 3</option>
+      <option value="2018">جيل 2018 | الصف 2</option>
+      <option value="2019">جيل 2019 | الصف 1</option>
+    `;
+
+    select.style.cssText = `
+      width: 100% !important;
+      padding: 14px 16px !important;
+      margin: 10px 0 !important;
+      border-radius: 14px !important;
+      border: 1px solid rgba(15,23,42,.18) !important;
+      background: white !important;
+      color: #0f172a !important;
+      font-size: 15px !important;
+      font-weight: 700 !important;
+      outline: none !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      min-height: 48px !important;
+      position: relative !important;
+      z-index: 9999 !important;
+    `;
+
+    return select;
+  }
+
+  window.ensureRegisterCohortSelect = function ensureRegisterCohortSelect() {
+    const regPassword = document.querySelector("#regPassword");
+    const regEmail = document.querySelector("#regEmail");
+
+    if (!regPassword && !regEmail) return false;
+
+    let select = document.querySelector("#regCohort");
+
+    if (!select) {
+      select = buildCohortSelect();
+
+      if (regPassword) {
+        regPassword.insertAdjacentElement("afterend", select);
+      } else {
+        regEmail.insertAdjacentElement("afterend", select);
+      }
+    }
+
+    select.style.display = "block";
+    select.style.visibility = "visible";
+    select.style.opacity = "1";
+
+    return true;
+  };
+
+  function run() {
+    window.ensureRegisterCohortSelect();
+  }
+
+  run();
+
+  const observer = new MutationObserver(run);
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+
+  [300, 800, 1500, 3000, 6000].forEach(ms => setTimeout(run, ms));
+
+  const oldSwitchTab = window.switchTab;
+  if (typeof oldSwitchTab === "function" && !oldSwitchTab.__cohortSelectWrapped) {
+    window.switchTab = function(tab) {
+      const result = oldSwitchTab.apply(this, arguments);
+      setTimeout(run, 100);
+      setTimeout(run, 500);
+      return result;
+    };
+    window.switchTab.__cohortSelectWrapped = true;
+  }
+
+  console.log("✅ Register cohort select final installed.");
+})();
+</script>
+<script>
+  
+</script>
+<script>
+/* =========================================================
+   GOLDEN STUDENT COHORT GUARD - INDEX FINAL FORCE
+   Blocks premium students from opening another cohort.
+   ========================================================= */
+(function installGoldenStudentCohortGuardFromIndex() {
+  console.log("🔐 Installing Golden Student Cohort Guard from index.html...");
+
+  function getProfile() {
+    return window.currentProfile || {};
+  }
+
+  function norm(v) {
+    return String(v || "").trim();
+  }
+
+  function roleOf(p) {
+    return String(p?.role || "").toLowerCase();
+  }
+
+  function isStaff(p) {
+    const role = roleOf(p);
+    const email = String(p?.email || "").toLowerCase();
+
+    return (
+      role === "super_admin" ||
+      role === "admin" ||
+      role === "teacher" ||
+      email === "jalal26@yahoo.com" ||
+      email === "jalal026@gmail.com"
+    );
+  }
+
+  function isGoldenPremiumActive(p) {
+    if (!p) return false;
+    if (p.is_premium !== true) return false;
+
+    if (p.premium_plan && p.premium_plan !== "golden_cohort_package") {
+      return false;
+    }
+
+    if (p.premium_until) {
+      const until = new Date(p.premium_until);
+      const now = new Date();
+
+      if (Number.isNaN(until.getTime())) return false;
+      if (until < now) return false;
+    }
+
+    return true;
+  }
+
+   function getUnitNumber(unitKey) {
+  const raw = String(unitKey || "").trim();
+
+  // supports: "1", "2", "unit1", "unit2", "unit_1", "unit-1", "Unit 1"
+  if (/^\d+$/.test(raw)) return Number(raw);
+
+  const match =
+    raw.match(/^unit\s*[_-]?\s*(\d+)$/i) ||
+    raw.match(/^unit\s+(\d+)$/i) ||
+    raw.match(/(\d+)/);
+
+  return match ? Number(match[1]) : null;
+}
+
+  function isSpecial(unitKey) {
+    return ["cultureSpot", "literatureSpot"].includes(String(unitKey || ""));
+  }
+
+  function forceCanOpenFunction() {
+    window.canOpenGoldenUnitFinal = function canOpenGoldenUnitFinal_INDEX_FORCE(cohort, unitKey) {
+      const p = getProfile();
+      const role = roleOf(p);
+
+      if (isStaff(p)) {
+        return { ok: true, allowed: true, reason: "staff" };
+      }
+
+      if (role !== "student") {
+        return { ok: false, allowed: false, reason: "not_student" };
+      }
+
+      const ownCohort = norm(p.cohort);
+      const requestedCohort = norm(cohort);
+
+      // الطالب ممنوع يفتح جيل غير جيله حتى لو Premium
+      if (!ownCohort || ownCohort !== requestedCohort) {
+        return { ok: false, allowed: false, reason: "wrong_cohort" };
+      }
+
+      const n = getUnitNumber(unitKey);
+
+      // Unit 1 مجاني فقط داخل جيله
+      if (n === 1) {
+        return { ok: true, allowed: true, reason: "free_unit_1" };
+      }
+
+      // Unit 2-10 + Culture/Literature تحتاج Golden Premium داخل نفس الجيل
+      if ((n && n >= 2 && n <= 10) || isSpecial(unitKey)) {
+        if (isGoldenPremiumActive(p)) {
+          return { ok: true, allowed: true, reason: "golden_premium_same_cohort" };
+        }
+
+        return { ok: false, allowed: false, reason: "premium_required" };
+      }
+
+      return { ok: false, allowed: false, reason: "unknown_unit" };
+    };
+  }
+
+  function renderLocked(cohort, reason) {
+    const viewer =
+      document.getElementById("goldenUnitViewer" + cohort) ||
+      document.getElementById("goldenViewer" + cohort) ||
+      document.querySelector("#goldenIntensive .golden-unit-viewer") ||
+      document.querySelector("#goldenIntensive");
+
+    if (!viewer) return;
+
+    const p = getProfile();
+
+    const msg =
+      reason === "wrong_cohort"
+        ? "هذا المكثف مخصص لجيل آخر. يمكنك الوصول فقط إلى مكثف جيلك."
+        : "هذا القسم يحتاج تفعيل باقة المكثف الذهبي لجيلك.";
+
+    viewer.innerHTML = `
+      <div class="golden-locked-message">
+        <h3>🔒 محتوى مقفل</h3>
+        <p>${msg}</p>
+        <p>جيلك الحالي: <strong>${String(p.cohort || "غير محدد")}</strong></p>
+      </div>
+    `;
+  }
+
+  function bindGuard() {
+    forceCanOpenFunction();
+
+    const currentOpen = window.openGoldenUnit;
+
+    if (typeof currentOpen !== "function") return;
+
+    if (currentOpen.__goldenIndexForceGuard) return;
+
+    window.openGoldenUnit = function openGoldenUnit_INDEX_FORCE_GUARD(cohort, unitKey, ...rest) {
+      forceCanOpenFunction();
+
+      const decision = window.canOpenGoldenUnitFinal(cohort, unitKey);
+
+      if (!decision.ok) {
+        console.warn("🔒 Golden blocked by INDEX FORCE GUARD:", {
+          email: getProfile()?.email,
+          role: getProfile()?.role,
+          profileCohort: getProfile()?.cohort,
+          requestedCohort: cohort,
+          unitKey,
+          reason: decision.reason
+        });
+
+        renderLocked(cohort, decision.reason);
+        return false;
+      }
+
+      return currentOpen.apply(this, [cohort, unitKey, ...rest]);
+    };
+
+    window.openGoldenUnit.__goldenIndexForceGuard = true;
+    console.log("✅ Golden INDEX FORCE GUARD bound:", window.openGoldenUnit.name);
+  }
+
+  bindGuard();
+
+  const timer = setInterval(bindGuard, 500);
+
+  setTimeout(() => clearInterval(timer), 30000);
+
+  window.addEventListener("load", () => {
+    bindGuard();
+    setTimeout(bindGuard, 1000);
+    setTimeout(bindGuard, 3000);
+    setTimeout(bindGuard, 7000);
+  });
+})();
+</script>
+<script>
+/* =========================================================
+   GOLDEN UNIT KEY NORMALIZER FIX
+   Allows Unit 1 when unitKey comes as "1", "unit1", or "unit_1".
+   ========================================================= */
+(function installGoldenUnitKeyNormalizerFix() {
+  console.log("🔓 Installing Golden Unit Key Normalizer Fix...");
+
+  function getProfile() {
+    return window.currentProfile || {};
+  }
+
+  function norm(v) {
+    return String(v || "").trim();
+  }
+
+  function roleOf(p) {
+    return String(p?.role || "").toLowerCase();
+  }
+
+  function isStaff(p) {
+    const role = roleOf(p);
+    const email = String(p?.email || "").toLowerCase();
+
+    return (
+      role === "super_admin" ||
+      role === "admin" ||
+      role === "teacher" ||
+      email === "jalal26@yahoo.com" ||
+      email === "jalal026@gmail.com"
+    );
+  }
+
+  function getUnitNumber(unitKey) {
+    const raw = String(unitKey || "").trim();
+
+    // supports: "1", "unit1", "unit_1", "unit-1", "Unit 1"
+    if (/^\d+$/.test(raw)) return Number(raw);
+
+    const match =
+      raw.match(/^unit\s*[_-]?\s*(\d+)$/i) ||
+      raw.match(/unit\s+(\d+)/i) ||
+      raw.match(/(\d+)/);
+
+    return match ? Number(match[1]) : null;
+  }
+
+  function isSpecial(unitKey) {
+    return ["cultureSpot", "literatureSpot"].includes(String(unitKey || ""));
+  }
+
+  function isGoldenPremiumActive(p) {
+    if (!p) return false;
+    if (p.is_premium !== true) return false;
+
+    if (p.premium_plan && p.premium_plan !== "golden_cohort_package") {
+      return false;
+    }
+
+    if (p.premium_until) {
+      const until = new Date(p.premium_until);
+      const now = new Date();
+
+      if (Number.isNaN(until.getTime())) return false;
+      if (until < now) return false;
+    }
+
+    return true;
+  }
+
+  window.canOpenGoldenUnitFinal = function canOpenGoldenUnitFinal_UNIT_KEY_FIX(cohort, unitKey) {
+    const p = getProfile();
+    const role = roleOf(p);
+
+    if (isStaff(p)) {
+      return { ok: true, allowed: true, reason: "staff" };
+    }
+
+    if (role !== "student") {
+      return { ok: false, allowed: false, reason: "not_registered_student" };
+    }
+
+    const ownCohort = norm(p.cohort);
+    const requestedCohort = norm(cohort);
+
+    if (!ownCohort || ownCohort !== requestedCohort) {
+      return { ok: false, allowed: false, reason: "wrong_cohort" };
+    }
+
+    const n = getUnitNumber(unitKey);
+
+    if (n === 1) {
+      return { ok: true, allowed: true, reason: "free_unit_1_registered_same_cohort" };
+    }
+
+    if ((n && n >= 2 && n <= 10) || isSpecial(unitKey)) {
+      if (isGoldenPremiumActive(p)) {
+        return { ok: true, allowed: true, reason: "golden_premium_same_cohort" };
+      }
+
+      return { ok: false, allowed: false, reason: "premium_required" };
+    }
+
+    return { ok: false, allowed: false, reason: "unknown_unit" };
+  };
+
+  console.log("✅ Golden Unit Key Normalizer Fix installed.");
+})();
+</script>
 </body></html>

@@ -3754,14 +3754,19 @@ function renderPaymentInfo() {
       <p><b>Name:</b> ${safeText(s.cliqName)}</p>
       <p><b>Phone/Alias:</b> ${safeText(s.cliqPhone) || "Not set yet"}</p>
 
-      <div class="premium-offer-grid">
-        <div class="premium-price-card">
-          <span class="premium-plan-label">Student Monthly</span>
-          <div class="old-price">${oldStudentMonthly} JOD</div>
-          <div class="new-price">${safeText(s.studentMonthly)} JOD</div>
-          <p>per month</p>
-          <span class="offer-badge">Limited Offer</span>
-        </div>
+     <div class="golden-package-note">
+  <h3>المكثف الذهبي لجيلك</h3>
+
+  <p>
+    هذا الاشتراك ليس شهريًا. عند تفعيل المكثف الذهبي، تحصل على وصول كامل
+    إلى وحدات جيلك حتى نهاية فترة المكثف المحددة لهذا الجيل.
+  </p>
+
+  <ul>
+    <li><strong>جيل 2008:</strong> وصول حتى نهاية فترة مكثف 2008.</li>
+    <li><strong>جيل 2009:</strong> وصول حتى نهاية فترة مكثف 2009.</li>
+  </ul>
+</div>
 
         <div class="premium-price-card">
           <span class="premium-plan-label">Student Yearly</span>
@@ -3824,8 +3829,7 @@ async function submitPremiumRequest() {
     }
 
     const role = getRoleFromUser(user);
-    const plan = $("premiumPlan")?.value || "student_monthly";
-    const note = $("premiumNote")?.value.trim() || "";
+const plan = $("premiumPlan")?.value || "golden_cohort_package";    const note = $("premiumNote")?.value.trim() || "";
 
     if ($("premiumMsg")) {
       premiumMsg.textContent = "Submitting premium request...";
@@ -6223,64 +6227,156 @@ if (typeof editQuestion === "function") {
 // =========================
 // Users Management - Super Admin
 // =========================
-async function loadUsers() {
-  const status = $("usersStatus");
-  const table = $("usersTable");
+ async function loadUsers() {
+    let target =
+  document.getElementById("usersList") ||
+  document.getElementById("premiumUsersList") ||
+  document.getElementById("usersOutput") ||
+  document.getElementById("premiumUsers") ||
+  document.getElementById("adminUsersList") ||
+  document.getElementById("usersManagementList");
 
-  if (status) status.textContent = "Loading users...";
-  if (table) table.innerHTML = "";
+if (!target) {
+  const premiumPage = document.getElementById("premium");
 
-  if (!table) {
-    console.warn("usersTable element not found in index.html");
-    if (status) status.textContent = "Users table not found.";
+  if (!premiumPage) {
+    console.warn("Premium page not found.");
     return;
   }
 
+  target = document.createElement("div");
+  target.id = "premiumUsersList";
+  target.className = "premium-users-list";
+
+  premiumPage.appendChild(target);
+
+  console.log("✅ Created premiumUsersList container automatically.");
+}
+  target.innerHTML = `
+    <div class="users-loading-card">
+      جاري تحميل المستخدمين...
+    </div>
+  `;
+
   const { data, error } = await client
     .from("profiles")
-    .select("email, role, full_name, premium_until")
+    .select("email, role, full_name, cohort, grade_level, is_premium, premium_plan, premium_until")
     .order("email", { ascending: true });
 
   if (error) {
     console.error("Load users error:", error);
-    if (status) status.textContent = "Error loading users: " + error.message;
-    return;
-  }
-
-  const users = data || [];
-
-  if (status) status.textContent = "Users loaded: " + users.length;
-
-  if (!users.length) {
-    table.innerHTML = `
-      <tr>
-        <td colspan="4">No users found.</td>
-      </tr>
+    target.innerHTML = `
+      <div class="users-error-card">
+        حدث خطأ أثناء تحميل المستخدمين: ${safeText(error.message || "Unknown error")}
+      </div>
     `;
     return;
   }
 
-  users.forEach(user => {
-    const premiumText = user.premium_until
-      ? new Date(user.premium_until).toLocaleDateString()
-      : "Free";
-
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td>${safeText(user.email)}</td>
-      <td>${safeText(user.role || "student")}</td>
-      <td>${safeText(premiumText)}</td>
-      <td>
-        <button onclick="setUserRole('${safeText(user.email)}', 'teacher')">Make Teacher</button>
-        <button onclick="setUserRole('${safeText(user.email)}', 'student')">Make Student</button>
-        <button onclick="makeUserPremium('${safeText(user.email)}')">Make Premium</button>
-        <button class="danger" onclick="removeUserProfile('${safeText(user.email)}')">Remove Profile</button>
-      </td>
+  if (!data || !data.length) {
+    target.innerHTML = `
+      <div class="users-empty-card">
+        لا يوجد مستخدمون حتى الآن.
+      </div>
     `;
+    return;
+  }
 
-    table.appendChild(row);
-  });
+  function formatPremiumDate(value) {
+    if (!value) return "—";
+    try {
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return String(value).slice(0, 10);
+      return d.toLocaleDateString("en-GB");
+    } catch (e) {
+      return String(value).slice(0, 10);
+    }
+  }
+
+  function getPlanLabel(plan) {
+    if (plan === "golden_cohort_package") return "المكثف الذهبي";
+    if (plan === "student_monthly") return "طالب شهري";
+    if (plan === "student_yearly") return "طالب سنوي";
+    if (plan === "teacher_monthly") return "معلم شهري";
+    if (plan === "teacher_yearly") return "معلم سنوي";
+    return "—";
+  }
+
+  function getPremiumStatus(user) {
+    if (!user.is_premium) {
+      return `<span class="user-status-pill inactive">غير مفعّل</span>`;
+    }
+
+    return `<span class="user-status-pill active">Premium مفعّل</span>`;
+  }
+
+  target.innerHTML = `
+    <div class="users-management-shell">
+      <div class="users-management-header">
+        <div>
+          <h3>إدارة المستخدمين</h3>
+          <p>عدد المستخدمين: ${data.length}</p>
+        </div>
+        <button class="secondary" onclick="loadUsers()">Refresh</button>
+      </div>
+
+      <div class="users-grid">
+        ${data.map(u => `
+          <div class="user-admin-card">
+            <div class="user-main-info">
+              <div class="user-email">${safeText(u.email || "No email")}</div>
+              <div class="user-name">${safeText(u.full_name || "No name")}</div>
+
+              <div class="user-badges">
+                <span class="user-role-pill">${safeText(u.role || "student")}</span>
+                ${getPremiumStatus(u)}
+              </div>
+            </div>
+
+            <div class="user-details-grid">
+              <div>
+                <b>الجيل</b>
+                <span>${safeText(u.cohort || "—")}</span>
+              </div>
+
+              <div>
+                <b>الصف</b>
+                <span>${safeText(u.grade_level || "—")}</span>
+              </div>
+
+              <div>
+                <b>الخطة</b>
+                <span>${getPlanLabel(u.premium_plan)}</span>
+              </div>
+
+              <div>
+                <b>ينتهي في</b>
+                <span>${formatPremiumDate(u.premium_until)}</span>
+              </div>
+            </div>
+
+            <div class="user-actions-row">
+              <button onclick="setUserRole('${safeText(u.email)}', 'teacher')">
+                Make Teacher
+              </button>
+
+              <button onclick="setUserRole('${safeText(u.email)}', 'student')">
+                Make Student
+              </button>
+
+              <button class="gold" onclick="makeUserPremium('${safeText(u.email)}')">
+                Golden Premium
+              </button>
+
+              <button class="danger" onclick="removeUserProfile('${safeText(u.email)}')">
+                Remove
+              </button>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
 }
 
 async function setUserRole(email, newRole) {
@@ -6307,24 +6403,60 @@ async function setUserRole(email, newRole) {
 async function makeUserPremium(email) {
   if (!email) return;
 
-  const ok = confirm("Make " + email + " premium for 30 days?");
-  if (!ok) return;
-
-  const premiumDate = new Date();
-  premiumDate.setDate(premiumDate.getDate() + 30);
-
-  const { error } = await client
+  // أولًا نجيب بيانات الطالب
+  const { data: profileData, error: profileError } = await client
     .from("profiles")
-    .update({ premium_until: premiumDate.toISOString() })
-    .eq("email", email);
+    .select("email, role, cohort, grade_level")
+    .eq("email", email)
+    .single();
 
-  if (error) {
-    console.error("Premium error:", error);
-    alert("Error making premium: " + error.message);
+  if (profileError || !profileData) {
+    console.error("Failed to load student profile:", profileError);
+    alert("لم يتم العثور على بيانات الطالب.");
     return;
   }
 
-  alert("Premium activated for 30 days ✅");
+  function getGoldenPremiumUntilByCohort(cohort) {
+    if (String(cohort) === "2008") return "2026-07-31T23:59:59";
+    if (String(cohort) === "2009") return "2026-08-31T23:59:59";
+    return null;
+  }
+
+  const finalPremiumUntil = getGoldenPremiumUntilByCohort(profileData.cohort);
+
+  if (!finalPremiumUntil) {
+    alert("هذا الطالب ليس من جيل 2008 أو 2009، لذلك لا يمكن تفعيل المكثف الذهبي له الآن.");
+    return;
+  }
+
+  const ok = confirm(
+    "تفعيل باقة المكثف الذهبي للطالب:\n\n" +
+    email +
+    "\n\n" +
+    "الجيل: " + profileData.cohort + "\n" +
+    "الصف: " + (profileData.grade_level || "غير محدد") + "\n" +
+    "ينتهي بتاريخ: " + finalPremiumUntil.slice(0, 10) + "\n\n" +
+    "هل تريد المتابعة؟"
+  );
+
+  if (!ok) return;
+
+  const { error } = await client
+    .from("profiles")
+    .update({
+      is_premium: true,
+      premium_plan: "golden_cohort_package",
+      premium_until: finalPremiumUntil
+    })
+    .eq("email", email);
+
+  if (error) {
+    console.error("Golden premium error:", error);
+    alert("حدث خطأ أثناء تفعيل المكثف الذهبي: " + error.message);
+    return;
+  }
+
+  alert("تم تفعيل باقة المكثف الذهبي بنجاح ✅");
   loadUsers();
 }
 
@@ -29639,11 +29771,18 @@ finalStillActive:
    to startGoldenLinkedExam(id) after observer renders them.
    ========================================================= */
 
+/* =========================================================
+   GOLDEN FORCE START BUTTONS FIX FINAL
+   Fixes old Unit exam start buttons and logs once only
+========================================================= */
+
 (function installGoldenForceStartButtonsFixFinal() {
   console.log("🔧 Installing Golden Force Start Buttons Fix FINAL...");
 
   function forceFixGoldenStartButtons() {
-    const buttons = Array.from(document.querySelectorAll(".golden-linked-exam-unit-card button"));
+    const buttons = Array.from(
+      document.querySelectorAll(".golden-linked-exam-unit-card button")
+    );
 
     buttons.forEach(button => {
       const oldClick = button.getAttribute("onclick") || "";
@@ -29659,14 +29798,16 @@ finalStillActive:
       }
     });
 
-    if (buttons.length) {
+    if (buttons.length && !window.__goldenStartButtonsFixedLogged) {
       console.log("✅ Golden start buttons fixed:", buttons.length);
+      window.__goldenStartButtonsFixedLogged = true;
     }
   }
 
   window.forceFixGoldenStartButtons = forceFixGoldenStartButtons;
 
   const oldRefresh = window.refreshGoldenViewerExams;
+
   if (typeof oldRefresh === "function" && !oldRefresh.__forceStartButtonsFixed) {
     window.refreshGoldenViewerExams = async function refreshGoldenViewerExams_FORCE_BUTTONS(...args) {
       const result = await oldRefresh.apply(this, args);
@@ -29682,6 +29823,7 @@ finalStillActive:
   }
 
   const oldRender = window.renderGoldenExamsIntoViewer;
+
   if (typeof oldRender === "function" && !oldRender.__forceStartButtonsFixed) {
     window.renderGoldenExamsIntoViewer = async function renderGoldenExamsIntoViewer_FORCE_BUTTONS(...args) {
       const result = await oldRender.apply(this, args);
@@ -29696,12 +29838,17 @@ finalStillActive:
     window.renderGoldenExamsIntoViewer.__forceStartButtonsFixed = true;
   }
 
-  setInterval(() => {
-    const page = document.getElementById("goldenIntensive");
-    if (page?.classList.contains("active")) {
-      forceFixGoldenStartButtons();
-    }
-  }, 1200);
+  if (!window.__goldenStartButtonsFixIntervalInstalled) {
+    window.__goldenStartButtonsFixIntervalInstalled = true;
+
+    setInterval(() => {
+      const page = document.getElementById("goldenIntensive");
+
+      if (page?.classList.contains("active")) {
+        forceFixGoldenStartButtons();
+      }
+    }, 3000);
+  }
 
   setTimeout(forceFixGoldenStartButtons, 500);
   setTimeout(forceFixGoldenStartButtons, 1500);
@@ -31225,7 +31372,1044 @@ function installGoldenAccessGuardWatchdog() {
     }
   }, 300);
 })();
+/* =========================================================
+   JAK PATCH - HARD SECURITY GUARD FINAL
+   Re-protects showPage and openGoldenUnit if later code overrides them.
+   ========================================================= */
 
+(function installJakHardSecurityGuardFinal() {
+  console.log("🛡️ Installing JAK Hard Security Guard FINAL...");
+
+  const OWNER_EMAILS = ["jalal26@yahoo.com", "jalal026@gmail.com"];
+
+  function getJakAuthState() {
+    const profile = window.currentProfile || {};
+    const user = window.currentUser || {};
+
+    const email = profile.email || user.email || "";
+    const role = profile.role || "";
+    const cohort = String(profile.cohort || user.cohort || "");
+    const gradeLevel = String(profile.grade_level || user.grade_level || "");
+
+    const isLoggedIn = !!(email || profile.id || user.id);
+
+    const isOwner =
+      OWNER_EMAILS.includes(email) ||
+      role === "owner" ||
+      role === "super_admin";
+
+    const isAdmin = isOwner || role === "admin";
+    const isTeacher = isOwner || isAdmin || role === "teacher";
+
+    const isPremium =
+      isOwner ||
+      isAdmin ||
+      isTeacher ||
+      profile.is_premium === true ||
+      user.is_premium === true;
+
+    return {
+      email,
+      role,
+      cohort,
+      gradeLevel,
+      isLoggedIn,
+      isOwner,
+      isAdmin,
+      isTeacher,
+      isPremium
+    };
+  }
+
+  function ensureAccessDeniedPage(pageId, reason) {
+    let page = document.querySelector("#accessDeniedPage");
+
+    if (!page) {
+      page = document.createElement("section");
+      page.id = "accessDeniedPage";
+      page.className = "page";
+      document.querySelector("main")?.appendChild(page);
+    }
+
+    page.innerHTML = `
+      <div style="
+        max-width:760px;
+        margin:80px auto;
+        padding:32px;
+        border-radius:24px;
+        background:#fff;
+        box-shadow:0 18px 45px rgba(15,23,42,.14);
+        text-align:center;
+        direction:rtl;
+      ">
+        <h2>🔒 غير مسموح بالوصول</h2>
+        <p style="font-size:18px;line-height:1.8;color:#475569;">
+          هذه الصفحة محمية ولا يمكن فتحها من هذا الحساب.
+        </p>
+        <p style="color:#64748b;">الصفحة: <strong>${pageId}</strong></p>
+        <p style="color:#64748b;">السبب: ${reason}</p>
+        <button onclick="showPage('home')" style="
+          margin-top:18px;
+          padding:12px 22px;
+          border:0;
+          border-radius:14px;
+          background:#0f172a;
+          color:white;
+          cursor:pointer;
+          font-weight:800;
+        ">العودة للرئيسية</button>
+      </div>
+    `;
+
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    page.classList.add("active");
+  }
+
+  function canAccessJakPage(pageId) {
+    const auth = getJakAuthState();
+
+    const guestAllowed = new Set([
+      "home",
+      "login",
+      "register",
+      "premium",
+      "teachersPage",
+      "studentExams",
+      "takeExam",
+      "examSolver",
+      "examResult",
+      "goldenIntensive"
+    ]);
+
+    const studentAllowed = new Set([
+      "home",
+      "studentDashboard",
+      "studentExams",
+      "teachersPage",
+      "takeExam",
+      "examSolver",
+      "examResult",
+      "myResults",
+      "leaderboard",
+      "studentAssistant",
+      "planner",
+      "premium",
+      "goldenIntensive"
+    ]);
+
+    const teacherOnly = new Set([
+      "teacherDashboard",
+      "questionManager",
+      "questionBank",
+      "aiCenter"
+    ]);
+
+    const ownerOnly = new Set([
+      "superAdminDashboard"
+    ]);
+
+    if (ownerOnly.has(pageId)) {
+      return {
+        allowed: auth.isOwner,
+        reason: "Super Admin فقط"
+      };
+    }
+
+    if (teacherOnly.has(pageId)) {
+      return {
+        allowed: auth.isTeacher,
+        reason: "Teacher/Admin فقط"
+      };
+    }
+
+    if (!auth.isLoggedIn) {
+      return {
+        allowed: guestAllowed.has(pageId),
+        reason: "يحتاج تسجيل دخول"
+      };
+    }
+
+    if (auth.role === "student" || !auth.isTeacher) {
+      return {
+        allowed: studentAllowed.has(pageId) || guestAllowed.has(pageId),
+        reason: "هذه الصفحة ليست مخصصة للطلاب"
+      };
+    }
+
+    return {
+      allowed: true,
+      reason: "allowed"
+    };
+  }
+
+  function protectShowPageNow() {
+    if (typeof window.showPage !== "function") return false;
+
+    if (window.showPage.__jakHardGuardFinal === true) return true;
+
+    const original = window.showPage;
+
+    window.showPage = function guardedShowPage(pageId, ...args) {
+      const access = canAccessJakPage(pageId);
+
+      if (!access.allowed) {
+        console.warn("🔒 Route blocked FINAL:", {
+          pageId,
+          reason: access.reason,
+          auth: getJakAuthState()
+        });
+
+        ensureAccessDeniedPage(pageId, access.reason);
+        return false;
+      }
+
+      return original.apply(this, [pageId, ...args]);
+    };
+
+    window.showPage.__jakHardGuardFinal = true;
+    window.showPage.__originalShowPage = original;
+
+    console.log("✅ showPage protected by HARD FINAL guard.");
+    return true;
+  }
+
+  function normalizeGoldenUnitKey(unit) {
+    const raw = String(unit || "").trim();
+
+    if (raw === "cultureSpot" || raw === "culture") return "cultureSpot";
+    if (raw === "literatureSpot" || raw === "literature") return "literatureSpot";
+
+    const n = parseInt(raw.replace(/^unit/i, ""), 10);
+    if (!Number.isNaN(n)) return String(n);
+
+    return raw;
+  }
+
+  function canOpenGoldenUnitFinal(cohort, unit) {
+    const auth = getJakAuthState();
+    const unitKey = normalizeGoldenUnitKey(unit);
+    const cohortKey = String(cohort || "");
+
+    if (auth.isOwner || auth.isAdmin || auth.isTeacher || auth.isPremium) {
+      return {
+        allowed: true,
+        reason: "owner/teacher/premium"
+      };
+    }
+
+    // Student cohort gating
+    if (auth.role === "student") {
+      const studentCohort =
+        auth.cohort ||
+        (auth.gradeLevel === "11" ? "2009" : "") ||
+        (auth.gradeLevel === "12" ? "2008" : "");
+
+      if (studentCohort && String(studentCohort) !== cohortKey) {
+        return {
+          allowed: false,
+          reason: "هذا المحتوى ليس مخصصًا لجيلك"
+        };
+      }
+    }
+
+    // Free access only Unit 1
+    if (unitKey === "1") {
+      return {
+        allowed: true,
+        reason: "free unit 1"
+      };
+    }
+
+    return {
+      allowed: false,
+      reason: "هذا المحتوى مخصص لطلاب Premium"
+    };
+  }
+
+  function renderGoldenPremiumLock(cohort, unit, reason) {
+    const viewer =
+      document.querySelector(`#goldenUnitViewer${cohort}`) ||
+      document.querySelector(`#golden-grade${cohort} .golden-unit-viewer`) ||
+      document.querySelector("#goldenIntensive");
+
+    if (!viewer) {
+      alert(reason || "هذا المحتوى مخصص لطلاب Premium");
+      return;
+    }
+
+    viewer.innerHTML = `
+      <div class="golden-premium-lock" style="
+        margin:24px 0;
+        padding:28px;
+        border-radius:24px;
+        background:linear-gradient(135deg,#fff7ed,#fffbeb);
+        border:1px solid rgba(245,158,11,.35);
+        box-shadow:0 18px 45px rgba(15,23,42,.10);
+        text-align:center;
+        direction:rtl;
+      ">
+        <h2 style="margin-bottom:10px;">🔒 محتوى Premium</h2>
+        <p style="font-size:18px;line-height:1.8;color:#475569;">
+          ${reason || "هذا المحتوى مخصص لطلاب Premium."}
+        </p>
+        <p style="color:#64748b;">
+          المتاح مجانًا: Unit 1 فقط.
+        </p>
+        <button onclick="showPage('premium')" style="
+          margin-top:16px;
+          padding:12px 22px;
+          border:0;
+          border-radius:14px;
+          background:#0f172a;
+          color:white;
+          cursor:pointer;
+          font-weight:800;
+        ">عرض الاشتراك</button>
+      </div>
+    `;
+  }
+
+  function protectOpenGoldenUnitNow() {
+    if (typeof window.openGoldenUnit !== "function") return false;
+
+    if (window.openGoldenUnit.__jakGoldenHardGuardFinal === true) return true;
+
+    const original = window.openGoldenUnit;
+
+    window.openGoldenUnit = async function openGoldenUnit_ACCESS_WATCHDOG(cohort, unit, ...args) {
+      const access = canOpenGoldenUnitFinal(cohort, unit);
+
+      if (!access.allowed) {
+        console.warn("🔒 Golden unit blocked FINAL:", {
+          cohort,
+          unit,
+          reason: access.reason,
+          auth: getJakAuthState()
+        });
+
+        renderGoldenPremiumLock(cohort, unit, access.reason);
+        return false;
+      }
+
+      const result = await original.apply(this, [cohort, unit, ...args]);
+
+      // Hide edit buttons from non-owner/non-teacher if any old renderer leaks them
+      const auth = getJakAuthState();
+      if (!(auth.isOwner || auth.isAdmin || auth.isTeacher)) {
+        setTimeout(() => {
+          document
+            .querySelectorAll("#goldenIntensive button")
+            .forEach(btn => {
+              const text = btn.innerText || "";
+              const onclick = btn.getAttribute("onclick") || "";
+
+              if (/Edit Content|تعديل|إدخال|openGoldenUnitEditor/i.test(text + " " + onclick)) {
+                btn.style.display = "none";
+                btn.disabled = true;
+              }
+            });
+        }, 100);
+      }
+
+      return result;
+    };
+
+    window.openGoldenUnit.__jakGoldenHardGuardFinal = true;
+    window.openGoldenUnit.__originalOpenGoldenUnit = original;
+
+    console.log("✅ openGoldenUnit protected by HARD FINAL guard.");
+    return true;
+  }
+
+  window.getJakAuthState = getJakAuthState;
+  window.canAccessJakPage = canAccessJakPage;
+  window.canOpenGoldenUnitFinal = canOpenGoldenUnitFinal;
+  window.protectShowPageNow = protectShowPageNow;
+  window.protectOpenGoldenUnitNow = protectOpenGoldenUnitNow;
+
+  protectShowPageNow();
+  protectOpenGoldenUnitNow();
+
+  // Re-apply because old patches may rebind functions after load
+  [200, 600, 1200, 2200, 3500].forEach(ms => {
+    setTimeout(protectShowPageNow, ms);
+    setTimeout(protectOpenGoldenUnitNow, ms);
+  });
+
+  console.log("✅ JAK Hard Security Guard FINAL installed.");
+  setTimeout(() => window.protectShowPageNow && window.protectShowPageNow(), 4500);
+setTimeout(() => window.protectOpenGoldenUnitNow && window.protectOpenGoldenUnitNow(), 4500);
+
+setTimeout(() => window.protectShowPageNow && window.protectShowPageNow(), 6500);
+setTimeout(() => window.protectOpenGoldenUnitNow && window.protectOpenGoldenUnitNow(), 6500);
+
+setTimeout(() => window.protectShowPageNow && window.protectShowPageNow(), 9000);
+setTimeout(() => window.protectOpenGoldenUnitNow && window.protectOpenGoldenUnitNow(), 9000);
+})();
+/* =========================================================
+   JAK PATCH - HIDE GOLDEN EDIT BUTTONS FROM STUDENTS FINAL
+   ========================================================= */
+
+(function installHideGoldenEditButtonsFromStudentsFinal() {
+  console.log("🔒 Installing Golden student edit-button cleaner...");
+
+  function isGoldenOwnerOrEditor() {
+    const profile = window.currentProfile || {};
+    const user = window.currentUser || {};
+    const email = profile.email || user.email || "";
+    const role = profile.role || "";
+
+    return (
+      email === "jalal26@yahoo.com" ||
+      email === "jalal026@gmail.com" ||
+      role === "owner" ||
+      role === "super_admin" ||
+      role === "admin" ||
+      role === "teacher"
+    );
+  }
+
+  function hideGoldenEditButtonsFromStudents() {
+    if (isGoldenOwnerOrEditor()) return;
+
+    document.querySelectorAll("#goldenIntensive button, #goldenIntensive a").forEach(el => {
+      const text = el.innerText || "";
+      const onclick = el.getAttribute("onclick") || "";
+
+      if (
+        /إدخال|تعديل|Edit Content|openGoldenUnitEditor|saveGoldenUnitContent|clearGoldenUnitContent/i.test(
+          text + " " + onclick
+        )
+      ) {
+        el.style.display = "none";
+        el.style.visibility = "hidden";
+        el.disabled = true;
+        el.setAttribute("data-hidden-from-student", "true");
+      }
+    });
+  }
+
+  window.hideGoldenEditButtonsFromStudents = hideGoldenEditButtonsFromStudents;
+
+  hideGoldenEditButtonsFromStudents();
+
+  const observer = new MutationObserver(() => {
+    hideGoldenEditButtonsFromStudents();
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  [300, 800, 1500, 2500, 4000].forEach(ms => {
+    setTimeout(hideGoldenEditButtonsFromStudents, ms);
+  });
+
+  console.log("✅ Golden student edit-button cleaner installed.");
+})();
+
+/* =========================================================
+   JAK PATCH - GLOBAL ROUTE SECURITY GUARD
+   Protect sensitive pages from guest/student access
+   ========================================================= */
+
+(function installGlobalRouteSecurityGuard() {
+  console.log("🔐 Installing Global Route Security Guard...");
+
+  if (window.__globalRouteSecurityGuardInstalled) {
+    console.log("ℹ️ Global Route Security Guard already installed.");
+    return;
+  }
+
+  window.__globalRouteSecurityGuardInstalled = true;
+
+  const OWNER_EMAILS = ["jalal26@yahoo.com", "jalal026@gmail.com"];
+
+  function getCurrentAppRole() {
+    const profile = window.currentProfile || {};
+    const user = window.currentUser || {};
+
+    const email = profile.email || user.email || "";
+    const role = profile.role || "";
+    const isPremium = !!(profile.is_premium || user.is_premium);
+
+    const isOwner =
+      OWNER_EMAILS.includes(email) ||
+      role === "owner" ||
+      role === "super_admin";
+
+    const isTeacher =
+      role === "teacher" ||
+      role === "admin" ||
+      isOwner;
+
+    const isAdmin =
+      role === "admin" ||
+      isOwner;
+
+    return {
+      email,
+      role,
+      isLoggedIn: !!(email || profile.id || user.id),
+      isPremium,
+      isOwner,
+      isTeacher,
+      isAdmin
+    };
+  }
+
+  function showAccessDeniedPage(targetPage, reason) {
+    let page = document.querySelector("#accessDeniedPage");
+
+    if (!page) {
+      page = document.createElement("section");
+      page.id = "accessDeniedPage";
+      page.className = "page";
+      document.querySelector("main")?.appendChild(page);
+    }
+
+    page.innerHTML = `
+      <div style="
+        max-width: 760px;
+        margin: 80px auto;
+        padding: 32px;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+        text-align: center;
+        direction: rtl;
+        font-family: inherit;
+      ">
+        <h2 style="margin-bottom: 12px;">🔒 غير مسموح بالوصول</h2>
+        <p style="font-size: 18px; line-height: 1.8; color: #475569;">
+          هذه الصفحة محمية ولا يمكن فتحها من هذا الحساب.
+        </p>
+        <p style="font-size: 14px; color: #64748b;">
+          الصفحة المطلوبة: <strong>${targetPage}</strong>
+        </p>
+        <p style="font-size: 14px; color: #64748b;">
+          السبب: ${reason}
+        </p>
+        <button onclick="showPage('home')" style="
+          margin-top: 18px;
+          padding: 12px 22px;
+          border: 0;
+          border-radius: 14px;
+          background: #0f172a;
+          color: #fff;
+          cursor: pointer;
+          font-weight: 700;
+        ">
+          العودة للرئيسية
+        </button>
+      </div>
+    `;
+
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    page.classList.add("active");
+  }
+
+  function canAccessPage(pageId) {
+    const auth = getCurrentAppRole();
+
+    const guestAllowedPages = new Set([
+      "home",
+      "login",
+      "register",
+      "premium",
+      "teachersPage",
+      "studentExams",
+      "goldenIntensive",
+      "takeExam",
+      "examSolver",
+      "examResult"
+    ]);
+
+    const studentAllowedPages = new Set([
+      "home",
+      "studentDashboard",
+      "teachersPage",
+      "studentExams",
+      "takeExam",
+      "examSolver",
+      "examResult",
+      "myResults",
+      "leaderboard",
+      "studentAssistant",
+      "planner",
+      "premium",
+      "goldenIntensive"
+    ]);
+
+    const teacherPages = new Set([
+      "teacherDashboard",
+      "questionBank",
+      "questionManager",
+      "aiCenter"
+    ]);
+
+    const adminOnlyPages = new Set([
+      "superAdminDashboard"
+    ]);
+
+    if (adminOnlyPages.has(pageId)) {
+      return {
+        allowed: auth.isOwner,
+        reason: "Super Admin فقط"
+      };
+    }
+
+    if (teacherPages.has(pageId)) {
+      return {
+        allowed: auth.isTeacher,
+        reason: "Teacher/Admin فقط"
+      };
+    }
+
+    if (!auth.isLoggedIn) {
+      return {
+        allowed: guestAllowedPages.has(pageId),
+        reason: "يحتاج تسجيل دخول"
+      };
+    }
+
+    if (auth.role === "student" || !auth.isTeacher) {
+      return {
+        allowed: studentAllowedPages.has(pageId) || guestAllowedPages.has(pageId),
+        reason: "هذه الصفحة ليست مخصصة للطلاب"
+      };
+    }
+
+    return {
+      allowed: true,
+      reason: "allowed"
+    };
+  }
+
+  window.canAccessPage = canAccessPage;
+  window.getCurrentAppRole = getCurrentAppRole;
+
+  const originalShowPage = window.showPage;
+
+  if (typeof originalShowPage === "function" && !originalShowPage.__routeGuardWrapped) {
+    window.showPage = function guardedShowPage(pageId, ...args) {
+      const access = canAccessPage(pageId);
+
+      if (!access.allowed) {
+        console.warn("🔒 Route blocked:", {
+          pageId,
+          reason: access.reason,
+          auth: getCurrentAppRole()
+        });
+
+        showAccessDeniedPage(pageId, access.reason);
+        return false;
+      }
+
+      return originalShowPage.apply(this, [pageId, ...args]);
+    };
+
+    window.showPage.__routeGuardWrapped = true;
+    console.log("✅ showPage protected by Global Route Security Guard.");
+  } else {
+    console.warn("⚠️ showPage not found or already wrapped.");
+  }
+
+  console.log("✅ Global Route Security Guard installed.");
+})();
+
+/* =========================================================
+   GOLDEN PATCH - HIDE EMPTY LINKED EXAM BOXES
+   Stable CSS fix
+   ========================================================= */
+
+(function installGoldenHideEmptyLinkedExamBoxesCSS() {
+  console.log("🎯 Installing Golden Hide Empty Linked Exam Boxes CSS...");
+
+  const old = document.getElementById("golden-hide-empty-linked-exam-boxes-css");
+  if (old) old.remove();
+
+  const style = document.createElement("style");
+  style.id = "golden-hide-empty-linked-exam-boxes-css";
+
+  style.textContent = `
+    #goldenIntensive .golden-unit-viewer #goldenCorrectViewerLinkedExamsBox,
+    #goldenIntensive .golden-unit-viewer .golden-unit-linked-exams-box {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border: 0 !important;
+    }
+
+    #goldenIntensive .golden-unit-viewer .golden-linked-exam-action-box {
+      display: block !important;
+      visibility: visible !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  console.log("✅ Golden empty linked exam boxes are now hidden by CSS.");
+})();
+/* =========================================================
+   GOLDEN PATCH - FORCE HIDE OWNER BACKUP TOOLS FROM NON OWNER
+   ========================================================= */
+
+(function installGoldenOwnerBackupToolsGuard() {
+  console.log("🔐 Installing Golden Owner Backup Tools Guard...");
+
+  const OWNER_EMAILS = ["jalal26@yahoo.com", "jalal026@gmail.com"];
+
+  function isGoldenOwnerNow() {
+    const profile = window.currentProfile || {};
+    const user = window.currentUser || {};
+
+    const email = profile.email || user.email || "";
+    const role = profile.role || "";
+
+    return OWNER_EMAILS.includes(email) || role === "owner" || role === "super_admin";
+  }
+
+  function guardGoldenOwnerBackupTools() {
+    const isOwner = isGoldenOwnerNow();
+
+    const ownerPanel = document.querySelector("#goldenOwnerTools");
+    if (ownerPanel) {
+      ownerPanel.style.display = isOwner ? "" : "none";
+    }
+
+    const buttons = Array.from(document.querySelectorAll("#goldenIntensive button, #goldenIntensive a"));
+
+    buttons.forEach(btn => {
+      const text = btn.innerText || "";
+      const onclick = btn.getAttribute("onclick") || "";
+
+      const isBackupTool =
+        /import|export|backup|restore|استيراد|تصدير|نسخة|استرجاع/i.test(text + " " + onclick);
+
+      if (isBackupTool) {
+        btn.style.display = isOwner ? "" : "none";
+        btn.disabled = !isOwner;
+        btn.setAttribute("data-owner-only-tool", "true");
+      }
+    });
+
+    return {
+      isOwner,
+      hiddenBackupTools: Array.from(document.querySelectorAll("[data-owner-only-tool='true']"))
+        .filter(el => getComputedStyle(el).display === "none")
+        .length
+    };
+  }
+
+  window.guardGoldenOwnerBackupTools = guardGoldenOwnerBackupTools;
+
+  guardGoldenOwnerBackupTools();
+
+  const goldenPage = document.querySelector("#goldenIntensive");
+  if (goldenPage) {
+    const observer = new MutationObserver(() => {
+      setTimeout(guardGoldenOwnerBackupTools, 50);
+      setTimeout(guardGoldenOwnerBackupTools, 300);
+    });
+
+    observer.observe(goldenPage, {
+      childList: true,
+      subtree: true
+    });
+
+    window.__goldenOwnerBackupToolsGuardObserver = observer;
+  }
+
+  setTimeout(guardGoldenOwnerBackupTools, 500);
+  setTimeout(guardGoldenOwnerBackupTools, 1500);
+
+  console.log("✅ Golden Owner Backup Tools Guard installed.");
+})();
+/* =========================================================
+   GOLDEN PATCH - OWNER TOOL CSS GUARD
+   Hide Golden owner/linker tools unless body has owner flag
+   ========================================================= */
+
+(function installGoldenOwnerToolCSSGuard() {
+  console.log("🔐 Installing Golden Owner Tool CSS Guard...");
+
+  const OWNER_EMAILS = ["jalal26@yahoo.com", "jalal026@gmail.com"];
+
+  function isGoldenOwner() {
+    const profile = window.currentProfile || {};
+    const user = window.currentUser || {};
+    const email = profile.email || user.email || "";
+    const role = profile.role || "";
+
+    return (
+      OWNER_EMAILS.includes(email) ||
+      role === "owner" ||
+      role === "super_admin"
+    );
+  }
+
+  function updateGoldenOwnerFlag() {
+    const owner = isGoldenOwner();
+
+    document.body.classList.toggle("golden-owner-active", owner);
+    document.body.classList.toggle("golden-not-owner", !owner);
+
+    return owner;
+  }
+
+  window.updateGoldenOwnerFlag = updateGoldenOwnerFlag;
+
+  const oldStyle = document.getElementById("golden-owner-tool-css-guard");
+  if (oldStyle) oldStyle.remove();
+
+  const style = document.createElement("style");
+  style.id = "golden-owner-tool-css-guard";
+  style.textContent = `
+    body.golden-not-owner #goldenExamLinkerPanel,
+    body.golden-not-owner #goldenOwnerTools,
+    body.golden-not-owner #goldenIntensive button[onclick*="saveGoldenExamLink"],
+    body.golden-not-owner #goldenIntensive button[onclick*="loadGoldenLinkedExamsPreview"],
+    body.golden-not-owner #goldenIntensive button[onclick*="exportGoldenBackup"],
+    body.golden-not-owner #goldenIntensive button[onclick*="importGoldenBackup"],
+    body.golden-not-owner #goldenIntensive button[onclick*="runGoldenSafeCheck"],
+    body.golden-not-owner #goldenIntensive button[onclick*="deleteGoldenLinkedExam"] {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  function applyGoldenOwnerToolGuard() {
+    const owner = updateGoldenOwnerFlag();
+
+    const buttons = Array.from(document.querySelectorAll("#goldenIntensive button, #goldenIntensive a"));
+
+    buttons.forEach(btn => {
+      const text = btn.innerText || "";
+      const onclick = btn.getAttribute("onclick") || "";
+
+      const isOwnerTool =
+        /saveGoldenExamLink|loadGoldenLinkedExamsPreview|exportGoldenBackup|importGoldenBackup|runGoldenSafeCheck|deleteGoldenLinkedExam/i.test(onclick) ||
+        /حفظ الربط|عرض الامتحانات المرتبطة|تصدير نسخة|استيراد نسخة|فحص المكثف|حذف الامتحان/i.test(text);
+
+      if (isOwnerTool) {
+        btn.disabled = !owner;
+        btn.setAttribute("data-golden-owner-tool", "true");
+        btn.style.display = owner ? "" : "none";
+      }
+    });
+
+    return {
+      owner,
+      hidden: Array.from(document.querySelectorAll("[data-golden-owner-tool='true']"))
+        .filter(el => getComputedStyle(el).display === "none")
+        .length
+    };
+  }
+
+  window.applyGoldenOwnerToolGuard = applyGoldenOwnerToolGuard;
+
+  applyGoldenOwnerToolGuard();
+
+  const goldenPage = document.querySelector("#goldenIntensive");
+
+  if (goldenPage) {
+    const observer = new MutationObserver(() => {
+      setTimeout(applyGoldenOwnerToolGuard, 50);
+      setTimeout(applyGoldenOwnerToolGuard, 300);
+    });
+
+    observer.observe(goldenPage, {
+      childList: true,
+      subtree: true
+    });
+
+    window.__goldenOwnerToolCSSGuardObserver = observer;
+  }
+
+  setTimeout(applyGoldenOwnerToolGuard, 500);
+  setTimeout(applyGoldenOwnerToolGuard, 1500);
+
+  console.log("✅ Golden Owner Tool CSS Guard installed.");
+})();
+
+
+ /* =========================================================
+   GOLDEN PATCH - CLEAN DUPLICATE EMPTY LINKED EXAM BOXES
+   Safe patch: removes empty "no linked exams" boxes only when
+   real Golden linked exam buttons already exist in the same viewer.
+   ========================================================= */
+
+(function installGoldenCleanEmptyLinkedExamBoxesPatch() {
+  console.log("🧹 Installing Golden Clean Empty Linked Exam Boxes Patch...");
+
+  function cleanGoldenDuplicateEmptyExamBoxes() {
+    const viewers = Array.from(document.querySelectorAll(
+      "#goldenUnitViewer2008, #goldenUnitViewer2009, .golden-unit-viewer"
+    ));
+
+    let removedCount = 0;
+
+    viewers.forEach(viewer => {
+      const hasRealStartButton = !!viewer.querySelector(".golden-linked-exam-start-btn");
+
+      if (!hasRealStartButton) return;
+
+      const emptyBoxes = Array.from(
+        viewer.querySelectorAll("#goldenCorrectViewerLinkedExamsBox, .golden-unit-linked-exams-box")
+      );
+
+      emptyBoxes.forEach(box => {
+        const text = box.innerText.trim().replace(/\s+/g, " ");
+        const saysEmpty = /لا توجد امتحانات مرتبطة/i.test(text);
+        const hasButtonInside = !!box.querySelector(".golden-linked-exam-start-btn");
+
+        if (saysEmpty && !hasButtonInside) {
+          box.remove();
+          removedCount++;
+        }
+      });
+    });
+
+    if (removedCount > 0) {
+if (window.GOLDEN_DEBUG_CLEANER === true && removedCount > 0) {
+ if (window.GOLDEN_DEBUG_CLEANER === true && removedCount > 0) {
+  console.log(`🧹 Golden empty linked exam boxes removed: ${removedCount}`);
+}
+}    }
+
+    return removedCount;
+  }
+
+  window.cleanGoldenDuplicateEmptyExamBoxes = cleanGoldenDuplicateEmptyExamBoxes;
+
+  const oldRenderGoldenLinkedExamButtonOnce = window.renderGoldenLinkedExamButtonOnce;
+  if (typeof oldRenderGoldenLinkedExamButtonOnce === "function" && !oldRenderGoldenLinkedExamButtonOnce.__cleanWrapped) {
+    window.renderGoldenLinkedExamButtonOnce = async function(...args) {
+      const result = await oldRenderGoldenLinkedExamButtonOnce.apply(this, args);
+
+      setTimeout(cleanGoldenDuplicateEmptyExamBoxes, 50);
+      setTimeout(cleanGoldenDuplicateEmptyExamBoxes, 250);
+      setTimeout(cleanGoldenDuplicateEmptyExamBoxes, 700);
+
+      return result;
+    };
+
+    window.renderGoldenLinkedExamButtonOnce.__cleanWrapped = true;
+    console.log("✅ renderGoldenLinkedExamButtonOnce wrapped with cleaner.");
+  }
+
+  const oldOpenGoldenUnit = window.openGoldenUnit;
+  if (typeof oldOpenGoldenUnit === "function" && !oldOpenGoldenUnit.__cleanWrapped) {
+    window.openGoldenUnit = async function(...args) {
+      const result = await oldOpenGoldenUnit.apply(this, args);
+
+      setTimeout(cleanGoldenDuplicateEmptyExamBoxes, 100);
+      setTimeout(cleanGoldenDuplicateEmptyExamBoxes, 400);
+      setTimeout(cleanGoldenDuplicateEmptyExamBoxes, 900);
+
+      return result;
+    };
+
+    window.openGoldenUnit.__cleanWrapped = true;
+    console.log("✅ openGoldenUnit wrapped with cleaner.");
+  }
+
+  setTimeout(cleanGoldenDuplicateEmptyExamBoxes, 500);
+  setTimeout(cleanGoldenDuplicateEmptyExamBoxes, 1500);
+
+  console.log("✅ Golden Clean Empty Linked Exam Boxes Patch installed.");
+})();
+ /* =========================================================
+   GOLDEN PATCH - CLEAN EMPTY EXAM BOXES AFTER OPEN UNIT
+   Strong quiet version
+   ========================================================= */
+
+(function installGoldenCleanAfterOpenUnitPatch() {
+  console.log("🧹 Installing Golden Clean After Open Unit Patch...");
+
+  if (window.__goldenCleanAfterOpenUnitInstalled) {
+    console.log("ℹ️ Golden Clean After Open Unit already installed.");
+    return;
+  }
+
+  window.__goldenCleanAfterOpenUnitInstalled = true;
+
+  function runCleanerManyTimes() {
+    if (typeof window.cleanGoldenDuplicateEmptyExamBoxes !== "function") return;
+
+    setTimeout(window.cleanGoldenDuplicateEmptyExamBoxes, 100);
+    setTimeout(window.cleanGoldenDuplicateEmptyExamBoxes, 300);
+    setTimeout(window.cleanGoldenDuplicateEmptyExamBoxes, 700);
+    setTimeout(window.cleanGoldenDuplicateEmptyExamBoxes, 1200);
+    setTimeout(window.cleanGoldenDuplicateEmptyExamBoxes, 1800);
+  }
+
+  function wrapOpenGoldenUnitCleaner() {
+    if (typeof window.openGoldenUnit !== "function") return;
+
+    if (window.openGoldenUnit.__goldenCleanerWrapped) return;
+
+    const originalOpenGoldenUnit = window.openGoldenUnit;
+
+    window.openGoldenUnit = async function openGoldenUnit_ACCESS_WATCHDOG(...args) {
+      const result = await originalOpenGoldenUnit.apply(this, args);
+      runCleanerManyTimes();
+      return result;
+    };
+
+    window.openGoldenUnit.__goldenCleanerWrapped = true;
+
+    console.log("✅ openGoldenUnit wrapped with quiet cleaner.");
+  }
+
+  wrapOpenGoldenUnitCleaner();
+
+  // لأن بعض أكواد Golden تعيد ربط openGoldenUnit بعد التحميل
+  setTimeout(wrapOpenGoldenUnitCleaner, 300);
+  setTimeout(wrapOpenGoldenUnitCleaner, 800);
+  setTimeout(wrapOpenGoldenUnitCleaner, 1500);
+  setTimeout(wrapOpenGoldenUnitCleaner, 2500);
+
+  const goldenPage = document.querySelector("#goldenIntensive");
+
+  if (goldenPage) {
+    let mutationTimer = null;
+
+    const observer = new MutationObserver(() => {
+      clearTimeout(mutationTimer);
+
+      mutationTimer = setTimeout(() => {
+        const hasStartButton = !!document.querySelector(".golden-linked-exam-start-btn");
+        const hasEmptyBox = !!document.querySelector("#goldenCorrectViewerLinkedExamsBox");
+
+        if (hasStartButton && hasEmptyBox) {
+          runCleanerManyTimes();
+        }
+      }, 300);
+    });
+
+    observer.observe(goldenPage, {
+      childList: true,
+      subtree: true
+    });
+
+    window.__goldenCleanAfterOpenUnitObserver = observer;
+  }
+
+  runCleanerManyTimes();
+
+  console.log("✅ Golden Clean After Open Unit Patch installed.");
+})();
 window.installGoldenAccessGuardWatchdog = installGoldenAccessGuardWatchdog;
 /* =========================================================
    GOLDEN AUTH PROFILE HYDRATION
@@ -32682,10 +33866,7 @@ function addDeleteButtonsToAllGoldenExamCards() {
 }
 
 window.addDeleteButtonsToAllGoldenExamCards = addDeleteButtonsToAllGoldenExamCards;
-/* =========================================================
-   GOLDEN UNIT DELETE BUTTONS - VISIBLE FINAL
-   Places delete button directly beside/under the start button in Unit cards
-========================================================= */
+ 
 
  /* =========================================================
    GOLDEN UNIT DELETE BUTTONS - FINAL SUPABASE VERSION
@@ -32814,3 +33995,404 @@ async function addVisibleDeleteButtonsToGoldenUnitCards(cohort = "2009", unitKey
 }
 
 window.addVisibleDeleteButtonsToGoldenUnitCards = addVisibleDeleteButtonsToGoldenUnitCards;
+/* =========================================================
+   JAK SECURITY PATCH - REMOVE PUBLIC ALERT INLINE HANDLERS
+   ========================================================= */
+
+(function installRemovePublicAlertInlineHandlers() {
+  console.log("🔒 Installing public alert inline-handler cleaner...");
+
+  function cleanPublicAlertHandlers() {
+    document.querySelectorAll("button[onclick], a[onclick], div[onclick]").forEach(el => {
+      const onclick = el.getAttribute("onclick") || "";
+
+      if (/^\s*alert\s*\(/i.test(onclick)) {
+        const msgMatch = onclick.match(/alert\s*\(\s*['"`]([\s\S]*?)['"`]\s*\)/i);
+        const message = msgMatch?.[1] || "قريبًا";
+
+        el.removeAttribute("onclick");
+        el.setAttribute("type", "button");
+        el.setAttribute("data-safe-coming-soon", message);
+
+        el.addEventListener("click", function safeComingSoonHandler(e) {
+          e.preventDefault();
+
+          const old = document.querySelector("#jakSafeToast");
+          if (old) old.remove();
+
+          const toast = document.createElement("div");
+          toast.id = "jakSafeToast";
+          toast.textContent = message;
+          toast.style.cssText = `
+            position: fixed;
+            z-index: 999999;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            max-width: min(92vw, 520px);
+            padding: 14px 18px;
+            border-radius: 16px;
+            background: #0f172a;
+            color: white;
+            box-shadow: 0 18px 45px rgba(15,23,42,.22);
+            font-weight: 800;
+            text-align: center;
+            direction: auto;
+          `;
+          document.body.appendChild(toast);
+
+          setTimeout(() => toast.remove(), 2600);
+        });
+      }
+    });
+  }
+
+  window.cleanPublicAlertHandlers = cleanPublicAlertHandlers;
+
+  cleanPublicAlertHandlers();
+
+  const observer = new MutationObserver(() => {
+    cleanPublicAlertHandlers();
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  [500, 1500, 3000, 6000].forEach(ms => {
+    setTimeout(cleanPublicAlertHandlers, ms);
+  });
+
+  console.log("✅ Public alert inline-handler cleaner installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - FINAL COHORT + PREMIUM ACCESS GUARD
+   Must be LAST after openGoldenUnit_ACCESS_WATCHDOG.
+   ========================================================= */
+(function installGoldenFinalCohortPremiumGuard() {
+  console.log("🔐 Installing Golden Final Cohort + Premium Guard...");
+
+  function getProfile() {
+    try {
+      return window.currentProfile || currentProfile || {};
+    } catch (e) {
+      return window.currentProfile || {};
+    }
+  }
+
+  function normalize(value) {
+    return String(value || "").trim();
+  }
+
+  function getRole(profile) {
+    return String(profile?.role || "").toLowerCase();
+  }
+
+  function isOwnerOrStaff(profile) {
+    const role = getRole(profile);
+    const email = String(profile?.email || "").toLowerCase();
+
+    return (
+      role === "super_admin" ||
+      role === "admin" ||
+      role === "teacher" ||
+      email === "jalal26@yahoo.com" ||
+      email === "jalal026@gmail.com"
+    );
+  }
+
+  function isGoldenPremiumActive(profile) {
+    if (!profile) return false;
+    if (profile.is_premium !== true) return false;
+
+    if (profile.premium_plan && profile.premium_plan !== "golden_cohort_package") {
+      return false;
+    }
+
+    if (profile.premium_until) {
+      const until = new Date(profile.premium_until);
+      const now = new Date();
+
+      if (Number.isNaN(until.getTime())) return false;
+      if (until < now) return false;
+    }
+
+    return true;
+  }
+
+  function getUnitNumber(unitKey) {
+    const match = String(unitKey || "").match(/unit(\d+)/i);
+    return match ? Number(match[1]) : null;
+  }
+
+  function isSpecialGoldenSection(unitKey) {
+    return ["cultureSpot", "literatureSpot"].includes(String(unitKey || ""));
+  }
+
+  window.canOpenGoldenUnitFinal = function canOpenGoldenUnitFinal(cohort, unitKey) {
+    const profile = getProfile();
+    const role = getRole(profile);
+
+    if (isOwnerOrStaff(profile)) {
+      return { ok: true, reason: "staff" };
+    }
+
+    if (role !== "student") {
+      return { ok: false, reason: "not_student" };
+    }
+
+    const ownCohort = normalize(profile.cohort);
+    const requestedCohort = normalize(cohort);
+
+    if (!ownCohort || ownCohort !== requestedCohort) {
+      return { ok: false, reason: "wrong_cohort" };
+    }
+
+    const unitNumber = getUnitNumber(unitKey);
+
+    if (unitNumber === 1) {
+      return { ok: true, reason: "free_unit_1" };
+    }
+
+    if (
+      (unitNumber && unitNumber >= 2 && unitNumber <= 10) ||
+      isSpecialGoldenSection(unitKey)
+    ) {
+      if (isGoldenPremiumActive(profile)) {
+        return { ok: true, reason: "golden_premium" };
+      }
+
+      return { ok: false, reason: "premium_required" };
+    }
+
+    return { ok: false, reason: "unknown_unit" };
+  };
+
+  function renderGoldenLockedMessage(cohort, unitKey, reason) {
+    const viewer =
+      document.getElementById("goldenUnitViewer" + cohort) ||
+      document.getElementById("goldenViewer" + cohort) ||
+      document.querySelector("#goldenIntensive .golden-unit-viewer") ||
+      document.querySelector("#goldenIntensive");
+
+    if (!viewer) return;
+
+    const profile = getProfile();
+
+    const message =
+      reason === "wrong_cohort"
+        ? "هذا المكثف مخصص لجيل آخر. يمكنك الوصول فقط إلى مكثف جيلك."
+        : "هذا القسم يحتاج تفعيل باقة المكثف الذهبي لجيلك.";
+
+    viewer.innerHTML = `
+      <div class="golden-locked-message">
+        <h3>🔒 محتوى مقفل</h3>
+        <p>${message}</p>
+        <p>جيلك الحالي: <strong>${String(profile?.cohort || "غير محدد")}</strong></p>
+      </div>
+    `;
+  }
+
+  const previousOpenGoldenUnit = window.openGoldenUnit;
+
+  window.openGoldenUnit = function openGoldenUnit_FINAL_COHORT_PREMIUM_GUARD(cohort, unitKey, ...rest) {
+    const decision = window.canOpenGoldenUnitFinal(cohort, unitKey);
+
+    if (!decision.ok) {
+      console.warn("🔒 Golden access blocked:", {
+        email: getProfile()?.email,
+        role: getProfile()?.role,
+        profileCohort: getProfile()?.cohort,
+        requestedCohort: cohort,
+        unitKey,
+        reason: decision.reason
+      });
+
+      renderGoldenLockedMessage(cohort, unitKey, decision.reason);
+      return false;
+    }
+
+    return previousOpenGoldenUnit.apply(this, [cohort, unitKey, ...rest]);
+  };
+
+  window.openGoldenUnit.__goldenFinalCohortPremiumGuard = true;
+
+  console.log("✅ Golden Final Cohort + Premium Guard installed.");
+})();
+/* =========================================================
+   GOLDEN INTENSIVE - ABSOLUTE FINAL STUDENT COHORT GUARD
+   Must stay LAST. Blocks premium students from other cohorts.
+   ========================================================= */
+(function installGoldenAbsoluteFinalStudentCohortGuard() {
+  console.log("🔐 Installing ABSOLUTE FINAL Golden Student Cohort Guard...");
+
+  function getProfile() {
+    try {
+      return window.currentProfile || currentProfile || {};
+    } catch (e) {
+      return window.currentProfile || {};
+    }
+  }
+
+  function norm(v) {
+    return String(v || "").trim();
+  }
+
+  function roleOf(p) {
+    return String(p?.role || "").toLowerCase();
+  }
+
+  function isStaff(p) {
+    const role = roleOf(p);
+    const email = String(p?.email || "").toLowerCase();
+
+    return (
+      role === "super_admin" ||
+      role === "admin" ||
+      role === "teacher" ||
+      email === "jalal26@yahoo.com" ||
+      email === "jalal026@gmail.com"
+    );
+  }
+
+  function isGoldenPremiumActive(p) {
+    if (!p) return false;
+    if (p.is_premium !== true) return false;
+
+    if (p.premium_plan && p.premium_plan !== "golden_cohort_package") {
+      return false;
+    }
+
+    if (p.premium_until) {
+      const until = new Date(p.premium_until);
+      const now = new Date();
+
+      if (Number.isNaN(until.getTime())) return false;
+      if (until < now) return false;
+    }
+
+    return true;
+  }
+
+  function unitNumber(unitKey) {
+    const m = String(unitKey || "").match(/unit(\d+)/i);
+    return m ? Number(m[1]) : null;
+  }
+
+  function isSpecial(unitKey) {
+    return ["cultureSpot", "literatureSpot"].includes(String(unitKey || ""));
+  }
+
+  window.canOpenGoldenUnitFinal = function canOpenGoldenUnitFinal(cohort, unitKey) {
+    const p = getProfile();
+    const role = roleOf(p);
+
+    if (isStaff(p)) {
+      return { ok: true, allowed: true, reason: "staff" };
+    }
+
+    if (role !== "student") {
+      return { ok: false, allowed: false, reason: "not_student" };
+    }
+
+    const ownCohort = norm(p.cohort);
+    const requestedCohort = norm(cohort);
+
+    if (!ownCohort || ownCohort !== requestedCohort) {
+      return { ok: false, allowed: false, reason: "wrong_cohort" };
+    }
+
+    const n = unitNumber(unitKey);
+
+    if (n === 1) {
+      return { ok: true, allowed: true, reason: "free_unit_1" };
+    }
+
+    if ((n && n >= 2 && n <= 10) || isSpecial(unitKey)) {
+      if (isGoldenPremiumActive(p)) {
+        return { ok: true, allowed: true, reason: "golden_premium" };
+      }
+
+      return { ok: false, allowed: false, reason: "premium_required" };
+    }
+
+    return { ok: false, allowed: false, reason: "unknown_unit" };
+  };
+
+  function renderLocked(cohort, unitKey, reason) {
+    const viewer =
+      document.getElementById("goldenUnitViewer" + cohort) ||
+      document.getElementById("goldenViewer" + cohort) ||
+      document.querySelector("#goldenIntensive .golden-unit-viewer") ||
+      document.querySelector("#goldenIntensive");
+
+    if (!viewer) return;
+
+    const p = getProfile();
+
+    const msg =
+      reason === "wrong_cohort"
+        ? "هذا المكثف مخصص لجيل آخر. يمكنك الوصول فقط إلى مكثف جيلك."
+        : "هذا القسم يحتاج تفعيل باقة المكثف الذهبي لجيلك.";
+
+    viewer.innerHTML = `
+      <div class="golden-locked-message">
+        <h3>🔒 محتوى مقفل</h3>
+        <p>${msg}</p>
+        <p>جيلك الحالي: <strong>${String(p?.cohort || "غير محدد")}</strong></p>
+      </div>
+    `;
+  }
+
+  function bindFinalGuard() {
+    if (
+      window.openGoldenUnit &&
+      window.openGoldenUnit.__goldenAbsoluteFinalStudentCohortGuard
+    ) {
+      return;
+    }
+
+    const previousOpenGoldenUnit = window.openGoldenUnit;
+
+    if (typeof previousOpenGoldenUnit !== "function") {
+      console.warn("⚠️ openGoldenUnit not found yet. Retrying final guard...");
+      return;
+    }
+
+    window.openGoldenUnit = function openGoldenUnit_ABSOLUTE_FINAL_STUDENT_COHORT_GUARD(cohort, unitKey, ...rest) {
+      const decision = window.canOpenGoldenUnitFinal(cohort, unitKey);
+
+      if (!decision.ok) {
+        console.warn("🔒 Golden access blocked by absolute final guard:", {
+          email: getProfile()?.email,
+          role: getProfile()?.role,
+          profileCohort: getProfile()?.cohort,
+          requestedCohort: cohort,
+          unitKey,
+          reason: decision.reason
+        });
+
+        renderLocked(cohort, unitKey, decision.reason);
+        return false;
+      }
+
+      return previousOpenGoldenUnit.apply(this, [cohort, unitKey, ...rest]);
+    };
+
+    window.openGoldenUnit.__goldenAbsoluteFinalStudentCohortGuard = true;
+
+    console.log("✅ ABSOLUTE FINAL Golden Student Cohort Guard bound:", window.openGoldenUnit.name);
+  }
+
+  bindFinalGuard();
+
+  [300, 800, 1500, 3000, 5000, 8000].forEach(ms => {
+    setTimeout(bindFinalGuard, ms);
+  });
+
+  window.addEventListener("load", () => {
+    setTimeout(bindFinalGuard, 500);
+    setTimeout(bindFinalGuard, 2000);
+  });
+})();
