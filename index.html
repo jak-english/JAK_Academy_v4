@@ -4939,12 +4939,95 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 </section>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=golden-mobile-content-5"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js?v=golden-mobile-content-6"></script>
+
+<script>
+/* =========================================================
+   GOLDEN CONTENT LOAD FROM SUPABASE - INDEX EMERGENCY FINAL
+========================================================= */
+(function installGoldenContentIndexEmergencyFinal() {
+  console.log("🚨 Installing Golden Content Index Emergency Final...");
+
+  const KEY = "jakGoldenIntensiveDataV1";
+
+  async function loadGoldenContentFromSupabase() {
+    const sb = window.client;
+
+    if (!sb || typeof sb.from !== "function") {
+      console.warn("❌ window.client not ready for golden_content load.");
+      return null;
+    }
+
+    const { data, error } = await sb
+      .from("golden_content")
+      .select("*");
+
+    if (error) {
+      console.error("❌ golden_content load failed:", error);
+      return null;
+    }
+
+    const current = JSON.parse(localStorage.getItem(KEY) || "{}");
+
+    (data || []).forEach(row => {
+      const cohort = String(row.cohort || "").trim();
+      const unitKey = String(row.unit_key || "").trim();
+
+      if (!cohort || !unitKey) return;
+
+      if (!current[cohort]) current[cohort] = {};
+      if (!current[cohort][unitKey]) current[cohort][unitKey] = {};
+
+      current[cohort][unitKey] = {
+        ...current[cohort][unitKey],
+        title: row.title || current[cohort][unitKey].title || unitKey,
+        vocabulary: row.vocabulary || "",
+        grammar: row.grammar || "",
+        reading: row.reading || "",
+        writing: row.writing || "",
+        notes: row.notes || "",
+        culture: row.culture || "",
+        literature: row.literature || ""
+      };
+    });
+
+    localStorage.setItem(KEY, JSON.stringify(current));
+
+    window.goldenIntensiveData = current;
+    window.goldenUnitData = current;
+    window.jakGoldenIntensiveData = current;
+
+    console.log("✅ Golden content loaded from Supabase INDEX:", {
+      rows: data?.length || 0,
+      unit1Vocabulary: !!current?.["2008"]?.unit1?.vocabulary,
+      unit1Grammar: !!current?.["2008"]?.unit1?.grammar
+    });
+
+    if (typeof window.renderGoldenUnitCards === "function") {
+      try {
+        window.renderGoldenUnitCards();
+      } catch (err) {
+        console.warn("⚠️ renderGoldenUnitCards after content load failed:", err);
+      }
+    }
+
+    return current;
+  }
+
+  window.loadGoldenContentFromSupabase = loadGoldenContentFromSupabase;
+
+  setTimeout(loadGoldenContentFromSupabase, 800);
+  setTimeout(loadGoldenContentFromSupabase, 2000);
+  setTimeout(loadGoldenContentFromSupabase, 4000);
+
+  console.log("✅ Golden Content Index Emergency Final installed.");
+})();
+</script>
+
 <script>
 /* =========================================================
    JAK SECURITY PATCH - REMOVE PUBLIC ALERT INLINE HANDLERS
-   Runs after app.js even if app.js has late errors
    ========================================================= */
 
 (function installRemovePublicAlertInlineHandlers() {

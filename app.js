@@ -35574,3 +35574,5 @@ window.renderGoldenExamLinks = renderGoldenExamLinks;
 
   console.log("✅ Golden Content Supabase Sync installed.");
 })();
+console.log("🔥 APP JS VERY END REACHED - GOLDEN TEST 2026");
+window.__appJsVeryEndReached = true;
