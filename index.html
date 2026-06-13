@@ -4940,7 +4940,7 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 </main>
 
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- <script src="app.js?v=golden-mobile-content-14"></script>
+ <script src="app.js?v=golden-mobile-content-15"></script>
  <script>
 /* =========================================================
    GOLDEN CONTENT LOAD FROM SUPABASE - INDEX EMERGENCY FINAL
@@ -6927,48 +6927,19 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
           `}
         </div>
 
-        <div class="golden-linked-exams-area" id="goldenLinkedExams_${cohort}_${unitKey}_${selectedPart}">
-          <div class="golden-exam-loading">جاري تحميل امتحانات هذا القسم...</div>
-        </div>
+        <div class="golden-linked-exams-area" id="goldenLinkedExams_${cohort}_${unitKey}_${selectedPart}"></div>
       </div>
     `;
 
-    // رجّع امتحانات القسم المرتبطة
-    setTimeout(async () => {
+    setTimeout(() => {
       try {
         if (typeof window.renderGoldenExamLinks === "function") {
-          await window.renderGoldenExamLinks(cohort, unitKey, selectedPart);
-        } else if (typeof window.loadGoldenLinkedExams === "function") {
-          const exams = await window.loadGoldenLinkedExams(cohort, unitKey, selectedPart);
-          const box = document.getElementById(`goldenLinkedExams_${cohort}_${unitKey}_${selectedPart}`);
-
-          if (box) {
-            if (Array.isArray(exams) && exams.length) {
-              box.innerHTML = exams.map(exam => `
-                <div class="golden-linked-exam-unit-card">
-                  <div>
-                    <h4>${exam.title || "Golden Exam"}</h4>
-                    <p>${exam.description || "امتحان مرتبط بهذا القسم"}</p>
-                  </div>
-                  <button type="button" onclick="startGoldenLinkedExam('${exam.id}')">
-                    ابدأ الامتحان
-                  </button>
-                </div>
-              `).join("");
-            } else {
-              box.innerHTML = "";
-            }
-          }
-        } else {
-          const box = document.getElementById(`goldenLinkedExams_${cohort}_${unitKey}_${selectedPart}`);
-          if (box) box.innerHTML = "";
+          window.renderGoldenExamLinks(cohort, unitKey, selectedPart);
         }
       } catch (err) {
-        console.warn("⚠️ Could not render golden linked exams:", err);
-        const box = document.getElementById(`goldenLinkedExams_${cohort}_${unitKey}_${selectedPart}`);
-        if (box) box.innerHTML = "";
+        console.warn("⚠️ Could not render original golden exam links:", err);
       }
-    }, 300);
+    }, 500);
 
     console.log("✅ Golden final viewer rendered:", {
       cohort,

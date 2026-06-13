@@ -43719,3 +43719,27 @@ min-width: 980px;
     min-height: 50px !important;
   }
 }
+@media (max-width: 768px) {
+  .golden-parts-toolbar button,
+  .golden-inner-tabs button,
+  .golden-editor-part-btn,
+  .golden-inner-tab {
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+    padding: 10px 8px !important;
+    min-height: 44px !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .golden-parts-toolbar button,
+  .golden-inner-tabs button,
+  .golden-editor-part-btn,
+  .golden-inner-tab {
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+    padding: 10px 8px !important;
+    min-height: 46px !important;
+  }
+}
