@@ -43616,3 +43616,106 @@ min-width: 980px;
     padding: 16px 14px;
   }
 }
+/* =========================================================
+   GOLDEN MOBILE BUTTONS / TABS FIX - FINAL
+========================================================= */
+
+@media (max-width: 768px) {
+  #goldenIntensive,
+  #goldenUnitViewer2008,
+  #goldenUnitViewer2009 {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .golden-parts-toolbar,
+  .golden-inner-tabs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+    padding: 8px !important;
+    overflow: visible !important;
+  }
+
+  .golden-parts-toolbar button,
+  .golden-inner-tabs button,
+  .golden-editor-part-btn,
+  .golden-inner-tab {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 48px !important;
+    padding: 12px 10px !important;
+    border-radius: 14px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    line-height: 1.35 !important;
+    text-align: center !important;
+    font-size: 14px !important;
+  }
+
+  .golden-unit-view-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    text-align: center !important;
+  }
+
+  .golden-back-btn,
+  .golden-edit-main-btn {
+    width: 100% !important;
+    min-height: 46px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  .golden-content-box {
+    padding: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .golden-linked-exams-area {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .golden-linked-exam-unit-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .golden-linked-exam-unit-card button {
+    width: 100% !important;
+    min-height: 46px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .golden-parts-toolbar,
+  .golden-inner-tabs {
+    grid-template-columns: 1fr !important;
+  }
+
+  .golden-parts-toolbar button,
+  .golden-inner-tabs button,
+  .golden-editor-part-btn,
+  .golden-inner-tab {
+    font-size: 15px !important;
+    min-height: 50px !important;
+  }
+}
