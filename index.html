@@ -4940,8 +4940,7 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 </main>
 
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=golden-mobile-content-6"></script>
-
+ <script src="app.js?v=golden-mobile-content-7"></script>
 <script>
 /* =========================================================
    GOLDEN CONTENT LOAD FROM SUPABASE - INDEX EMERGENCY FINAL
@@ -5024,8 +5023,129 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
   console.log("✅ Golden Content Index Emergency Final installed.");
 })();
 </script>
-
 <script>
+/* =========================================================
+   GOLDEN OPEN UNIT SUPABASE DATA BRIDGE - NETLIFY FINAL
+========================================================= */
+(function installGoldenOpenUnitSupabaseDataBridge() {
+  console.log("🌉 Installing Golden Open Unit Supabase Data Bridge...");
+
+  const KEY = "jakGoldenIntensiveDataV1";
+
+  function getGoldenLocalData() {
+    try {
+      return JSON.parse(localStorage.getItem(KEY) || "{}");
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function getGoldenViewer(cohort) {
+    return document.getElementById(`goldenUnitViewer${cohort}`);
+  }
+
+  function getUnitData(cohort, unitKey) {
+    const data = getGoldenLocalData();
+    return data?.[cohort]?.[unitKey] || null;
+  }
+
+  function renderGoldenUnitFromSupabaseData(cohort, unitKey, activeTab = "vocabulary") {
+    const viewer = getGoldenViewer(cohort);
+    const unit = getUnitData(cohort, unitKey);
+
+    if (!viewer || !unit) {
+      console.warn("❌ Golden bridge cannot render:", {
+        viewer: !!viewer,
+        unit: !!unit,
+        cohort,
+        unitKey
+      });
+      return false;
+    }
+
+    const tabs = [
+      { key: "vocabulary", label: "📚 المعاني" },
+      { key: "grammar", label: "📘 القواعد" },
+      { key: "reading", label: "📖 القراءة" },
+      { key: "writing", label: "✍️ الكتابة" },
+      { key: "notes", label: "📝 ملاحظات" }
+    ];
+
+    const safeActive = tabs.some(t => t.key === activeTab) ? activeTab : "vocabulary";
+    const content = unit?.[safeActive] || "";
+
+    viewer.innerHTML = `
+      <div class="golden-unit-view active" data-cohort="${cohort}" data-unit="${unitKey}">
+        <div class="golden-unit-view-header">
+          <button class="golden-back-btn" onclick="renderGoldenUnitCards && renderGoldenUnitCards()">← رجوع للوحدات</button>
+          <div>
+            <h2>${unit.title || unitKey}</h2>
+            <p>جيل ${cohort} | محتوى المكثف الذهبي</p>
+          </div>
+        </div>
+
+        <div class="golden-inner-tabs">
+          ${tabs.map(t => `
+            <button
+              class="golden-inner-tab ${t.key === safeActive ? "active" : ""}"
+              onclick="renderGoldenUnitFromSupabaseData('${cohort}', '${unitKey}', '${t.key}')">
+              ${t.label}
+            </button>
+          `).join("")}
+        </div>
+
+        <div class="golden-content-box">
+          ${content || `
+            <div class="golden-empty-state">
+              <h3>لا يوجد محتوى هنا بعد</h3>
+              <p>سيتم إضافة هذا القسم قريبًا.</p>
+            </div>
+          `}
+        </div>
+      </div>
+    `;
+
+    console.log("✅ Golden bridge rendered:", {
+      cohort,
+      unitKey,
+      activeTab: safeActive,
+      hasContent: !!content,
+      hasVocabulary: !!unit.vocabulary,
+      hasGrammar: !!unit.grammar
+    });
+
+    return true;
+  }
+
+  window.renderGoldenUnitFromSupabaseData = renderGoldenUnitFromSupabaseData;
+
+  const oldOpenGoldenUnit = window.openGoldenUnit;
+
+  window.openGoldenUnit = async function(cohort, unitKey, activeTab, ...rest) {
+    console.log("🌉 Golden bridge openGoldenUnit:", { cohort, unitKey, activeTab });
+
+    if (typeof window.loadGoldenContentFromSupabase === "function") {
+      await window.loadGoldenContentFromSupabase();
+    }
+
+    const rendered = renderGoldenUnitFromSupabaseData(
+      String(cohort),
+      String(unitKey),
+      activeTab || "vocabulary"
+    );
+
+    if (rendered) return;
+
+    if (typeof oldOpenGoldenUnit === "function") {
+      return oldOpenGoldenUnit.apply(this, [cohort, unitKey, activeTab, ...rest]);
+    }
+  };
+
+  console.log("✅ Golden Open Unit Supabase Data Bridge installed.");
+})();
+</script>
+<script>
+  
 /* =========================================================
    JAK SECURITY PATCH - REMOVE PUBLIC ALERT INLINE HANDLERS
    ========================================================= */
