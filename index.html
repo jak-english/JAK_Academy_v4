@@ -5145,6 +5145,61 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 })();
 </script>
 <script>
+/* =========================================================
+   GOLDEN OPEN UNIT BRIDGE FORCE BIND - FINAL
+========================================================= */
+(function forceBindGoldenOpenUnitBridgeFinal() {
+  console.log("🔒 Installing Golden Open Unit Bridge Force Bind...");
+
+  async function bridgeOpenGoldenUnit(cohort, unitKey, activeTab, ...rest) {
+    console.log("🔒 FORCE bridge openGoldenUnit:", { cohort, unitKey, activeTab });
+
+    if (typeof window.loadGoldenContentFromSupabase === "function") {
+      await window.loadGoldenContentFromSupabase();
+    }
+
+    if (typeof window.renderGoldenUnitFromSupabaseData === "function") {
+      const ok = window.renderGoldenUnitFromSupabaseData(
+        String(cohort),
+        String(unitKey),
+        activeTab || "vocabulary"
+      );
+
+      if (ok) return;
+    }
+
+    console.warn("⚠️ Force bridge could not render unit:", { cohort, unitKey, activeTab });
+  }
+
+  window.openGoldenUnit = bridgeOpenGoldenUnit;
+
+  setTimeout(() => {
+    window.openGoldenUnit = bridgeOpenGoldenUnit;
+    console.log("🔒 Golden bridge force rebound after 1s.");
+  }, 1000);
+
+  setTimeout(() => {
+    window.openGoldenUnit = bridgeOpenGoldenUnit;
+    console.log("🔒 Golden bridge force rebound after 3s.");
+  }, 3000);
+
+  setTimeout(() => {
+    window.openGoldenUnit = bridgeOpenGoldenUnit;
+    console.log("🔒 Golden bridge force rebound after 6s.");
+  }, 6000);
+
+  window.checkGoldenOpenUnitBinding = function() {
+    return {
+      openName: window.openGoldenUnit?.name,
+      bridgeRenderer: typeof window.renderGoldenUnitFromSupabaseData,
+      loader: typeof window.loadGoldenContentFromSupabase
+    };
+  };
+
+  console.log("✅ Golden Open Unit Bridge Force Bind installed.");
+})();
+</script>
+<script>
   
 /* =========================================================
    JAK SECURITY PATCH - REMOVE PUBLIC ALERT INLINE HANDLERS
