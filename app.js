@@ -35340,3 +35340,227 @@ window.renderGoldenExamLinks = renderGoldenExamLinks;
 
   console.log("✅ Golden Linked Exam Stable Render Patch installed.");
 })();
+/* =========================================================
+   GOLDEN CONTENT SUPABASE SYNC - LAUNCH FIX
+   Moves Golden Intensive content from localStorage to Supabase
+   and loads it on all devices.
+========================================================= */
+
+(function installGoldenContentSupabaseSync() {
+  console.log("🚀 Installing Golden Content Supabase Sync...");
+
+  const GOLDEN_STORAGE_KEY = "jakGoldenIntensiveDataV1";
+  const GOLDEN_TABLE = "golden_content";
+
+  function getSupabaseClient() {
+    return (
+      window.supabaseClient ||
+      window.supabase ||
+      window._supabase ||
+      null
+    );
+  }
+
+  function readGoldenLocalData() {
+    try {
+      return JSON.parse(localStorage.getItem(GOLDEN_STORAGE_KEY) || "{}");
+    } catch (err) {
+      console.error("❌ Failed to parse local golden data:", err);
+      return {};
+    }
+  }
+
+  function writeGoldenLocalData(data) {
+    localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(data || {}));
+  }
+
+  function normalizeGoldenUnitForDb(cohort, unitKey, unit) {
+    unit = unit || {};
+
+    return {
+      cohort: String(cohort),
+      unit_key: String(unitKey),
+      title: unit.title || "",
+      vocabulary: unit.vocabulary || unit.meanings || unit.words || unit.vocab || "",
+      grammar: unit.grammar || "",
+      reading: unit.reading || "",
+      writing: unit.writing || "",
+      notes: unit.notes || "",
+      culture: unit.culture || unit.cultureSpot || "",
+      literature: unit.literature || unit.literatureSpot || "",
+      updated_at: new Date().toISOString()
+    };
+  }
+
+  window.publishGoldenContentToSupabase = async function publishGoldenContentToSupabase() {
+    const client = getSupabaseClient();
+
+    if (!client || !client.from) {
+      alert("❌ Supabase client not found. تأكد أن Supabase شغال بالموقع.");
+      console.error("❌ Supabase client not found.");
+      return;
+    }
+
+    const localData = readGoldenLocalData();
+    const rows = [];
+
+    Object.keys(localData || {}).forEach(cohort => {
+      const cohortData = localData[cohort] || {};
+
+      Object.keys(cohortData).forEach(unitKey => {
+        const unit = cohortData[unitKey] || {};
+
+        if (
+          unitKey.startsWith("unit") ||
+          unitKey === "cultureSpot" ||
+          unitKey === "literatureSpot"
+        ) {
+          rows.push(normalizeGoldenUnitForDb(cohort, unitKey, unit));
+        }
+      });
+    });
+
+    if (!rows.length) {
+      alert("⚠️ لا يوجد محتوى Golden محفوظ محليًا للنشر.");
+      console.warn("⚠️ No local Golden content rows found.");
+      return;
+    }
+
+    console.log("🚀 Publishing Golden content rows:", rows.length, rows);
+
+    const { data, error } = await client
+      .from(GOLDEN_TABLE)
+      .upsert(rows, {
+        onConflict: "cohort,unit_key"
+      })
+      .select();
+
+    if (error) {
+      console.error("❌ Failed to publish Golden content:", error);
+      alert("❌ فشل نشر محتوى المكثف. افتح Console وشوف الخطأ.");
+      return;
+    }
+
+    console.log("✅ Golden content published to Supabase:", data);
+    alert(`✅ تم نشر محتوى المكثف بنجاح. عدد الأقسام: ${rows.length}`);
+  };
+
+  window.loadGoldenContentFromSupabase = async function loadGoldenContentFromSupabase() {
+    const client = getSupabaseClient();
+
+    if (!client || !client.from) {
+      console.warn("⚠️ Supabase client not found. Using local Golden content only.");
+      return readGoldenLocalData();
+    }
+
+    const { data, error } = await client
+      .from(GOLDEN_TABLE)
+      .select("*")
+      .order("cohort", { ascending: true })
+      .order("unit_key", { ascending: true });
+
+    if (error) {
+      console.error("❌ Failed to load Golden content from Supabase:", error);
+      return readGoldenLocalData();
+    }
+
+    const goldenData = readGoldenLocalData();
+
+    (data || []).forEach(row => {
+      const cohort = String(row.cohort);
+      const unitKey = String(row.unit_key);
+
+      if (!goldenData[cohort]) goldenData[cohort] = {};
+      if (!goldenData[cohort][unitKey]) goldenData[cohort][unitKey] = {};
+
+      goldenData[cohort][unitKey] = {
+        ...goldenData[cohort][unitKey],
+        title: row.title || goldenData[cohort][unitKey].title || "",
+        vocabulary: row.vocabulary || "",
+        grammar: row.grammar || "",
+        reading: row.reading || "",
+        writing: row.writing || "",
+        notes: row.notes || "",
+        culture: row.culture || "",
+        literature: row.literature || ""
+      };
+    });
+
+    writeGoldenLocalData(goldenData);
+
+    window.goldenIntensiveData = goldenData;
+    window.goldenUnitData = goldenData;
+
+    console.log("✅ Golden content loaded from Supabase:", {
+      rows: data?.length || 0,
+      data: goldenData
+    });
+
+    return goldenData;
+  };
+
+  window.installGoldenPublishButton = function installGoldenPublishButton() {
+    if (document.getElementById("publishGoldenContentBtn")) return;
+
+    const target =
+      document.getElementById("goldenOwnerTools") ||
+      document.querySelector(".golden-owner-tools") ||
+      document.querySelector("#goldenIntensive") ||
+      document.body;
+
+    const btn = document.createElement("button");
+    btn.id = "publishGoldenContentBtn";
+    btn.type = "button";
+    btn.textContent = "🚀 نشر محتوى المكثف للطلاب";
+    btn.style.cssText = `
+      position: relative;
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 12px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #7c5c18, #d6a735);
+      color: #fff;
+      font-weight: 800;
+      font-family: Cairo, Tajawal, Arial, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(0,0,0,.18);
+    `;
+
+    btn.onclick = window.publishGoldenContentToSupabase;
+
+    target.prepend(btn);
+
+    console.log("✅ Golden publish button installed.");
+  };
+
+  window.bootGoldenContentFromSupabase = async function bootGoldenContentFromSupabase() {
+    await window.loadGoldenContentFromSupabase();
+
+    if (typeof window.renderGoldenUnitCards === "function") {
+      try {
+        window.renderGoldenUnitCards();
+      } catch (err) {
+        console.warn("⚠️ renderGoldenUnitCards failed after Supabase load:", err);
+      }
+    }
+
+    if (typeof window.installGoldenPublishButton === "function") {
+      window.installGoldenPublishButton();
+    }
+  };
+
+  setTimeout(() => {
+    window.bootGoldenContentFromSupabase();
+  }, 1200);
+
+  setTimeout(() => {
+    window.installGoldenPublishButton();
+  }, 1800);
+
+  console.log("✅ Golden Content Supabase Sync installed.");
+})();
