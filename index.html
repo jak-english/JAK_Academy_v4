@@ -4940,7 +4940,7 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 </main>
 
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=golden-mobile-content-8"></script>
+<script src="app.js?v=golden-mobile-content-9"></script>
 <script>
 /* =========================================================
    GOLDEN CONTENT LOAD FROM SUPABASE - INDEX EMERGENCY FINAL
@@ -6595,6 +6595,182 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
   };
 
   console.log("✅ getGoldenVocabularyContent installed.");
+})();
+</script>
+<script>
+/* =========================================================
+   GOLDEN FINAL LAST WORD - SUPABASE DIRECT RENDER
+   Put this as the LAST script before </body>
+========================================================= */
+(function installGoldenFinalLastWordSupabaseRender() {
+  console.log("👑 Installing Golden FINAL LAST WORD Supabase Render...");
+
+  const KEY = "jakGoldenIntensiveDataV1";
+
+  function getViewer(cohort) {
+    return document.getElementById(`goldenUnitViewer${cohort}`);
+  }
+
+  async function getFreshUnitFromSupabase(cohort, unitKey) {
+    const sb = window.client;
+    if (!sb || typeof sb.from !== "function") return null;
+
+    const { data, error } = await sb
+      .from("golden_content")
+      .select("*")
+      .eq("cohort", String(cohort))
+      .eq("unit_key", String(unitKey))
+      .maybeSingle();
+
+    if (error) {
+      console.error("❌ Golden final direct fetch error:", error);
+      return null;
+    }
+
+    if (!data) return null;
+
+    const unit = {
+      title: data.title || unitKey,
+      vocabulary: data.vocabulary || "",
+      grammar: data.grammar || "",
+      reading: data.reading || "",
+      writing: data.writing || "",
+      notes: data.notes || "",
+      culture: data.culture || "",
+      literature: data.literature || ""
+    };
+
+    try {
+      const current = JSON.parse(localStorage.getItem(KEY) || "{}");
+      if (!current[cohort]) current[cohort] = {};
+      current[cohort][unitKey] = {
+        ...(current[cohort][unitKey] || {}),
+        ...unit
+      };
+      localStorage.setItem(KEY, JSON.stringify(current));
+      window.goldenIntensiveData = current;
+      window.goldenUnitData = current;
+      window.jakGoldenIntensiveData = current;
+    } catch (e) {
+      console.warn("⚠️ Could not sync golden unit to localStorage:", e);
+    }
+
+    return unit;
+  }
+
+  async function goldenFinalRenderUnit(cohort, unitKey, activeTab = "vocabulary") {
+    cohort = String(cohort);
+    unitKey = String(unitKey);
+
+    const viewer = getViewer(cohort);
+
+    if (!viewer) {
+      console.warn("❌ Golden final viewer not found:", cohort);
+      return false;
+    }
+
+    const unit = await getFreshUnitFromSupabase(cohort, unitKey);
+
+    if (!unit) {
+      viewer.innerHTML = `
+        <div class="golden-empty-state">
+          <h3>لم يتم العثور على محتوى الوحدة</h3>
+          <p>تأكد أن الوحدة منشورة في Supabase.</p>
+        </div>
+      `;
+      return false;
+    }
+
+    const tabs = [
+      { key: "vocabulary", label: "📚 المعاني" },
+      { key: "grammar", label: "📘 القواعد" },
+      { key: "reading", label: "📖 القراءة" },
+      { key: "writing", label: "✍️ الكتابة" },
+      { key: "notes", label: "📝 ملاحظات" }
+    ];
+
+    const safeTab = tabs.some(t => t.key === activeTab) ? activeTab : "vocabulary";
+    const content = unit[safeTab] || "";
+
+    viewer.innerHTML = `
+      <div class="golden-unit-view active" data-cohort="${cohort}" data-unit="${unitKey}">
+        <div class="golden-unit-view-header">
+          <button class="golden-back-btn" onclick="renderGoldenUnitCards && renderGoldenUnitCards()">← رجوع للوحدات</button>
+          <div>
+            <h2>${unit.title || unitKey}</h2>
+            <p>جيل ${cohort} | المكثف الذهبي</p>
+          </div>
+        </div>
+
+        <div class="golden-inner-tabs">
+          ${tabs.map(t => `
+            <button
+              class="golden-inner-tab ${t.key === safeTab ? "active" : ""}"
+              onclick="goldenFinalRenderUnit('${cohort}', '${unitKey}', '${t.key}')">
+              ${t.label}
+            </button>
+          `).join("")}
+        </div>
+
+        <div class="golden-content-box">
+          ${content || `
+            <div class="golden-empty-state">
+              <h3>لا يوجد محتوى هنا بعد</h3>
+              <p>سيتم إضافة هذا القسم قريبًا.</p>
+            </div>
+          `}
+        </div>
+      </div>
+    `;
+
+    console.log("👑 Golden FINAL rendered:", {
+      cohort,
+      unitKey,
+      activeTab: safeTab,
+      hasContent: !!content,
+      hasVocabulary: !!unit.vocabulary,
+      hasGrammar: !!unit.grammar
+    });
+
+    return true;
+  }
+
+  async function openGoldenUnit_FINAL_LAST_WORD(cohort, unitKey, activeTab = "vocabulary") {
+    console.log("👑 FINAL openGoldenUnit:", { cohort, unitKey, activeTab });
+
+    if (typeof window.loadGoldenContentFromSupabase === "function") {
+      await window.loadGoldenContentFromSupabase();
+    }
+
+    return goldenFinalRenderUnit(cohort, unitKey, activeTab || "vocabulary");
+  }
+
+  window.goldenFinalRenderUnit = goldenFinalRenderUnit;
+  window.openGoldenUnit = openGoldenUnit_FINAL_LAST_WORD;
+
+  function bindAgain() {
+    window.openGoldenUnit = openGoldenUnit_FINAL_LAST_WORD;
+  }
+
+  bindAgain();
+  setTimeout(bindAgain, 500);
+  setTimeout(bindAgain, 1500);
+  setTimeout(bindAgain, 3000);
+  setTimeout(bindAgain, 6000);
+  setTimeout(bindAgain, 10000);
+
+  const interval = setInterval(bindAgain, 1000);
+  setTimeout(() => clearInterval(interval), 20000);
+
+  window.checkGoldenOpenUnitBinding = function() {
+    return {
+      openName: window.openGoldenUnit?.name,
+      finalRenderer: typeof window.goldenFinalRenderUnit,
+      loader: typeof window.loadGoldenContentFromSupabase
+    };
+  };
+
+  console.log("✅ Golden FINAL LAST WORD Supabase Render installed.");
 })();
 </script>
 </body></html>
