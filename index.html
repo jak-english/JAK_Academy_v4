@@ -4940,7 +4940,7 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- <script src="app.js?v=golden-exam-fix-2"></script>
+<script src="app.js?v=golden-mobile-content-5"></script>
 <script>
 /* =========================================================
    JAK SECURITY PATCH - REMOVE PUBLIC ALERT INLINE HANDLERS
@@ -5936,6 +5936,7 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
 })();
 </script>
 <script>
+
 /* =========================================================
    GOLDEN EXAM LINK NORMALIZER - FINAL
    يمنع حفظ Unit 1 / Grammar بصيغة غير موحدة
@@ -6054,24 +6055,7 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
 })();
 </script>
 <script>
-  (function installGoldenVocabularyContentFallback() {
-  console.log("🔧 Installing Golden Vocabulary Content Fallback...");
-
-  window.getGoldenVocabularyContent = function(unit) {
-    if (!unit) return "";
-
-    return (
-      unit.vocabulary ||
-      unit.meanings ||
-      unit.words ||
-      unit.vocab ||
-      unit.vocabularyContent ||
-      ""
-    );
-  };
-
-  console.log("✅ getGoldenVocabularyContent installed.");
-})();
+  
   (function installGoldenVocabularyExamLoopGuard() {
   console.log("🛡️ Installing Golden Vocabulary Exam Loop Guard...");
 

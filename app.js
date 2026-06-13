@@ -3,6 +3,7 @@ const supabaseUrl = "https://bvvgfsogkzaikpraluof.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2dmdmc29na3phaWtwcmFsdW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMjYwMDAsImV4cCI6MjA5MjYwMjAwMH0.Rv4gjwqFA_ZVyice9JBV7sf81alsZb3PmB3lVtS4Xjo";
 const client = window.supabase.createClient(supabaseUrl, supabaseKey);
 window.client = client;
+window.supabaseClient = client;
 const $ = (id) => document.getElementById(id);
 
 const safeText = (value) => {
@@ -35340,6 +35341,7 @@ window.renderGoldenExamLinks = renderGoldenExamLinks;
 
   console.log("✅ Golden Linked Exam Stable Render Patch installed.");
 })();
+
 /* =========================================================
    GOLDEN CONTENT SUPABASE SYNC - LAUNCH FIX
    Moves Golden Intensive content from localStorage to Supabase
@@ -35352,14 +35354,22 @@ window.renderGoldenExamLinks = renderGoldenExamLinks;
   const GOLDEN_STORAGE_KEY = "jakGoldenIntensiveDataV1";
   const GOLDEN_TABLE = "golden_content";
 
-  function getSupabaseClient() {
-    return (
-      window.supabaseClient ||
-      window.supabase ||
-      window._supabase ||
-      null
-    );
+   function getSupabaseClient() {
+  if (window.client && typeof window.client.from === "function") {
+    return window.client;
   }
+
+  if (window.supabaseClient && typeof window.supabaseClient.from === "function") {
+    return window.supabaseClient;
+  }
+
+  if (window._supabase && typeof window._supabase.from === "function") {
+    return window._supabase;
+  }
+
+  console.error("❌ No real Supabase client found. window.supabase is probably the library, not the client.");
+  return null;
+}
 
   function readGoldenLocalData() {
     try {
