@@ -40026,3 +40026,3593 @@ body.golden-linked-exam-mode button[onclick="startSolvingExam()"] {
   font-weight: 800;
   line-height: 1.9;
 }
+/* =========================================================
+   Golden Rich Content Viewer
+   ========================================================= */
+
+.golden-rich-content-box {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 18px;
+  margin: 20px 0;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+  overflow-x: auto;
+}
+
+.golden-rich-content {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.golden-rich-content table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.golden-rich-content mark {
+  background: #fef08a;
+  color: #713f12;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 800;
+}
+
+.golden-content-title {
+  direction: rtl;
+  text-align: right;
+  color: #0f172a;
+  margin-bottom: 18px;
+  font-weight: 900;
+}
+
+.golden-plain-content {
+  white-space: normal;
+  line-height: 2;
+  font-size: 17px;
+}
+/* =========================================================
+   Golden Rich Content - Spacing + Mobile Responsive Fix
+   ========================================================= */
+
+.golden-rich-content-box {
+  padding: 14px !important;
+  margin: 14px 0 !important;
+  border-radius: 18px !important;
+}
+
+.golden-rich-content {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Reduce large spacing from pasted rich HTML */
+.golden-rich-content div {
+  box-sizing: border-box !important;
+}
+
+.golden-rich-content h1,
+.golden-rich-content h2,
+.golden-rich-content h3 {
+  margin-top: 12px !important;
+  margin-bottom: 10px !important;
+  line-height: 1.45 !important;
+}
+
+.golden-rich-content h1 {
+  font-size: clamp(24px, 4vw, 30px) !important;
+}
+
+.golden-rich-content h2 {
+  font-size: clamp(20px, 3.5vw, 25px) !important;
+}
+
+.golden-rich-content h3 {
+  font-size: clamp(17px, 3vw, 21px) !important;
+}
+
+.golden-rich-content p {
+  margin: 8px 0 !important;
+  line-height: 1.8 !important;
+}
+
+.golden-rich-content ul,
+.golden-rich-content ol {
+  margin-top: 8px !important;
+  margin-bottom: 12px !important;
+  padding-left: 24px !important;
+}
+
+.golden-rich-content li {
+  margin-bottom: 8px !important;
+  line-height: 1.75 !important;
+}
+
+/* Arabic lines inside examples */
+.golden-rich-content span[style*="direction:rtl"],
+.golden-rich-content [dir="rtl"] {
+  line-height: 1.75 !important;
+  margin-top: 2px !important;
+}
+
+/* Tables responsive */
+.golden-rich-content table {
+  width: 100% !important;
+  max-width: 100% !important;
+  border-collapse: collapse !important;
+  table-layout: auto !important;
+  font-size: 15px !important;
+}
+
+.golden-rich-content th,
+.golden-rich-content td {
+  padding: 9px 8px !important;
+  line-height: 1.55 !important;
+  word-break: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+/* Prevent huge hero blocks */
+.golden-rich-content > div:first-child {
+  padding: 18px 14px !important;
+  margin-bottom: 14px !important;
+  border-radius: 18px !important;
+}
+
+/* Section cards */
+.golden-rich-content > div {
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+}
+
+/* Mobile fix */
+@media (max-width: 700px) {
+  .golden-rich-content-box {
+    padding: 10px !important;
+    margin: 10px 0 !important;
+    border-radius: 16px !important;
+  }
+
+  .golden-rich-content {
+    font-size: 15px !important;
+    line-height: 1.75 !important;
+    overflow-x: hidden !important;
+  }
+
+  .golden-rich-content > div {
+    padding: 14px 12px !important;
+    margin: 12px 0 !important;
+    border-radius: 15px !important;
+  }
+
+  .golden-rich-content h1 {
+    font-size: 22px !important;
+  }
+
+  .golden-rich-content h2 {
+    font-size: 19px !important;
+  }
+
+  .golden-rich-content h3 {
+    font-size: 16px !important;
+  }
+
+  .golden-rich-content ul,
+  .golden-rich-content ol {
+    padding-left: 18px !important;
+    margin-top: 6px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .golden-rich-content li {
+    margin-bottom: 7px !important;
+  }
+
+  .golden-rich-content table {
+    display: block !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    font-size: 13px !important;
+    border-radius: 12px !important;
+  }
+
+  .golden-rich-content thead,
+  .golden-rich-content tbody,
+  .golden-rich-content tr {
+    width: 100% !important;
+  }
+
+  .golden-rich-content th,
+  .golden-rich-content td {
+    padding: 8px 7px !important;
+    min-width: 120px !important;
+  }
+
+  .golden-rich-content mark {
+    padding: 1px 5px !important;
+    border-radius: 5px !important;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 420px) {
+  .golden-rich-content {
+    font-size: 14px !important;
+  }
+
+  .golden-rich-content > div {
+    padding: 12px 10px !important;
+  }
+
+  .golden-rich-content h1 {
+    font-size: 20px !important;
+  }
+
+  .golden-rich-content h2 {
+    font-size: 18px !important;
+  }
+
+  .golden-rich-content h3 {
+    font-size: 15.5px !important;
+  }
+
+  .golden-rich-content th,
+  .golden-rich-content td {
+    min-width: 110px !important;
+    font-size: 12.5px !important;
+  }
+}
+/* =========================================================
+   Golden Intensive Compact Lesson System
+   Mobile-first tables that become cards on phones
+   ========================================================= */
+
+.golden-lesson {
+  direction: rtl;
+  text-align: right;
+  font-family: Cairo, Tajawal, Arial, sans-serif;
+  color: #1f2937;
+  line-height: 1.75;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.golden-lesson-title {
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  color: #ffffff;
+  border: 2px solid #facc15;
+  border-radius: 18px;
+  padding: 18px 20px;
+  margin: 14px 0 18px;
+  text-align: center;
+}
+
+.golden-lesson-title h2 {
+  margin: 0;
+  color: #facc15;
+  font-size: 24px;
+  line-height: 1.5;
+}
+
+.golden-lesson-title p {
+  margin: 6px 0 0;
+  color: #dbeafe;
+  font-size: 15px;
+}
+
+.golden-note {
+  background: #fff7ed;
+  border-right: 5px solid #f97316;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 14px 0;
+  color: #7c2d12;
+  font-weight: 700;
+}
+
+.golden-section-heading {
+  margin: 20px 0 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 20px;
+  font-weight: 900;
+  border-right: 5px solid #2563eb;
+}
+
+/* Desktop table */
+.golden-grammar-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10);
+  direction: ltr;
+  text-align: left;
+}
+
+.golden-grammar-table thead {
+  background: #1e3a8a;
+  color: #ffffff;
+}
+
+.golden-grammar-table th {
+  padding: 12px 10px;
+  font-size: 14px;
+  font-weight: 900;
+  border: 1px solid #dbeafe;
+  vertical-align: top;
+}
+
+.golden-grammar-table td {
+  padding: 12px 10px;
+  font-size: 14px;
+  line-height: 1.65;
+  border: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.golden-grammar-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.golden-tense-name {
+  color: #1d4ed8;
+  font-weight: 900;
+}
+
+.golden-ar {
+  direction: rtl;
+  text-align: right;
+  display: block;
+  color: #374151;
+  margin-top: 4px;
+}
+
+.golden-en {
+  direction: ltr;
+  text-align: left;
+  display: block;
+  color: #111827;
+}
+
+.golden-form {
+  background: #dbeafe;
+  color: #1e3a8a;
+  padding: 5px 8px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: 900;
+}
+
+.golden-key {
+  background: #fef08a;
+  color: #713f12;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 800;
+  display: inline-block;
+  margin: 2px;
+}
+
+.golden-example {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.golden-example:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Mobile: table becomes cards */
+@media (max-width: 760px) {
+  .golden-lesson {
+    line-height: 1.65;
+  }
+
+  .golden-lesson-title {
+    padding: 14px 12px;
+    border-radius: 15px;
+  }
+
+  .golden-lesson-title h2 {
+    font-size: 20px;
+  }
+
+  .golden-section-heading {
+    font-size: 17px;
+    padding: 9px 12px;
+  }
+
+  .golden-grammar-table,
+  .golden-grammar-table thead,
+  .golden-grammar-table tbody,
+  .golden-grammar-table th,
+  .golden-grammar-table td,
+  .golden-grammar-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .golden-grammar-table {
+    box-shadow: none;
+    background: transparent;
+    border-radius: 0;
+    margin: 10px 0 18px;
+  }
+
+  .golden-grammar-table thead {
+    display: none;
+  }
+
+  .golden-grammar-table tr {
+    background: #ffffff !important;
+    margin: 12px 0;
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10);
+    overflow: hidden;
+  }
+
+  .golden-grammar-table td {
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 12px;
+    font-size: 14px;
+    line-height: 1.65;
+    text-align: left;
+  }
+
+  .golden-grammar-table td:last-child {
+    border-bottom: none;
+  }
+
+  .golden-grammar-table td::before {
+    content: attr(data-label);
+    display: block;
+    direction: ltr;
+    text-align: left;
+    color: #1d4ed8;
+    font-weight: 900;
+    font-size: 13px;
+    margin-bottom: 5px;
+  }
+
+  .golden-ar {
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .golden-en {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .golden-form {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    line-height: 1.6;
+  }
+
+  .golden-key {
+    margin: 2px 1px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 420px) {
+  .golden-grammar-table td {
+    font-size: 13.5px;
+    padding: 9px 10px;
+  }
+
+  .golden-ar,
+  .golden-en {
+    font-size: 13.5px;
+  }
+
+  .golden-lesson-title h2 {
+    font-size: 18px;
+  }
+}
+/* =========================================================
+   Golden Grammar Tables - Compact Columns + Better Spacing
+   ========================================================= */
+
+.golden-section-heading {
+  margin: 14px 0 8px !important;
+  padding: 8px 12px !important;
+  font-size: 18px !important;
+}
+
+.golden-grammar-table {
+  margin: 8px 0 14px !important;
+  table-layout: fixed !important;
+  border-spacing: 0 !important;
+}
+
+.golden-grammar-table th,
+.golden-grammar-table td {
+  padding: 10px 12px !important;
+  line-height: 1.55 !important;
+  vertical-align: top !important;
+}
+
+/* توزيع الأعمدة حتى لا تنخنق */
+.golden-grammar-table th:nth-child(1),
+.golden-grammar-table td:nth-child(1) {
+  width: 16% !important;
+}
+
+.golden-grammar-table th:nth-child(2),
+.golden-grammar-table td:nth-child(2) {
+  width: 19% !important;
+}
+
+.golden-grammar-table th:nth-child(3),
+.golden-grammar-table td:nth-child(3) {
+  width: 22% !important;
+}
+
+.golden-grammar-table th:nth-child(4),
+.golden-grammar-table td:nth-child(4) {
+  width: 23% !important;
+}
+
+.golden-grammar-table th:nth-child(5),
+.golden-grammar-table td:nth-child(5) {
+  width: 20% !important;
+}
+
+/* تقليل تباعد الأمثلة */
+.golden-example {
+  margin-bottom: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+/* عربي + إنجليزي داخل الوظيفة اللغوية */
+.golden-use-item {
+  margin-bottom: 8px !important;
+  padding: 7px 8px !important;
+  background: #f8fafc !important;
+  border-radius: 10px !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.golden-use-en {
+  direction: ltr !important;
+  text-align: left !important;
+  display: block !important;
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  line-height: 1.45 !important;
+}
+
+.golden-use-ar {
+  direction: rtl !important;
+  text-align: right !important;
+  display: block !important;
+  color: #475569 !important;
+  font-weight: 700 !important;
+  line-height: 1.55 !important;
+  margin-top: 2px !important;
+}
+
+/* تقليل مساحة الكلمات الدالة */
+.golden-key {
+  font-size: 12.5px !important;
+  padding: 1px 5px !important;
+  margin: 1px !important;
+}
+
+/* موبايل: كل صف بطاقة، بدون خنق */
+@media (max-width: 760px) {
+  .golden-grammar-table {
+    margin: 8px 0 12px !important;
+  }
+
+  .golden-grammar-table tr {
+    margin: 9px 0 !important;
+  }
+
+  .golden-grammar-table td {
+    padding: 9px 10px !important;
+  }
+
+  .golden-grammar-table th,
+  .golden-grammar-table td {
+    width: 100% !important;
+  }
+
+  .golden-use-item {
+    margin-bottom: 6px !important;
+    padding: 7px 8px !important;
+  }
+
+  .golden-section-heading {
+    margin: 12px 0 6px !important;
+  }
+}
+/* =========================================================
+   GOLDEN GRAMMAR TABLES - REAL MOBILE CARD MODE FIX
+   Put this at the VERY END of style.css
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .golden-rich-content-box,
+  .golden-rich-content,
+  .golden-lesson {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .golden-grammar-table {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    margin: 8px 0 14px !important;
+    table-layout: unset !important;
+  }
+
+  .golden-grammar-table thead {
+    display: none !important;
+  }
+
+  .golden-grammar-table tbody {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .golden-grammar-table tr {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin: 12px 0 !important;
+    padding: 0 !important;
+
+    background: #ffffff !important;
+    border: 1px solid #dbeafe !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10) !important;
+
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .golden-grammar-table th,
+  .golden-grammar-table td {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+
+    padding: 10px 12px !important;
+    margin: 0 !important;
+
+    border: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+
+    box-sizing: border-box !important;
+    text-align: left !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.65 !important;
+  }
+
+  .golden-grammar-table td:last-child {
+    border-bottom: none !important;
+  }
+
+  .golden-grammar-table td::before {
+    content: attr(data-label) !important;
+    display: block !important;
+
+    margin-bottom: 6px !important;
+    padding-bottom: 4px !important;
+
+    color: #1d4ed8 !important;
+    font-size: 13px !important;
+    font-weight: 900 !important;
+    line-height: 1.4 !important;
+
+    direction: ltr !important;
+    text-align: left !important;
+    border-bottom: 1px dashed #bfdbfe !important;
+  }
+
+  .golden-tense-name,
+  .golden-form,
+  .golden-en,
+  .golden-use-en {
+    direction: ltr !important;
+    text-align: left !important;
+    display: block !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .golden-ar,
+  .golden-use-ar {
+    direction: rtl !important;
+    text-align: right !important;
+    display: block !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.75 !important;
+  }
+
+  .golden-form {
+    width: auto !important;
+    max-width: 100% !important;
+    padding: 6px 8px !important;
+    font-size: 13.5px !important;
+  }
+
+  .golden-key {
+    display: inline-block !important;
+    max-width: 100% !important;
+    margin: 2px 1px !important;
+    padding: 2px 6px !important;
+    font-size: 12.5px !important;
+    line-height: 1.5 !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .golden-use-item {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 6px 0 !important;
+    padding: 8px 9px !important;
+    border-radius: 10px !important;
+  }
+
+  .golden-example {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 7px !important;
+    padding-bottom: 7px !important;
+  }
+
+  .golden-section-heading {
+    font-size: 17px !important;
+    margin: 12px 0 8px !important;
+    padding: 9px 11px !important;
+    line-height: 1.5 !important;
+  }
+
+  .golden-lesson-title {
+    padding: 14px 12px !important;
+    margin: 10px 0 14px !important;
+    border-radius: 15px !important;
+  }
+
+  .golden-lesson-title h2 {
+    font-size: 19px !important;
+    line-height: 1.55 !important;
+  }
+
+  .golden-note {
+    margin: 10px 0 !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    line-height: 1.75 !important;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 430px) {
+
+  .golden-grammar-table td {
+    padding: 9px 10px !important;
+    font-size: 13.5px !important;
+  }
+
+  .golden-grammar-table td::before {
+    font-size: 12.5px !important;
+  }
+
+  .golden-en,
+  .golden-ar,
+  .golden-use-en,
+  .golden-use-ar {
+    font-size: 13.5px !important;
+  }
+
+  .golden-form {
+    font-size: 13px !important;
+  }
+
+  .golden-key {
+    font-size: 12px !important;
+  }
+}
+/* =========================================================
+   GOLDEN INTENSIVE - PROFESSIONAL GRAMMAR CARDS FINAL
+   Launch-ready, bilingual, mobile-safe
+   ========================================================= */
+
+.golden-lesson {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  direction: rtl;
+  text-align: right;
+  font-family: Cairo, Tajawal, Arial, sans-serif;
+  color: #1f2937;
+  line-height: 1.7;
+  box-sizing: border-box;
+}
+
+.golden-lesson * {
+  box-sizing: border-box;
+}
+
+.golden-hero {
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+  border: 1px solid rgba(250, 204, 21, 0.9);
+  border-radius: 22px;
+  padding: 22px 24px;
+  margin: 14px 0 18px;
+  text-align: center;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+
+.golden-hero-title {
+  margin: 0;
+  color: #facc15;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.golden-hero-subtitle {
+  margin: 6px 0 0;
+  color: #dbeafe;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.golden-compact-note {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-right: 5px solid #f59e0b;
+  border-radius: 16px;
+  padding: 13px 15px;
+  margin: 12px 0 18px;
+  color: #78350f;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+.golden-part-title {
+  margin: 20px 0 12px;
+  padding: 11px 14px;
+  background: #eff6ff;
+  border-right: 5px solid #2563eb;
+  border-radius: 14px;
+  color: #1d4ed8;
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+.golden-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 12px 0 20px;
+}
+
+.golden-grammar-card {
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10);
+  overflow: hidden;
+}
+
+.golden-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.golden-tense-title {
+  margin: 0;
+  direction: ltr;
+  text-align: left;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.golden-tense-ar {
+  display: block;
+  direction: rtl;
+  text-align: right;
+  color: #475569;
+  font-size: 15px;
+  font-weight: 800;
+  margin-top: 3px;
+}
+
+.golden-badge {
+  flex: 0 0 auto;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  direction: ltr;
+}
+
+.golden-card-row {
+  display: grid;
+  grid-template-columns: 145px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.golden-card-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.golden-label {
+  color: #1d4ed8;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+.golden-value {
+  min-width: 0;
+}
+
+.golden-form-pill {
+  display: inline-block;
+  direction: ltr;
+  text-align: left;
+  background: #eef2ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+  border-radius: 12px;
+  padding: 7px 10px;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.45;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.golden-key-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.golden-key {
+  display: inline-block;
+  direction: ltr;
+  background: #fef08a;
+  color: #713f12;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 12.5px;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+.golden-use-block {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 9px 10px;
+  margin-bottom: 7px;
+}
+
+.golden-use-block:last-child {
+  margin-bottom: 0;
+}
+
+.golden-use-en {
+  display: block;
+  direction: ltr;
+  text-align: left;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+.golden-use-ar {
+  display: block;
+  direction: rtl;
+  text-align: right;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.7;
+  margin-top: 2px;
+}
+
+.golden-example-block {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  border-radius: 12px;
+  padding: 9px 10px;
+  margin-bottom: 7px;
+}
+
+.golden-example-block:last-child {
+  margin-bottom: 0;
+}
+
+.golden-example-en {
+  display: block;
+  direction: ltr;
+  text-align: left;
+  color: #0f172a;
+  font-size: 14.5px;
+  font-weight: 900;
+  line-height: 1.55;
+}
+
+.golden-example-ar {
+  display: block;
+  direction: rtl;
+  text-align: right;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.7;
+  margin-top: 3px;
+}
+
+.golden-mini-note {
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-right: 4px solid #22c55e;
+  color: #166534;
+  border-radius: 12px;
+  padding: 9px 10px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.7;
+}
+
+/* Desktop: two cards per row only when space is enough */
+@media (min-width: 980px) {
+  .golden-cards-grid.two-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .golden-lesson {
+    max-width: 100%;
+    padding: 0;
+    line-height: 1.65;
+  }
+
+  .golden-hero {
+    padding: 16px 13px;
+    margin: 10px 0 14px;
+    border-radius: 17px;
+  }
+
+  .golden-hero-title {
+    font-size: 20px;
+  }
+
+  .golden-hero-subtitle {
+    font-size: 13.5px;
+  }
+
+  .golden-compact-note {
+    padding: 10px 11px;
+    margin: 10px 0 14px;
+    font-size: 13.5px;
+    border-radius: 13px;
+  }
+
+  .golden-part-title {
+    font-size: 16px;
+    margin: 15px 0 9px;
+    padding: 9px 11px;
+    border-radius: 12px;
+  }
+
+  .golden-cards-grid {
+    gap: 10px;
+  }
+
+  .golden-grammar-card {
+    padding: 12px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.09);
+  }
+
+  .golden-card-head {
+    display: block;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+
+  .golden-tense-title {
+    font-size: 17px;
+  }
+
+  .golden-tense-ar {
+    font-size: 13.5px;
+  }
+
+  .golden-badge {
+    display: inline-block;
+    margin-top: 7px;
+    font-size: 11.5px;
+    padding: 5px 8px;
+  }
+
+  .golden-card-row {
+    display: block;
+    padding: 9px 0;
+  }
+
+  .golden-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+
+  .golden-form-pill,
+  .golden-use-en,
+  .golden-use-ar,
+  .golden-example-en,
+  .golden-example-ar,
+  .golden-mini-note {
+    font-size: 13.5px;
+  }
+
+  .golden-key {
+    font-size: 12px;
+    padding: 2px 7px;
+  }
+
+  .golden-use-block,
+  .golden-example-block {
+    padding: 8px 9px;
+    margin-bottom: 6px;
+  }
+}
+/* =========================================================
+   GOLDEN GRAMMAR CARDS - COMPACT PROFESSIONAL SPACING FINAL
+   Reduces line spacing and makes information closer/neater
+   ========================================================= */
+
+.golden-lesson {
+  line-height: 1.45 !important;
+}
+
+.golden-hero {
+  padding: 14px 18px !important;
+  margin: 8px 0 12px !important;
+  border-radius: 18px !important;
+}
+
+.golden-hero-title {
+  font-size: 22px !important;
+  line-height: 1.25 !important;
+}
+
+.golden-hero-subtitle {
+  margin-top: 3px !important;
+  font-size: 13px !important;
+  line-height: 1.3 !important;
+}
+
+.golden-compact-note {
+  padding: 9px 12px !important;
+  margin: 8px 0 12px !important;
+  line-height: 1.55 !important;
+  font-size: 14px !important;
+  border-radius: 12px !important;
+}
+
+.golden-part-title {
+  margin: 12px 0 8px !important;
+  padding: 8px 11px !important;
+  font-size: 17px !important;
+  line-height: 1.35 !important;
+  border-radius: 11px !important;
+}
+
+.golden-cards-grid {
+  gap: 10px !important;
+  margin: 8px 0 14px !important;
+}
+
+.golden-grammar-card {
+  padding: 11px 13px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08) !important;
+}
+
+.golden-card-head {
+  padding-bottom: 6px !important;
+  margin-bottom: 6px !important;
+}
+
+.golden-tense-title {
+  font-size: 18px !important;
+  line-height: 1.2 !important;
+}
+
+.golden-tense-ar {
+  font-size: 13px !important;
+  margin-top: 1px !important;
+  line-height: 1.35 !important;
+}
+
+.golden-badge {
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+.golden-card-row {
+  grid-template-columns: 128px 1fr !important;
+  gap: 9px !important;
+  padding: 6px 0 !important;
+}
+
+.golden-label {
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+}
+
+.golden-form-pill {
+  padding: 5px 8px !important;
+  font-size: 13.5px !important;
+  line-height: 1.3 !important;
+  border-radius: 9px !important;
+}
+
+.golden-key-list {
+  gap: 3px !important;
+}
+
+.golden-key {
+  padding: 1px 6px !important;
+  font-size: 11.5px !important;
+  line-height: 1.35 !important;
+  margin: 0 !important;
+}
+
+.golden-use-block,
+.golden-example-block {
+  padding: 6px 8px !important;
+  margin-bottom: 5px !important;
+  border-radius: 9px !important;
+}
+
+.golden-use-en,
+.golden-example-en {
+  font-size: 13.2px !important;
+  line-height: 1.35 !important;
+}
+
+.golden-use-ar,
+.golden-example-ar {
+  font-size: 13.2px !important;
+  line-height: 1.45 !important;
+  margin-top: 1px !important;
+}
+
+.golden-mini-note {
+  padding: 7px 9px !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+}
+
+/* Mobile compact */
+@media (max-width: 700px) {
+  .golden-hero {
+    padding: 12px 10px !important;
+    margin: 7px 0 10px !important;
+  }
+
+  .golden-hero-title {
+    font-size: 18px !important;
+    line-height: 1.3 !important;
+  }
+
+  .golden-compact-note {
+    padding: 8px 10px !important;
+    margin: 7px 0 10px !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+
+  .golden-part-title {
+    font-size: 15px !important;
+    margin: 10px 0 7px !important;
+    padding: 7px 9px !important;
+  }
+
+  .golden-cards-grid {
+    gap: 8px !important;
+  }
+
+  .golden-grammar-card {
+    padding: 10px !important;
+    border-radius: 14px !important;
+  }
+
+  .golden-card-head {
+    margin-bottom: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .golden-tense-title {
+    font-size: 16px !important;
+  }
+
+  .golden-tense-ar {
+    font-size: 12.5px !important;
+  }
+
+  .golden-card-row {
+    padding: 6px 0 !important;
+  }
+
+  .golden-label {
+    margin-bottom: 4px !important;
+    font-size: 12.5px !important;
+  }
+
+  .golden-form-pill,
+  .golden-use-en,
+  .golden-use-ar,
+  .golden-example-en,
+  .golden-example-ar {
+    font-size: 12.8px !important;
+  }
+
+  .golden-use-block,
+  .golden-example-block {
+    padding: 6px 7px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .golden-key {
+    font-size: 11.2px !important;
+    padding: 1px 5px !important;
+  }
+}
+/* =========================================================
+   GOLDEN GRAMMAR - FINAL DENSE BILINGUAL BLOCKS
+   Fix huge gaps inside Use and Examples blocks
+   ========================================================= */
+
+/* اجعل صفوف البطاقة أقرب */
+.golden-card-row {
+  padding: 5px 0 !important;
+  gap: 8px !important;
+}
+
+/* لا تجعل كل وظيفة لغوية كرت كبير */
+.golden-use-block,
+.golden-example-block {
+  padding: 6px 8px !important;
+  margin: 0 0 4px 0 !important;
+  border-radius: 8px !important;
+  min-height: auto !important;
+  background: #f8fafc !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* السطر الإنجليزي */
+.golden-use-en,
+.golden-example-en {
+  display: block !important;
+  direction: ltr !important;
+  text-align: left !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1.25 !important;
+  margin: 0 0 2px 0 !important;
+  color: #0f172a !important;
+}
+
+/* السطر العربي */
+.golden-use-ar,
+.golden-example-ar {
+  display: block !important;
+  direction: rtl !important;
+  text-align: right !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  margin: 0 !important;
+  color: #475569 !important;
+}
+
+/* خانة الوظيفة والأمثلة نفسها لا تأخذ فراغ زائد */
+.golden-value {
+  line-height: 1.35 !important;
+}
+
+/* أمثلة أضيق وأرتب */
+.golden-example-block {
+  background: #ffffff !important;
+  border-color: #dbeafe !important;
+}
+
+/* تقليل عناوين الصفوف */
+.golden-label {
+  font-size: 12.5px !important;
+  line-height: 1.25 !important;
+  margin-bottom: 3px !important;
+}
+
+/* تقليل رأس البطاقة */
+.golden-grammar-card {
+  padding: 10px 12px !important;
+}
+
+.golden-card-head {
+  margin-bottom: 5px !important;
+  padding-bottom: 5px !important;
+}
+
+.golden-tense-title {
+  font-size: 17px !important;
+  line-height: 1.2 !important;
+}
+
+.golden-tense-ar {
+  font-size: 12.5px !important;
+  line-height: 1.25 !important;
+}
+
+/* Mobile: لا كروت ضخمة داخل الكرت */
+@media (max-width: 700px) {
+  .golden-card-row {
+    padding: 5px 0 !important;
+  }
+
+  .golden-use-block,
+  .golden-example-block {
+    padding: 6px 7px !important;
+    margin-bottom: 4px !important;
+    border-radius: 8px !important;
+  }
+
+  .golden-use-en,
+  .golden-example-en,
+  .golden-use-ar,
+  .golden-example-ar {
+    font-size: 12.7px !important;
+  }
+
+  .golden-use-en,
+  .golden-example-en {
+    line-height: 1.25 !important;
+  }
+
+  .golden-use-ar,
+  .golden-example-ar {
+    line-height: 1.35 !important;
+  }
+}
+/* =========================================================
+   Golden compact lines alternative
+   ========================================================= */
+
+.golden-use-line,
+.golden-example-line {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-items: start;
+
+  padding: 5px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.golden-use-line:last-child,
+.golden-example-line:last-child {
+  border-bottom: none;
+}
+
+.golden-use-line .golden-use-en,
+.golden-example-line .golden-example-en {
+  text-align: left !important;
+}
+
+.golden-use-line .golden-use-ar,
+.golden-example-line .golden-example-ar {
+  text-align: right !important;
+}
+
+@media (max-width: 700px) {
+  .golden-use-line,
+  .golden-example-line {
+    grid-template-columns: 1fr;
+    gap: 1px;
+    padding: 5px 0;
+  }
+}
+/* =========================================================
+   GOLDEN STUDY SHEET CARDS - PREMIUM FINAL SYSTEM
+   Launch-ready / bilingual / mobile-first
+   ========================================================= */
+
+.golden-sheet {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0;
+  direction: rtl;
+  text-align: right;
+  font-family: Cairo, Tajawal, Arial, sans-serif;
+  color: #172033;
+  line-height: 1.55;
+}
+
+.golden-sheet * {
+  box-sizing: border-box;
+}
+
+.golden-sheet-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(250,204,21,.22), transparent 35%),
+    linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #172554 100%);
+  border: 1px solid rgba(250,204,21,.85);
+  border-radius: 24px;
+  padding: 22px 22px;
+  margin: 10px 0 16px;
+  box-shadow: 0 18px 45px rgba(15,23,42,.18);
+}
+
+.golden-sheet-kicker {
+  display: inline-block;
+  background: rgba(250,204,21,.16);
+  color: #fde68a;
+  border: 1px solid rgba(250,204,21,.5);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.golden-sheet-title {
+  margin: 0;
+  color: #facc15;
+  font-size: 25px;
+  font-weight: 950;
+  line-height: 1.3;
+}
+
+.golden-sheet-subtitle {
+  margin: 5px 0 0;
+  color: #dbeafe;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.golden-sheet-intro {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-right: 5px solid #f59e0b;
+  border-radius: 16px;
+  padding: 11px 13px;
+  margin: 10px 0 14px;
+  color: #78350f;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.65;
+}
+
+.golden-sheet-section {
+  margin: 16px 0 10px;
+  padding: 9px 12px;
+  background: #eff6ff;
+  border-right: 5px solid #2563eb;
+  border-radius: 14px;
+  color: #1d4ed8;
+  font-size: 17px;
+  font-weight: 950;
+}
+
+.golden-study-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 10px 0 16px;
+}
+
+.golden-study-card {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #dbeafe;
+  border-radius: 22px;
+  padding: 14px;
+  box-shadow: 0 12px 32px rgba(15,23,42,.10);
+}
+
+.golden-study-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 9px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.golden-study-number {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #1d4ed8, #0f172a);
+  color: #facc15;
+  font-weight: 950;
+  font-size: 14px;
+  box-shadow: 0 8px 18px rgba(37,99,235,.25);
+}
+
+.golden-study-title-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.golden-study-title {
+  margin: 0;
+  direction: ltr;
+  text-align: left;
+  color: #0f172a;
+  font-size: 19px;
+  font-weight: 950;
+  line-height: 1.25;
+}
+
+.golden-study-ar {
+  display: block;
+  direction: rtl;
+  text-align: right;
+  color: #475569;
+  font-size: 13.5px;
+  font-weight: 850;
+  margin-top: 2px;
+}
+
+.golden-study-tag {
+  flex: 0 0 auto;
+  background: #eef2ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 950;
+  direction: ltr;
+}
+
+.golden-study-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.golden-info-box {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 15px;
+  padding: 9px 10px;
+  min-width: 0;
+}
+
+.golden-info-box.full {
+  grid-column: 1 / -1;
+}
+
+.golden-info-label {
+  display: block;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 950;
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+
+.golden-formula {
+  display: inline-block;
+  direction: ltr;
+  text-align: left;
+  background: #dbeafe;
+  color: #1e3a8a;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 5px 8px;
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 1.35;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.golden-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.golden-chip {
+  display: inline-block;
+  direction: ltr;
+  background: #fef08a;
+  color: #713f12;
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 11.5px;
+  font-weight: 950;
+  line-height: 1.35;
+}
+
+.golden-use-line,
+.golden-example-line {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.golden-use-line:last-child,
+.golden-example-line:last-child {
+  border-bottom: none;
+}
+
+.golden-en-line {
+  direction: ltr;
+  text-align: left;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.golden-ar-line {
+  direction: rtl;
+  text-align: right;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.golden-tip {
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-right: 4px solid #22c55e;
+  color: #166534;
+  border-radius: 13px;
+  padding: 8px 9px;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.55;
+}
+
+.golden-mini-check {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-right: 4px solid #f97316;
+  border-radius: 13px;
+  padding: 8px 9px;
+  font-size: 13px;
+  font-weight: 850;
+  color: #7c2d12;
+}
+
+.golden-mini-check .q {
+  direction: ltr;
+  text-align: left;
+  color: #111827;
+  font-weight: 950;
+  margin-bottom: 4px;
+}
+
+.golden-upgrade-box {
+  background:
+    radial-gradient(circle at top left, rgba(250,204,21,.18), transparent 35%),
+    linear-gradient(135deg, #0f172a, #172554);
+  color: #ffffff;
+  border: 1px solid rgba(250,204,21,.8);
+  border-radius: 20px;
+  padding: 16px;
+  margin: 18px 0 8px;
+  box-shadow: 0 16px 38px rgba(15,23,42,.18);
+}
+
+.golden-upgrade-box h3 {
+  margin: 0 0 8px;
+  color: #facc15;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.golden-upgrade-box p,
+.golden-upgrade-box li {
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.65;
+}
+
+.golden-upgrade-box ul {
+  margin: 8px 0 0;
+  padding-right: 18px;
+}
+
+/* Desktop two columns when appropriate */
+@media (min-width: 1020px) {
+  .golden-study-grid.two-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 720px) {
+  .golden-sheet {
+    max-width: 100%;
+    line-height: 1.45;
+  }
+
+  .golden-sheet-hero {
+    padding: 15px 12px;
+    border-radius: 18px;
+    margin: 8px 0 11px;
+  }
+
+  .golden-sheet-title {
+    font-size: 19px;
+  }
+
+  .golden-sheet-subtitle,
+  .golden-sheet-intro {
+    font-size: 13px;
+  }
+
+  .golden-sheet-section {
+    font-size: 15px;
+    padding: 8px 10px;
+    margin: 12px 0 8px;
+  }
+
+  .golden-study-grid {
+    gap: 9px;
+  }
+
+  .golden-study-card {
+    padding: 11px;
+    border-radius: 17px;
+  }
+
+  .golden-study-head {
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 7px;
+  }
+
+  .golden-study-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 11px;
+    font-size: 12px;
+  }
+
+  .golden-study-title {
+    font-size: 16px;
+  }
+
+  .golden-study-ar {
+    font-size: 12.5px;
+  }
+
+  .golden-study-tag {
+    font-size: 10.5px;
+    padding: 3px 7px;
+  }
+
+  .golden-study-body {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .golden-info-box {
+    padding: 8px 9px;
+    border-radius: 13px;
+  }
+
+  .golden-info-label {
+    font-size: 11.5px;
+    margin-bottom: 4px;
+  }
+
+  .golden-formula,
+  .golden-en-line,
+  .golden-ar-line,
+  .golden-tip,
+  .golden-mini-check {
+    font-size: 12.5px;
+  }
+
+  .golden-chip {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+
+  .golden-use-line,
+  .golden-example-line {
+    grid-template-columns: 1fr;
+    gap: 1px;
+    padding: 4px 0;
+  }
+
+  .golden-upgrade-box {
+    padding: 13px;
+    border-radius: 17px;
+  }
+
+  .golden-upgrade-box h3 {
+    font-size: 17px;
+  }
+
+  .golden-upgrade-box p,
+  .golden-upgrade-box li {
+    font-size: 13px;
+  }
+}
+/* =========================================================
+   GOLDEN STUDY SHEET - MOBILE WORD BREAK FIX
+   يمنع تكسير الكلمات على الموبايل
+   ========================================================= */
+
+.golden-sheet,
+.golden-sheet * {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  hyphens: none !important;
+}
+
+/* لا تكسر الجمل الإنجليزية */
+.golden-en-line,
+.golden-example-en,
+.golden-use-en,
+.golden-study-title,
+.golden-formula,
+.golden-chip,
+.golden-study-tag,
+.golden-mini-check .q {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
+  hyphens: none !important;
+}
+
+/* لا تكسر العربي أيضًا */
+.golden-ar-line,
+.golden-example-ar,
+.golden-use-ar,
+.golden-study-ar,
+.golden-sheet-intro,
+.golden-tip {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
+  hyphens: none !important;
+}
+
+/* على الموبايل: خلي كل شيء عمودي حتى لا تنخنق الكلمات */
+@media (max-width: 720px) {
+
+  .golden-study-body {
+    grid-template-columns: 1fr !important;
+    gap: 7px !important;
+  }
+
+  .golden-info-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .golden-use-line,
+  .golden-example-line {
+    grid-template-columns: 1fr !important;
+    gap: 2px !important;
+  }
+
+  .golden-en-line,
+  .golden-example-en,
+  .golden-use-en {
+    display: block !important;
+    direction: ltr !important;
+    text-align: left !important;
+    line-height: 1.35 !important;
+  }
+
+  .golden-ar-line,
+  .golden-example-ar,
+  .golden-use-ar {
+    display: block !important;
+    direction: rtl !important;
+    text-align: right !important;
+    line-height: 1.45 !important;
+  }
+
+  /* الصياغة تأخذ سطر كامل */
+  .golden-formula {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    direction: ltr !important;
+    text-align: left !important;
+    line-height: 1.45 !important;
+    font-size: 12.8px !important;
+  }
+
+  /* الدلالات لا تنضغط كثير */
+  .golden-chip-list {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+
+  .golden-chip {
+    max-width: 100% !important;
+    font-size: 11.5px !important;
+    line-height: 1.35 !important;
+    padding: 2px 6px !important;
+  }
+
+  /* رأس البطاقة */
+  .golden-study-head {
+    display: grid !important;
+    grid-template-columns: auto 1fr !important;
+    gap: 8px !important;
+    align-items: start !important;
+  }
+
+  .golden-study-tag {
+    grid-column: 1 / -1 !important;
+    width: fit-content !important;
+    margin-top: 2px !important;
+  }
+
+  .golden-study-title {
+    font-size: 16px !important;
+    line-height: 1.3 !important;
+  }
+
+  .golden-study-ar {
+    font-size: 12.5px !important;
+    line-height: 1.35 !important;
+  }
+
+  .golden-sheet-title {
+    font-size: 18px !important;
+    line-height: 1.35 !important;
+  }
+}
+
+/* شاشات صغيرة جدًا */
+@media (max-width: 390px) {
+  .golden-sheet {
+    font-size: 13px !important;
+  }
+
+  .golden-study-card {
+    padding: 9px !important;
+  }
+
+  .golden-info-box {
+    padding: 7px 8px !important;
+  }
+
+  .golden-en-line,
+  .golden-ar-line,
+  .golden-formula,
+  .golden-tip,
+  .golden-mini-check {
+    font-size: 12.3px !important;
+  }
+
+  .golden-chip {
+    font-size: 11px !important;
+  }
+}
+/* =========================================================
+   Golden Linked Exam Box - Compact Dark Blue + Yellow/White/Orange
+   CSS ONLY - No JS
+   ========================================================= */
+
+#goldenLinkedExamsBox,
+.golden-linked-exams-box {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  margin: 18px 0 !important;
+  padding: 16px !important;
+  border-radius: 20px !important;
+
+  background: linear-gradient(135deg, #071a33, #0b2a4d) !important;
+  border: 1px solid rgba(250, 204, 21, 0.55) !important;
+  box-shadow: 0 14px 32px rgba(2, 8, 23, 0.22) !important;
+
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.golden-linked-exams-head {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+
+  margin: 0 0 10px 0 !important;
+  padding: 0 0 10px 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16) !important;
+}
+
+.golden-linked-exams-head h3 {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #facc15 !important;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.35) !important;
+}
+
+.golden-linked-exams-head p {
+  margin: 4px 0 0 0 !important;
+  padding: 0 !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  line-height: 1.55 !important;
+}
+
+.golden-linked-exams-head span {
+  margin: 0 !important;
+  padding: 5px 10px !important;
+  border-radius: 999px !important;
+  background: rgba(251, 146, 60, 0.18) !important;
+  border: 1px solid rgba(251, 146, 60, 0.55) !important;
+  color: #fed7aa !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+
+.golden-linked-exams-list {
+  display: grid !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.golden-linked-exam-card {
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: center !important;
+  gap: 12px !important;
+
+  margin: 0 !important;
+  padding: 12px 14px !important;
+  border-radius: 16px !important;
+
+  background: #ffffff !important;
+  border: 1px solid rgba(250, 204, 21, 0.35) !important;
+  box-shadow: 0 8px 18px rgba(2, 8, 23, 0.12) !important;
+}
+
+.golden-linked-exam-info h4 {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #ea580c !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+}
+
+.golden-linked-exam-info p {
+  margin: 4px 0 0 0 !important;
+  padding: 0 !important;
+  color: #334155 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+}
+
+.golden-linked-exam-card button {
+  margin: 0 !important;
+  padding: 10px 16px !important;
+  border: none !important;
+  border-radius: 999px !important;
+
+  background: linear-gradient(135deg, #fb923c, #f97316) !important;
+  color: #ffffff !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+}
+
+@media (max-width: 700px) {
+  .golden-linked-exams-head {
+    display: block !important;
+  }
+
+  .golden-linked-exams-head span {
+    display: inline-block !important;
+    margin-top: 8px !important;
+  }
+
+  .golden-linked-exam-card {
+    display: block !important;
+  }
+
+  .golden-linked-exam-card button {
+    width: 100% !important;
+    margin-top: 10px !important;
+  }
+}
+/* =========================================================
+   Golden Linked Exam Box - Compact Visible Final
+   Fix huge height caused by inherited white-space/spacing
+   ========================================================= */
+
+#goldenLinkedExamsBox,
+.golden-linked-exams-box,
+#goldenLinkedExamsBox *,
+.golden-linked-exams-box * {
+  white-space: normal !important;
+  box-sizing: border-box !important;
+}
+
+#goldenLinkedExamsBox,
+.golden-linked-exams-box {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  margin: 18px 0 !important;
+  padding: 16px !important;
+  border-radius: 20px !important;
+
+  background: linear-gradient(135deg, #071a33, #0b2a4d) !important;
+  border: 1px solid rgba(250, 204, 21, 0.55) !important;
+  box-shadow: 0 14px 32px rgba(2, 8, 23, 0.22) !important;
+  overflow: visible !important;
+}
+
+.golden-linked-exams-head {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+
+  margin: 0 0 10px !important;
+  padding: 0 0 10px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16) !important;
+}
+
+.golden-linked-exams-head h3 {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #facc15 !important;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+}
+
+.golden-linked-exams-head p {
+  margin: 4px 0 0 !important;
+  padding: 0 !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  line-height: 1.5 !important;
+}
+
+.golden-linked-exams-head span {
+  margin: 0 !important;
+  padding: 5px 10px !important;
+  border-radius: 999px !important;
+  background: rgba(251, 146, 60, 0.18) !important;
+  border: 1px solid rgba(251, 146, 60, 0.55) !important;
+  color: #fed7aa !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+
+.golden-linked-exam-card {
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: center !important;
+  gap: 12px !important;
+
+  margin: 0 !important;
+  padding: 12px 14px !important;
+  border-radius: 16px !important;
+
+  background: #ffffff !important;
+  border: 1px solid rgba(250, 204, 21, 0.35) !important;
+  box-shadow: 0 8px 18px rgba(2, 8, 23, 0.12) !important;
+}
+
+.golden-linked-exam-info h4 {
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #ea580c !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+}
+
+.golden-linked-exam-info p {
+  margin: 4px 0 0 !important;
+  padding: 0 !important;
+  color: #334155 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+}
+
+.golden-linked-exam-card button {
+  margin: 0 !important;
+  padding: 10px 16px !important;
+  border: none !important;
+  border-radius: 999px !important;
+
+  background: linear-gradient(135deg, #fb923c, #f97316) !important;
+  color: #ffffff !important;
+
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+}
+
+@media (max-width: 700px) {
+  .golden-linked-exams-head {
+    display: block !important;
+  }
+
+  .golden-linked-exams-head span {
+    display: inline-block !important;
+    margin-top: 8px !important;
+  }
+
+  .golden-linked-exam-card {
+    display: block !important;
+  }
+
+  .golden-linked-exam-card button {
+    width: 100% !important;
+    margin-top: 10px !important;
+  }
+}
+/* =========================================================
+   Golden Linked Exam Box - Readable Text Colors on Dark Blue
+   COLORS ONLY
+   ========================================================= */
+
+/* عنوان الصندوق */
+.golden-linked-exams-head h3 {
+  color: #facc15 !important; /* أصفر ذهبي واضح */
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* الوصف تحت العنوان */
+.golden-linked-exams-head p {
+  color: #f8fafc !important; /* أبيض ناعم واضح */
+  text-shadow: 0 2px 7px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* شارة عدد الاختبارات */
+.golden-linked-exams-head span {
+  color: #fff7ed !important;
+  background: rgba(251, 146, 60, 0.22) !important;
+  border-color: rgba(251, 146, 60, 0.75) !important;
+}
+
+/* عنوان الامتحان داخل الكرت */
+.golden-linked-exam-info h4 {
+  color: #ea580c !important; /* برتقالي واضح وفخم */
+}
+
+/* وصف الامتحان داخل الكرت الأبيض */
+.golden-linked-exam-info p {
+  color: #334155 !important; /* رمادي غامق مقروء */
+}
+
+/* زر ابدأ الاختبار */
+.golden-linked-exam-card button {
+  background: linear-gradient(135deg, #fb923c, #f97316) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 22px rgba(249, 115, 22, 0.28) !important;
+}
+
+/* لمسة تركواز خفيفة على حدود الصندوق */
+#goldenLinkedExamsBox,
+.golden-linked-exams-box {
+  border-color: rgba(45, 212, 191, 0.55) !important;
+}
+
+/* لمسة تركواز خفيفة على الكرت الداخلي */
+.golden-linked-exam-card {
+  border-color: rgba(45, 212, 191, 0.28) !important;
+}
+/* =========================================================
+   GOLDEN LINKED EXAM BOX - FINAL PROFESSIONAL STYLE
+   ========================================================= */
+
+#goldenLinkedExamsBox,
+.golden-linked-exams-box,
+#goldenCorrectViewerLinkedExamsBox {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 22px 0 26px !important;
+  padding: 20px !important;
+  border-radius: 22px !important;
+  background:
+    linear-gradient(145deg, #0b3c5d 0%, #0f4c75 45%, #145c7a 100%) !important;
+  border: 1px solid rgba(64, 224, 208, 0.35) !important;
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  color: #ffffff !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* زخرفة خفيفة */
+#goldenLinkedExamsBox::before,
+.golden-linked-exams-box::before,
+#goldenCorrectViewerLinkedExamsBox::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top right, rgba(64,224,208,0.12), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(255,193,7,0.10), transparent 30%);
+  pointer-events: none;
+}
+
+/* عنوان البوكس */
+#goldenLinkedExamsBox h3,
+#goldenLinkedExamsBox h4,
+.golden-linked-exams-box h3,
+.golden-linked-exams-box h4,
+#goldenCorrectViewerLinkedExamsBox h3,
+#goldenCorrectViewerLinkedExamsBox h4 {
+  color: #ffffff !important;
+  margin: 0 0 10px !important;
+  font-size: 1.25rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.2px;
+  line-height: 1.5 !important;
+}
+
+/* النصوص العامة */
+#goldenLinkedExamsBox,
+#goldenLinkedExamsBox p,
+#goldenLinkedExamsBox span,
+#goldenLinkedExamsBox div,
+.golden-linked-exams-box,
+.golden-linked-exams-box p,
+.golden-linked-exams-box span,
+.golden-linked-exams-box div,
+#goldenCorrectViewerLinkedExamsBox,
+#goldenCorrectViewerLinkedExamsBox p,
+#goldenCorrectViewerLinkedExamsBox span,
+#goldenCorrectViewerLinkedExamsBox div {
+  color: #f8fbff !important;
+  line-height: 1.8 !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+}
+
+/* السطر الوصفي */
+#goldenLinkedExamsBox .golden-exam-box-subtitle,
+.golden-linked-exams-box .golden-exam-box-subtitle,
+#goldenCorrectViewerLinkedExamsBox .golden-exam-box-subtitle {
+  color: #dffcff !important;
+  font-size: 0.98rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 14px !important;
+}
+
+/* شارة العدد */
+#goldenLinkedExamsBox .golden-exam-count,
+.golden-linked-exams-box .golden-exam-count,
+#goldenCorrectViewerLinkedExamsBox .golden-exam-count {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 193, 7, 0.16) !important;
+  color: #ffe082 !important;
+  border: 1px solid rgba(255, 224, 130, 0.34) !important;
+  font-weight: 800 !important;
+  margin-bottom: 14px !important;
+}
+
+/* بطاقة الامتحان نفسها */
+#goldenLinkedExamsBox .golden-linked-exam-card,
+.golden-linked-exams-box .golden-linked-exam-card,
+#goldenCorrectViewerLinkedExamsBox .golden-linked-exam-card {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 18px !important;
+  padding: 16px !important;
+  margin-top: 14px !important;
+  backdrop-filter: blur(6px);
+}
+
+/* عنوان الامتحان */
+#goldenLinkedExamsBox .golden-linked-exam-card h5,
+#goldenLinkedExamsBox .golden-linked-exam-title,
+.golden-linked-exams-box .golden-linked-exam-card h5,
+.golden-linked-exams-box .golden-linked-exam-title,
+#goldenCorrectViewerLinkedExamsBox .golden-linked-exam-card h5,
+#goldenCorrectViewerLinkedExamsBox .golden-linked-exam-title {
+  color: #ffffff !important;
+  font-size: 1.06rem !important;
+  font-weight: 900 !important;
+  margin: 0 0 8px !important;
+  line-height: 1.6 !important;
+}
+
+/* وصف الامتحان */
+#goldenLinkedExamsBox .golden-linked-exam-card p,
+#goldenLinkedExamsBox .golden-linked-exam-description,
+.golden-linked-exams-box .golden-linked-exam-card p,
+.golden-linked-exams-box .golden-linked-exam-description,
+#goldenCorrectViewerLinkedExamsBox .golden-linked-exam-card p,
+#goldenCorrectViewerLinkedExamsBox .golden-linked-exam-description {
+  color: #d9f6ff !important;
+  font-size: 0.96rem !important;
+  font-weight: 600 !important;
+  margin: 0 0 14px !important;
+}
+
+/* زر ابدأ الاختبار */
+#goldenLinkedExamsBox button,
+#goldenLinkedExamsBox .golden-start-exam-btn,
+.golden-linked-exams-box button,
+.golden-linked-exams-box .golden-start-exam-btn,
+#goldenCorrectViewerLinkedExamsBox button,
+#goldenCorrectViewerLinkedExamsBox .golden-start-exam-btn {
+  background: linear-gradient(135deg, #1de9b6, #00bcd4) !important;
+  color: #062b33 !important;
+  border: none !important;
+  border-radius: 14px !important;
+  padding: 12px 18px !important;
+  font-size: 0.98rem !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  box-shadow: 0 10px 22px rgba(0, 188, 212, 0.25) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+#goldenLinkedExamsBox button:hover,
+#goldenLinkedExamsBox .golden-start-exam-btn:hover,
+.golden-linked-exams-box button:hover,
+.golden-linked-exams-box .golden-start-exam-btn:hover,
+#goldenCorrectViewerLinkedExamsBox button:hover,
+#goldenCorrectViewerLinkedExamsBox .golden-start-exam-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 14px 28px rgba(0, 188, 212, 0.34) !important;
+}
+
+/* موبايل */
+@media (max-width: 768px) {
+  #goldenLinkedExamsBox,
+  .golden-linked-exams-box,
+  #goldenCorrectViewerLinkedExamsBox {
+    padding: 14px !important;
+    border-radius: 16px !important;
+  }
+
+  #goldenLinkedExamsBox h3,
+  #goldenLinkedExamsBox h4,
+  .golden-linked-exams-box h3,
+  .golden-linked-exams-box h4,
+  #goldenCorrectViewerLinkedExamsBox h3,
+  #goldenCorrectViewerLinkedExamsBox h4 {
+    font-size: 1.08rem !important;
+  }
+
+  #goldenLinkedExamsBox .golden-linked-exam-card,
+  .golden-linked-exams-box .golden-linked-exam-card,
+  #goldenCorrectViewerLinkedExamsBox .golden-linked-exam-card {
+    padding: 12px !important;
+  }
+
+  #goldenLinkedExamsBox button,
+  .golden-linked-exams-box button,
+  #goldenCorrectViewerLinkedExamsBox button {
+    width: 100% !important;
+    text-align: center !important;
+  }
+}
+/* =========================================================
+   GOLDEN LINKED EXAM BOX - PREMIUM VISIBLE STYLE
+   ========================================================= */
+
+#golden2008Unit1GrammarExamBox_ONLY_GRAMMAR {
+  margin: 28px 0 !important;
+  padding: 0 !important;
+  border-radius: 26px !important;
+  background:
+    radial-gradient(circle at top right, rgba(255, 215, 120, 0.42), transparent 38%),
+    linear-gradient(135deg, #fff3c4 0%, #ffffff 45%, #fff8df 100%) !important;
+  border: 2px solid rgba(180, 120, 20, 0.55) !important;
+  box-shadow:
+    0 22px 55px rgba(120, 72, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  overflow: hidden !important;
+  position: relative !important;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+#golden2008Unit1GrammarExamBox_ONLY_GRAMMAR::before {
+  content: "امتحان مرتبط";
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #111827;
+  color: #fff;
+  font-family: Cairo, Tajawal, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.22);
+}
+
+#golden2008Unit1GrammarExamBox_ONLY_GRAMMAR > div {
+  padding: 26px 24px !important;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.80), rgba(255, 248, 224, 0.55)) !important;
+  border-radius: 24px !important;
+}
+
+#golden2008Unit1GrammarExamBox_ONLY_GRAMMAR div[style*="font-size:20px"] {
+  color: #6f4200 !important;
+  font-size: 23px !important;
+  font-weight: 950 !important;
+  margin-bottom: 10px !important;
+}
+
+#golden2008Unit1GrammarExamBox_ONLY_GRAMMAR div[style*="font-size:15px"] {
+  display: inline-block !important;
+  padding: 9px 13px !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  color: #1f2937 !important;
+  border: 1px solid rgba(180, 120, 20, 0.18) !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+}
+
+#golden2008Unit1GrammarExamBox_ONLY_GRAMMAR button {
+  background: linear-gradient(135deg, #111827, #3b2600) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 215, 120, 0.35) !important;
+  border-radius: 999px !important;
+  padding: 13px 25px !important;
+  font-size: 15px !important;
+  font-weight: 950 !important;
+  cursor: pointer !important;
+  box-shadow:
+    0 14px 30px rgba(17, 24, 39, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+#golden2008Unit1GrammarExamBox_ONLY_GRAMMAR button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow:
+    0 18px 38px rgba(17, 24, 39, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
+}
+
+#golden2008Unit1GrammarExamBox_ONLY_GRAMMAR::after {
+  content: "🏆";
+  position: absolute;
+  right: 18px;
+  bottom: -10px;
+  font-size: 82px;
+  opacity: 0.10;
+  pointer-events: none;
+}
+
+@media (max-width: 700px) {
+  #golden2008Unit1GrammarExamBox_ONLY_GRAMMAR::before {
+    position: static;
+    display: inline-block;
+    margin: 16px 18px 0 0;
+  }
+
+  #golden2008Unit1GrammarExamBox_ONLY_GRAMMAR > div {
+    padding: 20px 18px !important;
+  }
+
+  #golden2008Unit1GrammarExamBox_ONLY_GRAMMAR button {
+    width: 100% !important;
+    margin-top: 10px !important;
+  }
+}
+/* =========================================================
+   GOLDEN INTENSIVE - TEXT READABILITY FINAL FIX
+   إصلاح العربي/الإنجليزي + تباعد الأسطر داخل المكثف
+   ========================================================= */
+
+#goldenIntensive,
+#goldenIntensive * {
+  box-sizing: border-box;
+}
+
+#goldenIntensive {
+  font-family: Cairo, Tajawal, Arial, sans-serif !important;
+}
+
+/* محتوى الوحدات */
+#goldenIntensive .golden-content-box,
+#goldenIntensive .golden-unit-content,
+#goldenIntensive .golden-section-content,
+#goldenIntensive .golden-viewer-content,
+#goldenUnitViewer2008,
+#goldenUnitViewer2009 {
+  direction: rtl !important;
+  text-align: right !important;
+  font-family: Cairo, Tajawal, Arial, sans-serif !important;
+  line-height: 1.75 !important;
+  letter-spacing: 0 !important;
+  word-spacing: normal !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+/* الفقرات والعناوين داخل المكثف */
+#goldenIntensive p,
+#goldenIntensive li,
+#goldenIntensive div,
+#goldenIntensive span {
+  line-height: 1.75 !important;
+  letter-spacing: 0 !important;
+  word-spacing: normal !important;
+}
+
+/* تقليل المسافة المبالغ فيها بين السطور */
+#goldenIntensive p {
+  margin-top: 0 !important;
+  margin-bottom: 10px !important;
+}
+
+#goldenIntensive br {
+  line-height: 1.4 !important;
+}
+
+/* العناوين */
+#goldenIntensive h1,
+#goldenIntensive h2,
+#goldenIntensive h3,
+#goldenIntensive h4 {
+  line-height: 1.35 !important;
+  margin-top: 12px !important;
+  margin-bottom: 12px !important;
+  letter-spacing: 0 !important;
+}
+
+/* منع مشكلة كل حرف بسطر */
+#goldenIntensive .golden-content-box *,
+#goldenIntensive .golden-unit-content *,
+#goldenIntensive .golden-section-content *,
+#goldenUnitViewer2008 *,
+#goldenUnitViewer2009 * {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+/* الإنجليزية داخل النص العربي */
+#goldenIntensive .english-line,
+#goldenIntensive .en-line,
+#goldenIntensive [dir="ltr"],
+#goldenIntensive code {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
+  font-family: Arial, "Segoe UI", sans-serif !important;
+  line-height: 1.65 !important;
+  letter-spacing: 0 !important;
+  word-spacing: normal !important;
+}
+
+/* التمارين أو الجمل الإنجليزية إن ظهرت داخل div عادي */
+#goldenIntensive .golden-english-text {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate !important;
+  font-family: Arial, "Segoe UI", sans-serif !important;
+}
+
+/* العربي الصريح */
+#goldenIntensive .arabic-line,
+#goldenIntensive .ar-line,
+#goldenIntensive [dir="rtl"] {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: isolate !important;
+  font-family: Cairo, Tajawal, Arial, sans-serif !important;
+}
+
+/* القوائم */
+#goldenIntensive ul,
+#goldenIntensive ol {
+  padding-right: 24px !important;
+  padding-left: 0 !important;
+  margin-top: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+#goldenIntensive li {
+  margin-bottom: 6px !important;
+}
+
+/* بطاقات المحتوى */
+#goldenIntensive .golden-content-box,
+#goldenIntensive .golden-section-card,
+#goldenIntensive .golden-lesson-card {
+  padding: 22px !important;
+  border-radius: 22px !important;
+  overflow: visible !important;
+}
+
+/* Textareas في المحرر */
+#goldenIntensive textarea {
+  direction: auto !important;
+  text-align: start !important;
+  line-height: 1.65 !important;
+  letter-spacing: 0 !important;
+  word-spacing: normal !important;
+  font-family: Cairo, Tajawal, Arial, sans-serif !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: break-word !important;
+}
+
+/* تحسين الموبايل */
+@media (max-width: 700px) {
+  #goldenIntensive .golden-content-box,
+  #goldenIntensive .golden-section-card,
+  #goldenIntensive .golden-lesson-card {
+    padding: 16px !important;
+  }
+
+  #goldenIntensive p,
+  #goldenIntensive li,
+  #goldenIntensive div,
+  #goldenIntensive span {
+    line-height: 1.65 !important;
+  }
+}
+/* =========================================================
+GOLDEN WRITING SKILLS PREMIUM TABLE
+========================================================= */
+
+.writing-skills-premium {
+direction: rtl;
+}
+
+.writing-skill-alert {
+margin: 22px 0;
+padding: 18px 20px;
+border-radius: 22px;
+background: linear-gradient(135deg, #fff7ed, #ffffff);
+border: 1px solid rgba(217, 119, 6, 0.25);
+box-shadow: 0 14px 35px rgba(120, 72, 0, 0.08);
+color: #7c2d12;
+font-weight: 850;
+line-height: 1.8;
+}
+
+.writing-skills-table-wrap {
+width: 100%;
+overflow-x: auto;
+padding: 8px 4px 18px;
+margin: 26px 0;
+}
+
+.writing-skills-premium-table {
+width: 100%;
+min-width: 1050px;
+border-collapse: separate;
+border-spacing: 0 16px;
+font-family: Cairo, Tajawal, Arial, sans-serif;
+}
+
+.writing-skills-premium-table thead th {
+padding: 18px 14px;
+background: linear-gradient(135deg, #111827, #3b2600);
+color: #ffffff;
+text-align: center;
+font-size: 15px;
+font-weight: 950;
+border: none;
+}
+
+.writing-skills-premium-table thead th:first-child {
+border-radius: 0 22px 22px 0;
+}
+
+.writing-skills-premium-table thead th:last-child {
+border-radius: 22px 0 0 22px;
+}
+
+.writing-skills-premium-table thead span {
+display: block;
+margin-top: 5px;
+color: #fde68a;
+font-size: 12px;
+font-weight: 850;
+}
+
+.writing-skills-premium-table tbody tr {
+filter: drop-shadow(0 16px 32px rgba(15, 23, 42, 0.08));
+}
+
+.writing-skills-premium-table tbody td {
+padding: 18px 16px;
+background: #ffffff;
+border-top: 1px solid rgba(15, 23, 42, 0.07);
+border-bottom: 1px solid rgba(15, 23, 42, 0.07);
+vertical-align: top;
+font-size: 14px;
+font-weight: 750;
+line-height: 1.75;
+color: #111827;
+}
+
+.writing-skills-premium-table tbody td:first-child {
+border-radius: 0 24px 24px 0;
+}
+
+.writing-skills-premium-table tbody td:last-child {
+border-radius: 24px 0 0 24px;
+}
+
+.row-introduction td:first-child {
+border-right: 7px solid #2563eb;
+}
+
+.row-style td:first-child {
+border-right: 7px solid #d97706;
+}
+
+.row-conclusion td:first-child {
+border-right: 7px solid #059669;
+}
+
+.skill-cell {
+text-align: center;
+min-width: 150px;
+}
+
+.skill-icon {
+width: 58px;
+height: 58px;
+margin: 0 auto 10px;
+border-radius: 20px;
+display: grid;
+place-items: center;
+font-size: 28px;
+color: white;
+background: #111827;
+box-shadow: 0 14px 28px rgba(17, 24, 39, 0.22);
+}
+
+.row-introduction .skill-icon {
+background: linear-gradient(135deg, #1d4ed8, #60a5fa);
+}
+
+.row-style .skill-icon {
+background: linear-gradient(135deg, #b45309, #facc15);
+}
+
+.row-conclusion .skill-icon {
+background: linear-gradient(135deg, #047857, #34d399);
+}
+
+.skill-name {
+font-size: 17px;
+font-weight: 950;
+color: #111827;
+}
+
+.skill-ar {
+margin-top: 4px;
+font-size: 14px;
+font-weight: 900;
+color: #92400e;
+}
+
+.main-point {
+display: inline-block;
+padding: 8px 13px;
+border-radius: 999px;
+font-weight: 950;
+margin-bottom: 10px;
+direction: ltr;
+text-align: left;
+font-family: Arial, "Segoe UI", sans-serif;
+}
+
+.blue-point {
+background: #dbeafe;
+color: #1e40af;
+}
+
+.amber-point {
+background: #fef3c7;
+color: #92400e;
+}
+
+.green-point {
+background: #d1fae5;
+color: #065f46;
+}
+
+.ar-explain {
+color: #111827;
+font-weight: 850;
+margin-bottom: 8px;
+}
+
+.small-note {
+padding: 10px 12px;
+border-radius: 14px;
+background: #f8fafc;
+color: #475569;
+font-size: 13px;
+font-weight: 800;
+}
+
+.highlight-chip {
+display: inline-block;
+padding: 9px 13px;
+margin: 4px 4px 8px;
+border-radius: 999px;
+font-weight: 950;
+direction: ltr;
+text-align: left;
+font-family: Arial, "Segoe UI", sans-serif;
+}
+
+.blue-chip {
+background: #eff6ff;
+color: #1d4ed8;
+border: 1px solid rgba(37, 99, 235, 0.25);
+}
+
+.amber-chip {
+background: #fffbeb;
+color: #92400e;
+border: 1px solid rgba(217, 119, 6, 0.28);
+}
+
+.green-chip {
+background: #ecfdf5;
+color: #047857;
+border: 1px solid rgba(5, 150, 105, 0.25);
+}
+
+.clue-box {
+margin-top: 8px;
+padding: 11px 12px;
+border-radius: 15px;
+background: linear-gradient(135deg, #ffffff, #f8fafc);
+border: 1px dashed rgba(120, 72, 0, 0.25);
+color: #374151;
+font-weight: 800;
+}
+
+.example-card {
+margin-bottom: 10px;
+padding: 12px;
+border-radius: 18px;
+background: #f8fafc;
+border: 1px solid rgba(15, 23, 42, 0.07);
+}
+
+.example-en {
+direction: ltr;
+text-align: left;
+font-family: Arial, "Segoe UI", sans-serif;
+color: #111827;
+font-weight: 850;
+line-height: 1.6;
+border-left: 4px solid #2563eb;
+padding-left: 10px;
+}
+
+.example-ar {
+margin-top: 7px;
+direction: rtl;
+text-align: right;
+color: #78350f;
+font-weight: 850;
+line-height: 1.7;
+}
+
+.exam-question {
+direction: ltr;
+text-align: left;
+padding: 10px 12px;
+border-radius: 15px;
+background: #eef2ff;
+color: #1e3a8a;
+font-family: Arial, "Segoe UI", sans-serif;
+font-weight: 900;
+margin-bottom: 7px;
+}
+
+.exam-answer {
+direction: ltr;
+text-align: left;
+padding: 9px 12px;
+border-radius: 15px;
+background: #ecfdf5;
+color: #065f46;
+font-family: Arial, "Segoe UI", sans-serif;
+font-weight: 950;
+margin-bottom: 10px;
+}
+
+.writing-exam-summary {
+margin-top: 26px;
+padding: 22px;
+border-radius: 26px;
+background: linear-gradient(135deg, #111827, #3b2600);
+color: white;
+box-shadow: 0 22px 55px rgba(17, 24, 39, 0.18);
+}
+
+.writing-exam-summary h3 {
+margin: 0 0 16px;
+color: #fde68a;
+font-weight: 950;
+}
+
+.summary-grid {
+display: grid;
+grid-template-columns: repeat(3, minmax(180px, 1fr));
+gap: 14px;
+}
+
+.summary-card {
+padding: 15px;
+border-radius: 18px;
+background: rgba(255, 255, 255, 0.10);
+border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.summary-card strong {
+display: block;
+font-size: 16px;
+font-weight: 950;
+margin-bottom: 6px;
+}
+
+.summary-card span {
+direction: ltr;
+text-align: left;
+display: block;
+font-family: Arial, "Segoe UI", sans-serif;
+font-weight: 800;
+color: #f8fafc;
+}
+
+@media (max-width: 800px) {
+.summary-grid {
+grid-template-columns: 1fr;
+}
+
+.writing-skills-premium-table {
+min-width: 980px;
+}
+}
+/* =========================================================
+   GOLDEN VOCABULARY SKILLS PREMIUM TABLES
+   JAK Academy - Golden Intensive
+   ========================================================= */
+
+.vocab-skills-premium {
+  direction: rtl;
+  font-family: Cairo, Tajawal, Arial, sans-serif;
+}
+
+/* Alert Box */
+.vocab-alert {
+  margin: 22px 0;
+  padding: 18px 22px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #fff7ed, #ffffff);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  box-shadow: 0 16px 38px rgba(120, 72, 0, 0.08);
+  color: #7c2d12;
+  font-weight: 850;
+  line-height: 1.85;
+}
+
+/* Section Titles */
+.vocab-section-title {
+  margin: 34px 0 16px;
+  padding: 15px 20px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #111827, #3b2600);
+  color: #fde68a;
+  font-size: 20px;
+  font-weight: 950;
+  box-shadow: 0 18px 38px rgba(17, 24, 39, 0.15);
+}
+
+/* Table Wrapper */
+.vocab-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 18px 0 30px;
+  padding: 8px 4px 18px;
+}
+
+/* Main Table */
+.vocab-premium-table {
+  width: 100%;
+  min-width: 1050px;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+  font-family: Cairo, Tajawal, Arial, sans-serif;
+}
+
+.vocab-premium-table.compact {
+  min-width: 760px;
+}
+
+/* Table Header */
+.vocab-premium-table thead th {
+  padding: 16px 14px;
+  background: linear-gradient(135deg, #172554, #0f172a);
+  color: #ffffff;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 950;
+  border: none;
+  white-space: nowrap;
+}
+
+.vocab-premium-table thead th:first-child {
+  border-radius: 0 20px 20px 0;
+}
+
+.vocab-premium-table thead th:last-child {
+  border-radius: 20px 0 0 20px;
+}
+
+/* Rows */
+.vocab-premium-table tbody tr {
+  filter: drop-shadow(0 12px 26px rgba(15, 23, 42, 0.07));
+}
+
+.vocab-premium-table tbody td {
+  padding: 15px 14px;
+  background: #ffffff;
+  border-top: 1px solid rgba(15, 23, 42, 0.07);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.07);
+  vertical-align: top;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 760;
+  line-height: 1.75;
+}
+
+.vocab-premium-table tbody td:first-child {
+  border-radius: 0 20px 20px 0;
+  border-right: 6px solid #2563eb;
+}
+
+.vocab-premium-table tbody td:last-child {
+  border-radius: 20px 0 0 20px;
+}
+
+/* Hover Effect */
+.vocab-premium-table tbody tr:hover td {
+  background: #fffbeb;
+  transition: 0.2s ease;
+}
+
+/* English Cells */
+.vocab-en,
+.example-en {
+  direction: ltr;
+  text-align: left;
+  font-family: Arial, "Segoe UI", sans-serif;
+  unicode-bidi: isolate;
+}
+
+.vocab-en {
+  font-weight: 950;
+  color: #1e3a8a;
+}
+
+.example-en {
+  font-weight: 850;
+  color: #111827;
+}
+
+/* Type Tags */
+.tag {
+  display: inline-block;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+  direction: ltr;
+  text-align: left;
+  font-family: Arial, "Segoe UI", sans-serif;
+  white-space: nowrap;
+}
+
+.tag.expression {
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+.tag.collocation {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.tag.compound {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid rgba(5, 150, 105, 0.25);
+}
+
+.tag.noun {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.25);
+}
+
+.tag.verb,
+.tag.phrasal {
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid rgba(79, 70, 229, 0.25);
+}
+
+.tag.adjective {
+  background: #fdf2f8;
+  color: #be185d;
+  border: 1px solid rgba(219, 39, 119, 0.22);
+}
+
+.tag.adverb {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid rgba(34, 197, 94, 0.24);
+}
+
+/* Exam Summary */
+.vocab-exam-summary {
+  margin-top: 32px;
+  padding: 25px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #111827, #3b2600);
+  color: #ffffff;
+  box-shadow: 0 24px 60px rgba(17, 24, 39, 0.18);
+}
+
+.vocab-exam-summary h3 {
+  margin: 0 0 18px;
+  color: #fde68a;
+  font-weight: 950;
+}
+
+.vocab-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(170px, 1fr));
+  gap: 14px;
+}
+
+.vocab-summary-card {
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.vocab-summary-card strong {
+  display: block;
+  direction: ltr;
+  text-align: left;
+  font-family: Arial, "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 950;
+  color: #fde68a;
+  margin-bottom: 8px;
+}
+
+.vocab-summary-card span {
+  display: block;
+  color: #f8fafc;
+  font-weight: 800;
+  line-height: 1.7;
+}
+
+/* Mobile */
+@media (max-width: 800px) {
+  .vocab-section-title {
+    font-size: 17px;
+    padding: 13px 15px;
+  }
+
+  .vocab-alert {
+    font-size: 14px;
+    padding: 15px 16px;
+  }
+
+  .vocab-premium-table {
+    min-width: 940px;
+  }
+
+  .vocab-premium-table.compact {
+    min-width: 680px;
+  }
+
+  .vocab-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* =========================================================
+   FIX VOCAB SUMMARY CARDS CONTRAST + CONTAINMENT
+   ========================================================= */
+
+.vocab-exam-summary {
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.vocab-summary-grid {
+  width: 100%;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.vocab-summary-card {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 18px 16px;
+  border-radius: 20px;
+
+  background: linear-gradient(135deg, #ffffff, #fff7ed) !important;
+  border: 1px solid rgba(217, 119, 6, 0.28) !important;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+
+  color: #111827 !important;
+}
+
+.vocab-summary-card strong {
+  color: #7c2d12 !important;
+  font-weight: 950;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.vocab-summary-card span {
+  color: #1f2937 !important;
+  font-weight: 850;
+  line-height: 1.8;
+}
+
+/* لو في إنجليزي داخل الكرت */
+.vocab-summary-card strong,
+.vocab-summary-card span {
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+/* للموبايل */
+@media (max-width: 700px) {
+  .vocab-exam-summary {
+    padding: 18px 14px;
+  }
+
+  .vocab-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vocab-summary-card {
+    padding: 16px 14px;
+  }
+}

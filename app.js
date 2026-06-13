@@ -34396,3 +34396,947 @@ window.addVisibleDeleteButtonsToGoldenUnitCards = addVisibleDeleteButtonsToGolde
     setTimeout(bindFinalGuard, 2000);
   });
 })();
+/* =========================================================
+   GOLDEN RICH HTML CONTENT RENDER FIX
+   Allows owner-entered Golden content to render colors/tables/highlights.
+   ========================================================= */
+
+function sanitizeGoldenOwnerHTML(html) {
+  let clean = String(html || "");
+
+  // remove dangerous scripts
+  clean = clean.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+  clean = clean.replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, "");
+  clean = clean.replace(/<object[\s\S]*?>[\s\S]*?<\/object>/gi, "");
+  clean = clean.replace(/<embed[\s\S]*?>[\s\S]*?<\/embed>/gi, "");
+
+  // remove inline event handlers like onclick, onerror, onload...
+  clean = clean.replace(/\son\w+\s*=\s*["'][^"']*["']/gi, "");
+  clean = clean.replace(/\son\w+\s*=\s*[^\s>]+/gi, "");
+
+  // block javascript: links
+  clean = clean.replace(/javascript:/gi, "");
+
+  return clean;
+}
+
+function escapeGoldenText(text) {
+  return String(text || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function goldenLooksLikeHTML(content) {
+  return /<\/?(div|table|thead|tbody|tr|td|th|h1|h2|h3|p|span|strong|mark|ul|ol|li|br)\b/i.test(
+    String(content || "")
+  );
+}
+
+function renderGoldenContentBox(title, content) {
+  const safeTitle = escapeGoldenText(title || "");
+  const rawContent = String(content || "").trim();
+
+  if (!rawContent) {
+    return `
+      <div class="golden-content-empty">
+        <h3>${safeTitle}</h3>
+        <p>لم يتم إدخال محتوى لهذا القسم بعد.</p>
+      </div>
+    `;
+  }
+
+  if (goldenLooksLikeHTML(rawContent)) {
+    return `
+      <div class="golden-content-box golden-rich-content-box">
+        <h3 class="golden-content-title">${safeTitle}</h3>
+        <div class="golden-rich-content">
+          ${sanitizeGoldenOwnerHTML(rawContent)}
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="golden-content-box">
+      <h3 class="golden-content-title">${safeTitle}</h3>
+      <div class="golden-plain-content" dir="auto">
+        ${escapeGoldenText(rawContent).replace(/\n/g, "<br>")}
+      </div>
+    </div>
+  `;
+}
+
+window.renderGoldenContentBox = renderGoldenContentBox;
+
+console.log("✅ Golden Rich HTML Content Render Fix installed.");
+
+/* =========================================================
+   QUESTION BANK IMPORT PARSER - FINAL ROBUST FIX
+   Supports: Q:, Question:, 1., A:, A), a), Correct:, Answer:
+   ========================================================= */
+
+function parseImportedQuestionsFlexible(rawText) {
+  const text = String(rawText || "")
+    .replace(/\r/g, "")
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .trim();
+
+  if (!text) return [];
+
+  const blocks = text
+    .split(/\n\s*\n+/)
+    .map(block => block.trim())
+    .filter(Boolean);
+
+  return blocks.map((block, index) => {
+    const lines = block
+      .split("\n")
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    const q = {
+      index: index + 1,
+      type: "mcq",
+      question_text: "",
+      option_a: "",
+      option_b: "",
+      option_c: "",
+      option_d: "",
+      correct_answer: "",
+      explanation: "",
+      errors: []
+    };
+
+    lines.forEach(line => {
+      const clean = String(line || "").trim();
+
+      // Question
+      if (/^Q\s*:/i.test(clean)) {
+        q.question_text = clean.replace(/^Q\s*:/i, "").trim();
+        return;
+      }
+
+      if (/^Question\s*:/i.test(clean)) {
+        q.question_text = clean.replace(/^Question\s*:/i, "").trim();
+        return;
+      }
+
+      if (/^Question\s*Text\s*:/i.test(clean)) {
+        q.question_text = clean.replace(/^Question\s*Text\s*:/i, "").trim();
+        return;
+      }
+
+      // numbered question: 1. Look! ...
+      if (/^\d+\s*[\.\)]\s+/.test(clean)) {
+        q.question_text = clean.replace(/^\d+\s*[\.\)]\s+/, "").trim();
+        return;
+      }
+
+      // Type
+      if (/^Type\s*:/i.test(clean)) {
+        q.type = normalizeImportedQuestionType(clean.replace(/^Type\s*:/i, "").trim());
+        return;
+      }
+
+      // Options: A: / A) / A. / a)
+      const optMatch = clean.match(/^([A-Da-d])\s*[:\)\.]\s*(.+)$/);
+      if (optMatch) {
+        const key = optMatch[1].toUpperCase();
+        const value = optMatch[2].trim();
+
+        if (key === "A") q.option_a = value;
+        if (key === "B") q.option_b = value;
+        if (key === "C") q.option_c = value;
+        if (key === "D") q.option_d = value;
+        return;
+      }
+
+      // Correct / Answer
+      if (/^Correct\s*Answer\s*:/i.test(clean)) {
+        q.correct_answer = clean.replace(/^Correct\s*Answer\s*:/i, "").trim().toUpperCase();
+        return;
+      }
+
+      if (/^Correct\s*:/i.test(clean)) {
+        q.correct_answer = clean.replace(/^Correct\s*:/i, "").trim().toUpperCase();
+        return;
+      }
+
+      if (/^Answer\s*:/i.test(clean)) {
+        q.correct_answer = clean.replace(/^Answer\s*:/i, "").trim().toUpperCase();
+        return;
+      }
+
+      // Explanation
+      if (/^Explanation\s*:/i.test(clean)) {
+        q.explanation = clean.replace(/^Explanation\s*:/i, "").trim();
+        return;
+      }
+
+      if (/^Reason\s*:/i.test(clean)) {
+        q.explanation = clean.replace(/^Reason\s*:/i, "").trim();
+        return;
+      }
+    });
+
+    // clean correct answer like "C – are playing"
+    q.correct_answer = String(q.correct_answer || "")
+      .trim()
+      .charAt(0)
+      .toUpperCase();
+
+    if (!q.question_text) {
+      q.errors.push("Missing question text");
+    }
+
+    if (q.type === "mcq") {
+      if (!q.option_a) q.errors.push("Missing option A");
+      if (!q.option_b) q.errors.push("Missing option B");
+      if (!q.option_c) q.errors.push("Missing option C");
+      if (!q.option_d) q.errors.push("Missing option D");
+
+      if (!["A", "B", "C", "D"].includes(q.correct_answer)) {
+        q.errors.push("Correct answer must be A, B, C, or D");
+      }
+    }
+
+    if (q.type === "tf") {
+      if (!["TRUE", "FALSE", "T", "F", "صح", "خطأ"].includes(q.correct_answer)) {
+        q.errors.push("Correct answer must be True or False");
+      }
+    }
+
+    return q;
+  });
+}
+
+window.parseImportedQuestionsFlexible = parseImportedQuestionsFlexible;
+
+console.log("✅ Final robust question import parser installed.");
+/* =========================================================
+   GOLDEN LINKED EXAMS VIEWER - FINAL PATCH
+   Shows published exams linked to Golden Intensive units/skills
+   ========================================================= */
+
+async function loadGoldenLinkedExams(cohort, unitKey, skill) {
+  const normalizedCohort = String(cohort || "").trim();
+  const normalizedUnit = String(unitKey || "").trim();
+  const normalizedSkill = String(skill || "").trim().toLowerCase();
+
+  if (!normalizedCohort || !normalizedUnit || !normalizedSkill) return [];
+
+  const { data, error } = await client
+    .from("exams")
+    .select("id,title,description,status,golden_cohort,golden_unit,golden_lesson,golden_skill")
+    .eq("status", "published")
+    .eq("golden_cohort", normalizedCohort)
+    .eq("golden_unit", normalizedUnit)
+    .eq("golden_skill", normalizedSkill)
+    .order("title", { ascending: true });
+
+  if (error) {
+    console.error("Golden linked exams load error:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
+function renderGoldenExamLinksHTML(exams) {
+  if (!exams || !exams.length) return "";
+
+  return `
+    <div class="golden-linked-exams-box" id="goldenLinkedExamsBox">
+      <div class="golden-linked-exams-head">
+        <div>
+          <h3>اختبار مرتبط بالدرس</h3>
+          <p>تدرّب مباشرة على نفس القاعدة الموجودة في هذا القسم.</p>
+        </div>
+        <span>${exams.length} اختبار</span>
+      </div>
+
+      <div class="golden-linked-exams-list">
+        ${exams.map(exam => `
+          <div class="golden-linked-exam-card">
+            <div class="golden-linked-exam-info">
+              <h4>${safeText(exam.title || "Golden Exam")}</h4>
+              <p>${safeText(exam.description || "اختبار تدريبي مرتبط بالمكثف الذهبي.")}</p>
+            </div>
+
+            <button type="button" onclick="startGoldenLinkedExam('${exam.id}')">
+              ابدأ الاختبار
+            </button>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+async function renderGoldenExamLinks(cohort, unitKey, skill) {
+  const viewer =
+    document.getElementById(`goldenUnitViewer${cohort}`) ||
+    document.getElementById(`goldenViewer${cohort}`);
+
+  if (!viewer) return;
+
+  const oldBox = viewer.querySelector("#goldenLinkedExamsBox");
+  if (oldBox) oldBox.remove();
+
+  const exams = await loadGoldenLinkedExams(cohort, unitKey, skill);
+  const html = renderGoldenExamLinksHTML(exams);
+
+  if (!html) return;
+
+  viewer.insertAdjacentHTML("beforeend", html);
+}
+
+window.loadGoldenLinkedExams = loadGoldenLinkedExams;
+window.renderGoldenExamLinks = renderGoldenExamLinks;
+
+/* Auto-render exams after opening Golden unit/section */
+(function installGoldenLinkedExamsAutoRender() {
+  if (window.__goldenLinkedExamsAutoRenderInstalled) return;
+  window.__goldenLinkedExamsAutoRenderInstalled = true;
+
+  const originalOpenGoldenUnit = window.openGoldenUnit;
+
+  window.openGoldenUnit = function openGoldenUnit_WITH_LINKED_EXAMS(...args) {
+    const result = originalOpenGoldenUnit.apply(this, args);
+
+    setTimeout(() => {
+      const cohort = String(args[0] || "").trim();
+      const unitKey = String(args[1] || "").trim();
+
+      if (!cohort || !unitKey) return;
+
+      const viewer =
+        document.getElementById(`goldenUnitViewer${cohort}`) ||
+        document.getElementById(`goldenViewer${cohort}`);
+
+      const text = viewer?.innerText || "";
+
+      let skill = "";
+
+      if (text.includes("📘 القواعد") || text.includes("Grammar") || text.includes("Progressive")) {
+        skill = "grammar";
+      } else if (text.includes("📚 المعاني") || text.includes("Vocabulary")) {
+        skill = "vocabulary";
+      } else if (text.includes("📖 القراءة") || text.includes("Reading")) {
+        skill = "reading";
+      } else if (text.includes("✍️ الكتابة") || text.includes("Writing")) {
+        skill = "writing";
+      } else if (text.includes("📝 ملاحظات") || text.includes("Notes")) {
+        skill = "notes";
+      }
+
+      if (skill) {
+        renderGoldenExamLinks(cohort, unitKey, skill);
+      }
+    }, 700);
+
+    return result;
+  };
+
+  console.log("✅ Golden linked exams auto-render installed.");
+})();
+
+/* =========================================================
+   GOLDEN LINKED EXAMS AUTO CALL - FINAL CLEAN FIX
+   Root cause: renderGoldenExamLinks works manually but is not called automatically
+   ========================================================= */
+
+(function installGoldenLinkedExamAutoCallFinal() {
+  if (window.__goldenLinkedExamAutoCallFinalInstalled) return;
+  window.__goldenLinkedExamAutoCallFinalInstalled = true;
+
+  function detectGoldenActiveSkill(viewer) {
+    const text = viewer?.innerText || "";
+
+    if (text.includes("📘 القواعد") || text.includes("Grammar") || text.includes("Progressive")) {
+      return "grammar";
+    }
+
+    if (text.includes("📚 المعاني") || text.includes("Vocabulary")) {
+      return "vocabulary";
+    }
+
+    if (text.includes("📖 القراءة") || text.includes("Reading")) {
+      return "reading";
+    }
+
+    if (text.includes("✍️ الكتابة") || text.includes("Writing")) {
+      return "writing";
+    }
+
+    if (text.includes("📝 ملاحظات") || text.includes("Notes")) {
+      return "notes";
+    }
+
+    return "";
+  }
+
+  function normalizeGoldenUnitKeyFinal(unitKey) {
+    const raw = String(unitKey || "").trim();
+
+    if (/^unit\d+$/i.test(raw)) {
+      return raw.toLowerCase();
+    }
+
+    const match = raw.match(/\d+/);
+    if (match) {
+      return `unit${match[0]}`;
+    }
+
+    return raw;
+  }
+
+  async function autoRenderGoldenLinkedExamFinal(cohort, unitKey) {
+    const normalizedCohort = String(cohort || "").trim();
+    const normalizedUnit = normalizeGoldenUnitKeyFinal(unitKey);
+
+    if (!normalizedCohort || !normalizedUnit) return;
+
+    const viewer =
+      document.getElementById(`goldenUnitViewer${normalizedCohort}`) ||
+      document.getElementById(`goldenViewer${normalizedCohort}`);
+
+    if (!viewer) return;
+
+    const skill = detectGoldenActiveSkill(viewer);
+    if (!skill) return;
+
+    if (typeof window.renderGoldenExamLinks === "function") {
+      await window.renderGoldenExamLinks(normalizedCohort, normalizedUnit, skill);
+      console.log("✅ Golden linked exam auto-called:", {
+        cohort: normalizedCohort,
+        unit: normalizedUnit,
+        skill
+      });
+    }
+  }
+
+  const previousOpenGoldenUnit = window.openGoldenUnit;
+
+  window.openGoldenUnit = function openGoldenUnit_WITH_AUTO_EXAM_CALL(cohort, unitKey, ...rest) {
+    const result = previousOpenGoldenUnit.apply(this, [cohort, unitKey, ...rest]);
+
+    setTimeout(() => {
+      autoRenderGoldenLinkedExamFinal(cohort, unitKey);
+    }, 900);
+
+    setTimeout(() => {
+      autoRenderGoldenLinkedExamFinal(cohort, unitKey);
+    }, 1800);
+
+    return result;
+  };
+
+  window.autoRenderGoldenLinkedExamFinal = autoRenderGoldenLinkedExamFinal;
+
+  console.log("✅ Golden linked exam auto-call final installed.");
+})();
+/* =========================================================
+   GOLDEN LINKED EXAM OBSERVER - CLEAN FINAL
+   Does not wrap openGoldenUnit. Watches visible Golden content.
+   ========================================================= */
+
+(function installGoldenLinkedExamObserverCleanFinal() {
+  if (window.__goldenLinkedExamObserverCleanFinalInstalled) return;
+  window.__goldenLinkedExamObserverCleanFinalInstalled = true;
+
+  let renderTimer = null;
+  let isRendering = false;
+
+  function isGoldenPageVisible() {
+    const golden = document.getElementById("goldenIntensive");
+    if (!golden) return false;
+
+    return (
+      golden.classList.contains("active") &&
+      getComputedStyle(golden).display !== "none" &&
+      golden.offsetWidth > 0
+    );
+  }
+
+  function getVisibleGoldenViewer() {
+    const viewers = [
+      document.getElementById("goldenUnitViewer2008"),
+      document.getElementById("goldenUnitViewer2009")
+    ].filter(Boolean);
+
+    return viewers.find(viewer => {
+      const text = viewer.innerText || "";
+      return (
+        viewer.offsetWidth > 0 &&
+        text.includes("Unit 1") &&
+        (text.includes("📘 القواعد") || text.includes("Grammar") || text.includes("Progressive"))
+      );
+    });
+  }
+
+  async function tryRenderGoldenLinkedExamCleanFinal() {
+    if (isRendering) return;
+    if (!isGoldenPageVisible()) return;
+
+    const viewer = getVisibleGoldenViewer();
+    if (!viewer) return;
+
+    const text = viewer.innerText || "";
+
+    const is2008 = viewer.id.includes("2008");
+    const cohort = is2008 ? "2008" : "2009";
+
+    const isUnit1Grammar =
+      text.includes("Unit 1") &&
+      (text.includes("📘 القواعد") || text.includes("Grammar") || text.includes("Progressive"));
+
+    if (!isUnit1Grammar) return;
+
+    const existing = viewer.querySelector("#goldenLinkedExamsBox, .golden-linked-exams-box");
+    if (existing && existing.offsetWidth > 0 && existing.offsetHeight > 0) return;
+
+    if (typeof window.renderGoldenExamLinks !== "function") {
+      console.warn("renderGoldenExamLinks is missing.");
+      return;
+    }
+
+    isRendering = true;
+
+    try {
+      await window.renderGoldenExamLinks(cohort, "unit1", "grammar");
+      console.log("✅ Golden linked exam observer rendered:", {
+        cohort,
+        unit: "unit1",
+        skill: "grammar"
+      });
+    } catch (err) {
+      console.error("Golden linked exam observer render error:", err);
+    } finally {
+      setTimeout(() => {
+        isRendering = false;
+      }, 800);
+    }
+  }
+
+  function scheduleRender() {
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(tryRenderGoldenLinkedExamCleanFinal, 700);
+  }
+
+  ["goldenUnitViewer2008", "goldenUnitViewer2009", "goldenIntensive"].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const observer = new MutationObserver(scheduleRender);
+    observer.observe(el, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["class", "style"]
+    });
+  });
+
+  window.tryRenderGoldenLinkedExamCleanFinal = tryRenderGoldenLinkedExamCleanFinal;
+
+  setTimeout(scheduleRender, 1000);
+  setTimeout(scheduleRender, 2500);
+
+  console.log("✅ Golden linked exam observer clean final installed.");
+})();
+
+/* =========================================================
+   GOLDEN LINKED EXAMS - ANTI DISAPPEAR FIX
+   يمنع اختفاء صندوق الامتحان المرتبط بعد إعادة رسم التابات
+   ========================================================= */
+
+(function installGoldenLinkedExamAntiDisappearFix() {
+  console.log("🛡️ Installing Golden Linked Exam Anti-Disappear Fix...");
+
+  const GOLDEN_EXAM_BOX_ID = "goldenLinkedExamStableBox";
+
+  function getActiveGoldenContext() {
+    const viewer2008 = document.getElementById("goldenUnitViewer2008");
+    const viewer2009 = document.getElementById("goldenUnitViewer2009");
+
+    let viewer = null;
+    let cohort = null;
+
+    if (viewer2008 && viewer2008.offsetParent !== null) {
+      viewer = viewer2008;
+      cohort = "2008";
+    } else if (viewer2009 && viewer2009.offsetParent !== null) {
+      viewer = viewer2009;
+      cohort = "2009";
+    } else if (viewer2008 && viewer2008.innerText.trim()) {
+      viewer = viewer2008;
+      cohort = "2008";
+    } else if (viewer2009 && viewer2009.innerText.trim()) {
+      viewer = viewer2009;
+      cohort = "2009";
+    }
+
+    if (!viewer || !cohort) return null;
+
+    const text = viewer.innerText || "";
+
+    let unitKey = null;
+    const unitMatch = text.match(/Unit\s+(\d+)/i);
+    if (unitMatch) {
+      unitKey = "unit" + unitMatch[1];
+    }
+
+    let skill = null;
+
+    if (
+      text.includes("Progressive Tenses") ||
+      text.includes("Grammar") ||
+      text.includes("القواعد") ||
+      viewer.querySelector('[data-golden-skill="grammar"]')
+    ) {
+      skill = "grammar";
+    }
+
+    if (
+      text.includes("Vocabulary") ||
+      text.includes("المعاني") ||
+      viewer.querySelector('[data-golden-skill="vocabulary"]')
+    ) {
+      skill = skill || "vocabulary";
+    }
+
+    if (
+      text.includes("Reading") ||
+      text.includes("القراءة") ||
+      viewer.querySelector('[data-golden-skill="reading"]')
+    ) {
+      skill = skill || "reading";
+    }
+
+    if (
+      text.includes("Writing") ||
+      text.includes("الكتابة") ||
+      viewer.querySelector('[data-golden-skill="writing"]')
+    ) {
+      skill = skill || "writing";
+    }
+
+    return { viewer, cohort, unitKey, skill };
+  }
+
+  async function stabilizeGoldenLinkedExamBox() {
+    try {
+      const ctx = getActiveGoldenContext();
+
+      if (!ctx || !ctx.viewer || !ctx.cohort || !ctx.unitKey || !ctx.skill) {
+        return;
+      }
+
+      const { viewer, cohort, unitKey, skill } = ctx;
+
+      // لا نكرر الصندوق إذا كان موجوداً
+      const existingBox = viewer.querySelector("#" + GOLDEN_EXAM_BOX_ID);
+      if (existingBox && existingBox.innerText.trim().length > 10) {
+        return;
+      }
+
+      // إذا دالتك الأصلية موجودة، استخدمها أولاً
+      if (typeof window.renderGoldenExamLinks === "function") {
+        await window.renderGoldenExamLinks(cohort, unitKey, skill);
+      }
+
+      // التقط الصندوق الذي أنشأته الدالة الأصلية إن وجد
+      const possibleBoxes = Array.from(
+        viewer.querySelectorAll(
+          ".golden-linked-exams-box, .golden-linked-exam-box, .golden-exam-links-box, [data-golden-exam-box]"
+        )
+      );
+
+      const originalBox = possibleBoxes.find(box =>
+        box.innerText &&
+        (
+          box.innerText.includes("امتحان") ||
+          box.innerText.includes("Quiz") ||
+          box.innerText.includes("Progressive") ||
+          box.innerText.includes("ابدأ")
+        )
+      );
+
+      if (originalBox) {
+        originalBox.id = GOLDEN_EXAM_BOX_ID;
+        originalBox.style.display = "block";
+        originalBox.style.visibility = "visible";
+        originalBox.style.opacity = "1";
+        originalBox.style.height = "auto";
+        originalBox.style.minHeight = "80px";
+        originalBox.style.overflow = "visible";
+        return;
+      }
+
+      // fallback مباشر لو دالة العرض الأصلية لم تزرع الصندوق
+      if (typeof window.loadGoldenLinkedExams === "function") {
+        const exams = await window.loadGoldenLinkedExams(cohort, unitKey, skill);
+
+        if (!Array.isArray(exams) || exams.length === 0) return;
+
+        const box = document.createElement("div");
+        box.id = GOLDEN_EXAM_BOX_ID;
+        box.className = "golden-linked-exams-box";
+        box.style.cssText = `
+          display:block;
+          visibility:visible;
+          opacity:1;
+          height:auto;
+          min-height:90px;
+          overflow:visible;
+          margin:24px 0;
+          padding:18px;
+          border-radius:18px;
+          background:linear-gradient(135deg,#fff8e1,#ffffff);
+          border:1px solid rgba(201,151,42,.35);
+          box-shadow:0 10px 28px rgba(0,0,0,.08);
+          direction:rtl;
+          text-align:right;
+        `;
+
+        box.innerHTML = `
+          <h3 style="margin:0 0 12px;font-size:20px;color:#7a4f00;">
+            🏆 امتحانات مرتبطة بهذا الدرس
+          </h3>
+          <div style="display:grid;gap:12px;">
+            ${exams.map(exam => `
+              <div class="golden-linked-exam-unit-card"
+                   style="padding:14px;border-radius:14px;background:#fff;border:1px solid rgba(0,0,0,.08);">
+                <div style="font-weight:800;color:#222;margin-bottom:8px;">
+                  ${exam.title || "Golden Intensive Quiz"}
+                </div>
+                <button type="button"
+                        onclick="startGoldenLinkedExam('${exam.id}')"
+                        style="
+                          border:0;
+                          border-radius:999px;
+                          padding:10px 18px;
+                          cursor:pointer;
+                          font-weight:800;
+                          background:#111827;
+                          color:white;
+                        ">
+                  ابدأ الامتحان
+                </button>
+              </div>
+            `).join("")}
+          </div>
+        `;
+
+        const upgradeBox =
+          viewer.querySelector(".golden-upgrade-box") ||
+          viewer.querySelector(".upgrade-box") ||
+          viewer.lastElementChild;
+
+        if (upgradeBox && upgradeBox.parentNode === viewer) {
+          viewer.insertBefore(box, upgradeBox);
+        } else {
+          viewer.appendChild(box);
+        }
+
+        console.log("✅ Stable Golden exam box inserted:", { cohort, unitKey, skill, count: exams.length });
+      }
+    } catch (err) {
+      console.warn("⚠️ Golden linked exam stabilize failed:", err);
+    }
+  }
+
+  // اجعلها متاحة للفحص اليدوي
+  window.stabilizeGoldenLinkedExamBox = stabilizeGoldenLinkedExamBox;
+
+  // بعد فتح الوحدة أو تبديل التابات، أعِد تثبيت الصندوق
+  const originalOpenGoldenUnit = window.openGoldenUnit;
+  if (typeof originalOpenGoldenUnit === "function" && !originalOpenGoldenUnit.__examStableWrapped) {
+    const wrappedOpenGoldenUnit = async function(...args) {
+      const result = await originalOpenGoldenUnit.apply(this, args);
+
+      setTimeout(stabilizeGoldenLinkedExamBox, 80);
+      setTimeout(stabilizeGoldenLinkedExamBox, 250);
+      setTimeout(stabilizeGoldenLinkedExamBox, 700);
+
+      return result;
+    };
+
+    wrappedOpenGoldenUnit.__examStableWrapped = true;
+    window.openGoldenUnit = wrappedOpenGoldenUnit;
+  }
+
+  // راقب أي إعادة رسم داخل المكثف وأرجع الصندوق إذا انمسح
+  const goldenPage = document.getElementById("goldenIntensive");
+  if (goldenPage && !goldenPage.__goldenExamObserverInstalled) {
+    const observer = new MutationObserver(() => {
+      clearTimeout(window.__goldenExamStableTimer);
+      window.__goldenExamStableTimer = setTimeout(stabilizeGoldenLinkedExamBox, 120);
+    });
+
+    observer.observe(goldenPage, {
+      childList: true,
+      subtree: true
+    });
+
+    goldenPage.__goldenExamObserverInstalled = true;
+  }
+
+  // عند الضغط على أي زر داخل تابات المكثف
+  document.addEventListener("click", function(e) {
+    const target = e.target;
+
+    if (
+      target &&
+      (
+        target.closest(".golden-unit-tab") ||
+        target.closest(".golden-tab-btn") ||
+        target.closest("[data-golden-skill]") ||
+        target.closest("#goldenIntensive button")
+      )
+    ) {
+      setTimeout(stabilizeGoldenLinkedExamBox, 120);
+      setTimeout(stabilizeGoldenLinkedExamBox, 400);
+    }
+  });
+
+  // تشغيل أولي
+  setTimeout(stabilizeGoldenLinkedExamBox, 500);
+  setTimeout(stabilizeGoldenLinkedExamBox, 1200);
+
+  console.log("✅ Golden Linked Exam Anti-Disappear Fix installed.");
+})();
+/* =========================================================
+   GOLDEN LINKED EXAMS - STABLE RENDER PATCH
+   تثبيت ظهور الامتحانات المرتبطة داخل المكثف الذهبي
+   ========================================================= */
+
+(function installGoldenLinkedExamStableRenderPatch() {
+  console.log("🧩 Installing Golden Linked Exam Stable Render Patch...");
+
+  async function stabilizeGoldenLinkedExamBox() {
+    try {
+      const page = document.getElementById("goldenIntensive");
+      const viewer2008 = document.getElementById("goldenUnitViewer2008");
+      const viewer2009 = document.getElementById("goldenUnitViewer2009");
+
+      if (!page || page.classList.contains("active") === false) return;
+
+      const viewer =
+        viewer2008 && viewer2008.innerText.trim()
+          ? viewer2008
+          : viewer2009 && viewer2009.innerText.trim()
+          ? viewer2009
+          : null;
+
+      if (!viewer) return;
+
+      const text = viewer.innerText || "";
+
+      const is2008 = viewer.id === "goldenUnitViewer2008";
+      const cohort = is2008 ? "2008" : "2009";
+
+      const unitMatch = text.match(/Unit\s+(\d+)/i);
+      if (!unitMatch) return;
+
+      const unitKey = "unit" + unitMatch[1];
+
+      let skill = null;
+
+      if (
+        text.includes("القواعد") ||
+        text.includes("Grammar") ||
+        text.includes("Progressive Tenses") ||
+        text.includes("Tenses")
+      ) {
+        skill = "grammar";
+      }
+
+      if (!skill) return;
+
+      if (typeof window.renderGoldenExamLinks !== "function") {
+        console.warn("❌ renderGoldenExamLinks is missing");
+        return;
+      }
+
+      await window.renderGoldenExamLinks(cohort, unitKey, skill);
+
+      const boxes = viewer.querySelectorAll(
+        ".golden-linked-exams-box, .golden-linked-exam-box, .golden-exam-links-box, [data-golden-exam-box]"
+      );
+
+      boxes.forEach(box => {
+        box.style.display = "block";
+        box.style.visibility = "visible";
+        box.style.opacity = "1";
+        box.style.height = "auto";
+        box.style.minHeight = "80px";
+        box.style.overflow = "visible";
+      });
+
+      console.log("✅ Golden linked exam stabilized:", {
+        cohort,
+        unitKey,
+        skill,
+        boxes: boxes.length
+      });
+    } catch (err) {
+      console.warn("⚠️ stabilizeGoldenLinkedExamBox failed:", err);
+    }
+  }
+
+  window.stabilizeGoldenLinkedExamBox = stabilizeGoldenLinkedExamBox;
+
+  const oldOpenGoldenUnit = window.openGoldenUnit;
+
+  if (typeof oldOpenGoldenUnit === "function" && !oldOpenGoldenUnit.__goldenExamStablePatch) {
+    function openGoldenUnitWithExamStablePatch(...args) {
+      const result = oldOpenGoldenUnit.apply(this, args);
+
+      setTimeout(stabilizeGoldenLinkedExamBox, 150);
+      setTimeout(stabilizeGoldenLinkedExamBox, 500);
+      setTimeout(stabilizeGoldenLinkedExamBox, 1200);
+
+      return result;
+    }
+
+    openGoldenUnitWithExamStablePatch.__goldenExamStablePatch = true;
+    window.openGoldenUnit = openGoldenUnitWithExamStablePatch;
+  }
+
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("button, .golden-tab-btn, .golden-unit-tab, [data-golden-skill]");
+    if (!btn) return;
+
+    const insideGolden = btn.closest("#goldenIntensive");
+    if (!insideGolden) return;
+
+    setTimeout(stabilizeGoldenLinkedExamBox, 150);
+    setTimeout(stabilizeGoldenLinkedExamBox, 500);
+  });
+
+  const goldenPage = document.getElementById("goldenIntensive");
+
+  if (goldenPage && !goldenPage.__goldenLinkedExamStableObserver) {
+    const observer = new MutationObserver(() => {
+      clearTimeout(window.__goldenLinkedExamStableTimer);
+      window.__goldenLinkedExamStableTimer = setTimeout(stabilizeGoldenLinkedExamBox, 250);
+    });
+
+    observer.observe(goldenPage, {
+      childList: true,
+      subtree: true
+    });
+
+    goldenPage.__goldenLinkedExamStableObserver = true;
+  }
+
+  setTimeout(stabilizeGoldenLinkedExamBox, 800);
+
+  console.log("✅ Golden Linked Exam Stable Render Patch installed.");
+})();

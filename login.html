@@ -148,7 +148,7 @@ if (!accessToken || !userId) {
   return false;
 }
 
-    const res = await fetch(
+const res = await fetch(
       supabaseUrl + "/rest/v1/profiles?id=eq." + encodeURIComponent(userId),
       {
         method: "PATCH",
