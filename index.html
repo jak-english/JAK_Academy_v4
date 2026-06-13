@@ -4940,7 +4940,7 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 </main>
 
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- <script src="app.js?v=golden-mobile-content-12"></script>
+ <script src="app.js?v=golden-mobile-content-13"></script>
  <script>
 /* =========================================================
    GOLDEN CONTENT LOAD FROM SUPABASE - INDEX EMERGENCY FINAL
@@ -6858,10 +6858,17 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
     return data;
   }
 
-  async function openGoldenUnit_SUPABASE_FINAL(cohort, unitKey, activeTab = "vocabulary") {
-    cohort = String(cohort);
-    unitKey = String(unitKey);
-    activeTab = activeTab || "vocabulary";
+   async function openGoldenUnit_SUPABASE_FINAL(cohort, unitKey, activeTab = "vocabulary") {
+  cohort = String(cohort);
+
+  unitKey = String(unitKey);
+
+  // Normalize unit key: 1 -> unit1, unit1 -> unit1
+  if (/^\d+$/.test(unitKey)) {
+    unitKey = `unit${unitKey}`;
+  }
+
+  activeTab = activeTab || "vocabulary";
 
     console.log("👑 Golden final open:", { cohort, unitKey, activeTab });
 
