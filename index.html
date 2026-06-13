@@ -6054,6 +6054,85 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
 })();
 </script>
 <script>
+  (function installGoldenVocabularyContentFallback() {
+  console.log("🔧 Installing Golden Vocabulary Content Fallback...");
+
+  window.getGoldenVocabularyContent = function(unit) {
+    if (!unit) return "";
+
+    return (
+      unit.vocabulary ||
+      unit.meanings ||
+      unit.words ||
+      unit.vocab ||
+      unit.vocabularyContent ||
+      ""
+    );
+  };
+
+  console.log("✅ getGoldenVocabularyContent installed.");
+})();
+  (function installGoldenVocabularyExamLoopGuard() {
+  console.log("🛡️ Installing Golden Vocabulary Exam Loop Guard...");
+
+  window.__goldenVocabExamRenderLock = false;
+  window.__goldenVocabExamLastKey = "";
+  window.__goldenVocabExamLastTime = 0;
+
+  const oldRender = window.renderGoldenAutoLinkedExams || window.renderGoldenLinkedExams;
+
+  if (typeof oldRender !== "function") {
+    console.warn("⚠️ No Golden exam render function found yet.");
+    return;
+  }
+
+  async function guardedGoldenExamRender(cohort, unitKey, skill, reason = "manual") {
+    const normalizedSkill = String(skill || "").toLowerCase();
+
+    if (normalizedSkill !== "vocabulary") {
+      return oldRender.apply(this, arguments);
+    }
+
+    const key = `${cohort}|${unitKey}|${normalizedSkill}`;
+    const now = Date.now();
+
+    if (window.__goldenVocabExamRenderLock) {
+      console.log("⏭️ Vocabulary exams render skipped: lock active", { key, reason });
+      return;
+    }
+
+    if (
+      window.__goldenVocabExamLastKey === key &&
+      now - window.__goldenVocabExamLastTime < 2500
+    ) {
+      console.log("⏭️ Vocabulary exams render skipped: duplicate too soon", { key, reason });
+      return;
+    }
+
+    window.__goldenVocabExamRenderLock = true;
+    window.__goldenVocabExamLastKey = key;
+    window.__goldenVocabExamLastTime = now;
+
+    try {
+      return await oldRender.call(this, cohort, unitKey, normalizedSkill, reason);
+    } finally {
+      setTimeout(() => {
+        window.__goldenVocabExamRenderLock = false;
+      }, 800);
+    }
+  }
+
+  if (window.renderGoldenAutoLinkedExams) {
+    window.renderGoldenAutoLinkedExams = guardedGoldenExamRender;
+  }
+
+  if (window.renderGoldenLinkedExams) {
+    window.renderGoldenLinkedExams = guardedGoldenExamRender;
+  }
+
+  console.log("✅ Golden Vocabulary Exam Loop Guard installed.");
+})();
+
 /* =========================================================
    GOLDEN VOCABULARY TAB AUTO EXAM FIX - FINAL
    يجعل تبويب المعاني / المفردات يعرض امتحانات vocabulary تلقائيًا
@@ -6197,249 +6276,83 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
 
   console.log("✅ Golden Vocabulary Tab Auto Exam Fix FINAL installed.");
 })();
-</script>
-<script>
-/* =========================================================
-   GOLDEN VOCABULARY AUTO DISPLAY WATCHDOG - FINAL STRONG
-   يعرض امتحانات المعاني تلقائيًا مثل Grammar و Writing
-   ========================================================= */
-(function installGoldenVocabularyAutoDisplayWatchdogFinal() {
-  console.log("📚 Installing Golden Vocabulary Auto Display Watchdog FINAL...");
+(function installGoldenVocabularyExamLoopGuard() {
+  console.log("🛡️ Installing Golden Vocabulary Exam Loop Guard...");
 
-  if (window.__goldenVocabularyAutoDisplayWatchdogFinalInstalled) {
-    console.log("ℹ️ Golden Vocabulary Auto Display Watchdog already installed.");
+  window.__goldenVocabExamRenderLock = false;
+  window.__goldenVocabExamLastKey = "";
+  window.__goldenVocabExamLastTime = 0;
+
+  const oldRender = window.renderGoldenAutoLinkedExams || window.renderGoldenLinkedExams;
+
+  if (typeof oldRender !== "function") {
+    console.warn("⚠️ No Golden exam render function found yet.");
     return;
   }
 
-  window.__goldenVocabularyAutoDisplayWatchdogFinalInstalled = true;
+  async function guardedGoldenExamRender(cohort, unitKey, skill, reason = "manual") {
+    const normalizedSkill = String(skill || "").toLowerCase();
 
-  function isVisible(el) {
-    if (!el) return false;
-    const style = window.getComputedStyle(el);
-    return (
-      style.display !== "none" &&
-      style.visibility !== "hidden" &&
-      style.opacity !== "0" &&
-      el.offsetWidth > 0 &&
-      el.offsetHeight > 0
-    );
-  }
-
-  function normalizeText(text) {
-    return String(text || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, " ");
-  }
-
-  function isVocabularyText(text) {
-    const t = normalizeText(text);
-
-    return (
-      t.includes("vocabulary") ||
-      t.includes("vocab") ||
-      t.includes("meaning") ||
-      t.includes("meanings") ||
-      t.includes("المعاني") ||
-      t.includes("معاني") ||
-      t.includes("مفردات")
-    );
-  }
-
-  function getVisibleGoldenViewer() {
-    const viewers = [
-      document.getElementById("goldenUnitViewer2008"),
-      document.getElementById("goldenUnitViewer2009")
-    ].filter(Boolean);
-
-    return (
-      viewers.find(v => isVisible(v) && v.textContent.trim().length > 0) ||
-      viewers.find(v => v.textContent.trim().length > 0) ||
-      viewers[0] ||
-      null
-    );
-  }
-
-  function getGoldenCohort() {
-    const viewer = getVisibleGoldenViewer();
-
-    if (viewer?.id?.includes("2009")) return "2009";
-    if (viewer?.id?.includes("2008")) return "2008";
-
-    const active = document.querySelector(
-      ".golden-cohort-tab.active, .golden-tab.active, .cohort-tab.active"
-    );
-
-    const activeText = active?.textContent || "";
-    if (activeText.includes("2009")) return "2009";
-
-    return "2008";
-  }
-
-  function getGoldenUnitKey() {
-    if (typeof window.getGoldenAutoLinkedExamContext === "function") {
-      try {
-        const ctx = window.getGoldenAutoLinkedExamContext();
-        if (ctx?.unitKey && /^unit\d+$/i.test(String(ctx.unitKey))) {
-          return String(ctx.unitKey).toLowerCase();
-        }
-      } catch (e) {}
+    if (normalizedSkill !== "vocabulary") {
+      return oldRender.apply(this, arguments);
     }
 
-    const viewer = getVisibleGoldenViewer();
-    const text = viewer?.textContent || "";
+    const key = `${cohort}|${unitKey}|${normalizedSkill}`;
+    const now = Date.now();
 
-    const match = text.match(/Unit\s*(\d+)/i);
-    if (match) return "unit" + match[1];
-
-    const selectedUnit = document.querySelector(
-      ".golden-unit-card.active, .golden-unit-card.selected, [data-unit].active, [data-unit].selected"
-    );
-
-    const dataUnit = selectedUnit?.getAttribute("data-unit");
-    if (dataUnit) {
-      const m = String(dataUnit).match(/(\d+)/);
-      if (m) return "unit" + m[1];
-    }
-
-    return "unit1";
-  }
-
-  function isVocabularyCurrentlyOpen() {
-    const activeButtons = Array.from(
-      document.querySelectorAll(
-        ".golden-inner-tab.active, .golden-tab-button.active, .tab-btn.active, button.active, [role='tab'][aria-selected='true']"
-      )
-    );
-
-    if (activeButtons.some(btn => isVocabularyText(btn.textContent))) return true;
-
-    const viewer = getVisibleGoldenViewer();
-    if (!viewer) return false;
-
-    const visibleVocabularySections = Array.from(
-      viewer.querySelectorAll(
-        ".vocabulary, .vocab, .meanings, [data-skill='vocabulary'], [data-tab='vocabulary'], [data-section='vocabulary']"
-      )
-    ).filter(isVisible);
-
-    if (visibleVocabularySections.length > 0) return true;
-
-    const viewerText = viewer.textContent || "";
-
-    return isVocabularyText(viewerText) && !/grammar|القواعد|reading|القراءة|writing|الكتابة/i.test(viewerText.slice(0, 300));
-  }
-
-  async function forceVocabularyExamLinks(reason) {
-    if (typeof window.renderGoldenAutoLinkedExams !== "function") {
-      console.warn("❌ renderGoldenAutoLinkedExams not found.");
+    if (window.__goldenVocabExamRenderLock) {
+      console.log("⏭️ Vocabulary exams render skipped: lock active", { key, reason });
       return;
     }
 
-    const cohort = getGoldenCohort();
-    const unitKey = getGoldenUnitKey();
-
-    await window.renderGoldenAutoLinkedExams({
-      cohort,
-      unitKey,
-      skill: "vocabulary"
-    });
-
-    console.log("✅ Vocabulary exams auto displayed:", {
-      reason,
-      cohort,
-      unitKey,
-      skill: "vocabulary"
-    });
-  }
-
-  function scheduleVocabularyCheck(reason) {
-    setTimeout(() => {
-      if (isVocabularyCurrentlyOpen()) {
-        forceVocabularyExamLinks(reason + "-350ms");
-      }
-    }, 350);
-
-    setTimeout(() => {
-      if (isVocabularyCurrentlyOpen()) {
-        forceVocabularyExamLinks(reason + "-900ms");
-      }
-    }, 900);
-
-    setTimeout(() => {
-      if (isVocabularyCurrentlyOpen()) {
-        forceVocabularyExamLinks(reason + "-1600ms");
-      }
-    }, 1600);
-  }
-
-  document.addEventListener(
-    "click",
-    function(e) {
-      const target = e.target.closest("button, .tab-btn, .golden-inner-tab, .golden-tab-button, [role='tab'], .golden-unit-card");
-      if (!target) return;
-
-      const txt = target.textContent || "";
-
-      if (isVocabularyText(txt) || txt.includes("Unit")) {
-        scheduleVocabularyCheck("click");
-      }
-    },
-    true
-  );
-
-  const oldOpenGoldenUnit = window.openGoldenUnit;
-
-  if (typeof oldOpenGoldenUnit === "function" && !oldOpenGoldenUnit.__goldenVocabularyWatchdogWrapped) {
-    const wrappedOpenGoldenUnit = function(...args) {
-      const result = oldOpenGoldenUnit.apply(this, args);
-
-      scheduleVocabularyCheck("openGoldenUnit");
-
-      return result;
-    };
-
-    wrappedOpenGoldenUnit.__goldenVocabularyWatchdogWrapped = true;
-    wrappedOpenGoldenUnit.__original = oldOpenGoldenUnit;
-
-    window.openGoldenUnit = wrappedOpenGoldenUnit;
-
-    console.log("✅ openGoldenUnit wrapped for Vocabulary auto display.");
-  }
-
-  const observer = new MutationObserver(function() {
-    const goldenPage = document.getElementById("goldenIntensive");
-    if (!goldenPage || !isVisible(goldenPage)) return;
-
-    if (isVocabularyCurrentlyOpen()) {
-      scheduleVocabularyCheck("mutation");
+    if (
+      window.__goldenVocabExamLastKey === key &&
+      now - window.__goldenVocabExamLastTime < 2500
+    ) {
+      console.log("⏭️ Vocabulary exams render skipped: duplicate too soon", { key, reason });
+      return;
     }
-  });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ["class", "style", "aria-selected"]
-  });
+    window.__goldenVocabExamRenderLock = true;
+    window.__goldenVocabExamLastKey = key;
+    window.__goldenVocabExamLastTime = now;
 
-  window.forceGoldenVocabularyExamLinks = function forceGoldenVocabularyExamLinks() {
-    return forceVocabularyExamLinks("manual-force");
+    try {
+      return await oldRender.call(this, cohort, unitKey, normalizedSkill, reason);
+    } finally {
+      setTimeout(() => {
+        window.__goldenVocabExamRenderLock = false;
+      }, 800);
+    }
+  }
+
+  if (window.renderGoldenAutoLinkedExams) {
+    window.renderGoldenAutoLinkedExams = guardedGoldenExamRender;
+  }
+
+  if (window.renderGoldenLinkedExams) {
+    window.renderGoldenLinkedExams = guardedGoldenExamRender;
+  }
+
+  console.log("✅ Golden Vocabulary Exam Loop Guard installed.");
+})();
+(function installGoldenVocabularyContentFallback() {
+  console.log("🔧 Installing Golden Vocabulary Content Fallback...");
+
+  window.getGoldenVocabularyContent = function(unit) {
+    if (!unit) return "";
+
+    return (
+      unit.vocabulary ||
+      unit.meanings ||
+      unit.words ||
+      unit.vocab ||
+      unit.vocabularyContent ||
+      ""
+    );
   };
 
-  window.checkGoldenVocabularyAutoDisplay = function checkGoldenVocabularyAutoDisplay() {
-    return {
-      vocabularyOpen: isVocabularyCurrentlyOpen(),
-      cohort: getGoldenCohort(),
-      unitKey: getGoldenUnitKey(),
-      renderExists: typeof window.renderGoldenAutoLinkedExams,
-      viewer: getVisibleGoldenViewer()?.id || null
-    };
-  };
-
-  setTimeout(() => scheduleVocabularyCheck("initial-load"), 1200);
-
-  console.log("✅ Golden Vocabulary Auto Display Watchdog FINAL installed.");
+  console.log("✅ getGoldenVocabularyContent installed.");
 })();
 </script>
 </body></html>
