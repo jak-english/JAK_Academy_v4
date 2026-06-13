@@ -4940,8 +4940,8 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 </main>
 
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=golden-mobile-content-9"></script>
-<script>
+ <script src="app.js?v=golden-mobile-content-10"></script>
+ <script>
 /* =========================================================
    GOLDEN CONTENT LOAD FROM SUPABASE - INDEX EMERGENCY FINAL
 ========================================================= */
@@ -6771,6 +6771,83 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
   };
 
   console.log("✅ Golden FINAL LAST WORD Supabase Render installed.");
+})();
+</script>
+<script>
+/* =========================================================
+   GOLDEN OPEN UNIT HARD LOCK - ABSOLUTE FINAL
+   Put this as the VERY LAST script before </body>
+========================================================= */
+(function installGoldenOpenUnitHardLockAbsoluteFinal() {
+  console.log("🔐 Installing Golden Open Unit HARD LOCK...");
+
+  async function lockedGoldenOpenUnit(cohort, unitKey, activeTab = "vocabulary") {
+    console.log("🔐 LOCKED openGoldenUnit:", { cohort, unitKey, activeTab });
+
+    if (typeof window.loadGoldenContentFromSupabase === "function") {
+      await window.loadGoldenContentFromSupabase();
+    }
+
+    if (typeof window.goldenFinalRenderUnit === "function") {
+      return window.goldenFinalRenderUnit(
+        String(cohort),
+        String(unitKey),
+        activeTab || "vocabulary"
+      );
+    }
+
+    if (typeof window.renderGoldenUnitFromSupabaseData === "function") {
+      return window.renderGoldenUnitFromSupabaseData(
+        String(cohort),
+        String(unitKey),
+        activeTab || "vocabulary"
+      );
+    }
+
+    console.warn("❌ No Golden renderer found.");
+    return false;
+  }
+
+  try {
+    Object.defineProperty(window, "openGoldenUnit", {
+      configurable: true,
+      get() {
+        return lockedGoldenOpenUnit;
+      },
+      set(value) {
+        console.warn("🚫 Blocked attempt to overwrite openGoldenUnit:", value?.name || typeof value);
+      }
+    });
+  } catch (err) {
+    console.warn("⚠️ Could not hard lock openGoldenUnit, using fallback:", err);
+    window.openGoldenUnit = lockedGoldenOpenUnit;
+  }
+
+  function forceCheck() {
+    try {
+      if (window.openGoldenUnit?.name !== "lockedGoldenOpenUnit") {
+        window.openGoldenUnit = lockedGoldenOpenUnit;
+      }
+    } catch (e) {}
+  }
+
+  forceCheck();
+  setTimeout(forceCheck, 500);
+  setTimeout(forceCheck, 1500);
+  setTimeout(forceCheck, 3000);
+  setTimeout(forceCheck, 6000);
+  setTimeout(forceCheck, 10000);
+
+  window.checkGoldenOpenUnitBinding = function() {
+    return {
+      openName: window.openGoldenUnit?.name,
+      finalRenderer: typeof window.goldenFinalRenderUnit,
+      bridgeRenderer: typeof window.renderGoldenUnitFromSupabaseData,
+      loader: typeof window.loadGoldenContentFromSupabase
+    };
+  };
+
+  console.log("✅ Golden Open Unit HARD LOCK installed.");
 })();
 </script>
 </body></html>
