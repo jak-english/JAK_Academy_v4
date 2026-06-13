@@ -4940,7 +4940,7 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 </main>
 
  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- <script src="app.js?v=golden-mobile-content-10"></script>
+ <script src="app.js?v=golden-mobile-content-11"></script>
  <script>
 /* =========================================================
    GOLDEN CONTENT LOAD FROM SUPABASE - INDEX EMERGENCY FINAL
@@ -6773,16 +6773,16 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
   console.log("✅ Golden FINAL LAST WORD Supabase Render installed.");
 })();
 </script>
-<script>
+ <script>
 /* =========================================================
-   GOLDEN OPEN UNIT HARD LOCK - ABSOLUTE FINAL
+   GOLDEN OPEN UNIT HARD LOCK - ABSOLUTE FINAL V2
    Put this as the VERY LAST script before </body>
 ========================================================= */
-(function installGoldenOpenUnitHardLockAbsoluteFinal() {
-  console.log("🔐 Installing Golden Open Unit HARD LOCK...");
+(function installGoldenOpenUnitHardLockAbsoluteFinalV2() {
+  console.log("🔐 Installing Golden Open Unit HARD LOCK V2...");
 
   async function lockedGoldenOpenUnit(cohort, unitKey, activeTab = "vocabulary") {
-    console.log("🔐 LOCKED openGoldenUnit:", { cohort, unitKey, activeTab });
+    console.log("🔐 LOCKED V2 openGoldenUnit:", { cohort, unitKey, activeTab });
 
     if (typeof window.loadGoldenContentFromSupabase === "function") {
       await window.loadGoldenContentFromSupabase();
@@ -6810,33 +6810,22 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
 
   try {
     Object.defineProperty(window, "openGoldenUnit", {
-      configurable: true,
-      get() {
-        return lockedGoldenOpenUnit;
-      },
-      set(value) {
-        console.warn("🚫 Blocked attempt to overwrite openGoldenUnit:", value?.name || typeof value);
-      }
+      configurable: false,
+      enumerable: true,
+      writable: false,
+      value: lockedGoldenOpenUnit
     });
+
+    console.log("✅ openGoldenUnit locked with configurable:false");
   } catch (err) {
-    console.warn("⚠️ Could not hard lock openGoldenUnit, using fallback:", err);
-    window.openGoldenUnit = lockedGoldenOpenUnit;
-  }
+    console.warn("⚠️ Hard lock V2 defineProperty failed:", err);
 
-  function forceCheck() {
     try {
-      if (window.openGoldenUnit?.name !== "lockedGoldenOpenUnit") {
-        window.openGoldenUnit = lockedGoldenOpenUnit;
-      }
-    } catch (e) {}
+      window.openGoldenUnit = lockedGoldenOpenUnit;
+    } catch (e) {
+      console.error("❌ Could not assign lockedGoldenOpenUnit:", e);
+    }
   }
-
-  forceCheck();
-  setTimeout(forceCheck, 500);
-  setTimeout(forceCheck, 1500);
-  setTimeout(forceCheck, 3000);
-  setTimeout(forceCheck, 6000);
-  setTimeout(forceCheck, 10000);
 
   window.checkGoldenOpenUnitBinding = function() {
     return {
@@ -6847,7 +6836,7 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
     };
   };
 
-  console.log("✅ Golden Open Unit HARD LOCK installed.");
+  console.log("✅ Golden Open Unit HARD LOCK V2 installed.");
 })();
 </script>
 </body></html>
