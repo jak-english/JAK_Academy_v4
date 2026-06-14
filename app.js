@@ -19600,30 +19600,28 @@ function checkQuestionTagsFilePractice(questionId) {
   const feedback = document.getElementById(`qt-file-feedback-${questionId}`);
   if (!input || !feedback) return;
 
-  const studentAnswer = String(input.value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[؟?!.]/g, "")
-    .replace(/\s+/g, " ");
+  const studentAnswer = String(input.value || "");
 
-  const correctAnswer = String(q.answer || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[؟?!.]/g, "")
-    .replace(/\s+/g, " ");
+  const smartResult = window.checkSmartAnswer(
+    {
+      answer: q.answer,
+      correct_answer: q.answer
+    },
+    studentAnswer
+  );
 
-  const isCorrect = studentAnswer === correctAnswer;
+  const isCorrect = smartResult.isCorrect;
 
   feedback.className = `jak-lesson-feedback ${isCorrect ? "good" : "bad"}`;
+
   feedback.innerHTML = isCorrect
-    ? `إجابة صحيحة ✅<br>${q.explanation}`
-    : `إجابة غير صحيحة ❌<br>الإجابة الصحيحة: <strong>${q.answer}</strong><br>${q.explanation}`;
+    ? `إجابة صحيحة ✅<br>${q.explanation || ""}`
+    : `إجابة غير صحيحة ❌<br>الإجابة الصحيحة: <strong>${q.answer}</strong><br>${q.explanation || ""}`;
 }
 
 window.renderQuestionTagsArabicLesson = renderQuestionTagsArabicLesson;
 window.checkQuestionTagsFilePractice = checkQuestionTagsFilePractice;
-
-/* =====================================================
+ /* =====================================================
    English Learning Hub V2 - Clean Rebuild
 ===================================================== */
 
@@ -27441,14 +27439,32 @@ function renderGoldenContentBox(title, value, emptyText) {
     btn.classList.toggle("active", btn.dataset.part === partKey);
   });
 
-  contentArea.innerHTML = `
-    <label class="golden-editor-label">${labels[partKey] || partKey}</label>
-    <textarea
-      id="goldenEditor_${partKey}"
-      class="golden-editor-textarea"
-      placeholder="اكتب محتوى هذا القسم هنا..."
-    >${escapeGoldenHTML(unit?.[partKey] || "")}</textarea>
-  `;
+  const isReading = partKey === "reading";
+
+contentArea.innerHTML = `
+  <label class="golden-editor-label">${labels[partKey] || partKey}</label>
+
+  ${
+    isReading
+      ? `
+        <div class="golden-editor-note" style="margin:10px 0 14px;padding:12px 14px;border-radius:14px;background:#fff7df;border:1px solid rgba(198,155,60,.25);line-height:1.8;">
+          <strong>📖 محرر القراءة:</strong>
+          الصق هنا HTML الخاص بـ Reading Lab / Paragraph Mastery System.
+          <br>
+          يمكنك وضع صناديق، كروت، ضمائر، وأسئلة فقرة داخل هذا القسم.
+        </div>
+      `
+      : ""
+  }
+
+  <textarea
+    id="goldenEditor_${partKey}"
+    class="golden-editor-textarea ${isReading ? "golden-reading-html-editor" : ""}"
+    dir="${isReading ? "ltr" : "auto"}"
+    placeholder="${isReading ? "Paste Reading Lab HTML here..." : "اكتب محتوى هذا القسم هنا..."}"
+    style="${isReading ? "min-height:560px;font-family:Consolas, monospace;line-height:1.7;" : ""}"
+  >${escapeGoldenHTML(unit?.[partKey] || "")}</textarea>
+`;
 }
 
 window.renderGoldenEditorPart = renderGoldenEditorPart;
@@ -27604,43 +27620,53 @@ function openGoldenUnitEditor(cohort = "2008", unitKeyOrNumber = "unit1") {
 
  // window.openGoldenUnitEditor = openGoldenUnitEditor;
 
-function saveGoldenUnitContent(cohort = "2008", unitKeyOrNumber = "unit1") {
+async function saveGoldenUnitContent(cohort = "2008", unitKeyOrNumber = "unit1") {
   if (typeof canEditGoldenIntensive === "function" && !canEditGoldenIntensive()) {
     alert("الحفظ مخصص لصاحب المنصة فقط.");
     return;
   }
 
- if (typeof ensureGoldenDataShape === "function") {
-  ensureGoldenDataShape();
-}
+  if (typeof ensureGoldenDataShape === "function") {
+    ensureGoldenDataShape();
+  }
+
   cohort = String(cohort || "2008");
-
   const unitKey = normalizeGoldenUnitKey(unitKeyOrNumber);
+
+  /* ===============================
+     SAVE EXTRA SPOTS
+     Culture / Literature
+  =============================== */
   if (isGoldenExtraSpot(unitKey)) {
-  if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
-  if (!goldenUnitData[cohort][unitKey]) {
-    goldenUnitData[cohort][unitKey] = createEmptyGoldenExtraSpot(unitKey);
+    if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
+    if (!goldenUnitData[cohort][unitKey]) {
+      goldenUnitData[cohort][unitKey] = createEmptyGoldenExtraSpot(unitKey);
+    }
+
+    const titleInput = document.getElementById("goldenEditor_title");
+    const contentInput = document.getElementById("goldenEditor_content");
+
+    goldenUnitData[cohort][unitKey] = {
+      title: titleInput
+        ? titleInput.value.trim() || createEmptyGoldenExtraSpot(unitKey).title
+        : createEmptyGoldenExtraSpot(unitKey).title,
+      content: contentInput ? contentInput.value : ""
+    };
+
+    localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+
+    if (typeof renderGoldenUnitCards === "function") {
+      renderGoldenUnitCards();
+    }
+
+    openGoldenUnit(cohort, unitKey);
+    alert("✅ تم حفظ القسم بنجاح");
+    return;
   }
 
-  const titleInput = document.getElementById("goldenEditor_title");
-  const contentInput = document.getElementById("goldenEditor_content");
-
-  goldenUnitData[cohort][unitKey] = {
-    title: titleInput ? titleInput.value.trim() || createEmptyGoldenExtraSpot(unitKey).title : createEmptyGoldenExtraSpot(unitKey).title,
-    content: contentInput ? contentInput.value.trim() : ""
-  };
-
-  localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
-
-  if (typeof renderGoldenUnitCards === "function") {
-    renderGoldenUnitCards();
-  }
-
-  openGoldenUnit(cohort, unitKey);
-
-  alert("✅ تم حفظ القسم بنجاح");
-  return;
-}
+  /* ===============================
+     SAVE NORMAL UNIT
+  =============================== */
   const unitNumber = getGoldenUnitNumber(unitKey);
 
   if (!goldenUnitData[cohort]) goldenUnitData[cohort] = {};
@@ -27648,17 +27674,27 @@ function saveGoldenUnitContent(cohort = "2008", unitKeyOrNumber = "unit1") {
     goldenUnitData[cohort][unitKey] = createEmptyGoldenUnit(unitNumber);
   }
 
-  const existingUnit = normalizeGoldenUnitObject(goldenUnitData[cohort][unitKey], unitNumber);
+  const existingUnit = normalizeGoldenUnitObject(
+    goldenUnitData[cohort][unitKey],
+    unitNumber
+  );
 
   const titleInput = document.getElementById("goldenEditor_title");
+
   if (titleInput) {
     existingUnit.title = titleInput.value.trim() || `Unit ${unitNumber}`;
   }
 
   const activeTextarea = document.querySelector(".golden-editor-active-part textarea");
+
+  let activePartKey = null;
+  let activePartValue = null;
+
   if (activeTextarea) {
-    const partKey = activeTextarea.id.replace("goldenEditor_", "");
-    existingUnit[partKey] = activeTextarea.value.trim();
+    activePartKey = activeTextarea.id.replace("goldenEditor_", "");
+    activePartValue = activeTextarea.value;
+
+    existingUnit[activePartKey] = activePartValue;
   }
 
   delete existingUnit.cultureSpot;
@@ -27666,13 +27702,55 @@ function saveGoldenUnitContent(cohort = "2008", unitKeyOrNumber = "unit1") {
 
   goldenUnitData[cohort][unitKey] = existingUnit;
 
+  /* Save locally */
   localStorage.setItem(GOLDEN_STORAGE_KEY, JSON.stringify(goldenUnitData));
+
+  /* Save to Supabase */
+  try {
+    const sb = window.client;
+
+    if (sb && typeof sb.from === "function") {
+      const updatePayload = {
+        title: existingUnit.title || `Unit ${unitNumber}`,
+        updated_at: new Date().toISOString()
+      };
+
+      if (activePartKey) {
+        updatePayload[activePartKey] = activePartValue || "";
+      }
+
+      const { error } = await sb
+        .from("golden_content")
+        .update(updatePayload)
+        .eq("cohort", String(cohort))
+        .eq("unit_key", String(unitKey));
+
+      if (error) {
+        console.error("❌ Golden Supabase save failed:", error);
+        alert("تم الحفظ محليًا، لكن فشل الحفظ في Supabase.");
+        return;
+      }
+
+      console.log("✅ Golden content saved to Supabase:", {
+        cohort,
+        unitKey,
+        activePartKey,
+        savedToSupabase: true
+      });
+    } else {
+      console.warn("⚠️ Supabase client not ready. Saved locally only.");
+    }
+  } catch (err) {
+    console.error("❌ Golden save error:", err);
+    alert("تم الحفظ محليًا، لكن حدث خطأ أثناء الحفظ في Supabase.");
+    return;
+  }
 
   if (typeof renderGoldenUnitCards === "function") {
     renderGoldenUnitCards();
   }
 
-  openGoldenUnit(cohort, unitKey);
+  openGoldenUnit(cohort, unitKey, activePartKey || "vocabulary");
 
   alert("✅ تم حفظ محتوى الوحدة بنجاح");
 }
@@ -32914,7 +32992,15 @@ console.log("✅ Golden exam question renderer installed.");
    GOLDEN EXAM SUBMIT FIX
    Handles Golden linked exams without breaking normal exams
 ========================================================= */
+function normalizeMCQKey(value) {
+  const raw = String(value ?? "")
+    .trim()
+    .toUpperCase();
 
+  const match = raw.match(/^[\s\(\[]*([ABCD])[\s\)\].:\-–—]*/i);
+
+  return match ? match[1].toUpperCase() : raw;
+}
 function submitGoldenLinkedExam() {
   const exam = window.currentPreviewExam || window.selectedExam || window.currentExam;
   const questions = window.solvingQuestions || exam?.questions || [];
@@ -32926,28 +33012,25 @@ function submitGoldenLinkedExam() {
 
   let score = 0;
   const total = questions.length;
+const answersReview = questions.map((q, index) => {
+  const studentAnswer = window.studentAnswers?.[q.id];
+  const correctAnswer = q.correct_answer;
 
-  const answersReview = questions.map((q, index) => {
-    const studentAnswer = window.studentAnswers?.[q.id];
-    const correctAnswer = q.correct_answer;
+  const isCorrect =
+    normalizeMCQKey(studentAnswer) === normalizeMCQKey(correctAnswer);
 
-    const isCorrect =
-      String(studentAnswer || "").trim().toLowerCase() ===
-      String(correctAnswer || "").trim().toLowerCase();
+  if (isCorrect) score++;
 
-    if (isCorrect) score++;
-
-    return {
-      questionNumber: index + 1,
-      questionId: q.id,
-      questionText: q.question_text || q.question || "",
-      studentAnswer: studentAnswer || "",
-      correctAnswer: correctAnswer || "",
-      isCorrect,
-      explanation: q.explanation || ""
-    };
-  });
-
+  return {
+    questionNumber: index + 1,
+    questionId: q.id,
+    questionText: q.question_text || q.question || "",
+    studentAnswer: studentAnswer || "",
+    correctAnswer: correctAnswer || "",
+    isCorrect,
+    explanation: q.explanation || ""
+  };
+});
   const percentage = total ? Math.round((score / total) * 100) : 0;
 
    if (window.timerInterval) {
@@ -35574,5 +35657,4 @@ window.renderGoldenExamLinks = renderGoldenExamLinks;
 
   console.log("✅ Golden Content Supabase Sync installed.");
 })();
-console.log("🔥 APP JS VERY END REACHED - GOLDEN TEST 2026");
-window.__appJsVeryEndReached = true;
+ 
