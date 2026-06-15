@@ -7528,11 +7528,17 @@ setTimeout(() => {
 })();
 </script>
 <script>
-/* ✅ GOLDEN CONTENT INJECT FIX AFTER FORCE BRIDGE */
-/* يعالج مشكلة hasVocabulary:false رغم أن المحتوى موجود في window.goldenUnitData */
+/* ✅ GOLDEN CONTENT AUTO INJECT WATCHER */
+/* يعمل حتى لو FORCE GUARD أو WATCHDOG غطّى على openGoldenUnit */
 
-(function installGoldenContentInjectAfterBridgeFix() {
-  console.log("🔧 Installing Golden Content Inject After Bridge Fix...");
+(function installGoldenContentAutoInjectWatcher() {
+  console.log("🔧 Installing Golden Content Auto Inject Watcher...");
+
+  window.__lastGoldenOpenContext = window.__lastGoldenOpenContext || {
+    cohort: "2008",
+    unitKey: "unit1",
+    skill: "vocabulary"
+  };
 
   function getGoldenUnitContent(cohort, unitKey, skill) {
     const unit =
@@ -7541,18 +7547,20 @@ setTimeout(() => {
 
     if (!unit) return "";
 
-    if (skill === "vocabulary" || skill === "meanings" || !skill) {
+    const activeSkill = skill || "vocabulary";
+
+    if (activeSkill === "vocabulary" || activeSkill === "meanings") {
       return unit.vocabulary || unit.meanings || "";
     }
 
-    if (skill === "grammar") return unit.grammar || "";
-    if (skill === "reading") return unit.reading || "";
-    if (skill === "writing") return unit.writing || "";
-    if (skill === "notes") return unit.notes || "";
-    if (skill === "culture") return unit.culture || "";
-    if (skill === "literature") return unit.literature || "";
+    if (activeSkill === "grammar") return unit.grammar || "";
+    if (activeSkill === "reading") return unit.reading || "";
+    if (activeSkill === "writing") return unit.writing || "";
+    if (activeSkill === "notes") return unit.notes || "";
+    if (activeSkill === "culture") return unit.culture || "";
+    if (activeSkill === "literature") return unit.literature || "";
 
-    return unit[skill] || "";
+    return unit[activeSkill] || "";
   }
 
   function getGoldenViewer(cohort) {
@@ -7569,7 +7577,7 @@ setTimeout(() => {
     const content = getGoldenUnitContent(cohort, unitKey, activeSkill);
     const viewer = getGoldenViewer(cohort);
 
-    console.log("🔍 Inject check:", {
+    console.log("🔍 Auto inject check:", {
       cohort,
       unitKey,
       activeSkill,
@@ -7593,7 +7601,7 @@ setTimeout(() => {
 
     target.innerHTML = content;
 
-    console.log("✅ Golden content injected successfully:", {
+    console.log("✅ Golden content auto-injected:", {
       cohort,
       unitKey,
       activeSkill,
@@ -7605,24 +7613,55 @@ setTimeout(() => {
 
   window.injectGoldenLoadedContent = injectGoldenLoadedContent;
 
-  const previousOpenGoldenUnit = window.openGoldenUnit;
+  const originalOpen = window.openGoldenUnit;
 
-  if (typeof previousOpenGoldenUnit === "function") {
+  if (typeof originalOpen === "function") {
     window.openGoldenUnit = async function(cohort, unitKey, skill = "vocabulary") {
+      window.__lastGoldenOpenContext = {
+        cohort,
+        unitKey,
+        skill: skill || "vocabulary"
+      };
+
       if (typeof window.loadGoldenContentFromSupabase === "function") {
         await window.loadGoldenContentFromSupabase();
       }
 
-      const result = previousOpenGoldenUnit.call(this, cohort, unitKey, skill);
+      const result = originalOpen.call(this, cohort, unitKey, skill);
 
-      setTimeout(() => injectGoldenLoadedContent(cohort, unitKey, skill), 400);
-      setTimeout(() => injectGoldenLoadedContent(cohort, unitKey, skill), 1000);
+      setTimeout(() => injectGoldenLoadedContent(cohort, unitKey, skill), 500);
+      setTimeout(() => injectGoldenLoadedContent(cohort, unitKey, skill), 1200);
+      setTimeout(() => injectGoldenLoadedContent(cohort, unitKey, skill), 2200);
 
       return result;
     };
-
-    console.log("✅ openGoldenUnit wrapped with content injection.");
   }
+
+  const observer = new MutationObserver(() => {
+    const ctx = window.__lastGoldenOpenContext;
+    if (!ctx) return;
+
+    const viewer = getGoldenViewer(ctx.cohort);
+    if (!viewer) return;
+
+    const text = viewer.textContent || "";
+
+    if (
+      text.includes("ما في محتوى") ||
+      text.includes("لا يوجد محتوى") ||
+      text.includes("No content") ||
+      text.includes("hasContent")
+    ) {
+      injectGoldenLoadedContent(ctx.cohort, ctx.unitKey, ctx.skill);
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  console.log("✅ Golden Content Auto Inject Watcher installed.");
 })();
 </script>
 </body></html>
