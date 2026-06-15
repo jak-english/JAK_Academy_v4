@@ -7361,4 +7361,170 @@ setTimeout(() => {
   loadGoldenContentFromSupabase();
 }, 1000);
 </script>
+<script>
+/* ✅ GOLDEN FORCE BRIDGE CONTENT SOURCE FIX */
+/* يصلح أن bridge يقول hasVocabulary:false رغم أن window.goldenUnitData فيه محتوى */
+
+(function installGoldenForceBridgeContentSourceFix() {
+  console.log("🔧 Installing Golden Force Bridge Content Source Fix...");
+
+  function getGoldenUnitSafe(cohort, unitKey) {
+    return (
+      window.goldenUnitData?.[cohort]?.[unitKey] ||
+      window.goldenData?.[cohort]?.[unitKey] ||
+      null
+    );
+  }
+
+  function getGoldenSkillContent(unit, skill) {
+    if (!unit) return "";
+
+    const key = skill || "vocabulary";
+
+    if (key === "vocabulary" || key === "meanings") {
+      return unit.vocabulary || unit.meanings || "";
+    }
+
+    if (key === "grammar") {
+      return unit.grammar || "";
+    }
+
+    if (key === "reading") {
+      return unit.reading || "";
+    }
+
+    if (key === "writing") {
+      return unit.writing || "";
+    }
+
+    if (key === "notes") {
+      return unit.notes || "";
+    }
+
+    if (key === "culture") {
+      return unit.culture || "";
+    }
+
+    if (key === "literature") {
+      return unit.literature || "";
+    }
+
+    return unit[key] || "";
+  }
+
+  function findGoldenViewer(cohort) {
+    return (
+      document.querySelector("#goldenUnitViewer" + cohort) ||
+      document.querySelector("#goldenViewer" + cohort) ||
+      document.querySelector(".golden-unit-viewer") ||
+      document.querySelector(".golden-viewer")
+    );
+  }
+
+  function viewerHasNoContent(viewer) {
+    if (!viewer) return false;
+
+    const text = viewer.textContent || "";
+
+    return (
+      text.includes("ما في محتوى") ||
+      text.includes("لا يوجد محتوى") ||
+      text.includes("No content") ||
+      text.includes("لا يوجد محتوى بعد")
+    );
+  }
+
+  function injectCorrectGoldenContent(cohort, unitKey, skill) {
+    const unit = getGoldenUnitSafe(cohort, unitKey);
+    const content = getGoldenSkillContent(unit, skill);
+    const viewer = findGoldenViewer(cohort);
+
+    console.log("🔍 Content source fix check:", {
+      cohort,
+      unitKey,
+      skill,
+      hasUnit: !!unit,
+      contentLength: content ? String(content).length : 0,
+      viewerFound: !!viewer,
+      viewerNoContent: viewer ? viewerHasNoContent(viewer) : false
+    });
+
+    if (!viewer || !content) return false;
+
+    const contentBox =
+      viewer.querySelector(".golden-content-box") ||
+      viewer.querySelector(".golden-unit-content") ||
+      viewer.querySelector(".golden-content-body") ||
+      viewer.querySelector(".golden-section-content") ||
+      viewer.querySelector("[data-golden-content]");
+
+    if (contentBox) {
+      contentBox.innerHTML = content;
+    } else if (viewerHasNoContent(viewer)) {
+      const noContentBox =
+        Array.from(viewer.querySelectorAll("div, p, section"))
+          .find(el => {
+            const t = el.textContent || "";
+            return (
+              t.includes("ما في محتوى") ||
+              t.includes("لا يوجد محتوى") ||
+              t.includes("No content")
+            );
+          });
+
+      if (noContentBox) {
+        noContentBox.innerHTML = content;
+      } else {
+        viewer.insertAdjacentHTML(
+          "beforeend",
+          '<div class="golden-content-box">' + content + '</div>'
+        );
+      }
+    } else {
+      viewer.insertAdjacentHTML(
+        "beforeend",
+        '<div class="golden-content-box">' + content + '</div>'
+      );
+    }
+
+    console.log("✅ Correct Golden content injected from window.goldenUnitData:", {
+      cohort,
+      unitKey,
+      skill,
+      length: String(content).length
+    });
+
+    return true;
+  }
+
+  window.injectCorrectGoldenContent = injectCorrectGoldenContent;
+
+  const oldOpenGoldenUnit = window.openGoldenUnit;
+
+  if (typeof oldOpenGoldenUnit !== "function") {
+    console.warn("⚠️ openGoldenUnit not found. Fix waiting skipped.");
+    return;
+  }
+
+  window.openGoldenUnit = async function(cohort, unitKey, skill = "vocabulary") {
+    if (typeof window.loadGoldenContentFromSupabase === "function") {
+      await window.loadGoldenContentFromSupabase();
+    }
+
+    const result = oldOpenGoldenUnit.call(this, cohort, unitKey, skill);
+
+    setTimeout(() => {
+      injectCorrectGoldenContent(cohort, unitKey, skill);
+    }, 300);
+
+    setTimeout(() => {
+      injectCorrectGoldenContent(cohort, unitKey, skill);
+    }, 900);
+
+    return result;
+  };
+
+  console.log("✅ Golden Force Bridge Content Source Fix installed.");
+})();
+</script>
 </body></html>
