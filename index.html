@@ -7527,4 +7527,102 @@ setTimeout(() => {
   console.log("✅ Golden Force Bridge Content Source Fix installed.");
 })();
 </script>
+<script>
+/* ✅ GOLDEN CONTENT INJECT FIX AFTER FORCE BRIDGE */
+/* يعالج مشكلة hasVocabulary:false رغم أن المحتوى موجود في window.goldenUnitData */
+
+(function installGoldenContentInjectAfterBridgeFix() {
+  console.log("🔧 Installing Golden Content Inject After Bridge Fix...");
+
+  function getGoldenUnitContent(cohort, unitKey, skill) {
+    const unit =
+      window.goldenUnitData?.[cohort]?.[unitKey] ||
+      window.goldenData?.[cohort]?.[unitKey];
+
+    if (!unit) return "";
+
+    if (skill === "vocabulary" || skill === "meanings" || !skill) {
+      return unit.vocabulary || unit.meanings || "";
+    }
+
+    if (skill === "grammar") return unit.grammar || "";
+    if (skill === "reading") return unit.reading || "";
+    if (skill === "writing") return unit.writing || "";
+    if (skill === "notes") return unit.notes || "";
+    if (skill === "culture") return unit.culture || "";
+    if (skill === "literature") return unit.literature || "";
+
+    return unit[skill] || "";
+  }
+
+  function getGoldenViewer(cohort) {
+    return (
+      document.querySelector("#goldenUnitViewer" + cohort) ||
+      document.querySelector("#goldenViewer" + cohort) ||
+      document.querySelector(".golden-unit-viewer") ||
+      document.querySelector(".golden-viewer")
+    );
+  }
+
+  function injectGoldenLoadedContent(cohort, unitKey, skill) {
+    const activeSkill = skill || "vocabulary";
+    const content = getGoldenUnitContent(cohort, unitKey, activeSkill);
+    const viewer = getGoldenViewer(cohort);
+
+    console.log("🔍 Inject check:", {
+      cohort,
+      unitKey,
+      activeSkill,
+      contentLength: content ? content.length : 0,
+      viewerFound: !!viewer
+    });
+
+    if (!viewer || !content) return false;
+
+    let target =
+      viewer.querySelector(".golden-content-box") ||
+      viewer.querySelector(".golden-unit-content") ||
+      viewer.querySelector(".golden-content-body") ||
+      viewer.querySelector(".golden-section-content");
+
+    if (!target) {
+      target = document.createElement("div");
+      target.className = "golden-content-box";
+      viewer.prepend(target);
+    }
+
+    target.innerHTML = content;
+
+    console.log("✅ Golden content injected successfully:", {
+      cohort,
+      unitKey,
+      activeSkill,
+      length: content.length
+    });
+
+    return true;
+  }
+
+  window.injectGoldenLoadedContent = injectGoldenLoadedContent;
+
+  const previousOpenGoldenUnit = window.openGoldenUnit;
+
+  if (typeof previousOpenGoldenUnit === "function") {
+    window.openGoldenUnit = async function(cohort, unitKey, skill = "vocabulary") {
+      if (typeof window.loadGoldenContentFromSupabase === "function") {
+        await window.loadGoldenContentFromSupabase();
+      }
+
+      const result = previousOpenGoldenUnit.call(this, cohort, unitKey, skill);
+
+      setTimeout(() => injectGoldenLoadedContent(cohort, unitKey, skill), 400);
+      setTimeout(() => injectGoldenLoadedContent(cohort, unitKey, skill), 1000);
+
+      return result;
+    };
+
+    console.log("✅ openGoldenUnit wrapped with content injection.");
+  }
+})();
+</script>
 </body></html>
