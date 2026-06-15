@@ -7271,4 +7271,94 @@ async function loadAutoLinkedExams(cohort, unitKey, skill) {
   console.log("✅ Golden linked exams clean restore installed.");
 })();
 </script>
+<script>
+/* ✅ SUPABASE CLIENT BRIDGE FOR HTML MODE */
+(function installSupabaseClientBridgeHTML() {
+  console.log("🔧 Installing Supabase Client Bridge HTML...");
+
+  function getAppSupabaseClient() {
+    if (window.supabaseClient && typeof window.supabaseClient.from === "function") {
+      return window.supabaseClient;
+    }
+
+    if (window.db && typeof window.db.from === "function") {
+      return window.db;
+    }
+
+    if (window.supabase && typeof window.supabase.from === "function") {
+      return window.supabase;
+    }
+
+    console.error("❌ No valid Supabase client found.");
+    return null;
+  }
+
+  window.getAppSupabaseClient = getAppSupabaseClient;
+
+  console.log("✅ Supabase client bridge ready:", window.getAppSupabaseClient());
+})();
+</script>
+<script>
+/* ✅ GOLDEN CONTENT LOAD FROM SUPABASE - HTML MODE */
+async function loadGoldenContentFromSupabase() {
+  const client = getAppSupabaseClient();
+
+  if (!client) {
+    console.error("❌ لا يوجد Supabase Client صالح");
+    return false;
+  }
+
+  const { data, error } = await client
+    .from("golden_content")
+    .select("*");
+
+  if (error) {
+    console.error("❌ خطأ تحميل محتوى المكثف:", error);
+    return false;
+  }
+
+  if (!window.goldenUnitData) {
+    window.goldenUnitData = {};
+  }
+
+  data.forEach(row => {
+    const cohort = String(row.cohort || "").trim();
+    const unitKey = String(row.unit_key || "").trim();
+
+    if (!cohort || !unitKey) return;
+
+    if (!window.goldenUnitData[cohort]) {
+      window.goldenUnitData[cohort] = {};
+    }
+
+    window.goldenUnitData[cohort][unitKey] = {
+      ...(window.goldenUnitData[cohort][unitKey] || {}),
+      id: row.id,
+      title: row.title || "",
+      vocabulary: row.vocabulary || "",
+      meanings: row.vocabulary || "",
+      grammar: row.grammar || "",
+      reading: row.reading || "",
+      writing: row.writing || "",
+      notes: row.notes || "",
+      culture: row.culture || "",
+      literature: row.literature || ""
+    };
+  });
+
+  window.goldenData = window.goldenUnitData;
+
+  console.log("✅ تم تحميل محتوى المكثف من Supabase:", {
+    rows: data.length,
+    unit1: window.goldenUnitData?.["2008"]?.["unit1"]
+  });
+
+  return true;
+}
+
+/* تحميل تلقائي بعد فتح الصفحة */
+setTimeout(() => {
+  loadGoldenContentFromSupabase();
+}, 1000);
+</script>
 </body></html>
