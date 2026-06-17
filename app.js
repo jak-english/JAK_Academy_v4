@@ -27682,7 +27682,8 @@ async function saveGoldenUnitContent(cohort = "2008", unitKeyOrNumber = "unit1")
   const titleInput = document.getElementById("goldenEditor_title");
 
   if (titleInput) {
-    existingUnit.title = titleInput.value.trim() || `Unit ${unitNumber}`;
+    existingUnit.title = titleInput.value
+    .trim() || `Unit ${unitNumber}`;
   }
 
   const activeTextarea = document.querySelector(".golden-editor-active-part textarea");
@@ -33270,6 +33271,7 @@ function getGoldenLinkedExamLabel(unitKey) {
     document.getElementById("goldenIntensive")
   );
 }
+
 function activateGoldenCohortPanel(cohort) {
   const c = String(cohort || "").trim();
 
@@ -35658,3 +35660,526 @@ window.renderGoldenExamLinks = renderGoldenExamLinks;
   console.log("✅ Golden Content Supabase Sync installed.");
 })();
  
+ /* =========================================================
+   GOLDEN EMERGENCY FIX - SECTION CONTENT MAPPING
+   Fixes: reading duplicated in writing + empty sections
+   ========================================================= */
+
+(function installGoldenSectionMappingEmergencyFix() {
+  console.log("🟡 Installing Golden Section Mapping Emergency Fix...");
+
+  const GOLDEN_SECTION_KEYS = {
+    vocabulary: "vocabulary",
+    meanings: "vocabulary",
+    grammar: "grammar",
+    reading: "reading",
+    writing: "writing",
+    notes: "notes"
+  };
+
+  function normalizeGoldenSkill(skill) {
+    return GOLDEN_SECTION_KEYS[String(skill || "").trim()] || "vocabulary";
+  }
+
+  function getGoldenUnitSafe(cohort, unitKey) {
+    if (!window.goldenUnitData) window.goldenUnitData = {};
+    if (!window.goldenUnitData[cohort]) window.goldenUnitData[cohort] = {};
+    if (!window.goldenUnitData[cohort][unitKey]) {
+      window.goldenUnitData[cohort][unitKey] = {
+        title: unitKey,
+        vocabulary: "",
+        grammar: "",
+        reading: "",
+        writing: "",
+        notes: ""
+      };
+    }
+
+    const unit = window.goldenUnitData[cohort][unitKey];
+
+    if (typeof unit.title !== "string") unit.title = unit.title || unitKey;
+    if (typeof unit.vocabulary !== "string") unit.vocabulary = unit.vocabulary || "";
+    if (typeof unit.grammar !== "string") unit.grammar = unit.grammar || "";
+    if (typeof unit.reading !== "string") unit.reading = unit.reading || "";
+    if (typeof unit.writing !== "string") unit.writing = unit.writing || "";
+    if (typeof unit.notes !== "string") unit.notes = unit.notes || "";
+
+    return unit;
+  }
+
+  function getGoldenViewerSafe(cohort) {
+    return (
+      document.getElementById(`goldenUnitViewer${cohort}`) ||
+      document.getElementById(`goldenViewer${cohort}`) ||
+      document.querySelector(`[data-golden-viewer="${cohort}"]`)
+    );
+  }
+
+  function getSectionLabel(skill) {
+    const labels = {
+      vocabulary: "📚 المعاني والمفردات",
+      grammar: "📘 القواعد",
+      reading: "📖 القراءة",
+      writing: "✍️ الكتابة",
+      notes: "📝 الملاحظات"
+    };
+    return labels[skill] || "📚 المحتوى";
+  }
+
+  function renderGoldenSectionContent(cohort, unitKey, skill) {
+    const cleanSkill = normalizeGoldenSkill(skill);
+    const unit = getGoldenUnitSafe(cohort, unitKey);
+    const viewer = getGoldenViewerSafe(cohort);
+
+    if (!viewer) {
+      console.warn("❌ Golden viewer not found for cohort:", cohort);
+      return;
+    }
+
+    const content = unit[cleanSkill] || "";
+
+    viewer.innerHTML = `
+      <div class="golden-unit-opened-card">
+        <div class="golden-unit-header">
+          <div>
+            <div class="golden-small-label">جيل ${cohort}</div>
+            <h2>${unit.title || unitKey}</h2>
+            <p>${getSectionLabel(cleanSkill)}</p>
+          </div>
+        </div>
+
+        <div class="golden-inner-tabs">
+          <button onclick="renderGoldenSectionContent('${cohort}','${unitKey}','vocabulary')">📚 المعاني</button>
+          <button onclick="renderGoldenSectionContent('${cohort}','${unitKey}','grammar')">📘 القواعد</button>
+          <button onclick="renderGoldenSectionContent('${cohort}','${unitKey}','reading')">📖 القراءة</button>
+          <button onclick="renderGoldenSectionContent('${cohort}','${unitKey}','writing')">✍️ الكتابة</button>
+          <button onclick="renderGoldenSectionContent('${cohort}','${unitKey}','notes')">📝 ملاحظات</button>
+        </div>
+
+        <div class="golden-content-box golden-${cleanSkill}-content" dir="auto">
+          ${
+            content && content.trim()
+              ? content
+              : `<div class="golden-empty-content">لا يوجد محتوى في قسم ${getSectionLabel(cleanSkill)} بعد.</div>`
+          }
+        </div>
+
+        <div class="golden-owner-edit-row">
+          <button class="golden-edit-btn" onclick="openGoldenUnitEditor('${cohort}','${unitKey}','${cleanSkill}')">
+            ✏️ إدخال / تعديل هذا القسم
+          </button>
+        </div>
+
+        <div id="goldenLinkedExamsBox_${cohort}_${unitKey}_${cleanSkill}" class="golden-linked-exams-box"></div>
+      </div>
+    `;
+
+    window.__lastGoldenOpenContext = {
+      cohort,
+      unitKey,
+      skill: cleanSkill
+    };
+
+    if (typeof window.renderGoldenExamLinks === "function") {
+      setTimeout(() => {
+        try {
+          window.renderGoldenExamLinks(cohort, unitKey, cleanSkill);
+        } catch (e) {
+          console.warn("Golden exam render skipped:", e);
+        }
+      }, 150);
+    }
+
+    viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  window.renderGoldenSectionContent = renderGoldenSectionContent;
+
+  const originalOpenGoldenUnit = window.openGoldenUnit;
+
+  window.openGoldenUnit = function(cohort, unitKey, skill) {
+    const cleanSkill = normalizeGoldenSkill(skill || "vocabulary");
+
+    try {
+      if (typeof originalOpenGoldenUnit === "function") {
+        originalOpenGoldenUnit(cohort, unitKey, cleanSkill);
+      }
+    } catch (e) {
+      console.warn("Original openGoldenUnit failed, using emergency renderer:", e);
+    }
+
+    setTimeout(() => {
+      renderGoldenSectionContent(cohort, unitKey, cleanSkill);
+    }, 100);
+  };
+
+  const originalSaveGoldenUnitContent = window.saveGoldenUnitContent;
+
+  window.saveGoldenUnitContent = async function(cohort, unitKey) {
+    const ctx = window.__lastGoldenOpenContext || {};
+    const activeSkill = normalizeGoldenSkill(ctx.skill || window.currentGoldenSkill || "vocabulary");
+    const unit = getGoldenUnitSafe(cohort, unitKey);
+
+    const titleInput =
+      document.getElementById("goldenEditor_title") ||
+      document.querySelector('[data-golden-editor="title"]');
+
+    const activeTextarea =
+      document.getElementById(`goldenEditor_${activeSkill}`) ||
+      document.querySelector(`[data-golden-editor="${activeSkill}"]`) ||
+      document.querySelector(".golden-editor-panel textarea:not([style*='display: none'])") ||
+      document.querySelector("textarea");
+
+    if (titleInput) {
+      unit.title = titleInput.value || unit.title || unitKey;
+    }
+
+    if (activeTextarea) {
+      unit[activeSkill] = activeTextarea.value || "";
+      console.log("✅ Saved Golden section:", {
+        cohort,
+        unitKey,
+        activeSkill,
+        length: unit[activeSkill].length
+      });
+    } else {
+      console.warn("⚠️ No active textarea found for:", activeSkill);
+    }
+
+    try {
+      localStorage.setItem("jakGoldenIntensiveDataV1", JSON.stringify(window.goldenUnitData));
+    } catch (e) {
+      console.warn("LocalStorage save failed:", e);
+    }
+
+    if (typeof originalSaveGoldenUnitContent === "function") {
+      try {
+        await originalSaveGoldenUnitContent(cohort, unitKey);
+      } catch (e) {
+        console.warn("Original save skipped after emergency save:", e);
+      }
+    }
+
+    renderGoldenSectionContent(cohort, unitKey, activeSkill);
+    alert("✅ تم حفظ القسم الصحيح: " + getSectionLabel(activeSkill));
+  };
+
+  console.log("✅ Golden Section Mapping Emergency Fix installed.");
+})();
+/* =========================================================
+   GOLDEN READING DISPLAY FIX ONLY
+   Fix: Reading exists in data but does not display
+   ========================================================= */
+
+(function installGoldenReadingDisplayFixOnly() {
+  console.log("📖 Installing Golden Reading Display Fix Only...");
+
+  const previousOpenGoldenUnit = window.openGoldenUnit;
+
+  function normalizeUnitKey(unitKey) {
+    const raw = String(unitKey || "unit1").trim();
+
+    if (/^unit\d+$/i.test(raw)) {
+      return raw.toLowerCase();
+    }
+
+    const num = raw.match(/\d+/)?.[0];
+    return num ? `unit${num}` : raw;
+  }
+
+  function getGoldenViewer(cohort) {
+    return (
+      document.getElementById(`goldenUnitViewer${cohort}`) ||
+      document.getElementById(`goldenViewer${cohort}`)
+    );
+  }
+
+  function getGoldenUnit(cohort, unitKey) {
+    const cleanUnitKey = normalizeUnitKey(unitKey);
+    return window.goldenUnitData?.[cohort]?.[cleanUnitKey] || null;
+  }
+
+  function renderGoldenReadingDirect(cohort, unitKey) {
+    const cleanUnitKey = normalizeUnitKey(unitKey);
+    const viewer = getGoldenViewer(cohort);
+    const unit = getGoldenUnit(cohort, cleanUnitKey);
+
+    if (!viewer) {
+      console.warn("❌ Golden viewer not found:", cohort);
+      return;
+    }
+
+    if (!unit) {
+      viewer.innerHTML = `
+        <div class="golden-empty-content">
+          لا توجد بيانات لهذه الوحدة.
+        </div>
+      `;
+      return;
+    }
+
+    const readingHTML = unit.reading || "";
+
+    viewer.innerHTML = `
+      <div class="golden-unit-opened-card">
+        <div class="golden-unit-header">
+          <div>
+            <div class="golden-small-label">جيل ${cohort}</div>
+            <h2>${unit.title || cleanUnitKey}</h2>
+            <p>📖 القراءة</p>
+          </div>
+        </div>
+
+        <div class="golden-inner-tabs">
+          <button onclick="openGoldenUnit('${cohort}','${cleanUnitKey}','vocabulary')">📚 المعاني</button>
+          <button onclick="openGoldenUnit('${cohort}','${cleanUnitKey}','grammar')">📘 القواعد</button>
+          <button onclick="openGoldenUnit('${cohort}','${cleanUnitKey}','reading')">📖 القراءة</button>
+          <button onclick="openGoldenUnit('${cohort}','${cleanUnitKey}','writing')">✍️ الكتابة</button>
+          <button onclick="openGoldenUnit('${cohort}','${cleanUnitKey}','notes')">📝 ملاحظات</button>
+        </div>
+
+        <div class="golden-content-box golden-reading-content" dir="auto">
+          ${
+            readingHTML && readingHTML.trim()
+              ? readingHTML
+              : `<div class="golden-empty-content">لا يوجد محتوى قراءة بعد.</div>`
+          }
+        </div>
+
+        <div class="golden-owner-edit-row">
+          <button class="golden-edit-btn" onclick="openGoldenUnitEditor('${cohort}','${cleanUnitKey}','reading')">
+            ✏️ إدخال / تعديل القراءة
+          </button>
+        </div>
+
+        <div id="goldenLinkedExamsBox_${cohort}_${cleanUnitKey}_reading" class="golden-linked-exams-box"></div>
+      </div>
+    `;
+
+    window.__lastGoldenOpenContext = {
+      cohort,
+      unitKey: cleanUnitKey,
+      skill: "reading"
+    };
+
+    if (typeof window.renderGoldenExamLinks === "function") {
+      setTimeout(() => {
+        try {
+          window.renderGoldenExamLinks(cohort, cleanUnitKey, "reading");
+        } catch (e) {
+          console.warn("Reading linked exams render skipped:", e);
+        }
+      }, 200);
+    }
+
+    viewer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  window.openGoldenReadingDirect = renderGoldenReadingDirect;
+
+  window.openGoldenUnit = function(cohort, unitKey, skill = "vocabulary") {
+    const cleanSkill = String(skill || "vocabulary").trim().toLowerCase();
+
+    if (cleanSkill === "reading") {
+      return renderGoldenReadingDirect(cohort, unitKey);
+    }
+
+    if (typeof previousOpenGoldenUnit === "function") {
+      return previousOpenGoldenUnit(cohort, unitKey, skill);
+    }
+  };
+  console.log("✅ Golden Reading Display Fix Only installed.");
+})();
+console.log("🔥 app.js reading fix loaded");
+window.JALAL_TEST_2026 = "loaded";
+console.log("🔥 JALAL TEST 2026 LOADED"); 
+/* =====================================================
+   GOLDEN READING EXAMS CONFLICT KILLER - FINAL
+   يمنع اختفاء الشرح بسبب renderGoldenExamLinks للقراءة فقط
+===================================================== */
+
+(function installGoldenReadingExamsConflictKillerFinal() {
+  if (window.__goldenReadingExamsConflictKillerFinalInstalled) return;
+  window.__goldenReadingExamsConflictKillerFinalInstalled = true;
+
+  function normalizeUnit(unitKey) {
+    const raw = String(unitKey || "unit1").trim();
+    return raw.startsWith("unit") ? raw : "unit" + raw;
+  }
+
+  function getDb() {
+    return window.client || window.supabaseClient || null;
+  }
+
+  function getViewer(cohort) {
+    if (typeof window.getGoldenViewer === "function") {
+      const v = window.getGoldenViewer(cohort);
+      if (v) return v;
+    }
+
+    return (
+      document.getElementById("goldenUnitViewer" + cohort) ||
+      document.getElementById("goldenViewer" + cohort) ||
+      document.querySelector("#goldenUnitViewer" + cohort) ||
+      document.querySelector(".golden-unit-viewer")
+    );
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  async function renderReadingExamsBox() {
+    const db = getDb();
+    const viewer = getViewer("2008");
+
+    if (!db || typeof db.from !== "function") {
+      console.warn("❌ No DB client found. Expected client or supabaseClient.");
+      return;
+    }
+
+    if (!viewer) {
+      console.warn("❌ Golden viewer not found.");
+      return;
+    }
+
+    const oldBox = viewer.querySelector("#goldenReadingStableExamsBoxFinal");
+    if (oldBox) oldBox.remove();
+
+    const box = document.createElement("section");
+    box.id = "goldenReadingStableExamsBoxFinal";
+    box.className = "golden-reading-stable-exams-box";
+    box.setAttribute("dir", "rtl");
+
+    box.innerHTML = `
+      <div class="golden-reading-exams-head">
+        <div>
+          <span class="golden-reading-exams-badge">Reading Exams</span>
+          <h3>امتحانات القطعة</h3>
+          <p>اختبر فهمك بعد دراسة الشرح الكامل.</p>
+        </div>
+      </div>
+      <div class="golden-reading-exams-list">
+        <p class="golden-reading-exams-loading">جاري تحميل امتحانات القراءة...</p>
+      </div>
+    `;
+
+    viewer.appendChild(box);
+
+    const { data, error } = await db
+      .from("exams")
+      .select("id,title,status,golden_cohort,golden_unit,golden_skill,golden_lesson,created_at")
+      .eq("golden_cohort", "2008")
+      .eq("golden_unit", "unit1")
+      .eq("golden_skill", "reading")
+      .eq("status", "published")
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error("❌ Reading exams load error:", error);
+      box.querySelector(".golden-reading-exams-list").innerHTML =
+        `<p class="golden-reading-exams-empty">حدث خطأ أثناء تحميل الامتحانات.</p>`;
+      return;
+    }
+
+    const exams = Array.isArray(data) ? data : [];
+
+    if (!exams.length) {
+      box.querySelector(".golden-reading-exams-list").innerHTML =
+        `<p class="golden-reading-exams-empty">لا توجد امتحانات قراءة مربوطة حاليًا.</p>`;
+      return;
+    }
+
+    box.querySelector(".golden-reading-exams-list").innerHTML = exams.map((exam, index) => {
+      const id = escapeHtml(exam.id);
+      const title = escapeHtml(exam.title || "Reading Exam");
+      const lesson = escapeHtml(exam.golden_lesson || "Does Language Change How You See the World?");
+
+      return `
+        <article class="golden-reading-exam-card-stable">
+          <div class="golden-reading-exam-number">${index + 1}</div>
+
+          <div class="golden-reading-exam-content">
+            <h4>${title}</h4>
+            <p>${lesson}</p>
+            <div class="golden-reading-exam-meta">
+              <span>Reading</span>
+              <span>Unit 1</span>
+              <span>Published</span>
+            </div>
+          </div>
+
+          <button type="button" onclick="startGoldenReadingStableExamFinal('${id}')">
+            ابدأ الامتحان
+          </button>
+        </article>
+      `;
+    }).join("");
+
+    console.log("✅ Reading exams stable box rendered:", exams.length);
+  }
+
+  window.renderGoldenReadingStableExamsFinal = renderReadingExamsBox;
+
+  window.startGoldenReadingStableExamFinal = function(examId) {
+    if (typeof window.startGoldenLinkedExam === "function") {
+      return window.startGoldenLinkedExam(examId);
+    }
+
+    if (typeof window.startExam === "function") {
+      return window.startExam(examId);
+    }
+
+    alert("تعذر تشغيل الامتحان.");
+  };
+
+  /*
+    أهم جزء:
+    نمنع renderGoldenExamLinks من العمل على reading فقط
+    لأنه هو الذي يسبب اختفاء الشرح.
+  */
+  const oldRenderGoldenExamLinks = window.renderGoldenExamLinks;
+
+  if (typeof oldRenderGoldenExamLinks === "function") {
+    window.renderGoldenExamLinks = function(cohort, unitKey, skill) {
+      const c = String(cohort || "");
+      const u = normalizeUnit(unitKey);
+      const s = String(skill || "");
+
+      if (c === "2008" && u === "unit1" && s === "reading") {
+        console.log("🛑 Blocked old renderGoldenExamLinks for reading to protect explanation.");
+        setTimeout(renderReadingExamsBox, 300);
+        return;
+      }
+
+      return oldRenderGoldenExamLinks.apply(this, arguments);
+    };
+  }
+
+  const oldOpenGoldenUnit = window.openGoldenUnit;
+
+  if (typeof oldOpenGoldenUnit === "function") {
+    window.openGoldenUnit = async function(cohort, unitKey, skill) {
+      const result = await oldOpenGoldenUnit.apply(this, arguments);
+
+      const c = String(cohort || "");
+      const u = normalizeUnit(unitKey);
+      const s = String(skill || "vocabulary");
+
+      if (c === "2008" && u === "unit1" && s === "reading") {
+        setTimeout(renderReadingExamsBox, 900);
+        setTimeout(renderReadingExamsBox, 1800);
+        setTimeout(renderReadingExamsBox, 3000);
+      }
+
+      return result;
+    };
+  }
+
+  console.log("✅ GOLDEN READING EXAMS CONFLICT KILLER FINAL installed.");
+})();

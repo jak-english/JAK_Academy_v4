@@ -44894,3 +44894,1518 @@ min-width: 980px;
   margin-top: 6px !important;
   padding: 8px 9px !important;
 }
+/* =========================
+   GOLDEN READING LAB DESIGN
+   ========================= */
+
+.golden-reading-lab {
+  direction: rtl;
+  text-align: right;
+  font-family: "Cairo", "Tajawal", Arial, sans-serif;
+  color: #111827;
+  display: grid;
+  gap: 24px;
+}
+
+.golden-reading-hero {
+  background: linear-gradient(135deg, #fff7d6 0%, #ffffff 100%);
+  border: 2px solid #f3d37a;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
+}
+
+.golden-reading-hero h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 900;
+  color: #7c2d12;
+}
+
+.golden-reading-hero p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.9;
+  color: #374151;
+  font-weight: 700;
+}
+
+.golden-reading-passage {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.07);
+}
+
+.golden-reading-passage-title {
+  margin: 0 0 14px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.golden-reading-paragraph {
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 22px;
+  padding: 22px;
+  margin-top: 20px;
+}
+
+.golden-reading-paragraph h3 {
+  margin: 0 0 14px;
+  font-size: 21px;
+  font-weight: 900;
+  color: #1f2937;
+}
+
+.golden-reading-original {
+  background: #ffffff;
+  border-right: 5px solid #d97706;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+}
+
+.golden-reading-original strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #92400e;
+  font-size: 16px;
+}
+
+.golden-reading-original p {
+  margin: 0 0 12px;
+  line-height: 2;
+  font-size: 16px;
+  color: #111827;
+}
+
+.golden-reading-understanding {
+  background: linear-gradient(135deg, #eef8ff 0%, #ffffff 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.golden-reading-understanding strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #1d4ed8;
+  font-size: 16px;
+}
+
+.golden-reading-understanding p {
+  margin: 0;
+  line-height: 1.9;
+  color: #1f2937;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* =========================
+   QUESTION CARD
+   ========================= */
+
+.golden-reading-question-card {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 22px;
+  padding: 20px;
+  margin-top: 18px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+
+.golden-reading-question-title {
+  background: linear-gradient(135deg, #7c2d12 0%, #b45309 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 22px rgba(124, 45, 18, 0.22);
+}
+
+.golden-reading-question-title .q-number {
+  display: inline-block;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.24);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  margin-left: 8px;
+}
+
+.golden-reading-question-title p {
+  margin: 8px 0 0;
+  line-height: 1.8;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.golden-reading-question-title .ar {
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  opacity: 0.96;
+}
+
+.golden-reading-options {
+  display: grid;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.golden-reading-option {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: 0.2s ease;
+}
+
+.golden-reading-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.07);
+  border-color: #d1d5db;
+}
+
+.golden-reading-option-letter {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #111827;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.golden-reading-option-text {
+  line-height: 1.8;
+  font-size: 15px;
+  color: #111827;
+  font-weight: 700;
+}
+
+/* =========================
+   ANSWER + EXPLANATION
+   ========================= */
+
+.golden-reading-answer-box {
+  margin-top: 16px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-right: 5px solid #059669;
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.golden-reading-answer-box strong {
+  color: #065f46;
+}
+
+.golden-reading-answer-box p {
+  margin: 8px 0 0;
+  line-height: 1.9;
+  color: #065f46;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.golden-reading-explanation-box {
+  margin-top: 12px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-right: 5px solid #ea580c;
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.golden-reading-explanation-box strong {
+  color: #9a3412;
+}
+
+.golden-reading-explanation-box p {
+  margin: 8px 0 0;
+  line-height: 1.9;
+  color: #7c2d12;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .golden-reading-hero,
+  .golden-reading-passage,
+  .golden-reading-paragraph,
+  .golden-reading-question-card {
+    padding: 16px;
+  }
+
+  .golden-reading-question-title p,
+  .golden-reading-question-title .ar,
+  .golden-reading-option-text {
+    font-size: 14px;
+  }
+}
+
+/* =========================
+   PARAGRAPH BANNER TITLE
+   ========================= */
+
+.golden-paragraph-banner {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #b45309 100%);
+  color: #ffffff;
+  border-radius: 22px;
+  padding: 22px 24px;
+  margin: 0 0 22px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.golden-paragraph-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(251,191,36,0.28), transparent 36%);
+  pointer-events: none;
+}
+
+.golden-paragraph-banner-content {
+  position: relative;
+  z-index: 1;
+}
+
+.golden-paragraph-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #fde68a;
+  font-weight: 900;
+  font-size: 14px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+}
+
+.golden-paragraph-banner h3 {
+  margin: 0;
+  font-size: 27px;
+  line-height: 1.35;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.golden-paragraph-banner p {
+  margin: 10px 0 0;
+  font-size: 15px;
+  line-height: 1.9;
+  color: #e5e7eb;
+  font-weight: 700;
+}
+
+.golden-paragraph-focus {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.golden-focus-chip {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .golden-paragraph-banner {
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+
+  .golden-paragraph-banner h3 {
+    font-size: 22px;
+  }
+
+  .golden-paragraph-banner p {
+    font-size: 14px;
+  }
+}
+
+/* =========================
+   GOLDEN PARAGRAPH BANNER - CLEAN LUXURY
+   ========================= */
+
+.golden-paragraph-banner {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #fff8e1 0%, #ffffff 48%, #f8efd2 100%);
+  color: #1f2937;
+  border-radius: 22px;
+  padding: 24px;
+  margin: 0 0 24px;
+  box-shadow: 0 14px 34px rgba(120, 83, 24, 0.13);
+  border: 2px solid #e7c873;
+}
+
+.golden-paragraph-banner::before {
+  content: "";
+  position: absolute;
+  top: -80px;
+  left: -80px;
+  width: 180px;
+  height: 180px;
+  background: rgba(212, 175, 55, 0.18);
+  border-radius: 50%;
+}
+
+.golden-paragraph-banner::after {
+  content: "";
+  position: absolute;
+  bottom: -90px;
+  right: -90px;
+  width: 210px;
+  height: 210px;
+  background: rgba(15, 23, 42, 0.06);
+  border-radius: 50%;
+}
+
+.golden-paragraph-banner-content {
+  position: relative;
+  z-index: 1;
+}
+
+.golden-paragraph-label {
+  display: inline-flex;
+  align-items: center;
+  background: #1f2937;
+  color: #facc15;
+  font-weight: 900;
+  font-size: 14px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 18px rgba(31, 41, 55, 0.16);
+}
+
+.golden-paragraph-banner h3 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.35;
+  font-weight: 900;
+  color: #111827;
+}
+
+.golden-paragraph-banner p {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 1.9;
+  color: #374151;
+  font-weight: 700;
+}
+
+.golden-paragraph-focus {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.golden-focus-chip {
+  background: #fff7d6;
+  color: #7c4a03;
+  border: 1px solid #e7c873;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+/* Question title softer and clearer */
+.golden-reading-question-title {
+  background: linear-gradient(135deg, #fff7d6 0%, #ffffff 100%) !important;
+  color: #111827 !important;
+  border: 2px solid #e7c873 !important;
+  border-right: 7px solid #c99700 !important;
+  border-radius: 16px !important;
+  padding: 16px 18px !important;
+  margin-bottom: 16px !important;
+  box-shadow: 0 10px 22px rgba(120, 83, 24, 0.10) !important;
+}
+
+.golden-reading-question-title .q-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1f2937 !important;
+  color: #facc15 !important;
+  border: none !important;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  margin-left: 8px;
+}
+
+.question-type-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #f3d37a;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.golden-reading-question-title p {
+  margin: 10px 0 0 !important;
+  line-height: 1.8 !important;
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  color: #111827 !important;
+}
+
+.golden-reading-question-title .ar {
+  color: #374151 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+/* Options cleaner */
+.golden-reading-option {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 15px !important;
+}
+
+.golden-reading-option-letter {
+  background: #c99700 !important;
+  color: #ffffff !important;
+}
+
+@media (max-width: 768px) {
+  .golden-paragraph-banner {
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+
+  .golden-paragraph-banner h3 {
+    font-size: 22px;
+  }
+
+  .golden-paragraph-banner p {
+    font-size: 14px;
+  }
+
+  .golden-reading-question-title p {
+    font-size: 15px !important;
+  }
+}
+
+/* CLEAR READING CHIPS / WORD BUTTONS */
+
+.golden-paragraph-focus {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.golden-focus-chip {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 2px solid #d4af37 !important;
+  padding: 9px 14px !important;
+  border-radius: 999px !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  box-shadow: 0 6px 14px rgba(120, 83, 24, 0.10) !important;
+  white-space: nowrap !important;
+}
+
+.question-type-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  background: #fff7d6 !important;
+  color: #5c3700 !important;
+  border: 2px solid #d4af37 !important;
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  margin-inline-start: 6px !important;
+}
+
+.golden-reading-question-title .q-number {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #111827 !important;
+  color: #facc15 !important;
+  border: 2px solid #facc15 !important;
+  padding: 6px 13px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  margin-left: 8px !important;
+}
+
+@media (max-width: 768px) {
+  .golden-focus-chip,
+  .question-type-badge {
+    font-size: 12.5px !important;
+    padding: 7px 10px !important;
+  }
+}
+/* FIX BROWN BUTTON / BADGE TEXT VISIBILITY */
+
+.golden-reading-question-title,
+.golden-reading-question-title * {
+  opacity: 1 !important;
+}
+
+.golden-reading-question-title {
+  background: #fff7d6 !important;
+  color: #111827 !important;
+  border: 2px solid #d4af37 !important;
+  border-right: 7px solid #c99700 !important;
+}
+
+.golden-reading-question-title p,
+.golden-reading-question-title .ar {
+  color: #111827 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+.question-type-badge {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border: 2px solid #d4af37 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  font-weight: 900 !important;
+}
+
+.golden-reading-question-title .q-number {
+  background: #111827 !important;
+  color: #facc15 !important;
+  border: 2px solid #facc15 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  font-weight: 900 !important;
+}
+/* CLEAR PARAGRAPH A TITLE */
+
+.golden-paragraph-topline {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  background: #111827 !important;
+  border: 2px solid #d4af37 !important;
+  border-radius: 18px !important;
+  padding: 14px 16px !important;
+  margin-bottom: 16px !important;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.18) !important;
+}
+
+.golden-paragraph-letter {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  border-radius: 50% !important;
+  background: #facc15 !important;
+  color: #111827 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 24px !important;
+  font-weight: 1000 !important;
+  border: 3px solid #ffffff !important;
+  box-shadow: 0 6px 14px rgba(250, 204, 21, 0.35) !important;
+}
+
+.golden-paragraph-title-text {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+}
+
+.golden-paragraph-title-text strong {
+  color: #ffffff !important;
+  font-size: 22px !important;
+  font-weight: 1000 !important;
+  line-height: 1.2 !important;
+}
+
+.golden-paragraph-title-text span {
+  color: #facc15 !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  line-height: 1.3 !important;
+}
+
+/* ================================
+   Golden Reading Paragraph Titles
+================================ */
+
+.golden-reading-lab * {
+  box-sizing: border-box;
+}
+
+.golden-paragraph-title {
+  background: linear-gradient(135deg, #111827, #0f766e);
+  color: #ffffff;
+  border-radius: 22px;
+  padding: 22px 24px;
+  margin: 0 0 22px 0;
+  box-shadow: 0 12px 30px rgba(15, 118, 110, 0.20);
+  position: relative;
+  overflow: hidden;
+}
+
+.golden-paragraph-title::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  left: -40px;
+  width: 120px;
+  height: 120px;
+  background: rgba(212, 175, 55, 0.22);
+  border-radius: 50%;
+}
+
+.golden-paragraph-title::after {
+  content: "";
+  position: absolute;
+  bottom: -50px;
+  right: -40px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 50%;
+}
+
+.golden-paragraph-title-inner {
+  position: relative;
+  z-index: 2;
+}
+
+.golden-paragraph-badge {
+  display: inline-block;
+  background: #d4af37;
+  color: #111827;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.golden-paragraph-title h3 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.35;
+  color: #ffffff;
+}
+
+.golden-paragraph-title p {
+  margin: 8px 0 0 0;
+  color: #ecfeff;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.golden-skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.golden-skill-tags span {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .golden-reading-lab {
+    font-size: 15px !important;
+    line-height: 1.85 !important;
+  }
+
+  .golden-reading-lab section {
+    padding: 14px !important;
+    border-radius: 16px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .golden-paragraph-title {
+    padding: 18px 16px;
+    border-radius: 18px;
+    margin-bottom: 18px;
+  }
+
+  .golden-paragraph-title h3 {
+    font-size: 21px;
+    line-height: 1.45;
+  }
+
+  .golden-paragraph-title p {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .golden-paragraph-badge {
+    font-size: 12px;
+    padding: 5px 11px;
+  }
+
+  .golden-skill-tags {
+    gap: 6px;
+  }
+
+  .golden-skill-tags span {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  .golden-reading-lab table {
+    display: block;
+    width: 100% !important;
+    overflow-x: auto;
+    white-space: nowrap;
+    border-radius: 12px;
+  }
+
+  .golden-reading-lab h2 {
+    font-size: 23px !important;
+  }
+
+  .golden-reading-lab h3 {
+    font-size: 19px;
+  }
+
+  .golden-reading-lab h4 {
+    font-size: 16px;
+  }
+}
+/* =====================================================
+   JAK Golden Reading Lab - Calm Premium Eye-Friendly CSS
+   ضع هذا الكود في CSS العام وليس داخل محرر القراءة
+===================================================== */
+
+.golden-reading-lab {
+  max-width: 1050px;
+  margin: 0 auto !important;
+  padding: 18px !important;
+  background: #f8faf7 !important;
+  color: #1f2937 !important;
+  font-family: Arial, "Cairo", sans-serif !important;
+  line-height: 1.9 !important;
+}
+
+/* كل العناصر */
+.golden-reading-lab * {
+  box-sizing: border-box;
+}
+
+/* عنوان القطعة الرئيسي + عناوين الفقرات */
+.golden-paragraph-title {
+  background: #ffffff !important;
+  border: 1px solid #e5ddc8 !important;
+  border-right: 7px solid #0f766e !important;
+  border-radius: 22px !important;
+  padding: 22px 24px !important;
+  margin: 0 0 24px 0 !important;
+  box-shadow: 0 10px 28px rgba(17, 24, 39, 0.07) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.golden-paragraph-title::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 6px !important;
+  background: linear-gradient(90deg, #0f766e, #d4af37) !important;
+}
+
+.golden-paragraph-title-inner {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.golden-paragraph-badge {
+  display: inline-block !important;
+  background: #0f766e !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  padding: 6px 15px !important;
+  border-radius: 999px !important;
+  font-size: 14px !important;
+  margin-bottom: 11px !important;
+  letter-spacing: 0.2px !important;
+}
+
+.golden-paragraph-title h3 {
+  margin: 0 !important;
+  font-size: 25px !important;
+  line-height: 1.35 !important;
+  color: #1f2937 !important;
+  font-weight: 800 !important;
+}
+
+.golden-paragraph-title p {
+  margin: 9px 0 0 0 !important;
+  color: #4b5563 !important;
+  font-size: 16px !important;
+  line-height: 1.85 !important;
+  font-weight: 500 !important;
+}
+
+.golden-skill-tags {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-top: 14px !important;
+}
+
+.golden-skill-tags span {
+  background: #f7f3e8 !important;
+  border: 1px solid #e7d8aa !important;
+  color: #374151 !important;
+  padding: 5px 11px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  white-space: nowrap !important;
+  font-weight: 700 !important;
+}
+
+/* أقسام القراءة العامة */
+.golden-reading-lab section {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 20px !important;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.04) !important;
+}
+
+/* صندوق النص الأصلي */
+.golden-reading-lab div[style*="background: #f9fafb"],
+.golden-reading-lab div[style*="background:#f9fafb"] {
+  background: #fbfcfd !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 16px !important;
+}
+
+/* صندوق الترجمة */
+.golden-reading-lab section[dir="rtl"] {
+  background: #f3fbf9 !important;
+  border: 1px solid #cde9e4 !important;
+  border-right: 6px solid #0f766e !important;
+}
+
+/* صناديق التحليل */
+.golden-reading-lab div[style*="background: #fff7ed"],
+.golden-reading-lab div[style*="background:#fff7ed"] {
+  background: #fffaf0 !important;
+  border: 1px solid #f2dfb3 !important;
+  border-radius: 16px !important;
+}
+
+/* صندوق الفكرة الرئيسية */
+.golden-reading-lab section[style*="#fefce8"],
+.golden-reading-lab section[style*="fefce8"] {
+  background: #fffdf2 !important;
+  border: 1px solid #eadca8 !important;
+}
+
+/* صندوق الضمائر */
+.golden-reading-lab section[style*="#eef2ff"],
+.golden-reading-lab section[style*="eef2ff"] {
+  background: #f5f7fb !important;
+  border: 1px solid #d8dee9 !important;
+}
+
+/* صندوق كيف أفهم */
+.golden-reading-lab section[style*="#fff1f2"],
+.golden-reading-lab section[style*="fff1f2"] {
+  background: #fff7f7 !important;
+  border: 1px solid #f0d4d4 !important;
+}
+
+/* صندوق الأسئلة */
+.golden-reading-lab section[style*="#f8fafc"],
+.golden-reading-lab section[style*="f8fafc"] {
+  background: #f9fafb !important;
+  border: 1px solid #d7dde5 !important;
+}
+
+/* صندوق الميني كويز */
+.golden-reading-lab section[style*="#f0fdf4"],
+.golden-reading-lab section[style*="f0fdf4"] {
+  background: #f4fbf6 !important;
+  border: 1px solid #cdebd5 !important;
+}
+
+/* البطاقات داخل الأسئلة */
+.golden-reading-question-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-right: 4px solid #d4af37 !important;
+  border-radius: 15px !important;
+  padding: 16px !important;
+  margin-bottom: 12px !important;
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.04) !important;
+}
+
+/* العناوين الداخلية */
+.golden-reading-lab h2,
+.golden-reading-lab h3,
+.golden-reading-lab h4 {
+  color: #1f2937 !important;
+}
+
+.golden-reading-lab h3 {
+  font-weight: 800 !important;
+}
+
+.golden-reading-lab h4 {
+  color: #0f766e !important;
+  font-weight: 800 !important;
+}
+
+/* النصوص */
+.golden-reading-lab p,
+.golden-reading-lab li {
+  color: #27303f !important;
+}
+
+/* الكلمات المظللة داخل النص الأصلي */
+.golden-reading-lab strong[style*="background"] {
+  background: #fff1b8 !important;
+  color: #1f2937 !important;
+  padding: 1px 4px !important;
+  border-radius: 5px !important;
+}
+
+/* الجداول */
+.golden-reading-lab table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.golden-reading-lab table tr:first-child {
+  background: #0f766e !important;
+  color: #ffffff !important;
+}
+
+.golden-reading-lab table th {
+  background: #0f766e !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+.golden-reading-lab table td {
+  color: #1f2937 !important;
+  background: #ffffff !important;
+}
+
+.golden-reading-lab table td,
+.golden-reading-lab table th {
+  padding: 11px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+/* القوائم */
+.golden-reading-lab ul,
+.golden-reading-lab ol {
+  padding-inline-start: 24px !important;
+}
+
+.golden-reading-lab li {
+  margin-bottom: 8px !important;
+}
+
+/* تحسين RTL */
+.golden-reading-lab [dir="rtl"] {
+  text-align: right !important;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .golden-reading-lab {
+    padding: 10px !important;
+    font-size: 15px !important;
+    line-height: 1.85 !important;
+  }
+
+  .golden-reading-lab section {
+    padding: 14px !important;
+    border-radius: 16px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .golden-paragraph-title {
+    padding: 17px 15px !important;
+    border-radius: 17px !important;
+    margin-bottom: 18px !important;
+    border-right-width: 5px !important;
+  }
+
+  .golden-paragraph-title h3 {
+    font-size: 20px !important;
+    line-height: 1.45 !important;
+  }
+
+  .golden-paragraph-title p {
+    font-size: 14px !important;
+    line-height: 1.8 !important;
+  }
+
+  .golden-paragraph-badge {
+    font-size: 12px !important;
+    padding: 5px 11px !important;
+  }
+
+  .golden-skill-tags {
+    gap: 6px !important;
+  }
+
+  .golden-skill-tags span {
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+  }
+
+  .golden-reading-lab h2 {
+    font-size: 22px !important;
+  }
+
+  .golden-reading-lab h3 {
+    font-size: 18px !important;
+  }
+
+  .golden-reading-lab h4 {
+    font-size: 16px !important;
+  }
+
+  .golden-reading-lab table {
+    display: block !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    border-radius: 12px !important;
+  }
+
+  .golden-reading-question-card {
+    padding: 13px !important;
+    border-radius: 13px !important;
+  }
+}
+.golden-reading-manual-exams {
+  background: #ffffff !important;
+  border: 1px solid #e5ddc8 !important;
+  border-right: 7px solid #d4af37 !important;
+  border-radius: 22px !important;
+  padding: 22px !important;
+  margin: 30px 0 10px 0 !important;
+  box-shadow: 0 10px 28px rgba(17, 24, 39, 0.07) !important;
+}
+
+.golden-reading-manual-exams-title span {
+  display: inline-block !important;
+  background: #0f766e !important;
+  color: #ffffff !important;
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  margin-bottom: 8px !important;
+}
+
+.golden-reading-manual-exams-title h3 {
+  margin: 0 !important;
+  color: #1f2937 !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+}
+
+.golden-reading-manual-exams-title p {
+  margin: 6px 0 18px 0 !important;
+  color: #4b5563 !important;
+}
+
+.golden-reading-manual-exams-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+  gap: 14px !important;
+}
+
+.golden-reading-manual-exam-card {
+  background: #fffdf7 !important;
+  border: 1px solid #eadca8 !important;
+  border-radius: 18px !important;
+  padding: 16px !important;
+  display: flex !important;
+  gap: 14px !important;
+  align-items: flex-start !important;
+  box-shadow: 0 6px 16px rgba(17, 24, 39, 0.05) !important;
+}
+
+.golden-reading-manual-exam-num {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  background: #d4af37 !important;
+  color: #111827 !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 900 !important;
+}
+
+.golden-reading-manual-exam-body {
+  flex: 1 !important;
+}
+
+.golden-reading-manual-exam-body h4 {
+  margin: 0 0 8px 0 !important;
+  color: #1f2937 !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  line-height: 1.5 !important;
+}
+
+.golden-reading-manual-exam-body p {
+  margin: 0 0 12px 0 !important;
+  color: #4b5563 !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+}
+
+.golden-reading-manual-exam-body button {
+  background: #0f766e !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 9px 16px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+}
+
+.golden-reading-manual-exam-body button:hover {
+  background: #115e59 !important;
+}
+
+@media (max-width: 600px) {
+  .golden-reading-manual-exams {
+    padding: 15px !important;
+    border-radius: 18px !important;
+    border-right-width: 5px !important;
+  }
+
+  .golden-reading-manual-exams-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .golden-reading-manual-exam-card {
+    flex-direction: column !important;
+  }
+
+  .golden-reading-manual-exam-body button {
+    width: 100% !important;
+  }
+}
+/* =========================================================
+   JAK GOLDEN EXAM BOX - CLEAN V3
+   صندوق امتحانات واضح، مرتب، بدون دوائر تخرب النص
+   CSS ONLY
+========================================================= */
+
+/* صندوق الامتحانات العام */
+.golden-fixed-exams-grid,
+.golden-linked-exams-grid,
+.golden-exams-grid {
+  direction: rtl;
+  position: relative !important;
+  margin-top: 36px !important;
+  padding: 74px 22px 22px !important;
+  border-radius: 28px !important;
+  background:
+    linear-gradient(135deg, #101827 0%, #18223a 48%, #241b4d 100%) !important;
+  border: 1px solid rgba(245, 158, 11, 0.30) !important;
+  box-shadow:
+    0 24px 55px rgba(15, 23, 42, 0.28),
+    inset 0 1px 0 rgba(255,255,255,0.10) !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 18px !important;
+  overflow: hidden !important;
+}
+
+/* زخرفة خفيفة بدون دوائر فوق النص */
+.golden-fixed-exams-grid::before,
+.golden-linked-exams-grid::before,
+.golden-exams-grid::before {
+  content: "اختبارات هذا القسم";
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f59e0b, #facc15);
+  color: #111827;
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-size: 14.5px;
+  font-weight: 950;
+  box-shadow: 0 10px 22px rgba(245, 158, 11, 0.28);
+  z-index: 4;
+  white-space: nowrap;
+}
+
+/* وصف الصندوق */
+.golden-fixed-exams-grid::after,
+.golden-linked-exams-grid::after,
+.golden-exams-grid::after {
+  content: "ابدأ الاختبار وتأكد من فهمك قبل الانتقال.";
+  position: absolute;
+  top: 28px;
+  left: 24px;
+  max-width: 52%;
+  color: rgba(255,255,255,0.78);
+  font-family: "Cairo", "Tajawal", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+  z-index: 4;
+  text-align: left;
+}
+
+/* كرت الامتحان */
+.golden-linked-exam-unit-card {
+  direction: rtl;
+  position: relative !important;
+  margin: 0 !important;
+  padding: 20px !important;
+  border-radius: 22px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  box-shadow:
+    0 16px 35px rgba(2, 6, 23, 0.20),
+    inset 0 1px 0 rgba(255,255,255,0.95) !important;
+  font-family: "Cairo", "Tajawal", sans-serif !important;
+  color: #0f172a !important;
+  font-size: 16.5px !important;
+  font-weight: 850 !important;
+  line-height: 1.7 !important;
+  overflow: hidden !important;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease !important;
+}
+
+/* خط علوي داخل الكرت بدل الدائرة */
+.golden-linked-exam-unit-card::before {
+  content: "";
+  display: block !important;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #7c3aed, #f59e0b, #facc15);
+  z-index: 1;
+}
+
+/* badge مضبوط لا يزاحم الكلام */
+.golden-linked-exam-unit-card::after {
+  content: "JAK TEST";
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+
+/* عناوين الامتحان */
+.golden-linked-exam-unit-card h2,
+.golden-linked-exam-unit-card h3,
+.golden-linked-exam-unit-card h4,
+.golden-linked-exam-unit-card strong,
+.golden-linked-exam-unit-card .exam-title {
+  display: block !important;
+  margin: 0 0 14px !important;
+  padding: 0 !important;
+  color: #111827 !important;
+  font-family: "Cairo", "Tajawal", sans-serif !important;
+  font-size: clamp(16.5px, 2.2vw, 21px) !important;
+  font-weight: 950 !important;
+  line-height: 1.6 !important;
+}
+
+/* لو النص مباشر بدون عنوان */
+.golden-linked-exam-unit-card {
+  text-align: right !important;
+}
+
+/* زر البداية */
+.golden-linked-exam-unit-card button,
+.golden-linked-exam-unit-card .start-exam-btn,
+.golden-linked-exam-unit-card .golden-start-exam-btn {
+  width: 100% !important;
+  min-height: 54px !important;
+  margin-top: 16px !important;
+  border: none !important;
+  border-radius: 16px !important;
+  cursor: pointer !important;
+  font-family: "Cairo", "Tajawal", sans-serif !important;
+  font-size: 15.5px !important;
+  font-weight: 950 !important;
+  color: #ffffff !important;
+  background:
+    linear-gradient(135deg, #4f46e5 0%, #6d28d9 46%, #f59e0b 100%) !important;
+  box-shadow:
+    0 14px 26px rgba(79, 70, 229, 0.28),
+    inset 0 1px 0 rgba(255,255,255,0.22) !important;
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease,
+    box-shadow 0.18s ease !important;
+}
+
+/* أيقونة الزر فقط */
+.golden-linked-exam-unit-card button::before,
+.golden-linked-exam-unit-card .start-exam-btn::before,
+.golden-linked-exam-unit-card .golden-start-exam-btn::before {
+  content: "🚀 ";
+}
+
+/* hover */
+.golden-linked-exam-unit-card:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(245, 158, 11, 0.65) !important;
+  box-shadow:
+    0 24px 52px rgba(2, 6, 23, 0.27),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+.golden-linked-exam-unit-card button:hover,
+.golden-linked-exam-unit-card .start-exam-btn:hover,
+.golden-linked-exam-unit-card .golden-start-exam-btn:hover {
+  transform: translateY(-2px) !important;
+  filter: brightness(1.07) !important;
+  box-shadow:
+    0 20px 38px rgba(79, 70, 229, 0.36),
+    inset 0 1px 0 rgba(255,255,255,0.26) !important;
+}
+
+/* منع تكسير النص */
+.golden-linked-exam-unit-card,
+.golden-linked-exam-unit-card * {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+
+/* موبايل */
+@media (max-width: 768px) {
+  .golden-fixed-exams-grid,
+  .golden-linked-exams-grid,
+  .golden-exams-grid {
+    padding: 92px 14px 16px !important;
+    border-radius: 24px !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .golden-fixed-exams-grid::before,
+  .golden-linked-exams-grid::before,
+  .golden-exams-grid::before {
+    top: 16px;
+    right: 14px;
+    font-size: 13.5px;
+    min-height: 34px;
+    padding: 0 14px;
+  }
+
+  .golden-fixed-exams-grid::after,
+  .golden-linked-exams-grid::after,
+  .golden-exams-grid::after {
+    top: 58px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+    text-align: right;
+    font-size: 12.5px;
+  }
+
+  .golden-linked-exam-unit-card {
+    padding: 18px 16px !important;
+    border-radius: 20px !important;
+    font-size: 15px !important;
+  }
+
+  .golden-linked-exam-unit-card h2,
+  .golden-linked-exam-unit-card h3,
+  .golden-linked-exam-unit-card h4,
+  .golden-linked-exam-unit-card strong,
+  .golden-linked-exam-unit-card .exam-title {
+    font-size: 16px !important;
+    line-height: 1.65 !important;
+  }
+
+  .golden-linked-exam-unit-card button,
+  .golden-linked-exam-unit-card .start-exam-btn,
+  .golden-linked-exam-unit-card .golden-start-exam-btn {
+    min-height: 52px !important;
+    font-size: 14.5px !important;
+  }
+}
