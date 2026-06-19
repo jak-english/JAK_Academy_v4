@@ -4775,6 +4775,7 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 
       if (!/alert\s*\(/i.test(onclick)) return;
 
+      
       const msgMatch = onclick.match(/alert\s*\(\s*['"`]([\s\S]*?)['"`]\s*\)/i);
       const message = msgMatch?.[1] || "قريبًا";
 
@@ -5060,31 +5061,51 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 
     const unit = store[c][u];
 
-    unit.title = unit.title || u.replace("unit", "Unit ");
-    unit.vocabulary = unit.vocabulary || unit.meanings || "";
-    unit.meanings = unit.meanings || unit.vocabulary || "";
-    unit.grammar = unit.grammar || "";
-    unit.reading = unit.reading || "";
-    unit.writing = unit.writing || "";
-    unit.notes = unit.notes || "";
+  unit.title = unit.title || u.replace("unit", "Unit ");
 
-    return unit;
+/* Keep each section independent */
+unit.vocabulary = unit.vocabulary || "";
+unit.meanings = unit.meanings || "";
+
+unit.grammar = unit.grammar || "";
+unit.reading = unit.reading || "";
+unit.writing = unit.writing || "";
+unit.notes = unit.notes || "";
+
+return unit;  
   }
 
   function getGoldenUnit(cohort, unitKey) {
-    const store = getGoldenStore();
-    const c = String(cohort || "2008");
-    const u = normalizeUnitKey(unitKey || "unit1");
+  const c = String(cohort);
+  const u = String(unitKey);
 
-    const unit =
-      store?.[c]?.[u] ||
-      store?.[c]?.units?.[u] ||
-      store?.[c]?.units?.find?.(x => x.key === u || x.unit_key === u) ||
-      null;
+  const fromWindow =
+    window.goldenUnitData?.[c]?.[u] ||
+    window.goldenIntensiveData?.[c]?.[u] ||
+    window.goldenData?.[c]?.[u] ||
+    window.goldenContentData?.[c]?.[u] ||
+    null;
 
-    return unit || ensureGoldenUnit(c, u);
+  if (fromWindow) return fromWindow;
+
+  try {
+    const raw = localStorage.getItem("jakGoldenIntensiveDataV1");
+    if (raw) {
+      const data = JSON.parse(raw);
+      const unit = data?.[c]?.[u];
+
+      if (unit) {
+        window.goldenUnitData = data;
+        return unit;
+      }
+    }
+  } catch (error) {
+    console.error("❌ Failed to read jakGoldenIntensiveDataV1:", error);
   }
 
+  console.warn("❌ Golden unit not found:", { cohort: c, unitKey: u });
+  return null;
+}
   function getGoldenViewer(cohort) {
     return (
       document.getElementById("goldenUnitViewer" + cohort) ||
@@ -6077,6 +6098,10 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
    GOLDEN RENDER PART HARD LOCK
    Must be the LAST block in app.js
 ========================================================= */
+/* =========================================================
+   GOLDEN RENDER PART HARD LOCK — STABLE FIX
+   Keeps old renderExams system + hides legacy vocabulary box
+========================================================= */
 (function GOLDEN_RENDER_PART_HARD_LOCK() {
   if (window.__GOLDEN_RENDER_PART_HARD_LOCK__) return;
   window.__GOLDEN_RENDER_PART_HARD_LOCK__ = true;
@@ -6155,6 +6180,14 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
     return box;
   }
 
+  function hideLegacyVocabBox(viewer) {
+    if (!viewer) return;
+
+    viewer.querySelectorAll(".golden-active-part-content").forEach(el => {
+      el.style.display = "none";
+    });
+  }
+
   function setActive(viewer, skill) {
     const labels = {
       vocabulary: "المعاني",
@@ -6221,11 +6254,20 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
       const unit = getUnit(cohort, unitKey);
 
       if (!viewer || !unit) {
-        console.error("❌ Missing viewer/unit:", { cohort, unitKey, viewer: !!viewer, unit: !!unit });
+        console.error("❌ Missing viewer/unit:", {
+          cohort,
+          unitKey,
+          viewer: !!viewer,
+          unit: !!unit
+        });
         return;
       }
 
       const box = ensureBox(viewer);
+
+      /* ✅ Fix: hide old vocabulary content stuck under all sections */
+      hideLegacyVocabBox(viewer);
+
       const content = contentOf(unit, skill);
 
       setActive(viewer, skill);
@@ -6250,6 +6292,8 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
       `;
 
       await renderExams(cohort, unitKey, skill, box);
+
+      hideLegacyVocabBox(viewer);
 
       console.log("✅ HARD LOCK rendered Golden part:", {
         cohort,
@@ -6728,6 +6772,147 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
   const timer = setInterval(run, 1200);
   setTimeout(() => clearInterval(timer), 60000);
 })();
+function normalizeExamAnswer(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ى/g, "ي")
+    .replace(/ة/g, "ه")
+    .replace(/['’`]/g, "")
+    .replace(/[.,!?؟،؛:;()\[\]{}"“”]/g, "")
+    .replace(/\s+/g, " ");
+}
+
+function normalizeExamAnswer(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ى/g, "ي")
+    .replace(/ة/g, "ه")
+    .replace(/['’`]/g, "")
+    .replace(/[.,!?؟،؛:;()\[\]{}"“”]/g, "")
+    .replace(/\s+/g, " ");
+}
+
+function extractAnswerKey(value) {
+  const raw = String(value || "").trim();
+  const match = raw.match(/^\s*([A-Da-d])\s*[\)\.\:\-]?\s*/);
+  return match ? match[1].toUpperCase() : "";
+}
+
+function cleanAnswerText(value) {
+  return String(value || "")
+    .trim()
+    .replace(/^\s*[A-Da-d]\s*[\)\.\:\-]\s*/g, "")
+    .trim();
+}
+
+function isStudentAnswerCorrect(question, studentAnswer) {
+  if (!question) return false;
+
+  const correctRaw = String(
+    question.correct_answer ||
+    question.answer ||
+    question.correct ||
+    ""
+  ).trim();
+
+  const studentRaw = String(studentAnswer || "").trim();
+
+  const optionMap = {
+    A: question.option_a,
+    B: question.option_b,
+    C: question.option_c,
+    D: question.option_d
+  };
+
+  const correctKey = extractAnswerKey(correctRaw);
+  const studentKey = extractAnswerKey(studentRaw);
+
+  if (correctKey && studentKey) {
+    return correctKey === studentKey;
+  }
+
+  if (correctKey) {
+    const correctText = optionMap[correctKey];
+
+    return (
+      normalizeExamAnswer(studentRaw) === normalizeExamAnswer(correctText) ||
+      normalizeExamAnswer(cleanAnswerText(studentRaw)) === normalizeExamAnswer(correctText)
+    );
+  }
+
+  if (studentKey) {
+    const studentText = optionMap[studentKey];
+
+    return (
+      normalizeExamAnswer(studentText) === normalizeExamAnswer(correctRaw) ||
+      normalizeExamAnswer(studentText) === normalizeExamAnswer(cleanAnswerText(correctRaw))
+    );
+  }
+
+  return (
+    normalizeExamAnswer(studentRaw) === normalizeExamAnswer(correctRaw) ||
+    normalizeExamAnswer(cleanAnswerText(studentRaw)) === normalizeExamAnswer(cleanAnswerText(correctRaw))
+  );
+}
+
+window.normalizeExamAnswer = normalizeExamAnswer;
+window.extractAnswerKey = extractAnswerKey;
+window.cleanAnswerText = cleanAnswerText;
+window.isStudentAnswerCorrect = isStudentAnswerCorrect;
+/* =========================================================
+   GOLDEN EXAM NAVIGATION RESTORE
+========================================================= */
+
+window.nextGoldenExamQuestion = function() {
+  const questions = window.solvingQuestions || [];
+
+  if (!questions.length) {
+    console.warn("❌ No solvingQuestions found");
+    return;
+  }
+
+  if (typeof window.currentQuestionIndex !== "number") {
+    window.currentQuestionIndex = 0;
+  }
+
+  if (window.currentQuestionIndex < questions.length - 1) {
+    window.currentQuestionIndex += 1;
+  }
+
+  console.log("➡️ Golden Next:", window.currentQuestionIndex);
+
+  window.renderGoldenExamQuestion(window.currentQuestionIndex);
+};
+
+window.prevGoldenExamQuestion = function() {
+  const questions = window.solvingQuestions || [];
+
+  if (!questions.length) {
+    console.warn("❌ No solvingQuestions found");
+    return;
+  }
+
+  if (typeof window.currentQuestionIndex !== "number") {
+    window.currentQuestionIndex = 0;
+  }
+
+  if (window.currentQuestionIndex > 0) {
+    window.currentQuestionIndex -= 1;
+  }
+
+  console.log("⬅️ Golden Previous:", window.currentQuestionIndex);
+
+  window.renderGoldenExamQuestion(window.currentQuestionIndex);
+};
 </script>
 
 <style>

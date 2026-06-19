@@ -1307,24 +1307,27 @@ async function submitExam(autoSubmit) {
   let correct = 0;
   const answers = [];
 
-  solvingQuestions.forEach(q => {
-    const ans = studentAnswers[q.id] || null;
-    const ok = ans === q.correct_answer;
+solvingQuestions.forEach(q => {
+  const ans =
+    (studentAnswers && studentAnswers[q.id]) ||
+    (window.studentAnswers && window.studentAnswers[q.id]) ||
+    null;
 
-    if (ok) correct++;
+  const ok = window.isStudentAnswerCorrect(q, ans);
 
-    answers.push({
-      question_id: q.id,
-      question_text: q.question_text,
-      student_answer: ans,
-      student_answer_text: getOptionText(q, ans),
-      correct_answer: q.correct_answer,
-      correct_answer_text: getOptionText(q, q.correct_answer),
-      is_correct: ok,
-      explanation: q.explanation || ""
-    });
+  if (ok) correct++;
+
+  answers.push({
+    question_id: q.id,
+    question_text: q.question_text,
+    student_answer: ans,
+    student_answer_text: getOptionText(q, ans),
+    correct_answer: q.correct_answer,
+    correct_answer_text: getOptionText(q, q.correct_answer),
+    is_correct: ok,
+    explanation: q.explanation || ""
   });
-
+});
   const total = solvingQuestions.length;
   const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
 
@@ -1441,12 +1444,15 @@ if (isRetryPractice) {
       </div>
     ` + scoreText.innerHTML;
 }
+
 if (typeof renderExamMasteryBadge === "function") {
   renderExamMasteryBadge(percentage, isRetryPractice);
 }
+
 studyAdviceAfterResult.innerHTML = getStudyAdvice(percentage, answers);
 resultDetails.innerHTML = "";
-  answers.forEach((a, i) => {
+
+answers.forEach((a, i) => {
   const div = document.createElement("div");
   div.className = "box " + (a.is_correct ? "correct" : "wrong");
 
@@ -32969,17 +32975,60 @@ function renderGoldenExamQuestion(index = 0) {
       </button>
     `;
   }).join("");
+  const solverCard =
+  optionsEl.closest(".exam-solver-card") ||
+  optionsEl.closest(".box") ||
+  document.getElementById("examSolver") ||
+  optionsEl.parentElement;
+
+let navButtons = document.getElementById("goldenExamNavButtons");
+
+if (!navButtons) {
+  navButtons = document.createElement("div");
+  navButtons.id = "goldenExamNavButtons";
+  navButtons.className = "golden-exam-nav-buttons";
+  solverCard.appendChild(navButtons);
+}
+
+navButtons.innerHTML = `
+  <button
+    type="button"
+    class="btn"
+    onclick="window.prevGoldenExamQuestion()"
+    ${index <= 0 ? "disabled" : ""}
+  >
+    Previous
+  </button>
+
+  <button
+    type="button"
+    class="btn violet"
+    onclick="window.nextGoldenExamQuestion()"
+    ${index >= questions.length - 1 ? "disabled" : ""}
+  >
+    Next
+  </button>
+`;
 }
 
 function selectGoldenExamAnswer(questionId, answer) {
   if (!window.studentAnswers) window.studentAnswers = {};
-  window.studentAnswers[questionId] = answer;
+
+  if (typeof studentAnswers !== "undefined" && studentAnswers) {
+    studentAnswers[questionId] = answer;
+    window.studentAnswers = studentAnswers;
+  } else {
+    window.studentAnswers[questionId] = answer;
+  }
 
   renderGoldenExamQuestion(window.currentQuestionIndex || 0);
 
   console.log("✅ Golden answer selected:", {
     questionId,
     answer,
+    savedInStudentAnswers:
+      typeof studentAnswers !== "undefined" ? studentAnswers[questionId] : undefined,
+    savedInWindow: window.studentAnswers[questionId],
     correctAnswer: window.solvingQuestions?.[window.currentQuestionIndex || 0]?.correct_answer
   });
 }
@@ -33014,23 +33063,27 @@ function submitGoldenLinkedExam() {
   let score = 0;
   const total = questions.length;
 const answersReview = questions.map((q, index) => {
-  const studentAnswer = window.studentAnswers?.[q.id];
-  const correctAnswer = q.correct_answer;
+const studentAnswer =
+  (window.studentAnswers && window.studentAnswers[q.id]) ||
+  (typeof studentAnswers !== "undefined" && studentAnswers && studentAnswers[q.id]) ||
+  "";
 
-  const isCorrect =
-    normalizeMCQKey(studentAnswer) === normalizeMCQKey(correctAnswer);
+const correctAnswer = q.correct_answer;
 
-  if (isCorrect) score++;
+const isCorrect = window.isStudentAnswerCorrect(q, studentAnswer);
 
-  return {
-    questionNumber: index + 1,
-    questionId: q.id,
-    questionText: q.question_text || q.question || "",
-    studentAnswer: studentAnswer || "",
-    correctAnswer: correctAnswer || "",
-    isCorrect,
-    explanation: q.explanation || ""
-  };
+if (isCorrect) score++;
+ return {
+  questionNumber: index + 1,
+  questionId: q.id,
+  questionText: q.question_text || q.question || "",
+  studentAnswer: studentAnswer || "",
+  correctAnswer: correctAnswer || "",
+  studentAnswerText: getOptionText(q, studentAnswer),
+  correctAnswerText: getOptionText(q, correctAnswer),
+  isCorrect,
+  explanation: q.explanation || ""
+};
 });
   const percentage = total ? Math.round((score / total) * 100) : 0;
 
@@ -35993,193 +36046,3 @@ window.renderGoldenExamLinks = renderGoldenExamLinks;
 console.log("🔥 app.js reading fix loaded");
 window.JALAL_TEST_2026 = "loaded";
 console.log("🔥 JALAL TEST 2026 LOADED"); 
-/* =====================================================
-   GOLDEN READING EXAMS CONFLICT KILLER - FINAL
-   يمنع اختفاء الشرح بسبب renderGoldenExamLinks للقراءة فقط
-===================================================== */
-
-(function installGoldenReadingExamsConflictKillerFinal() {
-  if (window.__goldenReadingExamsConflictKillerFinalInstalled) return;
-  window.__goldenReadingExamsConflictKillerFinalInstalled = true;
-
-  function normalizeUnit(unitKey) {
-    const raw = String(unitKey || "unit1").trim();
-    return raw.startsWith("unit") ? raw : "unit" + raw;
-  }
-
-  function getDb() {
-    return window.client || window.supabaseClient || null;
-  }
-
-  function getViewer(cohort) {
-    if (typeof window.getGoldenViewer === "function") {
-      const v = window.getGoldenViewer(cohort);
-      if (v) return v;
-    }
-
-    return (
-      document.getElementById("goldenUnitViewer" + cohort) ||
-      document.getElementById("goldenViewer" + cohort) ||
-      document.querySelector("#goldenUnitViewer" + cohort) ||
-      document.querySelector(".golden-unit-viewer")
-    );
-  }
-
-  function escapeHtml(value) {
-    return String(value || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  async function renderReadingExamsBox() {
-    const db = getDb();
-    const viewer = getViewer("2008");
-
-    if (!db || typeof db.from !== "function") {
-      console.warn("❌ No DB client found. Expected client or supabaseClient.");
-      return;
-    }
-
-    if (!viewer) {
-      console.warn("❌ Golden viewer not found.");
-      return;
-    }
-
-    const oldBox = viewer.querySelector("#goldenReadingStableExamsBoxFinal");
-    if (oldBox) oldBox.remove();
-
-    const box = document.createElement("section");
-    box.id = "goldenReadingStableExamsBoxFinal";
-    box.className = "golden-reading-stable-exams-box";
-    box.setAttribute("dir", "rtl");
-
-    box.innerHTML = `
-      <div class="golden-reading-exams-head">
-        <div>
-          <span class="golden-reading-exams-badge">Reading Exams</span>
-          <h3>امتحانات القطعة</h3>
-          <p>اختبر فهمك بعد دراسة الشرح الكامل.</p>
-        </div>
-      </div>
-      <div class="golden-reading-exams-list">
-        <p class="golden-reading-exams-loading">جاري تحميل امتحانات القراءة...</p>
-      </div>
-    `;
-
-    viewer.appendChild(box);
-
-    const { data, error } = await db
-      .from("exams")
-      .select("id,title,status,golden_cohort,golden_unit,golden_skill,golden_lesson,created_at")
-      .eq("golden_cohort", "2008")
-      .eq("golden_unit", "unit1")
-      .eq("golden_skill", "reading")
-      .eq("status", "published")
-      .order("created_at", { ascending: true });
-
-    if (error) {
-      console.error("❌ Reading exams load error:", error);
-      box.querySelector(".golden-reading-exams-list").innerHTML =
-        `<p class="golden-reading-exams-empty">حدث خطأ أثناء تحميل الامتحانات.</p>`;
-      return;
-    }
-
-    const exams = Array.isArray(data) ? data : [];
-
-    if (!exams.length) {
-      box.querySelector(".golden-reading-exams-list").innerHTML =
-        `<p class="golden-reading-exams-empty">لا توجد امتحانات قراءة مربوطة حاليًا.</p>`;
-      return;
-    }
-
-    box.querySelector(".golden-reading-exams-list").innerHTML = exams.map((exam, index) => {
-      const id = escapeHtml(exam.id);
-      const title = escapeHtml(exam.title || "Reading Exam");
-      const lesson = escapeHtml(exam.golden_lesson || "Does Language Change How You See the World?");
-
-      return `
-        <article class="golden-reading-exam-card-stable">
-          <div class="golden-reading-exam-number">${index + 1}</div>
-
-          <div class="golden-reading-exam-content">
-            <h4>${title}</h4>
-            <p>${lesson}</p>
-            <div class="golden-reading-exam-meta">
-              <span>Reading</span>
-              <span>Unit 1</span>
-              <span>Published</span>
-            </div>
-          </div>
-
-          <button type="button" onclick="startGoldenReadingStableExamFinal('${id}')">
-            ابدأ الامتحان
-          </button>
-        </article>
-      `;
-    }).join("");
-
-    console.log("✅ Reading exams stable box rendered:", exams.length);
-  }
-
-  window.renderGoldenReadingStableExamsFinal = renderReadingExamsBox;
-
-  window.startGoldenReadingStableExamFinal = function(examId) {
-    if (typeof window.startGoldenLinkedExam === "function") {
-      return window.startGoldenLinkedExam(examId);
-    }
-
-    if (typeof window.startExam === "function") {
-      return window.startExam(examId);
-    }
-
-    alert("تعذر تشغيل الامتحان.");
-  };
-
-  /*
-    أهم جزء:
-    نمنع renderGoldenExamLinks من العمل على reading فقط
-    لأنه هو الذي يسبب اختفاء الشرح.
-  */
-  const oldRenderGoldenExamLinks = window.renderGoldenExamLinks;
-
-  if (typeof oldRenderGoldenExamLinks === "function") {
-    window.renderGoldenExamLinks = function(cohort, unitKey, skill) {
-      const c = String(cohort || "");
-      const u = normalizeUnit(unitKey);
-      const s = String(skill || "");
-
-      if (c === "2008" && u === "unit1" && s === "reading") {
-        console.log("🛑 Blocked old renderGoldenExamLinks for reading to protect explanation.");
-        setTimeout(renderReadingExamsBox, 300);
-        return;
-      }
-
-      return oldRenderGoldenExamLinks.apply(this, arguments);
-    };
-  }
-
-  const oldOpenGoldenUnit = window.openGoldenUnit;
-
-  if (typeof oldOpenGoldenUnit === "function") {
-    window.openGoldenUnit = async function(cohort, unitKey, skill) {
-      const result = await oldOpenGoldenUnit.apply(this, arguments);
-
-      const c = String(cohort || "");
-      const u = normalizeUnit(unitKey);
-      const s = String(skill || "vocabulary");
-
-      if (c === "2008" && u === "unit1" && s === "reading") {
-        setTimeout(renderReadingExamsBox, 900);
-        setTimeout(renderReadingExamsBox, 1800);
-        setTimeout(renderReadingExamsBox, 3000);
-      }
-
-      return result;
-    };
-  }
-
-  console.log("✅ GOLDEN READING EXAMS CONFLICT KILLER FINAL installed.");
-})();
