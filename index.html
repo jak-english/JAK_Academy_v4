@@ -5235,46 +5235,68 @@ return unit;
     return true;
   }
 
-  async function loadGoldenLinkedExamsClean(cohort, unitKey, skill) {
-    const client = getSupabaseClient();
+async function loadGoldenLinkedExamsClean(cohort, unitKey, skill) {
+  const client = getSupabaseClient();
 
-    if (!client) {
-      console.warn("⚠️ Supabase client not ready for Golden exams");
-      return [];
-    }
-
-    const c = String(cohort || "").trim();
-    const u = normalizeUnitKey(unitKey);
-    const s = normalizeSkill(skill);
-
-    if (!c || !u || !s) return [];
-
-    const { data, error } = await client
-      .from("exams")
-      .select("*")
-      .eq("golden_cohort", c)
-      .eq("golden_unit", u)
-      .eq("golden_skill", s)
-      .eq("status", "published")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("❌ Golden exams load failed:", error);
-      return [];
-    }
-
-    console.log("✅ Golden exams loaded clean:", {
-      cohort: c,
-      unitKey: u,
-      skill: s,
-      count: data?.length || 0,
-      titles: (data || []).map(e => e.title)
-    });
-
-    return data || [];
+  if (!client) {
+    console.warn("⚠️ Supabase client not ready for Golden exams");
+    return [];
   }
 
-  function renderGoldenExamCards(exams, cohort, unitKey, skill) {
+  const c = window.normalizeGoldenCohortKey
+    ? window.normalizeGoldenCohortKey(cohort)
+    : String(cohort || "").trim();
+
+  const u = window.normalizeGoldenUnitKey
+    ? window.normalizeGoldenUnitKey(unitKey)
+    : normalizeUnitKey(unitKey);
+
+  const s = window.normalizeGoldenSkillKey
+    ? window.normalizeGoldenSkillKey(skill || "vocabulary")
+    : normalizeSkill(skill || "vocabulary");
+
+  if (!c || !u || !s) return [];
+
+  const { data: rawExams, error } = await client
+    .from("exams")
+    .select("*")
+    .eq("status", "published")
+    .not("golden_cohort", "is", null)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("❌ Golden exams load failed:", error);
+    return [];
+  }
+
+  const data = (rawExams || []).filter(exam => {
+    const examCohort = window.normalizeGoldenCohortKey
+      ? window.normalizeGoldenCohortKey(exam.golden_cohort)
+      : String(exam.golden_cohort || "").trim();
+
+    const examUnit = window.normalizeGoldenUnitKey
+      ? window.normalizeGoldenUnitKey(exam.golden_unit)
+      : normalizeUnitKey(exam.golden_unit);
+
+    const examSkill = window.normalizeGoldenSkillKey
+      ? window.normalizeGoldenSkillKey(exam.golden_skill)
+      : normalizeSkill(exam.golden_skill);
+
+    return examCohort === c && examUnit === u && examSkill === s;
+  });
+
+  console.log("✅ Golden exams loaded clean:", {
+    cohort: c,
+    unitKey: u,
+    skill: s,
+    count: data.length,
+    titles: data.map(e => e.title)
+  });
+
+  return data;
+}
+
+   function renderGoldenExamCards(exams, cohort, unitKey, skill) {
     if (skill === "notes") return "";
 
     if (!Array.isArray(exams) || exams.length === 0) {
@@ -7292,7 +7314,6 @@ window.normalizeGoldenExamPayload = function(payload) {
 };
 
 console.log("✅ Golden normalizer missing parts loaded permanently.");
-
 </script>
 
 <style>
