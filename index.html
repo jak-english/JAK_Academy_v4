@@ -4662,8 +4662,7 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=golden-clean-2026-06-17-01"></script>
-
+ <script src="app.js?v=golden-normalizer-final-2026-06-19"></script>
 <script>
 /* =========================================================
    JAK Academy - Smart Answer Checker Bridge
@@ -6913,6 +6912,387 @@ window.prevGoldenExamQuestion = function() {
 
   window.renderGoldenExamQuestion(window.currentQuestionIndex);
 };
+
+/* =========================================================
+   GOLDEN UNIT NORMALIZER + SAVE GUARD - FINAL ALL UNITS
+   Fixes:
+   1) Unit 2 / Vocabulary => unit2 / vocabulary
+   2) Saves active editor content into the correct unit + skill
+   3) Normalizes Golden exam links before insert/update when possible
+========================================================= */
+
+(function installGoldenUnitAndExamNormalizerFinal() {
+  console.log("🛡️ Installing Golden Unit + Exam Normalizer FINAL...");
+
+  function normalizeGoldenUnitKey(value) {
+    const raw = String(value || "").trim().toLowerCase();
+    if (!raw) return "";
+
+    const compact = raw.replace(/\s+/g, "");
+
+    if (/^unit\d+$/.test(compact)) return compact;
+
+    const match =
+      raw.match(/unit\s*(\d+)/i) ||
+      raw.match(/وحدة\s*(\d+)/i) ||
+      raw.match(/^(\d+)$/);
+
+    if (match) return "unit" + match[1];
+
+    return compact;
+  }
+
+  function normalizeGoldenSkillKey(value) {
+    const raw = String(value || "").trim().toLowerCase();
+
+    if (!raw) return "";
+
+    if (
+      raw.includes("vocab") ||
+      raw.includes("meaning") ||
+      raw.includes("معاني") ||
+      raw.includes("مفردات")
+    ) return "vocabulary";
+
+    if (
+      raw.includes("grammar") ||
+      raw.includes("قواعد")
+    ) return "grammar";
+
+    if (
+      raw.includes("reading") ||
+      raw.includes("passage") ||
+      raw.includes("قطع") ||
+      raw.includes("قراءة")
+    ) return "reading";
+
+    if (
+      raw.includes("writing") ||
+      raw.includes("كتابة")
+    ) return "writing";
+
+    if (
+      raw.includes("note") ||
+      raw.includes("ملاحظ")
+    ) return "notes";
+
+    return raw.replace(/\s+/g, "_");
+  }
+
+  function normalizeGoldenCohortKey(value) {
+    const raw = String(value || "").trim();
+    if (raw.includes("2008")) return "2008";
+    if (raw.includes("2009")) return "2009";
+    return raw;
+  }
+
+  window.normalizeGoldenUnitKey = normalizeGoldenUnitKey;
+  window.normalizeGoldenSkillKey = normalizeGoldenSkillKey;
+  window.normalizeGoldenCohortKey = normalizeGoldenCohortKey;
+
+  window.normalizeGoldenExamPayload = function normalizeGoldenExamPayload(payload) {
+    if (!payload || typeof payload !== "object") return payload;
+
+    const fixed = { ...payload };
+
+    if ("golden_cohort" in fixed) {
+      fixed.golden_cohort = normalizeGoldenCohortKey(fixed.golden_cohort);
+    }
+
+    if ("golden_unit" in fixed) {
+      fixed.golden_unit = normalizeGoldenUnitKey(fixed.golden_unit);
+    }
+
+    if ("golden_skill" in fixed) {
+      fixed.golden_skill = normalizeGoldenSkillKey(fixed.golden_skill);
+    }
+
+    return fixed;
+  };
+
+  function getGoldenEditorContextSafe() {
+    const ctx = window.__lastGoldenOpenContext || {};
+
+    const activeCohort =
+      ctx.cohort ||
+      window.currentGoldenCohort ||
+      document.querySelector("[data-golden-cohort].active")?.dataset?.goldenCohort ||
+      "2008";
+
+    const activeUnit =
+      ctx.unitKey ||
+      window.currentGoldenUnitKey ||
+      window.currentGoldenUnit ||
+      document.querySelector("[data-golden-unit].active")?.dataset?.goldenUnit ||
+      "unit1";
+
+    const activeSkill =
+      ctx.skill ||
+      window.currentGoldenSkill ||
+      document.querySelector(".golden-editor-tab.active")?.dataset?.skill ||
+      document.querySelector(".golden-unit-tab.active")?.dataset?.skill ||
+      "vocabulary";
+
+    return {
+      cohort: normalizeGoldenCohortKey(activeCohort),
+      unitKey: normalizeGoldenUnitKey(activeUnit),
+      skill: normalizeGoldenSkillKey(activeSkill)
+    };
+  }
+
+  function findActiveGoldenEditorTextarea(skill) {
+    const normalizedSkill = normalizeGoldenSkillKey(skill);
+
+    const exactIds = [
+      "goldenEditor_" + normalizedSkill,
+      "goldenEditor" + normalizedSkill.charAt(0).toUpperCase() + normalizedSkill.slice(1),
+      "goldenEditorContent"
+    ];
+
+    for (const id of exactIds) {
+      const el = document.getElementById(id);
+      if (el && typeof el.value === "string") return el;
+    }
+
+    const visibleTextareas = Array.from(document.querySelectorAll("textarea"))
+      .filter(el => {
+        const style = window.getComputedStyle(el);
+        return style.display !== "none" && style.visibility !== "hidden";
+      });
+
+    const skillMatched = visibleTextareas.find(el => {
+      const text = [
+        el.id,
+        el.name,
+        el.dataset?.skill,
+        el.placeholder,
+        el.className
+      ].join(" ").toLowerCase();
+
+      return text.includes(normalizedSkill);
+    });
+
+    return skillMatched || visibleTextareas[0] || null;
+  }
+
+  function ensureGoldenUnitShape(cohort, unitKey) {
+    window.goldenUnitData = window.goldenUnitData || {};
+    window.goldenUnitData[cohort] = window.goldenUnitData[cohort] || {};
+
+    window.goldenUnitData[cohort][unitKey] = window.goldenUnitData[cohort][unitKey] || {
+      title: "Unit " + String(unitKey).replace("unit", ""),
+      vocabulary: "",
+      grammar: "",
+      reading: "",
+      writing: "",
+      notes: ""
+    };
+
+    const unit = window.goldenUnitData[cohort][unitKey];
+
+    unit.title = unit.title || "Unit " + String(unitKey).replace("unit", "");
+    unit.vocabulary = unit.vocabulary || "";
+    unit.grammar = unit.grammar || "";
+    unit.reading = unit.reading || "";
+    unit.writing = unit.writing || "";
+    unit.notes = unit.notes || "";
+
+    return unit;
+  }
+
+  async function saveGoldenUnitContentFinalSafe() {
+    const ctx = getGoldenEditorContextSafe();
+    const textarea = findActiveGoldenEditorTextarea(ctx.skill);
+
+    if (!textarea) {
+      console.error("❌ No active Golden editor textarea found.");
+      return false;
+    }
+
+    const content = textarea.value || "";
+    const unit = ensureGoldenUnitShape(ctx.cohort, ctx.unitKey);
+
+    unit[ctx.skill] = content;
+
+    const storageKey = "jakGoldenIntensiveDataV1";
+
+    try {
+      const oldRaw = localStorage.getItem(storageKey);
+      const localData = oldRaw ? JSON.parse(oldRaw) : {};
+
+      localData[ctx.cohort] = localData[ctx.cohort] || {};
+      localData[ctx.cohort][ctx.unitKey] = localData[ctx.cohort][ctx.unitKey] || {
+        title: unit.title,
+        vocabulary: "",
+        grammar: "",
+        reading: "",
+        writing: "",
+        notes: ""
+      };
+
+      localData[ctx.cohort][ctx.unitKey].title = unit.title;
+      localData[ctx.cohort][ctx.unitKey][ctx.skill] = content;
+
+      localStorage.setItem(storageKey, JSON.stringify(localData));
+      console.log("✅ Golden saved to localStorage:", ctx, "length:", content.length);
+    } catch (e) {
+      console.warn("⚠️ localStorage save failed:", e);
+    }
+
+    const possibleClients = [
+      window.supabaseClient,
+      window._supabase,
+      window.db,
+      window.sb,
+      window.supabase
+    ].filter(Boolean);
+
+    let client = possibleClients.find(c => c && typeof c.from === "function");
+
+    if (!client) {
+      for (const key of Object.keys(window)) {
+        try {
+          const value = window[key];
+          if (value && typeof value.from === "function") {
+            client = value;
+            break;
+          }
+        } catch (e) {}
+      }
+    }
+
+    if (client && typeof client.from === "function") {
+      try {
+        const payload = {
+          cohort: ctx.cohort,
+          unit_key: ctx.unitKey,
+          title: unit.title,
+          vocabulary: unit.vocabulary,
+          grammar: unit.grammar,
+          reading: unit.reading,
+          writing: unit.writing,
+          notes: unit.notes
+        };
+
+        const { error } = await client
+          .from("golden_content")
+          .upsert(payload, { onConflict: "cohort,unit_key" });
+
+        if (error) {
+          console.warn("⚠️ Supabase Golden save failed:", error);
+        } else {
+          console.log("✅ Golden saved to Supabase:", {
+            cohort: ctx.cohort,
+            unitKey: ctx.unitKey,
+            skill: ctx.skill,
+            length: content.length
+          });
+        }
+      } catch (e) {
+        console.warn("⚠️ Supabase save exception:", e);
+      }
+    } else {
+      console.warn("⚠️ Supabase client not found, saved locally only.");
+    }
+
+    if (typeof window.openGoldenUnit === "function") {
+      setTimeout(() => {
+        window.openGoldenUnit(ctx.cohort, ctx.unitKey, ctx.skill);
+      }, 300);
+    }
+
+    return true;
+  }
+
+  window.saveGoldenUnitContentFinalSafe = saveGoldenUnitContentFinalSafe;
+
+  const oldSave = window.saveGoldenUnitContent;
+
+  window.saveGoldenUnitContent = async function goldenSaveWrapperFinal() {
+    console.log("🛡️ Golden save wrapper active.");
+    const result = await saveGoldenUnitContentFinalSafe();
+
+    if (!result && typeof oldSave === "function") {
+      return oldSave.apply(this, arguments);
+    }
+
+    return result;
+  };
+
+  const oldOpen = window.openGoldenUnit;
+
+  if (typeof oldOpen === "function") {
+    window.openGoldenUnit = async function openGoldenUnitNormalizedWrapper(cohort, unitKey, skill) {
+      const fixedCohort = normalizeGoldenCohortKey(cohort);
+      const fixedUnit = normalizeGoldenUnitKey(unitKey);
+      const fixedSkill = normalizeGoldenSkillKey(skill || "vocabulary");
+
+      window.__lastGoldenOpenContext = {
+        cohort: fixedCohort,
+        unitKey: fixedUnit,
+        skill: fixedSkill
+      };
+
+      window.currentGoldenCohort = fixedCohort;
+      window.currentGoldenUnitKey = fixedUnit;
+      window.currentGoldenSkill = fixedSkill;
+
+      return oldOpen.call(this, fixedCohort, fixedUnit, fixedSkill);
+    };
+  }
+  console.log("✅ Golden Unit + Exam Normalizer FINAL installed.");
+})();
+/* =========================================================
+   GOLDEN NORMALIZER MISSING PARTS - PERMANENT FIX
+========================================================= */
+
+window.normalizeGoldenSkillKey = function(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  if (!raw) return "";
+
+  if (
+    raw.includes("vocab") ||
+    raw.includes("meaning") ||
+    raw.includes("معاني") ||
+    raw.includes("مفردات")
+  ) return "vocabulary";
+
+  if (raw.includes("grammar") || raw.includes("قواعد")) return "grammar";
+
+  if (
+    raw.includes("reading") ||
+    raw.includes("passage") ||
+    raw.includes("قطع") ||
+    raw.includes("قراءة")
+  ) return "reading";
+
+  if (raw.includes("writing") || raw.includes("كتابة")) return "writing";
+
+  if (raw.includes("note") || raw.includes("ملاحظ")) return "notes";
+
+  return raw.replace(/\s+/g, "_");
+};
+
+window.normalizeGoldenCohortKey = function(value) {
+  const raw = String(value || "").trim();
+  if (raw.includes("2008")) return "2008";
+  if (raw.includes("2009")) return "2009";
+  return raw;
+};
+
+window.normalizeGoldenExamPayload = function(payload) {
+  if (!payload || typeof payload !== "object") return payload;
+
+  return {
+    ...payload,
+    golden_cohort: window.normalizeGoldenCohortKey(payload.golden_cohort),
+    golden_unit: window.normalizeGoldenUnitKey(payload.golden_unit),
+    golden_skill: window.normalizeGoldenSkillKey(payload.golden_skill)
+  };
+};
+
+console.log("✅ Golden normalizer missing parts loaded permanently.");
+
 </script>
 
 <style>
