@@ -46409,3 +46409,662 @@ min-width: 980px;
     font-size: 14.5px !important;
   }
 }
+/* =========================================================
+   GOLDEN GRAMMAR LESSON STYLE
+   For Unit 2 Grammar - Cleft Sentences
+========================================================= */
+
+.golden-grammar-unit {
+  direction: rtl;
+  font-family: "Cairo", "Tajawal", sans-serif;
+  color: #2b2417;
+  line-height: 2;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.golden-grammar-hero {
+  position: relative;
+  padding: 28px 26px;
+  margin: 18px 0 24px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.85), transparent 35%),
+    linear-gradient(135deg, #7a1f1f, #d94747 48%, #f6b25d);
+  color: #fff;
+  box-shadow: 0 18px 42px rgba(122, 31, 31, .22);
+  overflow: hidden;
+}
+
+.golden-grammar-hero::after {
+  content: "GRAMMAR";
+  position: absolute;
+  left: 24px;
+  bottom: -10px;
+  font-size: 4rem;
+  font-weight: 900;
+  opacity: .13;
+  letter-spacing: 2px;
+}
+
+.golden-grammar-hero .golden-label {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.35);
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.golden-grammar-hero h2 {
+  margin: 0 0 10px;
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
+  font-weight: 900;
+}
+
+.golden-grammar-hero p {
+  margin: 0;
+  font-size: 1.05rem;
+  max-width: 760px;
+}
+
+.golden-rule-box {
+  background: #fffdf8;
+  border: 1px solid rgba(162, 109, 28, .18);
+  border-radius: 24px;
+  padding: 22px;
+  margin: 20px 0;
+  box-shadow: 0 12px 30px rgba(80, 55, 10, .08);
+}
+
+.golden-rule-box h3 {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #fff0b8, #ffe2e2);
+  color: #6f3300;
+  font-size: 1.25rem;
+  font-weight: 900;
+  border-right: 6px solid #d69b1f;
+}
+
+.golden-rule-box h4 {
+  margin: 12px 0;
+  color: #8a4700;
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.golden-example {
+  background: #f7fbff;
+  border: 1px solid rgba(33, 120, 180, .16);
+  border-right: 6px solid #2f91c9;
+  border-radius: 18px;
+  padding: 16px 18px;
+  margin: 14px 0;
+}
+
+.golden-example p {
+  margin: 5px 0;
+}
+
+.golden-example strong {
+  color: #075985;
+}
+
+.golden-highlight {
+  display: inline-block;
+  padding: 0 7px;
+  border-radius: 8px;
+  background: #fff176;
+  color: #2b2417;
+  font-weight: 900;
+}
+
+.golden-red-highlight {
+  display: inline-block;
+  padding: 0 7px;
+  border-radius: 8px;
+  background: #ffd6d6;
+  color: #9f1239;
+  font-weight: 900;
+}
+
+.golden-blue-highlight {
+  display: inline-block;
+  padding: 0 7px;
+  border-radius: 8px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-weight: 900;
+}
+
+.golden-green-highlight {
+  display: inline-block;
+  padding: 0 7px;
+  border-radius: 8px;
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 900;
+}
+
+.golden-note,
+.golden-warning,
+.golden-danger {
+  border-radius: 18px;
+  padding: 15px 18px;
+  margin: 14px 0;
+  font-weight: 700;
+}
+
+.golden-note {
+  background: #eef6ff;
+  border: 1px solid rgba(37, 99, 235, .18);
+  color: #1e3a8a;
+}
+
+.golden-warning {
+  background: #fff7d6;
+  border: 1px solid rgba(202, 138, 4, .28);
+  color: #7c4a03;
+}
+
+.golden-danger {
+  background: #ffe4e6;
+  border: 1px solid rgba(190, 18, 60, .22);
+  color: #9f1239;
+}
+
+.golden-formula {
+  direction: ltr;
+  text-align: center;
+  background: #1f2937;
+  color: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  margin: 16px 0;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: .3px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.golden-steps {
+  background: #fff8e6;
+  border-radius: 18px;
+  border: 1px dashed rgba(177, 110, 0, .35);
+  padding: 16px 20px;
+  margin: 14px 0;
+}
+
+.golden-steps ol,
+.golden-steps ul {
+  margin: 0;
+  padding-right: 22px;
+}
+
+.golden-steps li {
+  margin: 6px 0;
+  font-weight: 700;
+}
+
+.golden-grammar-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  margin: 16px 0;
+  box-shadow: 0 8px 20px rgba(40, 40, 40, .06);
+}
+
+.golden-grammar-table th {
+  background: #7a1f1f;
+  color: #fff;
+  padding: 13px;
+  font-weight: 900;
+}
+
+.golden-grammar-table td {
+  background: #fff;
+  border-bottom: 1px solid #f1e4cd;
+  padding: 12px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.golden-grammar-table tr:nth-child(even) td {
+  background: #fff8e9;
+}
+
+.golden-mind-map {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.golden-map-center {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 18px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #7a1f1f, #d94747);
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.25rem;
+  box-shadow: 0 12px 25px rgba(122,31,31,.2);
+}
+
+.golden-map-card {
+  background: #ffffff;
+  border: 1px solid rgba(150, 100, 20, .18);
+  border-radius: 20px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 10px 22px rgba(80, 55, 10, .07);
+}
+
+.golden-map-card b {
+  display: block;
+  color: #7a1f1f;
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+
+.golden-map-card span {
+  display: block;
+  direction: ltr;
+  color: #1f2937;
+  font-weight: 900;
+}
+
+.golden-wrong-right {
+  display: grid;
+  gap: 8px;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,.08);
+  padding: 14px;
+  margin: 12px 0;
+}
+
+.golden-wrong {
+  color: #be123c;
+  font-weight: 900;
+}
+
+.golden-right {
+  color: #166534;
+  font-weight: 900;
+}
+
+.golden-mini-practice {
+  background: linear-gradient(135deg, #f8fafc, #fff7ed);
+  border: 1px solid rgba(162, 109, 28, .16);
+  border-radius: 22px;
+  padding: 18px;
+  margin: 18px 0;
+}
+
+.golden-mini-practice h4 {
+  color: #7a1f1f;
+}
+
+.golden-summary {
+  background: linear-gradient(135deg, #fff8e6, #fef2f2);
+  border: 2px solid rgba(214, 155, 31, .28);
+}
+
+@media (max-width: 700px) {
+  .golden-rule-box {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .golden-grammar-hero {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .golden-grammar-table {
+    font-size: .88rem;
+  }
+
+  .golden-formula {
+    font-size: .95rem;
+    overflow-x: auto;
+  }
+}
+ 
+
+/* =========================================================
+   GOLDEN DIRECT EDITOR VISIBILITY FIX
+   Fix white text / invisible content
+========================================================= */
+
+#goldenDirectEditorModal,
+#goldenDirectEditorModal * {
+  color: #2b2417 !important;
+}
+
+#goldenDirectContent,
+#goldenDirectTitle,
+#goldenDirectCohort,
+#goldenDirectUnit,
+#goldenDirectSkill {
+  background: #ffffff !important;
+  color: #111827 !important;
+  caret-color: #111827 !important;
+  border: 2px solid #cfae67 !important;
+}
+
+#goldenDirectContent::placeholder,
+#goldenDirectTitle::placeholder {
+  color: #6b7280 !important;
+}
+
+#goldenDirectContent {
+  font-family: Consolas, "Cairo", "Tajawal", monospace !important;
+  font-size: 15px !important;
+  line-height: 1.8 !important;
+  direction: auto !important;
+}
+
+/* Golden content display visibility */
+.golden-clean-content,
+.golden-clean-content *,
+.golden-fixed-part-body,
+.golden-fixed-part-body *,
+#goldenSkillContentMount,
+#goldenSkillContentMount * {
+  color: #2b2417 !important;
+}
+
+/* لكن نخلي الألوان الخاصة بالتظليل تشتغل */
+.hl-blue {
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
+}
+
+.hl-red {
+  background: #ffd6d6 !important;
+  color: #9f1239 !important;
+}
+
+.hl-yellow {
+  background: #fff176 !important;
+  color: #2b2417 !important;
+}
+
+.hl-green {
+  background: #dcfce7 !important;
+  color: #166534 !important;
+}
+
+.right {
+  color: #166534 !important;
+}
+
+.wrong {
+  color: #be123c !important;
+}
+
+/* الهيرو يضل أبيض لأنه خلفيته غامقة */
+.jak-cleft-hero,
+.jak-cleft-hero * {
+  color: #ffffff !important;
+}
+
+/* الفورمولا تضل أبيض على خلفية غامقة */
+.jak-formula,
+.jak-formula * {
+  color: #ffffff !important;
+}
+/* =====================================================
+   JAK GOLDEN GRAMMAR MASTER - QUESTION TAGS
+   Put this in style.css, NOT inside the editor
+===================================================== */
+
+.jak-grammar-master {
+  direction: ltr;
+  max-width: 1120px;
+  margin: 30px auto;
+  padding: 26px;
+  border-radius: 30px;
+  font-family: "Cairo", "Tajawal", Arial, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(250,204,21,.32), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(34,197,94,.22), transparent 32%),
+    linear-gradient(135deg, #fffdf3, #f8fafc, #ecfdf5);
+  border: 2px solid rgba(234,179,8,.42);
+  box-shadow: 0 24px 60px rgba(15,23,42,.16);
+  position: relative;
+  overflow: hidden;
+}
+
+.jak-grammar-master::before {
+  content: "";
+  position: absolute;
+  inset: -120px;
+  background: conic-gradient(from 0deg, transparent, rgba(250,204,21,.24), transparent, rgba(34,197,94,.18), transparent);
+  animation: jakGrammarGlow 16s linear infinite;
+  opacity: .5;
+  pointer-events: none;
+}
+
+@keyframes jakGrammarGlow {
+  from { transform: rotate(0); }
+  to { transform: rotate(360deg); }
+}
+
+.jak-grammar-master > * {
+  position: relative;
+  z-index: 1;
+}
+
+.jak-hero {
+  text-align: center;
+  padding: 24px 18px;
+  border-radius: 26px;
+  color: white;
+  background: linear-gradient(135deg, #0f172a, #14532d, #ca8a04);
+  box-shadow: 0 16px 35px rgba(15,23,42,.25);
+}
+
+.jak-hero h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 1000;
+}
+
+.jak-hero p {
+  margin: 8px 0 0;
+  color: #fef3c7;
+  font-weight: 800;
+}
+
+.jak-grammar-master h2 {
+  margin: 24px 0 14px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  color: #14532d;
+  background: linear-gradient(135deg, #fef9c3, #dcfce7);
+  border: 1px solid rgba(22,101,52,.18);
+  font-size: 22px;
+  font-weight: 1000;
+}
+
+.jak-golden-rule,
+.rule-box,
+.warning-box,
+.final-box {
+  direction: rtl;
+  text-align: right;
+  padding: 18px 20px;
+  margin: 18px 0;
+  border-radius: 22px;
+  line-height: 2;
+  color: #334155;
+  font-weight: 800;
+  background: rgba(255,255,255,.86);
+  border: 1px solid rgba(148,163,184,.24);
+  box-shadow: 0 12px 26px rgba(15,23,42,.08);
+}
+
+.jak-golden-rule {
+  border-right: 8px solid #eab308;
+}
+
+.rule-box {
+  border-right: 8px solid #22c55e;
+}
+
+.warning-box {
+  border-right: 8px solid #f97316;
+  background: linear-gradient(135deg, #fff7ed, #ffffff);
+}
+
+.final-box {
+  border-right: 8px solid #0f172a;
+  background: linear-gradient(135deg, #ecfdf5, #fef9c3);
+}
+
+.formula {
+  direction: ltr;
+  text-align: center;
+  margin: 14px 0;
+  padding: 15px;
+  border-radius: 18px;
+  color: #0f172a;
+  background: #ffffff;
+  border: 2px dashed rgba(234,179,8,.55);
+  font-weight: 1000;
+  line-height: 1.9;
+}
+
+.steps-grid,
+.special-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.step-card,
+.special-card {
+  direction: rtl;
+  text-align: right;
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255,255,255,.88);
+  border: 1px solid rgba(148,163,184,.24);
+  box-shadow: 0 12px 25px rgba(15,23,42,.08);
+  transition: .25s ease;
+}
+
+.step-card:hover,
+.special-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(15,23,42,.13);
+}
+
+.step-card b {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #422006;
+  background: linear-gradient(135deg, #facc15, #fef3c7);
+  font-size: 20px;
+  box-shadow: 0 8px 18px rgba(234,179,8,.22);
+}
+
+.jak-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 22px;
+  background: white;
+  box-shadow: 0 18px 35px rgba(15,23,42,.12);
+  margin: 16px 0 24px;
+}
+
+.jak-table thead th {
+  padding: 16px 14px;
+  color: white;
+  text-align: center;
+  background: linear-gradient(135deg, #052e16, #14532d, #0f172a);
+  font-size: 15px;
+  font-weight: 1000;
+  border-right: 1px solid rgba(255,255,255,.2);
+}
+
+.jak-table tbody td {
+  padding: 16px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  vertical-align: top;
+  color: #1e293b;
+  background: rgba(255,255,255,.96);
+  line-height: 1.85;
+  font-size: 15px;
+  transition: .25s ease;
+}
+
+.jak-table tbody tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+.jak-table tbody tr:hover td {
+  background: #fff3bf;
+  transform: translateY(-2px);
+}
+
+.chip {
+  display: inline-block;
+  padding: 7px 12px;
+  border-radius: 999px;
+  color: #064e3b;
+  background: linear-gradient(135deg, #dcfce7, #86efac);
+  border: 1px solid rgba(22,101,52,.25);
+  font-weight: 1000;
+}
+
+@media (max-width: 768px) {
+  .jak-grammar-master {
+    margin: 18px 6px;
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .jak-hero h1 {
+    font-size: 22px;
+  }
+
+  .jak-grammar-master h2 {
+    font-size: 18px;
+  }
+
+  .steps-grid,
+  .special-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jak-table {
+    display: block;
+    overflow-x: auto;
+    min-width: 100%;
+  }
+
+  .jak-table th,
+  .jak-table td {
+    font-size: 13px;
+    padding: 12px 10px;
+  }
+}

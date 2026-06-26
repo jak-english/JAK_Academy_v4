@@ -4662,7 +4662,7 @@ Explanation: We use an affirmative tag after a negative sentence."></textarea>
 </section>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- <script src="app.js?v=golden-normalizer-final-2026-06-19"></script>
+<script src="app.js?v=question-tags-save-final-2026-06-22"></script>
 <script>
 /* =========================================================
    JAK Academy - Smart Answer Checker Bridge
@@ -6284,14 +6284,54 @@ async function loadGoldenLinkedExamsClean(cohort, unitKey, skill) {
         return;
       }
 
-      const box = ensureBox(viewer);
+     const box = ensureBox(viewer);
 
-      /* ✅ Fix: hide old vocabulary content stuck under all sections */
-      hideLegacyVocabBox(viewer);
+/* ✅ Fix: hide old vocabulary content stuck under all sections */
+hideLegacyVocabBox(viewer);
 
-      const content = contentOf(unit, skill);
+/* ✅ Main content from current unit source */
+let content = contentOf(unit, skill);
 
-      setActive(viewer, skill);
+/* ✅ CRITICAL FIX:
+If the loaded unit source is empty, read from localStorage.
+This fixes cases like:
+localStorage has 2009/unit1/grammar length 14646
+but HARD_LOCK renders contentLength 0.
+*/
+if (!String(content || "").trim()) {
+try {
+const localData = JSON.parse(localStorage.getItem("jakGoldenIntensiveDataV1") || "{}");
+
+```
+const localContent =
+  localData?.[String(cohort)]?.[String(unitKey)]?.[String(skill)];
+
+if (String(localContent || "").trim()) {
+  content = localContent;
+
+  /* Also sync the active in-memory unit so future renders see it */
+  unit[skill] = localContent;
+
+  if (skill === "vocabulary") {
+    unit.meanings = localContent;
+  }
+
+  console.log("✅ HARD LOCK used localStorage fallback:", {
+    cohort,
+    unitKey,
+    skill,
+    localLength: String(localContent || "").length
+  });
+}
+```
+
+} catch (e) {
+console.warn("⚠️ HARD LOCK localStorage fallback failed:", e);
+}
+}
+
+setActive(viewer, skill);
+
 
       box.innerHTML = `
         <section class="golden-fixed-part-card" data-active-skill="${skill}" dir="auto">
@@ -7033,35 +7073,67 @@ window.prevGoldenExamQuestion = function() {
   };
 
   function getGoldenEditorContextSafe() {
-    const ctx = window.__lastGoldenOpenContext || {};
+  const ctx = window.__lastGoldenOpenContext || {};
 
-    const activeCohort =
-      ctx.cohort ||
-      window.currentGoldenCohort ||
-      document.querySelector("[data-golden-cohort].active")?.dataset?.goldenCohort ||
-      "2008";
+  const editor =
+    document.querySelector("#goldenEditorModal") ||
+    document.querySelector(".golden-editor-modal") ||
+    document;
 
-    const activeUnit =
-      ctx.unitKey ||
-      window.currentGoldenUnitKey ||
-      window.currentGoldenUnit ||
-      document.querySelector("[data-golden-unit].active")?.dataset?.goldenUnit ||
-      "unit1";
+  const activeEditorTab =
+    editor.querySelector(".golden-editor-tab.active") ||
+    editor.querySelector(".golden-editor-inner-tab.active") ||
+    editor.querySelector("[data-skill].active") ||
+    editor.querySelector("[data-golden-skill].active");
 
-    const activeSkill =
-      ctx.skill ||
-      window.currentGoldenSkill ||
-      document.querySelector(".golden-editor-tab.active")?.dataset?.skill ||
-      document.querySelector(".golden-unit-tab.active")?.dataset?.skill ||
-      "vocabulary";
+  const visibleTextarea = Array.from(editor.querySelectorAll("textarea")).find(el => {
+    const st = window.getComputedStyle(el);
+    return st.display !== "none" && st.visibility !== "hidden" && el.offsetParent !== null;
+  });
 
-    return {
-      cohort: normalizeGoldenCohortKey(activeCohort),
-      unitKey: normalizeGoldenUnitKey(activeUnit),
-      skill: normalizeGoldenSkillKey(activeSkill)
-    };
-  }
+  const skillFromTextarea =
+    visibleTextarea?.dataset?.skill ||
+    visibleTextarea?.dataset?.goldenSkill ||
+    String(visibleTextarea?.id || "")
+      .replace("goldenEditor_", "")
+      .replace("goldenEditor", "");
 
+  const activeCohort =
+    ctx.cohort ||
+    window.currentGoldenCohort ||
+    document.querySelector("[data-golden-cohort].active")?.dataset?.goldenCohort ||
+    "2008";
+
+  const activeUnit =
+    ctx.unitKey ||
+    window.currentGoldenUnitKey ||
+    window.currentGoldenUnit ||
+    document.querySelector("[data-golden-unit].active")?.dataset?.goldenUnit ||
+    "unit1";
+
+  /*
+    مهم:
+    هنا قدمنا التبويب النشط والـ textarea على ctx.skill
+    لأن ctx.skill قديم أحيانًا.
+  */
+  const activeSkill =
+    activeEditorTab?.dataset?.skill ||
+    activeEditorTab?.dataset?.goldenSkill ||
+    skillFromTextarea ||
+    window.currentGoldenSkill ||
+    ctx.skill ||
+    "vocabulary";
+
+  const result = {
+    cohort: normalizeGoldenCohortKey(activeCohort),
+    unitKey: normalizeGoldenUnitKey(activeUnit),
+    skill: normalizeGoldenSkillKey(activeSkill)
+  };
+
+  console.log("🧭 Golden editor context safe:", result);
+
+  return result;
+}
   function findActiveGoldenEditorTextarea(skill) {
     const normalizedSkill = normalizeGoldenSkillKey(skill);
 
@@ -7314,6 +7386,1797 @@ window.normalizeGoldenExamPayload = function(payload) {
 };
 
 console.log("✅ Golden normalizer missing parts loaded permanently.");
+/* =========================================================
+   GOLDEN DIRECT CONTENT EDITOR
+   Emergency stable data entry tool
+   Does NOT depend on old editor / tabs / active textarea
+========================================================= */
+(function installGoldenDirectContentEditor() {
+  if (window.__GOLDEN_DIRECT_CONTENT_EDITOR__) return;
+  window.__GOLDEN_DIRECT_CONTENT_EDITOR__ = true;
+
+  console.log("🧱 Installing Golden Direct Content Editor...");
+
+  function getClient() {
+    if (typeof window.getAppSupabaseClient === "function") {
+      const c = window.getAppSupabaseClient();
+      if (c && typeof c.from === "function") return c;
+    }
+
+    const candidates = [
+      window.client,
+      window.supabase,
+      window.supabaseClient,
+      window.db,
+      window._supabase,
+      window.sb
+    ];
+
+    for (const c of candidates) {
+      if (c && typeof c.from === "function") return c;
+    }
+
+    for (const key of Object.keys(window)) {
+      try {
+        const value = window[key];
+
+        if (value && typeof value.from === "function") return value;
+
+        if (value && typeof value === "object") {
+          for (const subKey of Object.keys(value).slice(0, 80)) {
+            try {
+              const subValue = value[subKey];
+              if (subValue && typeof subValue.from === "function") return subValue;
+            } catch (e) {}
+          }
+        }
+      } catch (e) {}
+    }
+
+    return null;
+  }
+
+  function normCohort(value) {
+    if (typeof window.normalizeGoldenCohortKey === "function") {
+      return window.normalizeGoldenCohortKey(value);
+    }
+
+    const raw = String(value || "").trim();
+    if (raw.includes("2009")) return "2009";
+    return "2008";
+  }
+
+  function normUnit(value) {
+    if (typeof window.normalizeGoldenUnitKey === "function") {
+      return window.normalizeGoldenUnitKey(value);
+    }
+
+    const raw = String(value || "unit1").trim().toLowerCase();
+    const num = raw.match(/\d+/)?.[0];
+    return num ? "unit" + num : "unit1";
+  }
+
+  function normSkill(value) {
+    const raw = String(value || "vocabulary").trim().toLowerCase();
+
+    if (raw.includes("vocab") || raw.includes("meaning") || raw.includes("معاني")) return "vocabulary";
+    if (raw.includes("grammar") || raw.includes("قواعد")) return "grammar";
+    if (raw.includes("reading") || raw.includes("قراءة")) return "reading";
+    if (raw.includes("writing") || raw.includes("كتابة")) return "writing";
+    if (raw.includes("note") || raw.includes("ملاحظ")) return "notes";
+
+    return ["vocabulary", "grammar", "reading", "writing", "notes"].includes(raw)
+      ? raw
+      : "vocabulary";
+  }
+
+  function skillLabel(skill) {
+    return {
+      vocabulary: "📚 المعاني والمفردات",
+      grammar: "📘 القواعد",
+      reading: "📖 القراءة",
+      writing: "✍️ الكتابة",
+      notes: "📝 الملاحظات"
+    }[skill] || skill;
+  }
+
+  function ensureStoreUnit(cohort, unitKey) {
+    const store = window.goldenUnitData || window.goldenData || {};
+    window.goldenUnitData = store;
+    window.goldenData = store;
+
+    store[cohort] = store[cohort] || {};
+    store[cohort][unitKey] = store[cohort][unitKey] || {};
+
+    const unit = store[cohort][unitKey];
+
+    unit.title = unit.title || unitKey.replace("unit", "Unit ");
+    unit.vocabulary = unit.vocabulary || unit.meanings || "";
+    unit.meanings = unit.meanings || unit.vocabulary || "";
+    unit.grammar = unit.grammar || "";
+    unit.reading = unit.reading || "";
+    unit.writing = unit.writing || "";
+    unit.notes = unit.notes || "";
+
+    return { store, unit };
+  }
+
+  function createModal() {
+    let modal = document.getElementById("goldenDirectEditorModal");
+
+    if (modal) return modal;
+
+    modal = document.createElement("div");
+    modal.id = "goldenDirectEditorModal";
+
+    modal.innerHTML = `
+      <div class="golden-direct-backdrop"></div>
+
+      <div class="golden-direct-box" dir="rtl">
+        <div class="golden-direct-head">
+          <div>
+            <h2>⚡ إدخال مباشر للمكثف الذهبي</h2>
+            <p id="goldenDirectMeta">Direct Save</p>
+          </div>
+          <button type="button" id="goldenDirectClose">×</button>
+        </div>
+
+        <div class="golden-direct-controls">
+          <label>
+            الجيل
+            <select id="goldenDirectCohort">
+              <option value="2008">2008</option>
+              <option value="2009">2009</option>
+            </select>
+          </label>
+
+          <label>
+            الوحدة
+            <select id="goldenDirectUnit">
+              ${Array.from({ length: 10 }, (_, i) => {
+                const n = i + 1;
+                return `<option value="unit${n}">Unit ${n}</option>`;
+              }).join("")}
+            </select>
+          </label>
+
+          <label>
+            القسم
+            <select id="goldenDirectSkill">
+              <option value="vocabulary">📚 المعاني</option>
+              <option value="grammar">📘 القواعد</option>
+              <option value="reading">📖 القراءة</option>
+              <option value="writing">✍️ الكتابة</option>
+              <option value="notes">📝 الملاحظات</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="golden-direct-title-label">
+          عنوان الوحدة
+          <input id="goldenDirectTitle" type="text" placeholder="Unit 2">
+        </label>
+
+        <label class="golden-direct-content-label">
+          المحتوى
+          <textarea id="goldenDirectContent" dir="auto" placeholder="الصق محتوى HTML هنا..."></textarea>
+        </label>
+
+        <div class="golden-direct-actions">
+          <button type="button" id="goldenDirectLoad">🔄 تحميل الموجود</button>
+          <button type="button" id="goldenDirectSave">💾 حفظ مباشر</button>
+          <button type="button" id="goldenDirectCancel">إغلاق</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const css = document.createElement("style");
+    css.id = "goldenDirectEditorCSS";
+    css.textContent = `
+      #goldenDirectEditorModal {
+        position: fixed;
+        inset: 0;
+        z-index: 9999999;
+        display: none;
+        font-family: "Cairo", "Tajawal", sans-serif;
+      }
+
+      #goldenDirectEditorModal.active {
+        display: block;
+      }
+
+      .golden-direct-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(20, 15, 5, .62);
+        backdrop-filter: blur(5px);
+      }
+
+      .golden-direct-box {
+        position: relative;
+        width: min(1150px, calc(100vw - 20px));
+        height: calc(100vh - 20px);
+        margin: 10px auto;
+        background: #fffdf8;
+        border-radius: 24px;
+        box-shadow: 0 30px 90px rgba(0,0,0,.38);
+        padding: 18px;
+        overflow: auto;
+        border: 1px solid rgba(181,132,36,.28);
+      }
+
+      .golden-direct-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #ead8ac;
+        margin-bottom: 14px;
+      }
+
+      .golden-direct-head h2 {
+        margin: 0;
+        color: #7a4d00;
+        font-weight: 900;
+      }
+
+      .golden-direct-head p {
+        margin: 4px 0 0;
+        color: #7d6840;
+        font-weight: 800;
+      }
+
+      #goldenDirectClose {
+        width: 44px;
+        height: 44px;
+        border: 0;
+        border-radius: 50%;
+        background: #7a1f1f;
+        color: white;
+        font-size: 28px;
+        cursor: pointer;
+      }
+
+      .golden-direct-controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .golden-direct-controls label,
+      .golden-direct-title-label,
+      .golden-direct-content-label {
+        display: block;
+        background: #fff7e6;
+        border: 1px solid #ead2a0;
+        border-radius: 16px;
+        padding: 10px;
+        color: #6b4300;
+        font-weight: 900;
+      }
+
+      .golden-direct-controls select,
+      #goldenDirectTitle,
+      #goldenDirectContent {
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 7px;
+        border: 1px solid #cfae67;
+        border-radius: 12px;
+        padding: 10px;
+        font-family: "Cairo", "Tajawal", sans-serif;
+        font-size: 15px;
+        background: white;
+      }
+
+      #goldenDirectContent {
+        min-height: 55vh;
+        line-height: 1.8;
+        resize: vertical;
+        direction: auto;
+        font-family: Consolas, "Cairo", monospace;
+      }
+
+      .golden-direct-actions {
+        position: sticky;
+        bottom: 0;
+        display: flex;
+        gap: 10px;
+        background: #fffdf8;
+        padding-top: 12px;
+        margin-top: 12px;
+        border-top: 1px solid #ead8ac;
+      }
+
+      .golden-direct-actions button {
+        border: 0;
+        border-radius: 13px;
+        padding: 11px 18px;
+        font-weight: 900;
+        cursor: pointer;
+        font-family: "Cairo", "Tajawal", sans-serif;
+      }
+
+      #goldenDirectSave {
+        background: #9a6500;
+        color: white;
+      }
+
+      #goldenDirectLoad {
+        background: #1d4ed8;
+        color: white;
+      }
+
+      #goldenDirectCancel {
+        background: #f3ead7;
+        color: #6b4300;
+      }
+
+      @media (max-width: 700px) {
+        .golden-direct-controls {
+          grid-template-columns: 1fr;
+        }
+
+        .golden-direct-box {
+          border-radius: 16px;
+          padding: 12px;
+        }
+      }
+    `;
+
+    document.head.appendChild(css);
+
+    document.getElementById("goldenDirectClose").onclick = () => modal.classList.remove("active");
+    document.getElementById("goldenDirectCancel").onclick = () => modal.classList.remove("active");
+    document.getElementById("goldenDirectLoad").onclick = () => window.loadGoldenDirectEditorContent();
+    document.getElementById("goldenDirectSave").onclick = () => window.saveGoldenDirectEditorContent();
+
+    ["goldenDirectCohort", "goldenDirectUnit", "goldenDirectSkill"].forEach(id => {
+      document.getElementById(id).addEventListener("change", () => {
+        window.loadGoldenDirectEditorContent();
+      });
+    });
+
+    return modal;
+  }
+
+  async function fetchRow(cohort, unitKey) {
+    const sb = getClient();
+
+    if (!sb) {
+      console.error("❌ Supabase client not found");
+      return null;
+    }
+
+    const { data, error } = await sb
+      .from("golden_content")
+      .select("*")
+      .eq("cohort", cohort)
+      .eq("unit_key", unitKey)
+      .limit(1);
+
+    if (error) {
+      console.error("❌ Golden direct fetch failed:", error);
+      return null;
+    }
+
+    return data && data.length ? data[0] : null;
+  }
+
+  window.openGoldenDirectEditor = async function openGoldenDirectEditor(cohort = "2008", unitKey = "unit1", skill = "vocabulary") {
+    const c = normCohort(cohort);
+    const u = normUnit(unitKey);
+    const s = normSkill(skill);
+
+    const modal = createModal();
+
+    document.getElementById("goldenDirectCohort").value = c;
+    document.getElementById("goldenDirectUnit").value = u;
+    document.getElementById("goldenDirectSkill").value = s;
+
+    modal.classList.add("active");
+
+    await window.loadGoldenDirectEditorContent();
+
+    console.log("⚡ Golden Direct Editor opened:", { cohort: c, unitKey: u, skill: s });
+  };
+
+  window.loadGoldenDirectEditorContent = async function loadGoldenDirectEditorContent() {
+    const c = normCohort(document.getElementById("goldenDirectCohort").value);
+    const u = normUnit(document.getElementById("goldenDirectUnit").value);
+    const s = normSkill(document.getElementById("goldenDirectSkill").value);
+
+    const { unit } = ensureStoreUnit(c, u);
+    const row = await fetchRow(c, u);
+
+    if (row) {
+      unit.title = row.title || unit.title || u.replace("unit", "Unit ");
+      unit.vocabulary = row.vocabulary || "";
+      unit.meanings = row.vocabulary || "";
+      unit.grammar = row.grammar || "";
+      unit.reading = row.reading || "";
+      unit.writing = row.writing || "";
+      unit.notes = row.notes || "";
+    }
+
+    document.getElementById("goldenDirectTitle").value = unit.title || u.replace("unit", "Unit ");
+    document.getElementById("goldenDirectContent").value = unit[s] || "";
+
+    document.getElementById("goldenDirectMeta").textContent =
+      `جيل ${c} / ${u} / ${skillLabel(s)}`;
+
+    console.log("🔄 Golden direct content loaded:", {
+      cohort: c,
+      unitKey: u,
+      skill: s,
+      length: String(unit[s] || "").length
+    });
+  };
+
+  window.saveGoldenDirectEditorContent = async function saveGoldenDirectEditorContent() {
+    const sb = getClient();
+
+    if (!sb) {
+      alert("تعذر الحفظ: Supabase غير جاهز");
+      console.error("❌ Supabase client not found");
+      return false;
+    }
+
+    const c = normCohort(document.getElementById("goldenDirectCohort").value);
+    const u = normUnit(document.getElementById("goldenDirectUnit").value);
+    const s = normSkill(document.getElementById("goldenDirectSkill").value);
+
+    const title = document.getElementById("goldenDirectTitle").value || u.replace("unit", "Unit ");
+    const content = document.getElementById("goldenDirectContent").value || "";
+
+    const { store, unit } = ensureStoreUnit(c, u);
+
+    const existing = await fetchRow(c, u);
+
+    const payload = {
+      cohort: c,
+      unit_key: u,
+      title,
+      vocabulary: existing?.vocabulary || unit.vocabulary || unit.meanings || "",
+      grammar: existing?.grammar || unit.grammar || "",
+      reading: existing?.reading || unit.reading || "",
+      writing: existing?.writing || unit.writing || "",
+      notes: existing?.notes || unit.notes || ""
+    };
+
+    payload[s] = content;
+
+    if (s === "vocabulary") {
+      unit.meanings = content;
+    }
+
+    unit.title = title;
+    unit[s] = content;
+
+    if (s === "vocabulary") {
+      unit.meanings = content;
+    }
+
+    try {
+      localStorage.setItem("jakGoldenIntensiveDataV1", JSON.stringify(store));
+    } catch (e) {
+      console.warn("⚠️ localStorage direct save failed:", e);
+    }
+
+    let error = null;
+
+    if (existing?.id) {
+      const result = await sb
+        .from("golden_content")
+        .update(payload)
+        .eq("id", existing.id);
+
+      error = result.error;
+    } else {
+      const result = await sb
+        .from("golden_content")
+        .insert(payload);
+
+      error = result.error;
+    }
+
+    if (error) {
+      console.error("❌ Golden direct save failed:", error, payload);
+      alert("فشل الحفظ المباشر");
+      return false;
+    }
+
+    console.log("✅ Golden direct save success:", {
+      cohort: c,
+      unitKey: u,
+      skill: s,
+      contentLength: content.length,
+      titleLength: title.length
+    });
+
+    alert("✅ تم الحفظ المباشر بنجاح");
+
+    if (typeof window.openGoldenUnit === "function") {
+      setTimeout(() => {
+        window.openGoldenUnit(c, u, s);
+      }, 250);
+    }
+
+    return true;
+  };
+
+  window.saveGoldenSectionDirect = async function saveGoldenSectionDirect(cohort, unitKey, skill, content, title) {
+    createModal();
+
+    document.getElementById("goldenDirectCohort").value = normCohort(cohort);
+    document.getElementById("goldenDirectUnit").value = normUnit(unitKey);
+    document.getElementById("goldenDirectSkill").value = normSkill(skill);
+    document.getElementById("goldenDirectTitle").value = title || normUnit(unitKey).replace("unit", "Unit ");
+    document.getElementById("goldenDirectContent").value = String(content || "");
+
+    return window.saveGoldenDirectEditorContent();
+  };
+
+  console.log("✅ Golden Direct Content Editor installed.");
+})();
+/* =========================================================
+   GOLDEN EDIT BUTTON BRIDGE
+   Make all Golden edit buttons open the Direct Editor
+========================================================= */
+(function installGoldenDirectEditorBridge() {
+  if (window.__GOLDEN_DIRECT_EDITOR_BRIDGE__) return;
+  window.__GOLDEN_DIRECT_EDITOR_BRIDGE__ = true;
+
+  window.openGoldenUnitEditor = function openGoldenUnitEditor_DIRECT_BRIDGE(cohort, unitKey, skill) {
+    const ctx = window.__lastGoldenOpenContext || {};
+
+    const c = cohort || ctx.cohort || "2008";
+    const u = unitKey || ctx.unitKey || "unit1";
+    const s = skill || ctx.skill || "vocabulary";
+
+    if (typeof window.openGoldenDirectEditor === "function") {
+      return window.openGoldenDirectEditor(c, u, s);
+    }
+
+    console.error("❌ openGoldenDirectEditor is not installed.");
+  };
+
+  console.log("✅ Golden edit buttons now open Direct Editor.");
+})();
+/* =========================================================
+   GOLDEN RELIABLE FULL SECTION SAVE - FINAL FIX
+   Fixes: only first lesson saved / old editor saves first textarea
+========================================================= */
+(function GOLDEN_RELIABLE_FULL_SECTION_SAVE_FINAL() {
+  if (window.__GOLDEN_RELIABLE_FULL_SECTION_SAVE_FINAL__) return;
+  window.__GOLDEN_RELIABLE_FULL_SECTION_SAVE_FINAL__ = true;
+
+  console.log("💾 Installing Golden Reliable Full Section Save FINAL...");
+
+  function normCohort(value) {
+    const raw = String(value || "").trim();
+    if (raw.includes("2009")) return "2009";
+    if (raw.includes("2008")) return "2008";
+    return raw || "2008";
+  }
+
+  function normUnit(value) {
+    const raw = String(value || "unit1").trim().toLowerCase();
+    const match = raw.match(/\d+/);
+    return match ? "unit" + match[0] : "unit1";
+  }
+
+  function normSkill(value) {
+    const raw = String(value || "vocabulary").trim().toLowerCase();
+
+    if (raw.includes("vocab") || raw.includes("meaning") || raw.includes("معاني") || raw.includes("مفردات")) return "vocabulary";
+    if (raw.includes("grammar") || raw.includes("قواعد")) return "grammar";
+    if (raw.includes("reading") || raw.includes("قراءة") || raw.includes("passage")) return "reading";
+    if (raw.includes("writing") || raw.includes("كتابة")) return "writing";
+    if (raw.includes("note") || raw.includes("ملاحظ")) return "notes";
+
+    return ["vocabulary", "grammar", "reading", "writing", "notes"].includes(raw)
+      ? raw
+      : "vocabulary";
+  }
+
+  function getClient() {
+    if (typeof window.getAppSupabaseClient === "function") {
+      const c = window.getAppSupabaseClient();
+      if (c && typeof c.from === "function") return c;
+    }
+
+    const candidates = [
+      window.supabase,
+      window.supabaseClient,
+      window._supabase,
+      window.db,
+      window.sb,
+      window.client
+    ];
+
+    for (const c of candidates) {
+      if (c && typeof c.from === "function") return c;
+    }
+
+    for (const key of Object.keys(window)) {
+      try {
+        const v = window[key];
+        if (v && typeof v.from === "function") return v;
+      } catch (e) {}
+    }
+
+    return null;
+  }
+
+  function getCurrentContext() {
+    const ctx = window.__lastGoldenOpenContext || {};
+
+    const c =
+      document.getElementById("goldenDirectCohort")?.value ||
+      ctx.cohort ||
+      window.currentGoldenCohort ||
+      "2008";
+
+    const u =
+      document.getElementById("goldenDirectUnit")?.value ||
+      ctx.unitKey ||
+      window.currentGoldenUnitKey ||
+      "unit1";
+
+    const s =
+      document.getElementById("goldenDirectSkill")?.value ||
+      ctx.skill ||
+      window.currentGoldenSkill ||
+      "vocabulary";
+
+    return {
+      cohort: normCohort(c),
+      unitKey: normUnit(u),
+      skill: normSkill(s)
+    };
+  }
+
+  function findRealEditorContent(ctx) {
+    /*
+      أهم نقطة:
+      لا نأخذ أول textarea عشوائيًا.
+      نبدأ بالمحرر المباشر، ثم textarea القسم الصحيح، ثم المرئي.
+    */
+
+    const direct = document.getElementById("goldenDirectContent");
+    if (direct && typeof direct.value === "string") {
+      return direct.value;
+    }
+
+    const exactIds = [
+      "goldenEditor_" + ctx.skill,
+      "goldenEditor" + ctx.skill.charAt(0).toUpperCase() + ctx.skill.slice(1),
+      "goldenEditorContent"
+    ];
+
+    for (const id of exactIds) {
+      const el = document.getElementById(id);
+      if (el && typeof el.value === "string") {
+        return el.value;
+      }
+    }
+
+    const allTextareas = Array.from(document.querySelectorAll("textarea"));
+
+    const visible = allTextareas.filter(el => {
+      const st = getComputedStyle(el);
+      return st.display !== "none" && st.visibility !== "hidden" && el.offsetHeight > 0;
+    });
+
+    const skillMatched = visible.find(el => {
+      const info = [
+        el.id,
+        el.name,
+        el.className,
+        el.placeholder,
+        el.dataset?.skill,
+        el.dataset?.goldenSkill
+      ].join(" ").toLowerCase();
+
+      return info.includes(ctx.skill);
+    });
+
+    if (skillMatched) return skillMatched.value;
+
+    if (visible[0]) return visible[0].value;
+
+    return "";
+  }
+
+  function ensureMemory(cohort, unitKey) {
+    const storageKey = "jakGoldenIntensiveDataV1";
+    let localData = {};
+
+    try {
+      localData = JSON.parse(localStorage.getItem(storageKey) || "{}");
+    } catch (e) {
+      localData = {};
+    }
+
+    localData[cohort] = localData[cohort] || {};
+    localData[cohort][unitKey] = localData[cohort][unitKey] || {};
+
+    const unit = localData[cohort][unitKey];
+
+    unit.title = unit.title || "Unit " + String(unitKey).replace("unit", "");
+    unit.vocabulary = unit.vocabulary || "";
+    unit.grammar = unit.grammar || "";
+    unit.reading = unit.reading || "";
+    unit.writing = unit.writing || "";
+    unit.notes = unit.notes || "";
+
+    window.goldenUnitData = localData;
+    window.goldenData = localData;
+    window.jakGoldenIntensiveData = localData;
+
+    return { localData, unit };
+  }
+
+  async function fetchExistingRow(sb, cohort, unitKey) {
+    const { data, error } = await sb
+      .from("golden_content")
+      .select("*")
+      .eq("cohort", cohort)
+      .eq("unit_key", unitKey)
+      .limit(1);
+
+    if (error) {
+      console.warn("⚠️ Could not fetch existing golden row:", error);
+      return null;
+    }
+
+    return data && data.length ? data[0] : null;
+  }
+
+  async function saveFullSectionReliable() {
+    const ctx = getCurrentContext();
+    const content = findRealEditorContent(ctx);
+
+    if (!String(content || "").trim()) {
+      alert("⚠️ صندوق المحتوى فاضي. لم يتم الحفظ.");
+      console.warn("❌ Empty content, save stopped:", ctx);
+      return false;
+    }
+
+    const { localData, unit } = ensureMemory(ctx.cohort, ctx.unitKey);
+
+    unit[ctx.skill] = content;
+
+    if (ctx.skill === "vocabulary") {
+      unit.meanings = content;
+    }
+
+    localData[ctx.cohort][ctx.unitKey] = unit;
+
+    try {
+      localStorage.setItem("jakGoldenIntensiveDataV1", JSON.stringify(localData));
+      console.log("✅ Reliable save to localStorage:", {
+        ...ctx,
+        length: content.length,
+        hasQuestionTags: content.includes("Question Tags")
+      });
+    } catch (e) {
+      console.error("❌ localStorage reliable save failed:", e);
+    }
+
+    const sb = getClient();
+
+    if (!sb) {
+      alert("✅ تم الحفظ محليًا، لكن Supabase غير جاهز.");
+      return true;
+    }
+
+    const existing = await fetchExistingRow(sb, ctx.cohort, ctx.unitKey);
+
+    const payload = {
+      cohort: ctx.cohort,
+      unit_key: ctx.unitKey,
+      title: unit.title || existing?.title || "Unit " + String(ctx.unitKey).replace("unit", ""),
+      vocabulary: existing?.vocabulary || unit.vocabulary || "",
+      grammar: existing?.grammar || unit.grammar || "",
+      reading: existing?.reading || unit.reading || "",
+      writing: existing?.writing || unit.writing || "",
+      notes: existing?.notes || unit.notes || ""
+    };
+
+    /*
+      هنا السطر المهم:
+      احفظ القسم كاملًا بالمحتوى الحالي، وليس أول درس.
+    */
+    payload[ctx.skill] = content;
+
+    let error = null;
+
+    if (existing?.id) {
+      const result = await sb
+        .from("golden_content")
+        .update(payload)
+        .eq("id", existing.id);
+
+      error = result.error;
+    } else {
+      const result = await sb
+        .from("golden_content")
+        .insert(payload);
+
+      error = result.error;
+    }
+
+    if (error) {
+      console.error("❌ Reliable Supabase save failed:", error, payload);
+      alert("⚠️ تم الحفظ محليًا، لكن فشل حفظ Supabase.");
+      return false;
+    }
+
+    console.log("✅ Reliable Supabase save success:", {
+      ...ctx,
+      length: content.length,
+      hasQuestionTags: content.includes("Question Tags")
+    });
+
+    alert("✅ تم حفظ القسم كاملًا بنجاح");
+
+    if (typeof window.openGoldenUnit === "function") {
+      setTimeout(() => {
+        window.openGoldenUnit(ctx.cohort, ctx.unitKey, ctx.skill);
+      }, 250);
+    }
+
+    return true;
+  }
+
+  /*
+    هذا الزر/الدالة الجديدة:
+    استخدمها بدل saveGoldenUnitContent العادي.
+  */
+  window.saveGoldenFullSectionReliable = saveFullSectionReliable;
+
+  /*
+    نربط الحفظ القديم بالحفظ الجديد.
+    يعني أي زر حفظ قديم سيستخدم الدالة المضمونة.
+  */
+  window.saveGoldenUnitContent = async function saveGoldenUnitContent_RELIABLE_FULL_SECTION() {
+    console.log("💾 Reliable full section save triggered.");
+    return window.saveGoldenFullSectionReliable();
+  };
+
+  /*
+    إذا كنت تستخدم المحرر المباشر، نخلي زر الحفظ فيه يستخدم نفس الدالة.
+  */
+  window.saveGoldenDirectEditorContent = async function saveGoldenDirectEditorContent_RELIABLE_FULL_SECTION() {
+    console.log("💾 Reliable direct editor save triggered.");
+    return window.saveGoldenFullSectionReliable();
+  };
+
+  console.log("✅ Golden Reliable Full Section Save FINAL installed.");
+})();
+/* =========================================================
+   JAK GOLDEN SINGLE SAVE ENGINE - FINAL CLEAN FIX
+   يحل مشكلة: لا يخزن / يخزن أول درس فقط / يرجع المحتوى القديم
+========================================================= */
+(function JAK_GOLDEN_SINGLE_SAVE_ENGINE_FINAL() {
+  if (window.__JAK_GOLDEN_SINGLE_SAVE_ENGINE_FINAL__) return;
+  window.__JAK_GOLDEN_SINGLE_SAVE_ENGINE_FINAL__ = true;
+
+  const STORAGE_KEY = "jakGoldenIntensiveDataV1";
+
+  function getSB() {
+    if (typeof window.getAppSupabaseClient === "function") {
+      const c = window.getAppSupabaseClient();
+      if (c && typeof c.from === "function") return c;
+    }
+
+    const candidates = [
+      window.supabaseClient,
+      window._supabase,
+      window.db,
+      window.sb,
+      window.client,
+      window.supabase
+    ];
+
+    for (const c of candidates) {
+      if (c && typeof c.from === "function") return c;
+    }
+
+    for (const key of Object.keys(window)) {
+      try {
+        const v = window[key];
+        if (v && typeof v.from === "function") return v;
+      } catch (e) {}
+    }
+
+    return null;
+  }
+
+  function normCohort(value) {
+    const raw = String(value || "").trim();
+    if (raw.includes("2009")) return "2009";
+    if (raw.includes("2008")) return "2008";
+    return "2008";
+  }
+
+  function normUnit(value) {
+    const raw = String(value || "unit1").trim().toLowerCase();
+    const num = raw.match(/\d+/)?.[0];
+    return num ? "unit" + num : "unit1";
+  }
+
+  function normSkill(value) {
+    const raw = String(value || "vocabulary").trim().toLowerCase();
+
+    if (raw.includes("vocab") || raw.includes("meaning") || raw.includes("معاني") || raw.includes("مفردات")) return "vocabulary";
+    if (raw.includes("grammar") || raw.includes("قواعد")) return "grammar";
+    if (raw.includes("reading") || raw.includes("قراءة") || raw.includes("passage")) return "reading";
+    if (raw.includes("writing") || raw.includes("كتابة")) return "writing";
+    if (raw.includes("note") || raw.includes("ملاحظ")) return "notes";
+
+    return ["vocabulary", "grammar", "reading", "writing", "notes"].includes(raw)
+      ? raw
+      : "vocabulary";
+  }
+
+  function getContext() {
+    const old = window.__lastGoldenOpenContext || {};
+
+    const cohort =
+      document.getElementById("goldenDirectCohort")?.value ||
+      window.currentGoldenCohort ||
+      old.cohort ||
+      "2008";
+
+    const unitKey =
+      document.getElementById("goldenDirectUnit")?.value ||
+      window.currentGoldenUnitKey ||
+      old.unitKey ||
+      "unit1";
+
+    const skill =
+      document.getElementById("goldenDirectSkill")?.value ||
+      window.currentGoldenSkill ||
+      old.skill ||
+      "vocabulary";
+
+    return {
+      cohort: normCohort(cohort),
+      unitKey: normUnit(unitKey),
+      skill: normSkill(skill)
+    };
+  }
+
+  function getEditorContent(ctx) {
+    const direct = document.getElementById("goldenDirectContent");
+    if (direct && typeof direct.value === "string") {
+      return direct.value;
+    }
+
+    const ids = [
+      "goldenEditor_" + ctx.skill,
+      "goldenEditor" + ctx.skill.charAt(0).toUpperCase() + ctx.skill.slice(1),
+      "goldenEditorContent"
+    ];
+
+    for (const id of ids) {
+      const el = document.getElementById(id);
+      if (el && typeof el.value === "string") return el.value;
+    }
+
+    const visibleTextarea = Array.from(document.querySelectorAll("textarea")).find(el => {
+      const st = getComputedStyle(el);
+      return st.display !== "none" && st.visibility !== "hidden" && el.offsetHeight > 0;
+    });
+
+    return visibleTextarea?.value || "";
+  }
+
+  function getEditorTitle(ctx) {
+    return (
+      document.getElementById("goldenDirectTitle")?.value ||
+      window.goldenUnitData?.[ctx.cohort]?.[ctx.unitKey]?.title ||
+      "Unit " + ctx.unitKey.replace("unit", "")
+    );
+  }
+
+  function readLocalStore() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function ensureLocalUnit(store, ctx) {
+    store[ctx.cohort] = store[ctx.cohort] || {};
+    store[ctx.cohort][ctx.unitKey] = store[ctx.cohort][ctx.unitKey] || {};
+
+    const unit = store[ctx.cohort][ctx.unitKey];
+
+    unit.title = unit.title || "Unit " + ctx.unitKey.replace("unit", "");
+    unit.vocabulary = unit.vocabulary || unit.meanings || "";
+    unit.meanings = unit.meanings || unit.vocabulary || "";
+    unit.grammar = unit.grammar || "";
+    unit.reading = unit.reading || "";
+    unit.writing = unit.writing || "";
+    unit.notes = unit.notes || "";
+
+    return unit;
+  }
+
+  async function fetchRows(sb, ctx) {
+    const { data, error } = await sb
+      .from("golden_content")
+      .select("*")
+      .eq("cohort", ctx.cohort)
+      .eq("unit_key", ctx.unitKey);
+
+    if (error) {
+      console.error("❌ Golden fetch rows failed:", error);
+      return [];
+    }
+
+    return data || [];
+  }
+
+  function pickBestRow(rows) {
+    if (!rows || !rows.length) return null;
+
+    return [...rows].sort((a, b) => {
+      const ad = new Date(a.updated_at || a.created_at || 0).getTime();
+      const bd = new Date(b.updated_at || b.created_at || 0).getTime();
+      return bd - ad;
+    })[0];
+  }
+
+  window.saveGoldenUnitContent = async function saveGoldenUnitContent_SINGLE_ENGINE() {
+    const ctx = getContext();
+    const content = getEditorContent(ctx);
+    const title = getEditorTitle(ctx);
+
+    if (!String(content || "").trim()) {
+      alert("⚠️ صندوق المحتوى فاضي. لم يتم الحفظ.");
+      console.warn("❌ Empty Golden content:", ctx);
+      return false;
+    }
+
+    const store = readLocalStore();
+    const unit = ensureLocalUnit(store, ctx);
+
+    unit.title = title;
+    unit[ctx.skill] = content;
+
+    if (ctx.skill === "vocabulary") {
+      unit.meanings = content;
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+
+    window.goldenUnitData = store;
+    window.goldenData = store;
+    window.jakGoldenIntensiveData = store;
+
+    const sb = getSB();
+
+    if (!sb) {
+      alert("✅ تم الحفظ محليًا فقط. Supabase غير جاهز.");
+      console.warn("⚠️ Supabase client not found.");
+      return true;
+    }
+
+    const rows = await fetchRows(sb, ctx);
+    const best = pickBestRow(rows) || {};
+
+    const payload = {
+      cohort: ctx.cohort,
+      unit_key: ctx.unitKey,
+      title,
+      vocabulary: best.vocabulary || unit.vocabulary || "",
+      grammar: best.grammar || unit.grammar || "",
+      reading: best.reading || unit.reading || "",
+      writing: best.writing || unit.writing || "",
+      notes: best.notes || unit.notes || ""
+    };
+
+    payload[ctx.skill] = content;
+
+    let error = null;
+
+    if (rows.length > 0) {
+      const result = await sb
+        .from("golden_content")
+        .update(payload)
+        .eq("cohort", ctx.cohort)
+        .eq("unit_key", ctx.unitKey);
+
+      error = result.error;
+    } else {
+      const result = await sb
+        .from("golden_content")
+        .insert(payload);
+
+      error = result.error;
+    }
+
+    if (error) {
+      console.error("❌ Golden save failed:", error, payload);
+      alert("⚠️ تم الحفظ محليًا، لكن فشل حفظ Supabase. افتح Console وشوف الخطأ.");
+      return false;
+    }
+
+    console.log("✅ GOLDEN SINGLE SAVE SUCCESS:", {
+      ...ctx,
+      length: content.length,
+      duplicatedRowsUpdated: rows.length
+    });
+
+    alert("✅ تم حفظ القسم بنجاح");
+
+    if (typeof window.openGoldenUnit === "function") {
+      setTimeout(() => {
+        window.openGoldenUnit(ctx.cohort, ctx.unitKey, ctx.skill);
+      }, 250);
+    }
+
+    return true;
+  };
+
+  window.saveGoldenDirectEditorContent = window.saveGoldenUnitContent;
+  window.saveGoldenFullSectionReliable = window.saveGoldenUnitContent;
+
+  console.log("✅ JAK GOLDEN SINGLE SAVE ENGINE FINAL installed.");
+})();
+/* =========================================================
+   GOLDEN EXACT SKILL EXAM RENDERER - FINAL FIX
+   يحل مشكلة: الامتحان مربوط صح لكنه لا يظهر بسبب observer قديم
+========================================================= */
+(function GOLDEN_EXACT_SKILL_EXAM_RENDERER_FINAL() {
+  if (window.__GOLDEN_EXACT_SKILL_EXAM_RENDERER_FINAL__) return;
+  window.__GOLDEN_EXACT_SKILL_EXAM_RENDERER_FINAL__ = true;
+
+  function getSB() {
+    return (
+      window.supabaseClient ||
+      window._supabase ||
+      window.db ||
+      window.sb ||
+      window.supabase ||
+      null
+    );
+  }
+
+  function normCohort(value) {
+    const raw = String(value || "").trim();
+    if (raw.includes("2009")) return "2009";
+    return "2008";
+  }
+
+  function normUnit(value) {
+    const raw = String(value || "unit1").trim().toLowerCase();
+    const num = raw.match(/\d+/)?.[0];
+    return num ? "unit" + num : "unit1";
+  }
+
+  function normSkill(value) {
+    const raw = String(value || "vocabulary").trim().toLowerCase();
+
+    if (raw.includes("vocab") || raw.includes("meaning") || raw.includes("معاني")) return "vocabulary";
+    if (raw.includes("grammar") || raw.includes("قواعد")) return "grammar";
+    if (raw.includes("reading") || raw.includes("قراءة")) return "reading";
+    if (raw.includes("writing") || raw.includes("كتابة")) return "writing";
+    if (raw.includes("note") || raw.includes("ملاحظ")) return "notes";
+
+    return ["vocabulary", "grammar", "reading", "writing", "notes"].includes(raw)
+      ? raw
+      : "vocabulary";
+  }
+
+  function getViewer(cohort) {
+    return document.getElementById("goldenUnitViewer" + normCohort(cohort));
+  }
+
+  function getSkillArabic(skill) {
+    const s = normSkill(skill);
+    return {
+      vocabulary: "المعاني",
+      grammar: "القواعد",
+      reading: "القراءة",
+      writing: "الكتابة",
+      notes: "الملاحظات"
+    }[s] || "القسم";
+  }
+
+  function getSkillIcon(skill) {
+    const s = normSkill(skill);
+    return {
+      vocabulary: "📚",
+      grammar: "📘",
+      reading: "📖",
+      writing: "✍️",
+      notes: "📝"
+    }[s] || "🏆";
+  }
+
+  function safeStartExam(examId) {
+    if (typeof window.startGoldenLinkedExam === "function") {
+      window.startGoldenLinkedExam(examId);
+      return;
+    }
+
+    if (typeof window.startGoldenLinkedExamV3 === "function") {
+      window.startGoldenLinkedExamV3(examId);
+      return;
+    }
+
+    if (typeof window.startExam === "function") {
+      window.startExam(examId);
+      return;
+    }
+
+    alert("لم يتم العثور على دالة بدء الامتحان.");
+  }
+
+  window.startGoldenExactSkillExam = safeStartExam;
+
+  async function loadExactSkillExams(cohort, unitKey, skill) {
+    const sb = getSB();
+
+    if (!sb || typeof sb.from !== "function") {
+      console.warn("⚠️ Supabase client not found.");
+      return [];
+    }
+
+    const c = normCohort(cohort);
+    const u = normUnit(unitKey);
+    const s = normSkill(skill);
+
+    const { data, error } = await sb
+      .from("exams")
+      .select("id,title,description,status,golden_cohort,golden_unit,golden_skill,created_at")
+      .eq("status", "published")
+      .eq("golden_cohort", c)
+      .eq("golden_unit", u)
+      .eq("golden_skill", s)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("❌ Golden exact skill exams load failed:", error);
+      return [];
+    }
+
+    return data || [];
+  }
+
+  window.loadGoldenExactSkillExams = loadExactSkillExams;
+
+  async function renderExactSkillExams(cohort, unitKey, skill) {
+    const c = normCohort(cohort);
+    const u = normUnit(unitKey);
+    const s = normSkill(skill);
+
+    const viewer = getViewer(c);
+    if (!viewer) return false;
+
+    const exams = await loadExactSkillExams(c, u, s);
+
+    let mount = viewer.querySelector("#goldenExactSkillExamMount");
+
+    if (!mount) {
+      mount = document.createElement("div");
+      mount.id = "goldenExactSkillExamMount";
+      viewer.appendChild(mount);
+    }
+
+    if (!exams.length) {
+      mount.innerHTML = "";
+      return false;
+    }
+
+    const skillArabic = getSkillArabic(s);
+    const skillIcon = getSkillIcon(s);
+
+    mount.innerHTML = `
+      <div style="
+        margin-top:24px;
+        padding:24px;
+        border-radius:26px;
+        background:linear-gradient(135deg,#fff7ed 0%,#fdf2f8 45%,#f5f3ff 100%);
+        border:2px solid #f9a8d4;
+        box-shadow:0 14px 34px rgba(124,58,237,.16);
+        direction:rtl;
+        font-family:Cairo,Tajawal,Arial,sans-serif;
+      ">
+        <div style="
+          background:linear-gradient(135deg,#111827 0%,#7c3aed 50%,#ec4899 100%);
+          color:white;
+          padding:20px;
+          border-radius:22px;
+          margin-bottom:18px;
+          box-shadow:0 10px 24px rgba(124,58,237,.20);
+        ">
+          <div style="font-size:14px;font-weight:900;opacity:.95;">
+            ${skillIcon} Golden Linked Exams
+          </div>
+          <h3 style="margin:8px 0 0;font-size:25px;line-height:1.35;">
+            امتحانات قسم ${skillArabic}
+          </h3>
+          <p style="margin:8px 0 0;font-size:15px;">
+            امتحانات مرتبطة مباشرة بـ ${c} / ${u} / ${s}
+          </p>
+        </div>
+
+        <div style="
+          display:grid;
+          grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+          gap:16px;
+        ">
+          ${exams.map((exam, index) => `
+            <div style="
+              background:white;
+              border:1px solid #ddd6fe;
+              border-radius:22px;
+              padding:18px;
+              box-shadow:0 10px 24px rgba(124,58,237,.11);
+              position:relative;
+              overflow:hidden;
+            ">
+              <div style="
+                position:absolute;
+                top:0;
+                right:0;
+                width:100%;
+                height:7px;
+                background:linear-gradient(90deg,#7c3aed,#ec4899,#f59e0b);
+              "></div>
+
+              <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                gap:8px;
+                margin:8px 0 12px;
+              ">
+                <span style="
+                  background:#7c3aed;
+                  color:white;
+                  padding:5px 12px;
+                  border-radius:999px;
+                  font-weight:900;
+                  font-size:13px;
+                ">
+                  اختبار ${index + 1}
+                </span>
+
+                <span style="
+                  background:#dcfce7;
+                  color:#166534;
+                  padding:5px 12px;
+                  border-radius:999px;
+                  font-weight:900;
+                  font-size:13px;
+                ">
+                  Published
+                </span>
+              </div>
+
+              <div style="font-size:36px;margin-bottom:8px;">🏆</div>
+
+              <h4 style="
+                margin:0 0 10px;
+                color:#4c1d95;
+                font-size:19px;
+                line-height:1.45;
+              ">
+                ${exam.title || "Golden Exam"}
+              </h4>
+
+              <p style="
+                margin:0 0 14px;
+                color:#4b5563;
+                font-size:14px;
+              ">
+                ${exam.description || "اختبار تدريبي مرتبط بهذا القسم من المكثف الذهبي."}
+              </p>
+
+              <div style="
+                display:flex;
+                flex-wrap:wrap;
+                gap:6px;
+                margin-bottom:14px;
+              ">
+                <span style="background:#f3e8ff;color:#6d28d9;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800;">${c}</span>
+                <span style="background:#ffedd5;color:#9a3412;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800;">${u}</span>
+                <span style="background:#e0f2fe;color:#075985;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800;">${s}</span>
+              </div>
+
+              <button
+                type="button"
+                onclick="window.startGoldenExactSkillExam('${exam.id}')"
+                style="
+                  width:100%;
+                  border:0;
+                  border-radius:15px;
+                  padding:13px 14px;
+                  font-weight:900;
+                  cursor:pointer;
+                  color:white;
+                  background:linear-gradient(135deg,#7c3aed,#ec4899);
+                  box-shadow:0 8px 18px rgba(236,72,153,.20);
+                "
+              >
+                ابدأ الامتحان الآن
+              </button>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+
+    console.log("✅ Golden exact skill exams rendered:", {
+      cohort: c,
+      unitKey: u,
+      skill: s,
+      count: exams.length,
+      titles: exams.map(e => e.title)
+    });
+
+    return true;
+  }
+
+  window.renderGoldenExactSkillExams = renderExactSkillExams;
+
+  const originalOpenGoldenUnit = window.openGoldenUnit;
+
+  if (typeof originalOpenGoldenUnit === "function") {
+    window.openGoldenUnit = async function openGoldenUnit_WITH_EXACT_SKILL_EXAMS(cohort, unitKey, skill) {
+      const c = normCohort(cohort);
+      const u = normUnit(unitKey);
+      const s = normSkill(skill || "vocabulary");
+
+      const result = await originalOpenGoldenUnit.apply(this, arguments);
+
+      // أكثر من محاولة لأن observer قديم يعيد الرسم بعد الفتح
+      setTimeout(() => renderExactSkillExams(c, u, s), 250);
+      setTimeout(() => renderExactSkillExams(c, u, s), 900);
+      setTimeout(() => renderExactSkillExams(c, u, s), 1800);
+      setTimeout(() => renderExactSkillExams(c, u, s), 3000);
+
+      return result;
+    };
+  }
+
+  console.log("✅ GOLDEN EXACT SKILL EXAM RENDERER FINAL installed.");
+})();
+/* =========================================================
+   GOLDEN LINKED EXAMS GLOBAL AUTO DISPLAY FIX
+   حل عام لإظهار الامتحانات المرتبطة لكل الوحدات والأقسام
+========================================================= */
+(function () {
+  if (window.__goldenLinkedExamsGlobalFixInstalled) return;
+  window.__goldenLinkedExamsGlobalFixInstalled = true;
+
+  function normalizeGoldenUnit(unitKey) {
+    const raw = String(unitKey || "").trim().toLowerCase();
+    const match = raw.match(/unit\s*(\d+)/i);
+    if (match) return "unit" + match[1];
+    return raw;
+  }
+
+  function normalizeGoldenSkill(skill) {
+    return String(skill || "vocabulary").trim().toLowerCase();
+  }
+
+  function getGoldenViewer(cohort) {
+    return (
+      document.getElementById("goldenUnitViewer" + cohort) ||
+      document.querySelector("#goldenIntensiveViewer") ||
+      document.querySelector(".golden-unit-viewer")
+    );
+  }
+
+  function getStartExamFunctionName() {
+    if (typeof window.startGoldenLinkedExamV3 === "function") return "startGoldenLinkedExamV3";
+    if (typeof window.startGoldenLinkedExam === "function") return "startGoldenLinkedExam";
+    if (typeof window.startExam === "function") return "startExam";
+    return "";
+  }
+
+  async function renderGoldenLinkedExamsGlobal(cohort, unitKey, skill) {
+    try {
+      cohort = String(cohort || "").trim();
+      unitKey = normalizeGoldenUnit(unitKey);
+      skill = normalizeGoldenSkill(skill);
+
+      if (!cohort || !unitKey || !skill) return;
+
+      const allowedSkills = ["vocabulary", "grammar", "reading", "writing"];
+      if (!allowedSkills.includes(skill)) return;
+
+      const sb =
+        window.supabaseClient ||
+        window._supabase ||
+        window.db ||
+        window.sb ||
+        window.supabase;
+
+      if (!sb) return;
+
+      const viewer = getGoldenViewer(cohort);
+      if (!viewer) return;
+
+      const { data: exams, error } = await sb
+        .from("exams")
+        .select("id,title,status,golden_cohort,golden_unit,golden_skill")
+        .eq("status", "published")
+        .eq("golden_cohort", cohort)
+        .eq("golden_unit", unitKey)
+        .eq("golden_skill", skill);
+
+      if (error) {
+        console.warn("Golden linked exams query error:", error);
+        return;
+      }
+
+      if (!exams || !exams.length) return;
+
+      const mountId = "goldenLinkedExamsGlobalMount_" + cohort + "_" + unitKey + "_" + skill;
+
+      const alreadyVisible = exams.some(function (exam) {
+        return (viewer.innerText || "").includes(exam.title);
+      });
+
+      if (alreadyVisible) return;
+
+      const old = document.getElementById(mountId);
+      if (old) old.remove();
+
+      const startFn = getStartExamFunctionName();
+
+      const labels = {
+        vocabulary: "📚 امتحانات المعاني المرتبطة",
+        grammar: "📘 امتحانات القواعد المرتبطة",
+        reading: "📖 امتحانات القراءة المرتبطة",
+        writing: "✍️ امتحانات الكتابة المرتبطة"
+      };
+
+      const box = document.createElement("div");
+      box.id = mountId;
+      box.style.cssText =
+        "direction:rtl;margin:26px 0;padding:24px;border-radius:24px;background:linear-gradient(135deg,#111827,#2563eb,#7c3aed);color:white;font-family:Cairo,Tajawal,Arial,sans-serif;box-shadow:0 14px 34px rgba(0,0,0,.18);";
+
+      let html = "";
+      html += '<h2 style="margin:0 0 10px;font-size:26px;">' + (labels[skill] || "🧪 الامتحانات المرتبطة") + "</h2>";
+      html += '<p style="margin:0 0 18px;opacity:.95;">' + cohort + " / " + unitKey + " / " + skill + "</p>";
+
+      exams.forEach(function (exam) {
+        html += '<div style="background:white;color:#111827;border-radius:18px;padding:18px;margin-top:14px;box-shadow:0 8px 22px rgba(0,0,0,.12);">';
+        html += '<h3 style="margin:0 0 8px;color:#1d4ed8;font-size:22px;">' + exam.title + "</h3>";
+        html += '<p style="margin:0 0 14px;color:#64748b;">امتحان مرتبط بهذا القسم من المكثف الذهبي.</p>';
+        html += '<button data-exam-id="' + exam.id + '" style="background:linear-gradient(135deg,#f59e0b,#f97316);color:white;border:none;padding:12px 22px;border-radius:999px;font-weight:900;cursor:pointer;font-size:16px;">ابدأ الامتحان</button>';
+        html += "</div>";
+      });
+
+      box.innerHTML = html;
+      viewer.appendChild(box);
+
+      box.querySelectorAll("button[data-exam-id]").forEach(function (btn) {
+        btn.onclick = function () {
+          const id = btn.getAttribute("data-exam-id");
+
+          if (startFn && typeof window[startFn] === "function") {
+            return window[startFn](id);
+          }
+
+          alert("Start exam function not found");
+        };
+      });
+
+      console.log("✅ Global Golden exams rendered:", {
+        cohort: cohort,
+        unitKey: unitKey,
+        skill: skill,
+        count: exams.length,
+        titles: exams.map(function (e) { return e.title; })
+      });
+    } catch (e) {
+      console.warn("Global Golden linked exams render failed:", e);
+    }
+  }
+
+  const originalOpenGoldenUnit = window.openGoldenUnit;
+
+  if (typeof originalOpenGoldenUnit === "function") {
+    window.openGoldenUnit = async function (cohort, unitKey, skill) {
+      const result = await originalOpenGoldenUnit.apply(this, arguments);
+
+      setTimeout(function () {
+        renderGoldenLinkedExamsGlobal(cohort, unitKey, skill);
+      }, 700);
+
+      setTimeout(function () {
+        renderGoldenLinkedExamsGlobal(cohort, unitKey, skill);
+      }, 1600);
+
+      return result;
+    };
+  }
+
+  window.renderGoldenLinkedExamsGlobal = renderGoldenLinkedExamsGlobal;
+
+  console.log("✅ Golden Linked Exams Global Auto Display Fix installed");
+})();
+/* =========================================================
+   GOLDEN LINKED EXAMS FINAL NORMALIZED RENDER FIX
+   حل نهائي عام لإظهار امتحانات المكثف بعد تطبيع unit/skill
+========================================================= */
+(function () {
+  if (window.__goldenFinalNormalizedExamFix) return;
+  window.__goldenFinalNormalizedExamFix = true;
+
+  function normalizeGoldenUnitFinal(unitKey) {
+    const raw = String(unitKey || "").trim().toLowerCase();
+    const m = raw.match(/unit\s*(\d+)/i);
+    if (m) return "unit" + m[1];
+    return raw;
+  }
+
+  function normalizeGoldenSkillFinal(skill) {
+    return String(skill || "vocabulary").trim().toLowerCase();
+  }
+
+  function getGoldenViewerFinal(cohort) {
+    return (
+      document.getElementById("goldenUnitViewer" + cohort) ||
+      document.getElementById("goldenIntensiveViewer") ||
+      document.querySelector(".golden-unit-viewer")
+    );
+  }
+
+  async function renderGoldenExamsFinal(cohort, unitKey, skill) {
+    try {
+      cohort = String(cohort || "").trim();
+      unitKey = normalizeGoldenUnitFinal(unitKey);
+      skill = normalizeGoldenSkillFinal(skill);
+
+      if (!cohort || !unitKey || !skill) return;
+
+      const allowed = ["vocabulary", "grammar", "reading", "writing"];
+      if (!allowed.includes(skill)) return;
+
+      const sb =
+        window.supabaseClient ||
+        window._supabase ||
+        window.db ||
+        window.sb ||
+        window.supabase;
+
+      if (!sb) return;
+
+      const viewer = getGoldenViewerFinal(cohort);
+      if (!viewer) return;
+
+      const { data: exams, error } = await sb
+        .from("exams")
+        .select("id,title,status,golden_cohort,golden_unit,golden_skill")
+        .eq("status", "published")
+        .eq("golden_cohort", cohort)
+        .eq("golden_unit", unitKey)
+        .eq("golden_skill", skill);
+
+      if (error) {
+        console.warn("Golden final exams query error:", error);
+        return;
+      }
+
+      if (!exams || !exams.length) return;
+
+      const mountId = "goldenFinalExamMount_" + cohort + "_" + unitKey + "_" + skill;
+
+      // لا تكرر نفس الصندوق
+      const old = document.getElementById(mountId);
+      if (old) old.remove();
+
+      // إذا الامتحان ظاهر أصلًا لا نضيفه مرة ثانية
+      const visibleText = viewer.innerText || "";
+      const alreadyVisible = exams.some(function (exam) {
+        return visibleText.includes(exam.title);
+      });
+
+      if (alreadyVisible) return;
+
+      const labels = {
+        vocabulary: "📚 امتحانات المعاني المرتبطة",
+        grammar: "📘 امتحانات القواعد المرتبطة",
+        reading: "📖 امتحانات القراءة المرتبطة",
+        writing: "✍️ امتحانات الكتابة المرتبطة"
+      };
+
+      const box = document.createElement("div");
+      box.id = mountId;
+      box.style.cssText =
+        "direction:rtl;margin:25px 0;padding:22px;border-radius:22px;background:linear-gradient(135deg,#111827,#2563eb,#7c3aed);color:white;font-family:Cairo,Tajawal,Arial,sans-serif;box-shadow:0 12px 30px rgba(0,0,0,.18);";
+
+      let html = "";
+      html += '<h2 style="margin:0 0 12px;">' + (labels[skill] || "🧪 الامتحانات المرتبطة") + "</h2>";
+      html += '<p style="margin:0 0 18px;">' + cohort + " / " + unitKey + " / " + skill + "</p>";
+
+      exams.forEach(function (exam) {
+        html += '<div style="background:white;color:#111827;border-radius:18px;padding:18px;margin-top:14px;box-shadow:0 8px 20px rgba(0,0,0,.12);">';
+        html += '<h3 style="margin:0 0 8px;color:#1d4ed8;">' + exam.title + "</h3>";
+        html += '<p style="margin:0 0 14px;color:#64748b;">امتحان مرتبط بهذا القسم من المكثف الذهبي.</p>';
+        html += '<button data-exam-id="' + exam.id + '" style="background:linear-gradient(135deg,#f59e0b,#f97316);color:white;border:none;padding:12px 22px;border-radius:999px;font-weight:900;cursor:pointer;font-size:16px;">ابدأ الامتحان</button>';
+        html += "</div>";
+      });
+
+      box.innerHTML = html;
+      viewer.appendChild(box);
+
+      box.querySelectorAll("button[data-exam-id]").forEach(function (btn) {
+        btn.onclick = function () {
+          const id = btn.getAttribute("data-exam-id");
+
+          if (window.startGoldenLinkedExamV3) {
+            return window.startGoldenLinkedExamV3(id);
+          }
+
+          if (window.startGoldenLinkedExam) {
+            return window.startGoldenLinkedExam(id);
+          }
+
+          if (window.startExam) {
+            return window.startExam(id);
+          }
+
+          alert("Start exam function not found");
+        };
+      });
+
+      console.log("✅ Golden final normalized exams rendered:", {
+        cohort: cohort,
+        unitKey: unitKey,
+        skill: skill,
+        count: exams.length,
+        titles: exams.map(function (e) { return e.title; })
+      });
+    } catch (e) {
+      console.warn("Golden final normalized exam render failed:", e);
+    }
+  }
+
+  const oldOpenGoldenUnit = window.openGoldenUnit;
+
+  if (typeof oldOpenGoldenUnit === "function") {
+    window.openGoldenUnit = async function (cohort, unitKey, skill) {
+      const result = await oldOpenGoldenUnit.apply(this, arguments);
+
+      setTimeout(function () {
+        renderGoldenExamsFinal(cohort, unitKey, skill);
+      }, 700);
+
+      setTimeout(function () {
+        renderGoldenExamsFinal(cohort, unitKey, skill);
+      }, 1600);
+
+      setTimeout(function () {
+        renderGoldenExamsFinal(cohort, unitKey, skill);
+      }, 2600);
+
+      return result;
+    };
+  }
+
+  window.renderGoldenExamsFinal = renderGoldenExamsFinal;
+
+  console.log("✅ Golden Final Normalized Exam Fix installed");
+})();
 </script>
 
 <style>
