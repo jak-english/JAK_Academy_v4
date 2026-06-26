@@ -9177,6 +9177,107 @@ console.log("✅ Golden normalizer missing parts loaded permanently.");
 
   console.log("✅ Golden Final Normalized Exam Fix installed");
 })();
+/* =========================================================
+   SAFE GOLDEN EXAM AUTO RENDER - UNIT/SKILL NORMALIZED
+========================================================= */
+(function () {
+  if (window.__safeGoldenExamAutoRender) return;
+  window.__safeGoldenExamAutoRender = true;
+
+  async function safeRenderGoldenExams(cohort, unitKey, skill) {
+    try {
+      var sb = window.supabaseClient || window._supabase || window.db || window.sb || window.supabase;
+      if (!sb) return;
+
+      cohort = String(cohort || "").trim();
+      unitKey = String(unitKey || "").trim().toLowerCase().replace(/\s+/g, "");
+      skill = String(skill || "").trim().toLowerCase();
+
+      if (!cohort || !unitKey || !skill) return;
+
+      var viewer = document.getElementById("goldenUnitViewer" + cohort);
+      if (!viewer) return;
+
+      var result = await sb
+        .from("exams")
+        .select("id,title")
+        .eq("status", "published")
+        .eq("golden_cohort", cohort)
+        .eq("golden_unit", unitKey)
+        .eq("golden_skill", skill);
+
+      var exams = result.data || [];
+      if (!exams.length) return;
+
+      var mountId = "safeGoldenExamBox_" + cohort + "_" + unitKey + "_" + skill;
+      var old = document.getElementById(mountId);
+      if (old) old.remove();
+
+      var titleMap = {
+        vocabulary: "📚 امتحانات المعاني المرتبطة",
+        grammar: "📘 امتحانات القواعد المرتبطة",
+        reading: "📖 امتحانات القراءة المرتبطة",
+        writing: "✍️ امتحانات الكتابة المرتبطة"
+      };
+
+      var box = document.createElement("div");
+      box.id = mountId;
+      box.style.cssText =
+        "direction:rtl;margin:25px 0;padding:22px;border-radius:22px;background:linear-gradient(135deg,#111827,#2563eb,#7c3aed);color:white;font-family:Cairo,Tajawal,Arial,sans-serif;box-shadow:0 12px 30px rgba(0,0,0,.18);";
+
+      var html = "";
+      html += '<h2 style="margin:0 0 12px;">' + (titleMap[skill] || "🧪 الامتحانات المرتبطة") + "</h2>";
+      html += '<p style="margin:0 0 18px;">' + cohort + " / " + unitKey + " / " + skill + "</p>";
+
+      exams.forEach(function (exam) {
+        html += '<div style="background:white;color:#111827;border-radius:18px;padding:18px;margin-top:14px;box-shadow:0 8px 20px rgba(0,0,0,.12);">';
+        html += '<h3 style="margin:0 0 8px;color:#1d4ed8;">' + exam.title + "</h3>";
+        html += '<p style="margin:0 0 14px;color:#64748b;">امتحان مرتبط بهذا القسم من المكثف الذهبي.</p>';
+        html += '<button data-exam-id="' + exam.id + '" style="background:linear-gradient(135deg,#f59e0b,#f97316);color:white;border:none;padding:12px 22px;border-radius:999px;font-weight:900;cursor:pointer;font-size:16px;">ابدأ الامتحان</button>';
+        html += "</div>";
+      });
+
+      box.innerHTML = html;
+      viewer.appendChild(box);
+
+      box.querySelectorAll("button[data-exam-id]").forEach(function (btn) {
+        btn.onclick = function () {
+          var id = btn.getAttribute("data-exam-id");
+          if (window.startGoldenLinkedExamV3) return window.startGoldenLinkedExamV3(id);
+          if (window.startGoldenLinkedExam) return window.startGoldenLinkedExam(id);
+          if (window.startExam) return window.startExam(id);
+          alert("Start exam function not found");
+        };
+      });
+
+      console.log("✅ Safe Golden exams rendered:", cohort, unitKey, skill, exams.length);
+    } catch (e) {
+      console.warn("Safe Golden exams render failed:", e);
+    }
+  }
+
+  window.safeRenderGoldenExams = safeRenderGoldenExams;
+
+  var oldOpen = window.openGoldenUnit;
+
+  if (typeof oldOpen === "function") {
+    window.openGoldenUnit = async function (cohort, unitKey, skill) {
+      var res = await oldOpen.apply(this, arguments);
+
+      setTimeout(function () {
+        safeRenderGoldenExams(cohort, unitKey, skill);
+      }, 900);
+
+      setTimeout(function () {
+        safeRenderGoldenExams(cohort, unitKey, skill);
+      }, 1800);
+
+      return res;
+    };
+  }
+
+  console.log("✅ Safe Golden Exam Auto Render installed");
+})();
 </script>
 
 <style>
